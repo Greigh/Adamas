@@ -1,0 +1,206 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// App Header & Navigation
+.app-header {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue) 0%,
+    var(--primary-blue-dark) 100%
+  );
+  color: var(--white);
+  padding: 0;
+  margin: -24px -24px 24px -24px;
+  border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
+  box-shadow: var(--shadow-md);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: map.get($spacing, 4) map.get($spacing, 6);
+  max-width: 100%;
+}
+
+.app-title {
+  h1 {
+    margin: 0;
+    font-size: map.get($font-sizes, '2xl');
+    font-weight: map.get($font-weights, semibold);
+    color: var(--white);
+    text-align: left;
+  }
+}
+
+.main-nav {
+  display: flex;
+  gap: map.get($spacing, 1);
+}
+
+.nav-tab {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: map.get($radius, md);
+  padding: map.get($spacing, 2) map.get($spacing, 5);
+  font-size: map.get($font-sizes, base);
+  font-weight: map.get($font-weights, medium);
+  cursor: pointer;
+  transition: map.get($transitions, base);
+  outline: none;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &.active {
+    background: var(--white);
+    color: var(--primary-blue);
+    font-weight: map.get($font-weights, semibold);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      background: var(--gray-50);
+      transform: translateY(-1px);
+    }
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  }
+}
+
+// Dark mode
+[data-theme='dark'] {
+  .app-header {
+    background: linear-gradient(
+      135deg,
+      var(--dark-surface) 0%,
+      var(--dark-bg) 100%
+    );
+    box-shadow: var(--shadow-xl);
+  }
+
+  .app-title h1 {
+    color: var(--dark-text);
+  }
+
+  .nav-tab {
+    background: rgba(144, 202, 249, 0.1);
+    color: rgba(226, 232, 240, 0.8);
+    border-color: rgba(144, 202, 249, 0.1);
+
+    &:hover {
+      background: rgba(144, 202, 249, 0.2);
+      color: var(--dark-text);
+    }
+
+    &.active {
+      background: #90caf9;
+      color: var(--dark-surface);
+      border-color: rgba(144, 202, 249, 0.3);
+
+      &:hover {
+        background: #81c1f7;
+      }
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.3);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: map.get($breakpoints, md)) {
+  .header-content {
+    flex-direction: column;
+    gap: map.get($spacing, 3);
+    text-align: center;
+  }
+
+  .app-title h1 {
+    font-size: map.get($font-sizes, xl);
+    text-align: center;
+  }
+
+  .main-nav {
+    justify-content: center;
+    width: 100%;
+
+    .nav-tab {
+      flex: 1;
+      text-align: center;
+    }
+  }
+}
+
+// Update your media queries for better small screen support
+@media (max-width: map.get($breakpoints, sm)) {
+  .app-header {
+    margin: -#{map.get($spacing, 3)} -#{map.get($spacing, 3)} #{map.get(
+        $spacing,
+        3
+      )} -#{map.get($spacing, 3)};
+  }
+
+  .header-content {
+    padding: map.get($spacing, 3);
+  }
+
+  .app-title h1 {
+    font-size: map.get($font-sizes, lg);
+  }
+}
+
+// Extra small devices
+@media (max-width: 480px) {
+  .app-title h1 {
+    font-size: map.get($font-sizes, base);
+  }
+
+  .main-nav {
+    gap: map.get($spacing, 1);
+  }
+
+  .nav-tab {
+    padding: map.get($spacing, 1) map.get($spacing, 2);
+    font-size: map.get($font-sizes, xs);
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 600px) {
+  .app-header {
+    margin: -8px -8px 12px -8px;
+    border-radius: map.get($radius, base) map.get($radius, base) 0 0;
+    padding: 0;
+  }
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: map.get($spacing, 2) map.get($spacing, 2);
+  }
+  .app-title h1 {
+    font-size: map.get($font-sizes, lg);
+    text-align: left;
+  }
+  .main-nav {
+    flex-direction: column;
+    gap: map.get($spacing, 0.5);
+    width: 100%;
+    margin-top: map.get($spacing, 2);
+  }
+  .nav-tab {
+    width: 100%;
+    font-size: map.get($font-sizes, sm);
+    padding: map.get($spacing, 2) map.get($spacing, 2);
+  }
+}

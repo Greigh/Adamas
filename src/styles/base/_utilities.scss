@@ -1,0 +1,88 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Display utilities
+.hidden { display: none !important; }
+.block { display: block !important; }
+.inline { display: inline !important; }
+.inline-block { display: inline-block !important; }
+.flex { display: flex !important; }
+.inline-flex { display: inline-flex !important; }
+.grid { display: grid !important; }
+
+// Flexbox utilities
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+
+// Spacing utilities
+.gap-1 { gap: map.get($spacing, 1); }
+.gap-2 { gap: map.get($spacing, 2); }
+.gap-3 { gap: map.get($spacing, 3); }
+.gap-4 { gap: map.get($spacing, 4); }
+.gap-6 { gap: map.get($spacing, 6); }
+
+// Margin utilities
+.m-0 { margin: 0 !important; }
+.mt-4 { margin-top: map.get($spacing, 4); }
+.mb-4 { margin-bottom: map.get($spacing, 4); }
+.ml-4 { margin-left: map.get($spacing, 4); }
+.mr-4 { margin-right: map.get($spacing, 4); }
+
+// Padding utilities
+.p-0 { padding: 0 !important; }
+.p-4 { padding: map.get($spacing, 4); }
+.pt-4 { padding-top: map.get($spacing, 4); }
+.pb-4 { padding-bottom: map.get($spacing, 4); }
+.pl-4 { padding-left: map.get($spacing, 4); }
+.pr-4 { padding-right: map.get($spacing, 4); }
+
+// Border radius utilities
+.rounded { border-radius: map.get($radius, base); }
+.rounded-lg { border-radius: map.get($radius, lg); }
+.rounded-xl { border-radius: map.get($radius, xl); }
+.rounded-full { border-radius: map.get($radius, full); }
+
+// Shadow utilities
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+// Color utilities
+.text-primary { color: var(--primary-blue); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-muted { color: var(--gray-500); }
+
+// Background utilities
+.bg-primary { background-color: var(--primary-blue); }
+.bg-success { background-color: var(--success); }
+.bg-warning { background-color: var(--warning); }
+.bg-error { background-color: var(--error); }
+.bg-gray-50 { background-color: var(--gray-50); }
+.bg-white { background-color: var(--white); }
+
+// Width utilities
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+
+// Cursor utilities
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+// Opacity utilities
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+// Transition utilities
+.transition { transition: map.get($transitions, base); }
+.transition-fast { transition: map.get($transitions, fast); }
+.transition-slow { transition: map.get($transitions, slow); }

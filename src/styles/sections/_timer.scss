@@ -1,0 +1,732 @@
+@use 'sass:color';
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Hold Timer Section
+#hold-timer {
+  .timer-display {
+    text-align: center;
+    margin-bottom: map.get($spacing, 6);
+    padding: map.get($spacing, 6);
+    background: var(--gray-50);
+    border-radius: map.get($radius, lg);
+    border: 1px solid var(--gray-200);
+  }
+
+  .timer-time {
+    font-family: $font-family-mono;
+    font-size: map.get($font-sizes, '4xl');
+    font-weight: map.get($font-weights, bold);
+    color: var(--primary-blue);
+    margin-bottom: map.get($spacing, 2);
+    text-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
+    line-height: 1;
+
+    // Add styles for editable state
+    &.editable {
+      border-bottom: 2px dashed var(--primary-blue);
+      padding-bottom: 2px;
+      cursor: text;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(25, 118, 210, 0.05);
+      }
+
+      &:focus {
+        outline: none;
+        border-bottom: 2px solid var(--primary-blue);
+        background: rgba(25, 118, 210, 0.1);
+      }
+    }
+  }
+
+  .timer-status {
+    font-size: map.get($font-sizes, lg);
+    font-weight: map.get($font-weights, medium);
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: map.get($spacing, 3);
+    justify-content: center;
+    margin-bottom: map.get($spacing, 6);
+    flex-wrap: wrap;
+
+    .timer-btn {
+      min-width: 120px;
+
+      &.start {
+        background: var(--success);
+
+        &:hover:not(:disabled) {
+          background: #15803d;
+        }
+      }
+
+      &.pause {
+        background: var(--warning);
+
+        &:hover:not(:disabled) {
+          background: #c2410c;
+        }
+      }
+
+      &.reset {
+        background: var(--error);
+
+        &:hover:not(:disabled) {
+          background: #b91c1c;
+        }
+      }
+    }
+  }
+
+  .timer-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); // Changed from 4 to 3 columns
+    gap: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: map.get($spacing, 4);
+    background: var(--white);
+    border-radius: map.get($radius, lg);
+    border: 2px solid var(--gray-100);
+    box-shadow: var(--shadow-sm);
+    transition: map.get($transitions, base);
+
+    &:hover {
+      border-color: var(--primary-blue);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-family: $font-family-mono;
+      font-size: map.get($font-sizes, xl);
+      font-weight: map.get($font-weights, bold);
+      color: var(--primary-blue);
+      display: block;
+      margin-bottom: map.get($spacing, 1);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: map.get($font-sizes, sm);
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: map.get($font-weights, medium);
+    }
+  }
+
+  .hold-history {
+    background: var(--white);
+    border-radius: map.get($radius, lg);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+
+    .history-header {
+      background: var(--gray-50);
+      padding: map.get($spacing, 4);
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h4 {
+        margin: 0;
+        color: var(--gray-800);
+        font-size: map.get($font-sizes, lg);
+        font-weight: map.get($font-weights, semibold);
+      }
+    }
+
+    .history-list {
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 0;
+      margin: 0;
+
+      &:empty::after {
+        content: 'No hold history yet.';
+        display: block;
+        text-align: center;
+        color: var(--gray-500);
+        font-style: italic;
+        padding: map.get($spacing, 8);
+      }
+    }
+
+    .history-item {
+      padding: map.get($spacing, 4);
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: map.get($transitions, fast);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: var(--gray-50);
+      }
+
+      .hold-duration {
+        font-family: $font-family-mono;
+        font-weight: map.get($font-weights, bold);
+        color: var(--primary-blue);
+        font-size: map.get($font-sizes, base);
+      }
+
+      .hold-timestamp {
+        font-size: map.get($font-sizes, xs);
+        color: var(--gray-500);
+        text-align: right;
+      }
+
+      .delete-hold-btn {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        padding: map.get($spacing, 1) map.get($spacing, 2);
+        font-size: map.get($font-sizes, sm);
+        background: var(--error);
+        color: white;
+        border: none;
+        border-radius: map.get($radius, base);
+        cursor: pointer;
+
+        &:hover {
+          background: color.adjust(#dc2626, $lightness: -10%);
+        }
+      }
+
+      &:hover .delete-hold-btn {
+        opacity: 1;
+      }
+    }
+  }
+
+  // Timer states
+  &.timer-running {
+    .timer-display {
+      background: rgba(34, 197, 94, 0.05);
+      border-color: var(--success);
+    }
+
+    .timer-time {
+      color: var(--success);
+      animation: pulse-green 2s infinite;
+    }
+
+    .timer-status {
+      color: var(--success);
+    }
+  }
+
+  &.timer-paused {
+    .timer-display {
+      background: rgba(217, 119, 6, 0.05);
+      border-color: var(--warning);
+    }
+
+    .timer-time {
+      color: var(--warning);
+    }
+
+    .timer-status {
+      color: var(--warning);
+    }
+  }
+
+  &.timer-warning {
+    .timer-display {
+      background: rgba(220, 38, 38, 0.05);
+      border-color: var(--error);
+      animation: warning-pulse 1s infinite;
+    }
+
+    .timer-time {
+      color: var(--error);
+      animation: pulse-red 1s infinite;
+    }
+
+    .timer-status {
+      color: var(--error);
+    }
+  }
+
+  // Countdown mode styling
+  .timer-mode {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 4);
+
+    #timer-mode {
+      font-size: map.get($font-sizes, sm);
+      font-weight: map.get($font-weights, bold);
+      color: var(--primary-blue);
+      background: rgba(25, 118, 210, 0.1);
+      padding: map.get($spacing, 1) map.get($spacing, 2);
+      border-radius: map.get($radius, base);
+      letter-spacing: 0.05em;
+    }
+  }
+
+  &.countdown-mode {
+    .timer-display {
+      background: rgba(25, 118, 210, 0.05);
+      border-color: var(--primary-blue);
+    }
+
+    .timer-time {
+      color: var(--primary-blue);
+    }
+  }
+
+  &.timer-expired {
+    .timer-display {
+      background: rgba(220, 38, 38, 0.1);
+      border-color: var(--error);
+      animation: expired-pulse 1s infinite alternate;
+    }
+
+    .timer-time {
+      color: var(--error);
+      font-weight: map.get($font-weights, bold);
+    }
+
+    .timer-status {
+      color: var(--error);
+      font-weight: map.get($font-weights, bold);
+    }
+  }
+
+  #stop-sound-btn {
+    background-color: var(--error);
+
+    &:hover {
+      background-color: color.adjust(#dc2626, $lightness: -10%);
+    }
+  }
+
+  // Countdown Controls
+  .countdown-controls {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: map.get($radius, base);
+    padding: map.get($spacing, 3);
+    margin: map.get($spacing, 2) 0;
+
+    .countdown-duration-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: map.get($spacing, 2);
+
+      label {
+        font-weight: 500;
+        color: var(--text-color);
+      }
+
+      .range-control {
+        display: flex;
+        align-items: center;
+        gap: map.get($spacing, 3);
+
+        input[type='range'] {
+          flex: 1;
+        }
+
+        span {
+          font-family: monospace;
+          font-weight: bold;
+          min-width: 60px;
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  &.countdown-mode .timer-time.editable {
+    &:focus {
+      outline: none;
+      border-bottom: 2px solid var(--primary-blue);
+      background: rgba(25, 118, 210, 0.1);
+    }
+
+    &:hover::after {
+      content: 'Click to edit';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      white-space: nowrap;
+      padding: 2px 8px;
+      background: var(--white);
+      border-radius: 4px;
+      opacity: 0.9;
+    }
+  }
+
+  .timer-edit-hint {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-top: 4px;
+    font-style: italic;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  // Show the hint when hovering over the timer time in editable state
+  .timer-time.editable:hover + .timer-edit-hint,
+  .timer-time.editable:focus + .timer-edit-hint {
+    opacity: 1;
+  }
+
+  // Enhance the editable styling
+  .timer-time.editable {
+    border-bottom: 2px dashed var(--primary-blue);
+    padding-bottom: 2px;
+    cursor: text;
+    transition: all 0.2s ease;
+    position: relative;
+
+    &::after {
+      content: '✎';
+      font-size: 0.8em;
+      position: absolute;
+      top: 0;
+      right: -1.5em;
+      color: var(--gray-500);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.05);
+
+      &::after {
+        opacity: 1;
+      }
+    }
+
+    &:focus {
+      outline: none;
+      border-bottom: 2px solid var(--primary-blue);
+      background: rgba(25, 118, 210, 0.1);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  // Add a visual cue when mode changes
+  &.mode-changed {
+    animation: mode-change-flash 0.5s;
+  }
+
+  @keyframes mode-change-flash {
+    0%,
+    100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: rgba(25, 118, 210, 0.1);
+    }
+  }
+
+  // Dark mode support
+  [data-theme='dark'] & {
+    .timer-time.editable {
+      border-bottom-color: #90caf9;
+
+      &:hover,
+      &:focus {
+        background: rgba(144, 202, 249, 0.1);
+        border-bottom-color: #90caf9;
+      }
+    }
+
+    .timer-edit-hint {
+      color: var(--gray-400);
+    }
+
+    &.mode-changed {
+      animation: mode-change-flash-dark 0.5s;
+
+      @keyframes mode-change-flash-dark {
+        0%,
+        100% {
+          background-color: transparent;
+        }
+        50% {
+          background-color: rgba(144, 202, 249, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Animation for expired state
+@keyframes expired-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+}
+
+@keyframes pulse-green {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes pulse-red {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes warning-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+}
+
+// Responsive design
+@media (max-width: map.get($breakpoints, md)) {
+  #hold-timer {
+    .timer-stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: map.get($spacing, 3);
+    }
+
+    .timer-controls {
+      flex-direction: column;
+      align-items: center;
+
+      .timer-btn {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+
+    .timer-time {
+      font-size: map.get($font-sizes, '3xl');
+    }
+  }
+}
+
+@media (max-width: map.get($breakpoints, sm)) {
+  #hold-timer {
+    .timer-display {
+      padding: map.get($spacing, 3);
+      margin-bottom: map.get($spacing, 3);
+    }
+
+    .timer-time {
+      font-size: map.get($font-sizes, '2xl');
+    }
+
+    .timer-controls {
+      gap: map.get($spacing, 2);
+    }
+
+    .timer-mode {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: map.get($spacing, 2);
+    }
+
+    #stop-sound-btn {
+      width: 100%;
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 600px) {
+  #hold-timer .timer-display {
+    padding: map.get($spacing, 2);
+    font-size: map.get($font-sizes, sm);
+  }
+  #hold-timer .timer-time {
+    font-size: map.get($font-sizes, 2xl);
+    padding: map.get($spacing, 1);
+  }
+  #hold-timer .timer-status {
+    font-size: map.get($font-sizes, base);
+  }
+  #hold-timer .timer-controls {
+    flex-direction: column;
+    gap: map.get($spacing, 2);
+    margin-bottom: map.get($spacing, 2);
+  }
+  #hold-timer .timer-btn {
+    min-width: 100%;
+    font-size: map.get($font-sizes, sm);
+    padding: map.get($spacing, 2);
+  }
+}
+
+// Dark mode
+[data-theme='dark'] {
+  #hold-timer {
+    .timer-display {
+      background: var(--dark-bg);
+      border-color: var(--dark-border);
+    }
+
+    .timer-time {
+      color: #90caf9;
+      text-shadow: 0 2px 4px rgba(144, 202, 249, 0.2);
+    }
+
+    .timer-status {
+      color: var(--dark-text-muted);
+    }
+
+    .stat-item {
+      background: var(--dark-surface);
+      border-color: var(--dark-border);
+
+      &:hover {
+        border-color: #90caf9;
+      }
+
+      .stat-value {
+        color: #90caf9;
+      }
+
+      .stat-label {
+        color: var(--dark-text-muted);
+      }
+    }
+
+    .hold-history {
+      background: var(--dark-surface);
+      border-color: var(--dark-border);
+
+      .history-header {
+        background: var(--dark-bg);
+        border-bottom-color: var(--dark-border);
+
+        h4 {
+          color: var(--dark-text);
+        }
+      }
+
+      .history-list {
+        &:empty::after {
+          color: var(--dark-text-muted);
+        }
+      }
+
+      .history-item {
+        border-bottom-color: var(--dark-border);
+
+        &:hover {
+          background: var(--dark-bg);
+        }
+
+        .hold-duration {
+          color: #90caf9;
+        }
+
+        .hold-timestamp {
+          color: var(--dark-text-muted);
+        }
+      }
+    }
+
+    // Timer states in dark mode
+    &.timer-running {
+      .timer-display {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: var(--success);
+      }
+
+      .timer-time,
+      .timer-status {
+        color: var(--success);
+      }
+    }
+
+    &.timer-paused {
+      .timer-display {
+        background: rgba(217, 119, 6, 0.1);
+        border-color: var(--warning);
+      }
+
+      .timer-time,
+      .timer-status {
+        color: var(--warning);
+      }
+    }
+
+    &.timer-warning {
+      .timer-display {
+        background: rgba(220, 38, 38, 0.1);
+        border-color: var(--error);
+      }
+
+      .timer-time,
+      .timer-status {
+        color: var(--error);
+      }
+    }
+
+    .timer-mode {
+      #timer-mode {
+        color: #90caf9;
+        background: rgba(144, 202, 249, 0.1);
+      }
+    }
+
+    &.countdown-mode {
+      .timer-display {
+        background: rgba(144, 202, 249, 0.1);
+        border-color: #90caf9;
+      }
+
+      .timer-time {
+        color: #90caf9;
+      }
+    }
+
+    &.timer-expired {
+      .timer-display {
+        background: rgba(220, 38, 38, 0.15);
+      }
+    }
+  }
+}

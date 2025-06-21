@@ -1,0 +1,193 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Notes Section
+#notes {
+  .notes-input-area {
+    margin-bottom: map.get($spacing, 6);
+  }
+
+  .notes-input {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    margin-bottom: map.get($spacing, 3);
+    font-family: $font-family-sans;
+  }
+
+  .notes-feed {
+    border-left: 3px solid var(--primary-blue);
+    padding-left: map.get($spacing, 6);
+    margin: map.get($spacing, 6) 0;
+    min-height: 200px;
+    position: relative;
+
+    &:empty::after {
+      content: 'No notes yet. Add your first note above!';
+      display: block;
+      text-align: center;
+      color: var(--gray-500);
+      font-style: italic;
+      padding: map.get($spacing, 8);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+    }
+  }
+
+  .note-item {
+    background: var(--white);
+    border-radius: map.get($radius, base);
+    padding: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 4);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--gray-200);
+    transition: map.get($transitions, base);
+    position: relative;
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+
+    // Timeline dot - FIXED: Use consistent rem units
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(-#{map.get($spacing, 6)} - 0.375rem); // 6px converted to rem
+      top: map.get($spacing, 4);
+      width: 0.75rem; // 12px in rem
+      height: 0.75rem; // 12px in rem
+      background: var(--primary-blue);
+      border-radius: map.get($radius, full);
+      border: 0.1875rem solid var(--white); // 3px in rem
+      box-shadow: 0 0 0 0.125rem var(--primary-blue); // 2px in rem
+    }
+  }
+
+  .note-content {
+    margin-bottom: map.get($spacing, 3);
+    line-height: 1.6;
+    word-break: break-word;
+    color: var(--gray-800);
+
+    // Handle line breaks in note content
+    white-space: pre-wrap;
+  }
+
+  .note-timestamp {
+    font-size: map.get($font-sizes, xs);
+    color: var(--gray-500);
+    margin-bottom: map.get($spacing, 2);
+    display: block;
+  }
+
+  .note-updated {
+    font-size: map.get($font-sizes, xs);
+    color: var(--gray-400);
+    margin-bottom: map.get($spacing, 2);
+    display: block;
+  }
+
+  .note-actions {
+    display: flex;
+    gap: map.get($spacing, 2);
+
+    button {
+      padding: map.get($spacing, 1) map.get($spacing, 2);
+      font-size: map.get($font-sizes, xs);
+      border-radius: map.get($radius, sm);
+    }
+  }
+
+  .edit-note-input {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    margin-bottom: map.get($spacing, 3);
+    font-family: $font-family-sans;
+  }
+
+  .notes-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: map.get($spacing, 2);
+    align-items: center;
+    margin-top: map.get($spacing, 4);
+
+    .notes-count {
+      font-size: map.get($font-sizes, sm);
+      color: var(--gray-500);
+      margin-left: auto;
+    }
+  }
+}
+
+// Dark mode
+[data-theme='dark'] {
+  #notes {
+    .notes-feed {
+      border-color: var(--dark-border);
+
+      &:empty::after {
+        color: var(--dark-text-muted);
+      }
+    }
+
+    .note-item {
+      background: var(--dark-surface);
+      border-bottom-color: var(--dark-border);
+
+      &:hover {
+        background: var(--dark-bg);
+      }
+
+      &::before {
+        background: #90caf9;
+        border-color: var(--dark-surface);
+        box-shadow: 0 0 0 0.125rem #90caf9; // 2px in rem
+      }
+    }
+
+    .note-content {
+      color: var(--dark-text);
+    }
+
+    .note-timestamp {
+      color: var(--dark-text-muted);
+    }
+
+    .note-updated {
+      color: var(--dark-text-muted);
+    }
+
+    .notes-controls .notes-count {
+      color: var(--dark-text-muted);
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 600px) {
+  #notes .notes-input {
+    min-height: 60px;
+    font-size: map.get($font-sizes, sm);
+  }
+  #notes .notes-feed {
+    padding-left: map.get($spacing, 2);
+    margin: map.get($spacing, 2) 0;
+    min-height: 100px;
+    font-size: map.get($font-sizes, sm);
+  }
+  #notes .note-item {
+    padding: map.get($spacing, 2);
+    font-size: map.get($font-sizes, sm);
+  }
+}

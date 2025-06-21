@@ -1,0 +1,17 @@
+build.js
+clean-build.js
+upload.js
+webpack.config.js
+
+nodemon.json
+.parcelrc
+
+node_modules/
+
+server.js
+upload.sh
+
+main.css
+main.css.map
+
+dist/

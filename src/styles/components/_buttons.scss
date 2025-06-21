@@ -1,0 +1,178 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Button Components
+.button,
+button:not(.nav-tab):not(.tab-button) {
+  background: linear-gradient(90deg, #3498db 60%, var(--primary-blue) 100%);
+  color: var(--white);
+  border: none;
+  border-radius: map.get($radius, base);
+  padding: map.get($spacing, 2) map.get($spacing, 5);
+  font-size: map.get($font-sizes, base);
+  font-weight: map.get($font-weights, medium);
+  cursor: pointer;
+  transition: map.get($transitions, base);
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: map.get($spacing, 2);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(90deg, var(--primary-blue) 60%, #3498db 100%);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  // Button variants
+  &.btn-secondary {
+    background: var(--gray-500);
+    
+    &:hover:not(:disabled) {
+      background: var(--gray-600);
+    }
+  }
+
+  &.btn-success {
+    background: var(--success);
+    
+    &:hover:not(:disabled) {
+      background: #15803d;
+    }
+  }
+
+  &.btn-warning {
+    background: var(--warning);
+    
+    &:hover:not(:disabled) {
+      background: #c2410c;
+    }
+  }
+
+  &.btn-danger {
+    background: var(--error);
+    
+    &:hover:not(:disabled) {
+      background: #b91c1c;
+    }
+  }
+
+  &.btn-outline {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+    
+    &:hover:not(:disabled) {
+      background: var(--primary-blue);
+      color: var(--white);
+    }
+  }
+
+  &.btn-sm {
+    padding: map.get($spacing, 1) map.get($spacing, 3);
+    font-size: map.get($font-sizes, sm);
+  }
+
+  &.btn-lg {
+    padding: map.get($spacing, 3) map.get($spacing, 6);
+    font-size: map.get($font-sizes, lg);
+  }
+}
+
+// Specific button styles
+.delete-note-btn,
+.remove-step-btn {
+  background: var(--error);
+  padding: map.get($spacing, 1) map.get($spacing, 2);
+  font-size: map.get($font-sizes, sm);
+  
+  &:hover:not(:disabled) {
+    background: #b91c1c;
+  }
+}
+
+.edit-note-btn,
+.save-note-btn {
+  background: var(--primary-blue);
+  padding: map.get($spacing, 1) map.get($spacing, 2);
+  font-size: map.get($font-sizes, sm);
+}
+
+.copy-note-btn,
+.cancel-edit-btn {
+  background: var(--gray-500);
+  padding: map.get($spacing, 1) map.get($spacing, 2);
+  font-size: map.get($font-sizes, sm);
+}
+
+// Scroll to top button
+.scroll-top-btn {
+  position: fixed;
+  bottom: map.get($spacing, 6);
+  right: map.get($spacing, 6);
+  width: 40px;
+  height: 40px;
+  background: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: map.get($radius, full);
+  font-size: map.get($font-sizes, xl);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  z-index: map.get($z-index, tooltip);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    background: var(--primary-blue-dark);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  .button,
+  button:not(.nav-tab):not(.tab-button) {
+    &.btn-outline {
+      color: #90caf9;
+      border-color: #90caf9;
+      
+      &:hover:not(:disabled) {
+        background: #90caf9;
+        color: var(--dark-bg);
+      }
+    }
+  }
+
+  .scroll-top-btn {
+    background: #90caf9;
+    color: var(--dark-bg);
+
+    &:hover {
+      background: #42a5f5;
+    }
+  }
+}

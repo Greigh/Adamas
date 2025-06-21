@@ -1,0 +1,136 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Tab Components
+.tab-container {
+  background: var(--white);
+  border-radius: map.get($radius, lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-header {
+  display: flex;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.tab-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: map.get($spacing, 4) map.get($spacing, 6);
+  font-weight: map.get($font-weights, medium);
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: map.get($transitions, base);
+  border-bottom: 3px solid transparent;
+  position: relative;
+
+  &:hover {
+    background: var(--gray-100);
+    color: var(--gray-800);
+  }
+
+  &.active {
+    background: var(--white);
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
+    font-weight: map.get($font-weights, semibold);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px rgba(25, 118, 210, 0.3);
+  }
+}
+
+.tab-content {
+  display: none;
+  padding: map.get($spacing, 6);
+
+  &.active {
+    display: block;
+  }
+}
+
+// Vertical tabs
+.tabs-vertical {
+  display: flex;
+
+  .tab-header {
+    flex-direction: column;
+    background: var(--gray-50);
+    border-right: 1px solid var(--gray-200);
+    border-bottom: none;
+    min-width: 200px;
+  }
+
+  .tab-button {
+    text-align: left;
+    border-bottom: none;
+    border-right: 3px solid transparent;
+
+    &.active {
+      border-right-color: var(--primary-blue);
+      border-bottom-color: transparent;
+    }
+  }
+
+  .tab-content {
+    flex: 1;
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  .tab-container {
+    background: var(--dark-surface);
+  }
+
+  .tab-header {
+    background: var(--dark-bg);
+    border-bottom-color: var(--dark-border);
+  }
+
+  .tab-button {
+    color: var(--dark-text-muted);
+
+    &:hover {
+      background: var(--dark-border);
+      color: var(--dark-text);
+    }
+
+    &.active {
+      background: var(--dark-surface);
+      color: #90caf9;
+      border-bottom-color: #90caf9;
+    }
+
+    &:focus {
+      box-shadow: inset 0 0 0 2px rgba(144, 202, 249, 0.3);
+    }
+  }
+
+  .tabs-vertical {
+    .tab-header {
+      background: var(--dark-bg);
+      border-right-color: var(--dark-border);
+    }
+
+    .tab-button.active {
+      border-right-color: #90caf9;
+    }
+  }
+}
+
+@media (max-width: map.get($breakpoints, sm)) {
+  .tab-button {
+    padding: map.get($spacing, 2);
+    font-size: map.get($font-sizes, sm);
+  }
+
+  .tab-content {
+    padding: map.get($spacing, 3);
+  }
+}

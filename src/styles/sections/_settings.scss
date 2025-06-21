@@ -1,0 +1,449 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Settings View
+#settings-view {
+  padding: map.get($spacing, 6);
+  min-height: calc(100vh - 120px); // Use min-height instead
+  overflow-y: visible; // Change from auto to visible
+  position: relative; // For scroll button positioning
+  width: 100%; // Add this to ensure full width
+  max-width: 100%; // Add this to prevent overflow
+  box-sizing: border-box; // Add this to include padding in width calculation
+
+  .settings-header {
+    text-align: center;
+    margin-bottom: map.get($spacing, 8);
+
+    h1 {
+      color: var(--primary-blue);
+      margin-bottom: map.get($spacing, 2);
+    }
+
+    p {
+      color: var(--gray-600);
+      font-size: map.get($font-sizes, lg);
+    }
+  }
+
+  .settings-container {
+    max-width: 1200px; // Increase from 1000px for more breathing room
+    margin: 0 auto;
+    width: 100%; // Ensure full width up to max-width
+  }
+
+  .settings-grid {
+    display: grid;
+    gap: map.get($spacing, 6);
+    grid-template-columns: 1fr; // Default to single column
+  }
+
+  @media (min-width: map.get($breakpoints, lg)) {
+    .settings-grid {
+      grid-template-columns: repeat(2, 1fr); // Two columns on large screens
+    }
+  }
+
+  .settings-section {
+    background: var(--white);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 6);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-100);
+    height: fit-content; // Adjust height based on content
+    overflow: visible; // Prevent scroll in each section
+
+    h3 {
+      margin: 0 0 map.get($spacing, 2) 0;
+      color: var(--primary-blue);
+      font-size: map.get($font-sizes, xl);
+      font-weight: map.get($font-weights, semibold);
+    }
+
+    p {
+      color: var(--gray-600);
+      margin-bottom: map.get($spacing, 4);
+    }
+
+    // Add to existing .settings-section styles
+    .layout-actions {
+      margin-top: map.get($spacing, 6);
+      display: flex;
+      gap: map.get($spacing, 3);
+
+      .button {
+        flex: 1;
+      }
+    }
+  }
+
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: map.get($spacing, 3) 0;
+    border-bottom: 1px solid var(--gray-100);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .setting-info {
+    flex: 1;
+    margin-right: map.get($spacing, 4);
+
+    .setting-label {
+      font-weight: map.get($font-weights, semibold);
+      color: var(--gray-800);
+      margin-bottom: map.get($spacing, 1);
+      display: flex;
+      align-items: center;
+      gap: map.get($spacing, 2);
+
+      input[type="checkbox"] {
+        margin-right: map.get($spacing, 2);
+      }
+    }
+
+    .setting-description {
+      font-size: map.get($font-sizes, sm);
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+  }
+
+  .setting-control {
+    flex-shrink: 0;
+  }
+
+  // Popup settings
+  .popup-options {
+    margin-top: map.get($spacing, 4);
+    padding: map.get($spacing, 4);
+    background: var(--gray-50);
+    border-radius: map.get($radius, base);
+    border-left: 3px solid var(--primary-blue);
+
+    .setting-item {
+      padding: map.get($spacing, 2) 0;
+    }
+  }
+
+  // Export settings
+  .export-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: map.get($spacing, 3);
+    margin: map.get($spacing, 4) 0;
+  }
+
+  .export-option {
+    display: flex;
+    align-items: center;
+    gap: map.get($spacing, 2);
+    padding: map.get($spacing, 3);
+    background: var(--gray-50);
+    border-radius: map.get($radius, base);
+    border: 1px solid var(--gray-200);
+    transition: map.get($transitions, base);
+
+    &:hover {
+      background: var(--gray-100);
+      border-color: var(--primary-blue);
+    }
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+
+    label {
+      margin: 0;
+      font-size: map.get($font-sizes, sm);
+      font-weight: map.get($font-weights, medium);
+      cursor: pointer;
+      color: var(--gray-700);
+    }
+  }
+
+  // Theme preview
+  .theme-buttons {
+    display: flex;
+    gap: map.get($spacing, 2);
+
+    .theme-btn {
+      padding: map.get($spacing, 2) map.get($spacing, 4);
+      border: 2px solid;
+      border-radius: map.get($radius, base);
+      cursor: pointer;
+      font-size: map.get($font-sizes, sm);
+      font-weight: map.get($font-weights, medium);
+      transition: map.get($transitions, base);
+
+      &.light {
+        background: var(--white);
+        color: var(--gray-800);
+        border-color: var(--gray-300);
+
+        &:hover {
+          border-color: var(--primary-blue);
+          transform: translateY(-1px);
+        }
+      }
+
+      &.dark {
+        background: var(--gray-800);
+        color: var(--white);
+        border-color: var(--gray-600);
+
+        &:hover {
+          border-color: #90caf9;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  #current-theme {
+    font-weight: map.get($font-weights, semibold);
+    color: var(--primary-blue);
+    background: rgba(25, 118, 210, 0.1);
+    padding: map.get($spacing, 1) map.get($spacing, 2);
+    border-radius: map.get($radius, base);
+    font-size: map.get($font-sizes, sm);
+  }
+
+  // Data management
+  .data-actions {
+    display: flex;
+    gap: map.get($spacing, 3);
+    margin-top: map.get($spacing, 4);
+    flex-wrap: wrap;
+
+    .button {
+      flex: 1;
+      min-width: 140px;
+    }
+  }
+
+  // Settings footer
+  .settings-footer {
+    margin-top: map.get($spacing, 8);
+    padding-top: map.get($spacing, 6);
+    border-top: 2px solid var(--gray-100);
+    display: flex;
+    gap: map.get($spacing, 3);
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .button {
+      min-width: 150px;
+    }
+  }
+
+  // Auto-save indicator
+  .auto-save-indicator {
+    position: fixed;
+    bottom: map.get($spacing, 4);
+    right: map.get($spacing, 4);
+    background: var(--success);
+    color: white;
+    padding: map.get($spacing, 2) map.get($spacing, 4);
+    border-radius: map.get($radius, full);
+    font-size: map.get($font-sizes, sm);
+    font-weight: map.get($font-weights, medium);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: map.get($z-index, toast);
+    box-shadow: var(--shadow-lg);
+
+    &.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Instance options
+  .instance-option {
+    padding-left: map.get($spacing, 6);
+    border-left: 2px solid var(--border-color);
+    margin-left: map.get($spacing, 4);
+
+    &:not(:last-child) {
+      margin-bottom: map.get($spacing, 4);
+    }
+
+    .setting-label {
+      font-size: map.get($font-sizes, sm);
+    }
+  }
+
+  // Range control
+  .range-control {
+    input[type="range"] {
+      width: 150px;
+    }
+
+    span {
+      min-width: 30px;
+      text-align: center;
+    }
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  #settings-view {
+    .settings-header {
+      h1 {
+        color: #90caf9;
+      }
+
+      p {
+        color: var(--dark-text-muted);
+      }
+    }
+
+    .settings-section {
+      background: var(--dark-surface);
+      border-color: var(--dark-border);
+
+      h3 {
+        color: #90caf9;
+      }
+
+      p {
+        color: var(--dark-text-muted);
+      }
+    }
+
+    .setting-item {
+      border-bottom-color: var(--dark-border);
+    }
+
+    .setting-info {
+      .setting-label {
+        color: var(--dark-text);
+      }
+
+      .setting-description {
+        color: var(--dark-text-muted);
+      }
+    }
+
+    .popup-options {
+      background: var(--dark-bg);
+      border-left-color: #90caf9;
+    }
+
+    .export-option {
+      background: var(--dark-bg);
+      border-color: var(--dark-border);
+
+      &:hover {
+        background: var(--dark-border);
+        border-color: #90caf9;
+      }
+
+      label {
+        color: var(--dark-text);
+      }
+    }
+
+    #current-theme {
+      color: #90caf9;
+      background: rgba(144, 202, 249, 0.1);
+    }
+
+    .theme-buttons .theme-btn.dark:hover {
+      border-color: #90caf9;
+    }
+
+    .settings-footer {
+      border-top-color: var(--dark-border);
+    }
+
+    .auto-save-indicator {
+      background: var(--success);
+      color: var(--dark-bg);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: map.get($breakpoints, md)) {
+  #settings-view {
+    padding: map.get($spacing, 3);
+
+    .settings-section {
+      padding: map.get($spacing, 3);
+      
+      h3 {
+        font-size: map.get($font-sizes, lg);
+      }
+    }
+
+    .setting-item {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .setting-info {
+        margin-right: 0;
+        margin-bottom: map.get($spacing, 2);
+        width: 100%;
+      }
+      
+      .setting-control {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+
+    // Other existing media query styles...
+  }
+}
+
+// Add extra small device support
+@media (max-width: 480px) {
+  #settings-view {
+    padding: map.get($spacing, 2);
+    
+    .settings-header {
+      margin-bottom: map.get($spacing, 4);
+      
+      h1 {
+        font-size: map.get($font-sizes, xl);
+      }
+      
+      p {
+        font-size: map.get($font-sizes, base);
+      }
+    }
+    
+    .popup-options {
+      padding: map.get($spacing, 2);
+    }
+    
+    .theme-buttons {
+      flex-direction: column;
+      width: 100%;
+      
+      .theme-btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: map.get($spacing, 2);
+      }
+    }
+  }
+}
+
+// Add specific media query for larger screens
+@media (min-width: map.get($breakpoints, xl)) {
+  #settings-view {
+    .settings-container {
+      max-width: 1400px; // Even more space on very large screens
+    }
+  }
+}

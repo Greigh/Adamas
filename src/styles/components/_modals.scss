@@ -1,0 +1,216 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Modal and Popup Components
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: map.get($z-index, modal);
+  opacity: 0;
+  visibility: hidden;
+  transition: map.get($transitions, base);
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.modal {
+  background: var(--white);
+  border-radius: map.get($radius, lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: map.get($transitions, base);
+
+  .modal-overlay.active & {
+    transform: scale(1);
+  }
+}
+
+.modal-header {
+  padding: map.get($spacing, 6);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    margin: 0;
+    font-size: map.get($font-sizes, xl);
+    font-weight: map.get($font-weights, semibold);
+    color: var(--gray-900);
+  }
+}
+
+.modal-body {
+  padding: map.get($spacing, 6);
+}
+
+.modal-footer {
+  padding: map.get($spacing, 6);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  gap: map.get($spacing, 3);
+  justify-content: flex-end;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: map.get($font-sizes, xl);
+  cursor: pointer;
+  padding: map.get($spacing, 1);
+  border-radius: map.get($radius, base);
+  transition: map.get($transitions, base);
+  color: var(--gray-500);
+
+  &:hover {
+    background: var(--gray-100);
+    color: var(--gray-700);
+  }
+}
+
+// Floating windows
+.floating-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: map.get($z-index, modal);
+}
+
+.floating-window {
+  position: absolute;
+  background: var(--white);
+  border-radius: map.get($radius, lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--gray-200);
+  pointer-events: auto;
+  min-width: 300px;
+  max-width: 800px;
+  resize: both;
+  overflow: hidden;
+}
+
+.floating-header {
+  background: var(--gray-50);
+  padding: map.get($spacing, 3) map.get($spacing, 4);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: move;
+
+  h3 {
+    margin: 0;
+    font-size: map.get($font-sizes, base);
+    font-weight: map.get($font-weights, semibold);
+    color: var(--gray-900);
+  }
+}
+
+.floating-controls {
+  display: flex;
+  gap: map.get($spacing, 1);
+
+  button {
+    background: none;
+    border: none;
+    padding: map.get($spacing, 1);
+    border-radius: map.get($radius, base);
+    cursor: pointer;
+    transition: map.get($transitions, fast);
+    color: var(--gray-600);
+    font-size: map.get($font-sizes, sm);
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--gray-200);
+      color: var(--gray-800);
+    }
+
+    &.close-btn:hover {
+      background: var(--error);
+      color: var(--white);
+    }
+  }
+}
+
+.floating-content {
+  padding: map.get($spacing, 4);
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+// Dark mode
+[data-theme="dark"] {
+  .modal {
+    background: var(--dark-surface);
+  }
+
+  .modal-header {
+    border-bottom-color: var(--dark-border);
+
+    h3 {
+      color: var(--dark-text);
+    }
+  }
+
+  .modal-footer {
+    border-top-color: var(--dark-border);
+  }
+
+  .modal-close {
+    color: var(--dark-text-muted);
+
+    &:hover {
+      background: var(--dark-border);
+      color: var(--dark-text);
+    }
+  }
+
+  .floating-window {
+    background: var(--dark-surface);
+    border-color: var(--dark-border);
+  }
+
+  .floating-header {
+    background: var(--dark-bg);
+    border-bottom-color: var(--dark-border);
+
+    h3 {
+      color: var(--dark-text);
+    }
+  }
+
+  .floating-controls button {
+    color: var(--dark-text-muted);
+
+    &:hover {
+      background: var(--dark-border);
+      color: var(--dark-text);
+    }
+
+    &.close-btn:hover {
+      background: var(--error);
+      color: var(--white);
+    }
+  }
+}

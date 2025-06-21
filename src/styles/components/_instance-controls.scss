@@ -1,0 +1,115 @@
+@use '../base/variables' as *;
+@use 'sass:map';
+
+.instance-controls {
+    display: flex;
+    gap: map.get($spacing, 4);
+    padding: map.get($spacing, 6);
+    margin: map.get($spacing, 6) 0;
+    background: linear-gradient(135deg, var(--gray-50), var(--white));
+    border-radius: map.get($radius, lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-100);
+    position: relative;
+    overflow: hidden;
+
+    // Add decorative element
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: var(--primary-blue);
+    }
+
+    .button {
+        flex: 1;
+        padding: map.get($spacing, 3) map.get($spacing, 4);
+        font-weight: map.get($font-weights, semibold);
+        font-size: map.get($font-sizes, base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: map.get($spacing, 2);
+        border-radius: map.get($radius, lg);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+
+        // Icon styling
+        &::before {
+            font-size: map.get($font-sizes, xl);
+            margin-right: map.get($spacing, 1);
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        &:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
+        }
+
+        // Button-specific styling
+        &#add-timer-btn {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            
+            &::before {
+                content: "⏱";
+            }
+        }
+        
+        &#add-notes-btn {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            
+            &::before {
+                content: "📝";
+            }
+        }
+    }
+}
+
+// Dark mode styling
+[data-theme="dark"] {
+    .instance-controls {
+        background: linear-gradient(135deg, var(--dark-bg), var(--dark-surface));
+        border-color: var(--dark-border);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+
+        &::before {
+            background: #90caf9;
+            box-shadow: 0 0 10px rgba(144, 202, 249, 0.4);
+        }
+
+        .button {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+            &:hover {
+                box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            &#add-timer-btn {
+                background: linear-gradient(135deg, #00b4db, #0083b0);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            }
+            
+            &#add-notes-btn {
+                background: linear-gradient(135deg, #56ab2f, #a8e063);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: map.get($breakpoints, sm)) {
+    .instance-controls {
+        flex-direction: column;
+        gap: map.get($spacing, 3);
+    }
+}

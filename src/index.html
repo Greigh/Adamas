@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call Center Helper</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Update the main app header -->
+      <header class="app-header">
+        <div class="header-content">
+          <div class="app-title">
+            <h1>📞 Call Center Helper</h1>
+          </div>
+          <nav class="main-nav">
+            <button id="main-tab" class="nav-tab active">Main</button>
+            <button id="settings-tab" class="nav-tab">Settings</button>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Main App View -->
+      <div id="main-app" class="app-view">
+        <div class="container sortable-container">
+          <!-- Number Formatter Section -->
+          <section
+            id="pattern-formatter"
+            class="card toggleable-section draggable-section"
+            data-section="formatter"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Number Formatter">
+                  Number Formatter
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="minimize-btn" title="Minimize">−</button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="tab-container">
+                <div class="tab-header">
+                  <button
+                    class="tab-button active"
+                    data-pattern-tab="format-tab"
+                  >
+                    Format
+                  </button>
+                  <button class="tab-button" data-pattern-tab="patterns-tab">
+                    Patterns
+                  </button>
+                </div>
+
+                <div class="tab-content active" id="format-tab">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="patternNumberInput"
+                      placeholder="Enter number to format..."
+                    />
+                    <button id="formatPatternBtn" class="button">Format</button>
+                    <button id="clearPatternBtn" class="button btn-secondary">
+                      Clear
+                    </button>
+                  </div>
+                  <div class="pattern-result" id="patternResult">
+                    Result will appear here
+                  </div>
+                  <button id="copyPatternBtn" class="button" disabled>
+                    Copy
+                  </button>
+                </div>
+
+                <div id="patterns-tab" class="tab-content">
+                  <div class="input-group">
+                    <label>
+                      <span>Starting Digits</span>
+                      <input
+                        type="text"
+                        id="startSequence"
+                        name="startSequence"
+                        placeholder="Optional starting digits..."
+                      />
+                    </label>
+                    <label>
+                      <span>Min Length</span>
+                      <input
+                        type="number"
+                        id="minLength"
+                        name="minLength"
+                        placeholder="Min digits..."
+                        min="1"
+                      />
+                    </label>
+                    <label>
+                      <span>Format (X = digit)</span>
+                      <input
+                        type="text"
+                        id="formatPattern"
+                        name="formatPattern"
+                        placeholder="Ex: @XXX-XXX-XXXX)"
+                      />
+                    </label>
+                    <button id="addPatternBtn" class="button">
+                      Add Pattern
+                    </button>
+                  </div>
+
+                  <table class="pattern-table">
+                    <thead>
+                      <tr>
+                        <th>Start</th>
+                        <th>Min Length</th>
+                        <th>Pattern</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="patternList">
+                      <!-- Patterns will be populated here -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Call Flow Builder Section -->
+          <section
+            id="call-flow-builder"
+            class="card toggleable-section draggable-section"
+            data-section="callflow"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Call Flow Builder">
+                  Call Flow Builder
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="minimize-btn" title="Minimize">−</button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="tab-container">
+                <div class="tab-header">
+                  <button
+                    class="tab-button active"
+                    data-callflow-tab="builder-tab"
+                  >
+                    Edit Steps
+                  </button>
+                  <button class="tab-button" data-callflow-tab="flow-tab">
+                    View Flow
+                  </button>
+                </div>
+
+                <div id="builder-tab" class="tab-content active">
+                  <div class="flow-step-input">
+                    <input
+                      type="text"
+                      id="step-input"
+                      name="step-input"
+                      placeholder="Enter step description..."
+                    />
+                    <button id="add-step-btn" class="button">Add Step</button>
+                  </div>
+                  <div class="bulk-add-area">
+                    <h4>Bulk Add Steps</h4>
+                    <p class="text-muted">Enter multiple steps, one per line</p>
+                    <textarea
+                      id="bulk-steps-area"
+                      name="bulk-steps-area"
+                      placeholder="Enter multiple steps, one per line..."
+                    ></textarea>
+                    <button id="bulk-add-btn" class="button">Bulk Add</button>
+                  </div>
+                </div>
+
+                <div id="flow-tab" class="tab-content">
+                  <div id="generated-flow" class="generated-flow"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Notes Section -->
+          <section
+            id="notes"
+            class="card notes-card toggleable-section draggable-section"
+            data-section="notes"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Notes">Notes</h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="minimize-btn" title="Minimize">−</button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="notes-input-area">
+                <textarea
+                  id="notes-input"
+                  name="notes-input"
+                  placeholder="Type a note and press Add..."
+                ></textarea>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px">
+                  <button id="add-note-btn" class="button">Add Note</button>
+                  <button id="clear-notes-btn" class="button btn-danger">
+                    Clear All Notes
+                  </button>
+                </div>
+              </div>
+              <ul id="notes-feed"></ul>
+            </div>
+          </section>
+
+          <!-- Hold Timer Section -->
+          <section
+            id="hold-timer"
+            class="card toggleable-section draggable-section"
+            data-section="holdtimer"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Hold Timer">
+                  Hold Timer
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="minimize-btn" title="Minimize">−</button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="timer-mode">
+                <span id="timer-mode">STOPWATCH</span>
+                <button id="toggle-mode-btn" class="button btn-sm">
+                  Toggle Mode
+                </button>
+              </div>
+
+              <div class="timer-display">
+                <div id="timer-time" class="timer-time">00:00</div>
+                <div id="timer-status" class="timer-status">Ready</div>
+              </div>
+
+              <div class="timer-controls">
+                <button id="start-timer" class="button timer-btn start">
+                  Start Hold
+                </button>
+                <button
+                  id="pause-timer"
+                  class="button timer-btn pause"
+                  disabled
+                >
+                  Pause
+                </button>
+                <button id="reset-timer" class="button timer-btn reset">
+                  Reset
+                </button>
+                <button
+                  id="stop-sound-btn"
+                  class="button timer-btn danger"
+                  style="display: none"
+                >
+                  Stop Sound
+                </button>
+              </div>
+
+              <div class="timer-stats">
+                <div class="stat-item">
+                  <div class="stat-value" id="total-hold-time">00:00</div>
+                  <div class="stat-label">Total Hold Time</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="hold-count">0</div>
+                  <div class="stat-label">Hold Count</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="average-hold-time">00:00</div>
+                  <div class="stat-label">Average Hold</div>
+                </div>
+              </div>
+
+              <div class="hold-history">
+                <div class="history-header">
+                  <h4>Hold History</h4>
+                  <button
+                    id="clear-history-btn"
+                    class="button btn-sm btn-secondary"
+                  >
+                    Clear History
+                  </button>
+                </div>
+                <ul id="hold-history" class="history-list"></ul>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="settings-view" class="app-view" style="display: none">
+        <div class="settings-container">
+          <div class="settings-header">
+            <h1>App Settings</h1>
+            <p>Customize the look and feel of the application</p>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Appearance Section -->
+            <div class="settings-section">
+              <h3>Appearance</h3>
+              <p>Customize the look and feel of the application:</p>
+
+              <!-- Theme Switch -->
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Dark Mode</div>
+                  <div class="setting-description">
+                    Switch between light and dark themes
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">
+                    Current Theme: <span id="current-theme">Light</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visible Sections -->
+            <div class="settings-section">
+              <h3>Visible Sections</h3>
+              <p>Choose which sections to display on the main page:</p>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Number Formatter</div>
+                  <div class="setting-description">
+                    Show the number pattern formatter section
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-formatter" checked />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Call Flow Builder</div>
+                  <div class="setting-description">
+                    Show the call flow step builder section
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-callflow" checked />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Notes</div>
+                  <div class="setting-description">Show the notes section</div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-notes" checked />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Hold Timer</div>
+                  <div class="setting-description">
+                    Show the hold timer section
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-holdtimer" checked />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hold Timer Settings -->
+            <div class="settings-section">
+              <h3>Hold Timer</h3>
+              <p>Configure hold timer behavior:</p>
+
+              <!-- Timer Settings Switches -->
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Auto-start on call</div>
+                  <div class="setting-description">
+                    Automatically start timer when indicated
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="timer-auto-start" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Sound alerts</div>
+                  <div class="setting-description">
+                    Play sound when timer reaches warning time
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch">
+                    <input type="checkbox" id="timer-sound-alerts" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Add Sound Selection Option -->
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Alert Sound</div>
+                  <div class="setting-description">
+                    Sound to play when timer expires
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <select id="timer-alert-sound">
+                    <option value="beep">Beep</option>
+                    <option value="ding">Ding</option>
+                    <option value="alarm">Alarm</option>
+                    <option value="chime">Chime</option>
+                    <option value="custom">Custom URL</option>
+                  </select>
+                </div>
+              </div>
+              <div class="setting-item">
+                <div class="setting-info">
+                  <h4>Enable Hold History Deletion</h4>
+                  <p>Allow users to delete individual hold history entries</p>
+                </div>
+                <div class="setting-control">
+                  <label class="toggle-switch">
+                    <input
+                      type="checkbox"
+                      id="timer-allow-history-deletion"
+                      name="timer-allow-history-deletion"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="copyright-footer">
+        <div class="container">
+          <p>
+            &copy; 2025 Daniel Hipskind.
+            <a href="privacy.html">Privacy Policy</a> &bull;
+            <a href="terms.html">Terms of Use</a> &bull;
+            <a href="contact.html">Contact Us</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
