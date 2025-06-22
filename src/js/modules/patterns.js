@@ -100,23 +100,18 @@ export function formatNumber() {
     // Only match if there are exactly minLength digits after the start
     if (digits.length !== pattern.minLength) continue;
 
-    // For @ or # prefix, use the first digit as the prefix, then fill Xs
     let formatted = '';
     let digitIndex = 0;
     for (let i = 0; i < pattern.format.length; i++) {
       const char = pattern.format[i];
-      if (char === '@' || char === '#') {
-        if (digitIndex < digits.length) {
-          formatted += char + digits[digitIndex++];
-        } else {
-          formatted += char;
+      if ((char === '@' || char === '#') && digitIndex < digits.length) {
+        formatted += char + digits[digitIndex++];
+        // Skip the next X, since the prefix digit is already used
+        if (pattern.format[i + 1] === 'X' || pattern.format[i + 1] === 'x') {
+          i++;
         }
-      } else if (char === 'X' || char === 'x') {
-        if (digitIndex < digits.length) {
-          formatted += digits[digitIndex++];
-        } else {
-          formatted += char;
-        }
+      } else if ((char === 'X' || char === 'x') && digitIndex < digits.length) {
+        formatted += digits[digitIndex++];
       } else {
         formatted += char;
       }

@@ -37,7 +37,7 @@ button:not(.nav-tab):not(.tab-button) {
   // Button variants
   &.btn-secondary {
     background: var(--gray-500);
-    
+
     &:hover:not(:disabled) {
       background: var(--gray-600);
     }
@@ -45,7 +45,7 @@ button:not(.nav-tab):not(.tab-button) {
 
   &.btn-success {
     background: var(--success);
-    
+
     &:hover:not(:disabled) {
       background: #15803d;
     }
@@ -53,7 +53,7 @@ button:not(.nav-tab):not(.tab-button) {
 
   &.btn-warning {
     background: var(--warning);
-    
+
     &:hover:not(:disabled) {
       background: #c2410c;
     }
@@ -61,7 +61,7 @@ button:not(.nav-tab):not(.tab-button) {
 
   &.btn-danger {
     background: var(--error);
-    
+
     &:hover:not(:disabled) {
       background: #b91c1c;
     }
@@ -71,7 +71,7 @@ button:not(.nav-tab):not(.tab-button) {
     background: transparent;
     color: var(--primary-blue);
     border: 2px solid var(--primary-blue);
-    
+
     &:hover:not(:disabled) {
       background: var(--primary-blue);
       color: var(--white);
@@ -93,11 +93,42 @@ button:not(.nav-tab):not(.tab-button) {
 .delete-note-btn,
 .remove-step-btn {
   background: var(--error);
-  padding: map.get($spacing, 1) map.get($spacing, 2);
-  font-size: map.get($font-sizes, sm);
-  
-  &:hover:not(:disabled) {
-    background: #b91c1c;
+  color: var(--white);
+  border: none;
+  border-radius: map.get($radius, base);
+  padding: map.get($spacing, 1) map.get($spacing, 3);
+  font-size: map.get($font-sizes, base);
+  font-weight: map.get($font-weights, semibold);
+  margin-left: map.get($spacing, 2);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: map.get($spacing, 1);
+
+  &:hover:not(:disabled),
+  &:focus {
+    background: darken(var(--error), 8%);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
+    outline: none;
+  }
+
+  &:active {
+    background: darken(var(--error), 16%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Add a trash icon or X
+  &::before {
+    content: '\2716'; // Unicode heavy X
+    font-size: 1.1em;
+    margin-right: 0.3em;
+    display: inline-block;
+    vertical-align: middle;
   }
 }
 
@@ -153,13 +184,13 @@ button:not(.nav-tab):not(.tab-button) {
 }
 
 // Dark mode
-[data-theme="dark"] {
+[data-theme='dark'] {
   .button,
   button:not(.nav-tab):not(.tab-button) {
     &.btn-outline {
       color: #90caf9;
       border-color: #90caf9;
-      
+
       &:hover:not(:disabled) {
         background: #90caf9;
         color: var(--dark-bg);

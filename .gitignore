@@ -15,3 +15,5 @@ main.css
 main.css.map
 
 dist/
+
+.DS_Store

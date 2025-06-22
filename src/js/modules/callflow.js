@@ -33,6 +33,7 @@ export function addStep() {
     steps.push(stepText);
     storageSteps(steps);
     renderSteps();
+    generateFlow(); // Ensure flow view updates after adding
     input.value = '';
     // Switch to the View Flow tab after adding step
     const flowTabButton = document.querySelector(
@@ -80,24 +81,33 @@ export function renderSteps() {
   const stepsContainer = document.getElementById('flow-steps');
   if (!stepsContainer) return;
 
-  if (steps.length === 0) {
-    stepsContainer.innerHTML =
-      '<div class="empty-steps-msg">No steps added yet. Use the input above or bulk add to get started.</div>';
-    return;
-  }
-
-  stepsContainer.innerHTML = steps
-    .map(
-      (step, index) => `
-        <div class="flow-step">
-            <span class="step-number">${index + 1}.</span>
-            <input type="text" class="step-input" id="step-input-${index}" name="step-input-${index}"
-                value="${step}">
-            <button class="remove-step-btn" id="remove-step-btn-${index}" name="remove-step-btn-${index}">Remove</button>
-        </div>
-    `
-    )
-    .join('');
+  // Always render the Delete All Steps button and make steps draggable
+  stepsContainer.innerHTML = `
+    <div class="steps-header">
+      <button id="delete-all-steps-btn" class="button btn-danger" ${
+        steps.length === 0 ? 'disabled' : ''
+      }>Delete All Steps</button>
+    </div>
+    <div class="draggable-steps-list">
+      ${
+        steps.length === 0
+          ? '<div class="empty-steps-msg">No steps added yet. Use the input above or bulk add to get started.</div>'
+          : steps
+              .map(
+                (step, index) => `
+                <div class="flow-step" draggable="true" data-index="${index}">
+                    <span class="step-number">${index + 1}.</span>
+                    <input type="text" class="step-input" id="step-input-${index}" name="step-input-${index}"
+                        value="${step}">
+                    <button class="remove-step-btn" id="remove-step-btn-${index}" name="remove-step-btn-${index}">Delete</button>
+                    <span class="drag-handle" title="Drag to reorder">☰</span>
+                </div>
+            `
+              )
+              .join('')
+      }
+    </div>
+  `;
 
   // Attach event listeners for edit and remove after rendering
   steps.forEach((_, index) => {
@@ -112,6 +122,56 @@ export function renderSteps() {
       removeBtn.addEventListener('click', () => removeStep(index));
     }
   });
+
+  // Drag and drop logic for reordering steps
+  const stepElems = stepsContainer.querySelectorAll('.flow-step');
+  let dragSrcIndex = null;
+  stepElems.forEach((stepElem) => {
+    stepElem.addEventListener('dragstart', (e) => {
+      dragSrcIndex = Number(stepElem.getAttribute('data-index'));
+      stepElem.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    stepElem.addEventListener('dragend', () => {
+      stepElem.classList.remove('dragging');
+    });
+    stepElem.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      stepElem.classList.add('drag-over');
+    });
+    stepElem.addEventListener('dragleave', () => {
+      stepElem.classList.remove('drag-over');
+    });
+    stepElem.addEventListener('drop', (e) => {
+      e.preventDefault();
+      stepElem.classList.remove('drag-over');
+      const dropIndex = Number(stepElem.getAttribute('data-index'));
+      if (dragSrcIndex !== null && dragSrcIndex !== dropIndex) {
+        const moved = steps.splice(dragSrcIndex, 1)[0];
+        steps.splice(dropIndex, 0, moved);
+        storageSteps(steps);
+        renderSteps();
+        generateFlow();
+      }
+      dragSrcIndex = null;
+    });
+  });
+
+  // Attach event listener for Delete All Steps button
+  const deleteAllBtn = document.getElementById('delete-all-steps-btn');
+  if (deleteAllBtn) {
+    deleteAllBtn.addEventListener('click', () => {
+      if (steps.length === 0) return;
+      if (confirm('Are you sure you want to delete all steps?')) {
+        steps.length = 0;
+        completedSteps.clear();
+        storageSteps(steps);
+        saveCompletedSteps();
+        renderSteps();
+        generateFlow();
+      }
+    });
+  }
 }
 
 // Toggle step completion status
@@ -175,9 +235,7 @@ export function generateFlow() {
                     <div class="step-number">${index + 1}</div>
                     <label class="step-checkbox">
                         <input type="checkbox" id="step-checkbox-${index}" name="step-checkbox-${index}"
-                            ${
-                              completedSteps.has(index) ? 'checked' : ''
-                            } onchange="toggleStep(${index})">
+                            ${completedSteps.has(index) ? 'checked' : ''}>
                         <span class="checkmark"></span>
                     </label>
                     <span class="step-text">${step}</span>
@@ -193,6 +251,14 @@ export function generateFlow() {
   if (clearBtn) {
     clearBtn.addEventListener('click', clearCheckmarks);
   }
+
+  // Attach event listeners to checkboxes
+  steps.forEach((_, index) => {
+    const checkbox = document.getElementById(`step-checkbox-${index}`);
+    if (checkbox) {
+      checkbox.addEventListener('change', () => toggleStep(index));
+    }
+  });
 }
 
 // Handle tab switching
@@ -216,6 +282,10 @@ function openCallFlowTab(tabId, event) {
   // If switching to edit tab, re-render steps
   if (tabId === 'builder-tab' && typeof renderSteps === 'function') {
     renderSteps();
+  }
+  // If switching to flow tab, re-render flow
+  if (tabId === 'flow-tab' && typeof generateFlow === 'function') {
+    generateFlow();
   }
 }
 
@@ -265,21 +335,8 @@ export function setupCallFlowEventListeners() {
         steps.push(...newSteps);
         storageSteps(steps);
         renderSteps();
-        textarea.value = '';
-        // Switch to view flow tab
-        const flowTabButton = document.querySelector(
-          '#call-flow-builder .tab-button[data-callflow-tab="flow-tab"]'
-        );
-        if (flowTabButton) {
-          openCallFlowTab('flow-tab', { currentTarget: flowTabButton });
-        }
+        generateFlow(); // Ensure flow view updates
       }
     });
   }
 }
-
-// Init call
-document.addEventListener('DOMContentLoaded', () => {
-  initializeCallFlow();
-  setupCallFlowEventListeners();
-});
