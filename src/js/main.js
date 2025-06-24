@@ -179,6 +179,14 @@ function loadSecondaryModules() {
   );
 }
 
+// Ensure floating overlay exists for floating windows
+if (!document.getElementById('floating-overlay')) {
+  const overlay = document.createElement('div');
+  overlay.id = 'floating-overlay';
+  overlay.className = 'floating-overlay';
+  document.body.appendChild(overlay);
+}
+
 function setupAllEventListeners() {
   // Main navigation
   document.getElementById('main-tab')?.addEventListener('click', showMainApp);
@@ -202,6 +210,46 @@ function setupAllEventListeners() {
         popOutSection(section.id, appSettings.enablePopupWindows);
       }
       // Add handling for edit-title-btn if needed
+      else if (button.classList.contains('edit-title-btn')) {
+        const titleContainer = button.closest('.title-container');
+        if (!titleContainer) return;
+        const titleElem = titleContainer.querySelector('.section-title');
+        if (!titleElem) return;
+        // Prevent multiple inputs
+        if (titleContainer.querySelector('.title-input')) return;
+        const currentTitle = titleElem.textContent;
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentTitle;
+        input.className = 'title-input';
+        input.style.marginLeft = '0.5rem';
+        input.style.fontSize = '1.1em';
+        input.style.fontWeight = '600';
+        input.style.width = Math.max(120, currentTitle.length * 12) + 'px';
+        titleElem.style.display = 'none';
+        button.style.display = 'none';
+        titleContainer.appendChild(input);
+        input.focus();
+        input.select();
+        // Save on blur or Enter
+        function saveTitle() {
+          const newTitle = input.value.trim() || currentTitle;
+          titleElem.textContent = newTitle;
+          titleElem.style.display = '';
+          button.style.display = '';
+          input.remove();
+        }
+        input.addEventListener('blur', saveTitle);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            saveTitle();
+          } else if (e.key === 'Escape') {
+            input.value = currentTitle;
+            saveTitle();
+          }
+        });
+      }
     });
   }
 
