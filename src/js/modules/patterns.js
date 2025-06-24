@@ -1,5 +1,5 @@
 // Number pattern formatter module
-import { savePatterns, loadPatterns } from './storage.js';
+import { savePatterns, loadPatterns, loadData } from './storage.js';
 
 export let patterns = [
   { id: 1, start: '81', minLength: 10, format: '@XXX-XXX-XXXX' },
@@ -121,10 +121,13 @@ export function formatNumber() {
   }
 
   resultDiv.textContent = result;
+  const autoCopy = loadData('autoCopyPattern', true);
   if (result && result !== 'No matching pattern found') {
     copyButton.style.display = 'inline-block';
     copyButton.disabled = false;
-    copyResult(); // <-- Auto-copy when a valid result is shown
+    if (autoCopy) {
+      copyResult(); // <-- Only auto-copy if enabled
+    }
   } else {
     copyButton.style.display = 'none';
     copyButton.disabled = true;
