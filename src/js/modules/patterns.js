@@ -124,6 +124,7 @@ export function formatNumber() {
   if (result && result !== 'No matching pattern found') {
     copyButton.style.display = 'inline-block';
     copyButton.disabled = false;
+    copyResult(); // <-- Auto-copy when a valid result is shown
   } else {
     copyButton.style.display = 'none';
     copyButton.disabled = true;

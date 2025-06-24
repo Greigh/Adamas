@@ -108,13 +108,13 @@ button:not(.nav-tab):not(.tab-button) {
 
   &:hover:not(:disabled),
   &:focus {
-    background: darken(var(--error), 8%);
+    background: #b91c1c; // hardcoded darker red for hover
     box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
     outline: none;
   }
 
   &:active {
-    background: darken(var(--error), 16%);
+    background: #991b1b; // even darker for active
   }
 
   &:disabled {
