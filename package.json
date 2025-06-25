@@ -18,7 +18,7 @@
     "sass:watch": "sass --watch src/styles/main.scss:src/styles/main.css",
     "build": "node build.js",
     "clean": "node clean-build.js",
-    "upload": "npm run clean && npm run build && sh upload.sh"
+    "upload": "npm run build && sh upload.sh"
   },
   "author": "Daniel Hipskind aka Greigh",
   "license": "CC BY-NC-ND",
