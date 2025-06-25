@@ -100,10 +100,31 @@ export function renderNotes() {
       copyBtn.textContent = 'Copy';
       copyBtn.className = 'copy-note-btn';
       copyBtn.onclick = () => {
-        navigator.clipboard.writeText(note.text).then(() => {
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(note.text)
+            .then(() => {
+              copyBtn.textContent = 'Copied!';
+              setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+            })
+            .catch(() => {
+              alert('Copy failed. Please copy manually.');
+            });
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = note.text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+          } catch (err) {
+            alert('Copy failed. Please copy manually.');
+          }
+          document.body.removeChild(textarea);
+        }
       };
       actionsDiv.appendChild(copyBtn);
 
@@ -385,10 +406,31 @@ function renderNotesInstance(notesId) {
       copyBtn.textContent = 'Copy';
       copyBtn.className = 'copy-note-btn';
       copyBtn.onclick = () => {
-        navigator.clipboard.writeText(note.text).then(() => {
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(note.text)
+            .then(() => {
+              copyBtn.textContent = 'Copied!';
+              setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+            })
+            .catch(() => {
+              alert('Copy failed. Please copy manually.');
+            });
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = note.text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+          } catch (err) {
+            alert('Copy failed. Please copy manually.');
+          }
+          document.body.removeChild(textarea);
+        }
       };
       actionsDiv.appendChild(copyBtn);
 

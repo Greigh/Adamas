@@ -141,26 +141,52 @@ export function copyResult() {
     resultText !== 'No matching pattern found' &&
     resultText !== 'Result will appear here'
   ) {
-    navigator.clipboard.writeText(resultText).then(() => {
-      // Show a copied message near the copy button
-      let copiedMsg = document.getElementById('pattern-copied-msg');
-      if (!copiedMsg) {
-        copiedMsg = document.createElement('span');
-        copiedMsg.id = 'pattern-copied-msg';
-        copiedMsg.style.marginLeft = '10px';
-        copiedMsg.style.color = '#16a34a';
-        copiedMsg.style.fontWeight = 'bold';
-        const copyBtn = document.getElementById('copyPatternBtn');
-        if (copyBtn && copyBtn.parentNode) {
-          copyBtn.parentNode.insertBefore(copiedMsg, copyBtn.nextSibling);
-        }
+    // Try Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard
+        .writeText(resultText)
+        .then(showCopiedMsg, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function fallbackCopy() {
+    // Fallback: create a temporary textarea
+    const textarea = document.createElement('textarea');
+    textarea.value = resultText;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'absolute';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      showCopiedMsg();
+    } catch (err) {
+      alert('Copy failed. Please copy manually.');
+    }
+    document.body.removeChild(textarea);
+  }
+
+  function showCopiedMsg() {
+    let copiedMsg = document.getElementById('pattern-copied-msg');
+    if (!copiedMsg) {
+      copiedMsg = document.createElement('span');
+      copiedMsg.id = 'pattern-copied-msg';
+      copiedMsg.style.marginLeft = '10px';
+      copiedMsg.style.color = '#16a34a';
+      copiedMsg.style.fontWeight = 'bold';
+      const copyBtn = document.getElementById('copyPatternBtn');
+      if (copyBtn && copyBtn.parentNode) {
+        copyBtn.parentNode.insertBefore(copiedMsg, copyBtn.nextSibling);
       }
-      copiedMsg.textContent = 'Copied!';
-      copiedMsg.style.display = 'inline';
-      setTimeout(() => {
-        copiedMsg.style.display = 'none';
-      }, 1500);
-    });
+    }
+    copiedMsg.textContent = 'Copied!';
+    copiedMsg.style.display = 'inline';
+    setTimeout(() => {
+      copiedMsg.style.display = 'none';
+    }, 1500);
   }
 }
 

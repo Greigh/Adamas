@@ -10,7 +10,11 @@ import {
   saveNotes,
 } from './storage.js';
 import { setupThemeToggle } from './themes.js';
-import { playAlertSound, initAudio } from '../utils/audio.js';
+import {
+  playAlertSound,
+  initAudio,
+  setRepeatAlertSoundMode,
+} from '../utils/audio.js';
 
 // Default settings
 export let appSettings = {
@@ -34,8 +38,9 @@ export let appSettings = {
   timerCountdownMode: false,
   timerCountdownDuration: 300, // 5 minutes in seconds
   timerAllowHistoryDeletion: true, // New setting for hold history deletion
-  timerAlertSound: 'beep',
+  timerAlertSound: 'endgame', // default, can be 'endgame', 'bell', 'towerbell', 'custom'
   timerCustomSoundUrl: '',
+  repeatAlertSound: true, // New setting for repeat alert sound
   customTitles: {},
   layoutMode: 'grid',
   gridColumns: 2,
@@ -75,6 +80,12 @@ export function initializeSettings() {
     appSettings = { ...appSettings, ...saved };
   }
   applySettings();
+
+  // Initialize repeat alert sound toggle
+  if (repeatAlertSoundToggle) {
+    repeatAlertSoundToggle.checked =
+      appSettings.timerRepeatAlertSound !== false;
+  }
 }
 
 export function applySettings() {
@@ -134,6 +145,10 @@ export function applySettings() {
   const timerSoundAlerts = document.getElementById('timer-sound-alerts');
   if (timerSoundAlerts) timerSoundAlerts.checked = appSettings.timerSoundAlerts;
 
+  // Repeat alert sound toggle
+  if (repeatAlertSoundToggle)
+    repeatAlertSoundToggle.checked = appSettings.repeatAlertSound;
+
   // Add the new setting
   const timerAllowHistoryDeletion = document.getElementById(
     'timer-allow-history-deletion'
@@ -178,6 +193,13 @@ export function applySettings() {
       option.style.display = appSettings.multipleNotes ? '' : 'none';
     }
   });
+
+  // Apply repeat alert sound mode
+  if (repeatAlertSoundToggle) {
+    repeatAlertSoundToggle.checked =
+      appSettings.timerRepeatAlertSound !== false;
+    setRepeatAlertSoundMode(repeatAlertSoundToggle.checked);
+  }
 }
 
 export function showMainApp() {
@@ -295,6 +317,15 @@ export function setupSettingsEventListeners() {
       });
     }
   });
+
+  // Repeat alert sound toggle
+  if (repeatAlertSoundToggle) {
+    repeatAlertSoundToggle.addEventListener('change', function () {
+      appSettings.timerRepeatAlertSound = this.checked;
+      saveSettings(appSettings);
+      setRepeatAlertSoundMode(this.checked);
+    });
+  }
 
   // Timer warning slider - CORRECTED VERSION
   const timerWarningInput = document.getElementById('timer-warning-time');
@@ -540,6 +571,31 @@ export function setupSettingsEventListeners() {
     testSoundBtn.addEventListener('click', function () {
       const soundType = document.getElementById('timer-alert-sound').value;
       const customUrl = document.getElementById('custom-sound-url').value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(`${soundType === 'custom' ? customUrl : soundType}`)
+          .then(() => {
+            testSoundBtn.textContent = 'Copied!';
+            setTimeout(() => (testSoundBtn.textContent = 'Test Sound'), 1000);
+          })
+          .catch(() => {
+            alert('Copy failed. Please copy manually.');
+          });
+      } else {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = soundType === 'custom' ? customUrl : soundType;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          testSoundBtn.textContent = 'Copied!';
+          setTimeout(() => (testSoundBtn.textContent = 'Test Sound'), 1000);
+        } catch (err) {
+          alert('Copy failed. Please copy manually.');
+        }
+        document.body.removeChild(textarea);
+      }
       playAlertSound(soundType, customUrl, true); // Play a short test sound
     });
   }
@@ -769,3 +825,28 @@ export async function lazyLoadDynamicComponent(componentId, moduleType) {
     // Add other component types as needed
   }
 }
+
+// Declare once at the top of the module scope
+const repeatAlertSoundToggle = document.getElementById(
+  'repeat-alert-sound-toggle'
+);
+
+// Add new sound options to the alert sound dropdown if present
+document.addEventListener('DOMContentLoaded', () => {
+  const alertSound = document.getElementById('timer-alert-sound');
+  if (alertSound) {
+    // Remove all existing options except custom
+    Array.from(alertSound.options).forEach((opt) => {
+      if (opt.value !== 'custom') alertSound.removeChild(opt);
+    });
+    // Add only the three allowed options
+    alertSound.insertAdjacentHTML(
+      'afterbegin',
+      `
+      <option value="endgame">End Game</option>
+      <option value="bell">Bell</option>
+      <option value="towerbell">Tower Bell</option>
+    `
+    );
+  }
+});

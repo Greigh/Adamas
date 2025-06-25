@@ -2,13 +2,17 @@
 let audioContext;
 let timerSoundSource = null;
 let activeAudio = null; // Declare this only once
+let alertRepeatInterval = null; // For repeating alert sounds
 
-// Sound URLs
-const AUDIO_URLS = {
-  beep: 'https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3',
-  ding: 'https://assets.mixkit.co/active_storage/sfx/255/255-preview.mp3',
-  alarm: 'https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3',
-  chime: 'https://assets.mixkit.co/active_storage/sfx/133/133-preview.mp3',
+// Add a global flag for repeat mode (default true for backward compatibility)
+let repeatAlertSound = true;
+
+// Sound URLs for different sound types
+const SOUND_URLS = {
+  endgame: '/audio/276-preview.mp3', // End game sound
+  bell: '/audio/933-preview.mp3', // Bell sound
+  towerbell: '/audio/1071-preview.mp3', // Tower Bell sound
+  custom: null, // Will be set by user
 };
 
 /**
@@ -81,48 +85,73 @@ export function playBeep(frequency = 440, duration = 0.5, volume = 0.5) {
   }
 }
 
-// This is the first missing export
-export function playTimerExpiredSound() {
-  // Stop any existing sound first
+// Play a repeating beep until stopped
+function startRepeatingBeep() {
   stopTimerSound();
-
-  // Create a timer alarm sound (multiple beeps)
-  if (!audioContext) {
-    initAudio();
-    if (!audioContext) return; // Still no audio context
+  function play() {
+    timerSoundSource = playBeep(880, 0.2, 0.7);
   }
-
-  if (audioContext.state === 'suspended') {
-    audioContext.resume();
+  play();
+  if (repeatAlertSound) {
+    alertRepeatInterval = setInterval(play, 600); // Repeat every 600ms
   }
+}
 
-  // Create a repeating beep pattern
-  const beepCount = 3;
-  const beepDuration = 0.2;
-  const beepSpacing = 0.3;
-  const beepFrequency = 880; // Higher pitched beep for alarm
+// Play a repeating audio file until stopped
+function startRepeatingAudio(url) {
+  stopTimerSound();
+  function play() {
+    if (activeAudio) {
+      activeAudio.pause();
+      activeAudio.currentTime = 0;
+    }
+    const audio = new Audio(url);
+    activeAudio = audio;
+    audio.play();
+    audio.onended = () => {
+      if (repeatAlertSound && alertRepeatInterval) {
+        // Only repeat if not stopped
+        setTimeout(() => {
+          if (repeatAlertSound && alertRepeatInterval) play();
+        }, 200);
+      }
+    };
+  }
+  play();
+  if (repeatAlertSound) {
+    alertRepeatInterval = true; // Just a flag for audio
+  }
+}
 
-  for (let i = 0; i < beepCount; i++) {
-    // Schedule each beep with increasing delay
-    setTimeout(() => {
-      timerSoundSource = playBeep(beepFrequency, beepDuration, 0.7);
-    }, i * beepSpacing * 1000);
+// This is the first missing export
+export function playTimerExpiredSound(soundType = 'beep', customUrl = null) {
+  stopTimerSound();
+  if (soundType === 'beep') {
+    startRepeatingBeep();
+  } else {
+    const url = soundType === 'custom' ? customUrl : SOUND_URLS[soundType];
+    if (url) {
+      startRepeatingAudio(url);
+    } else {
+      startRepeatingBeep();
+    }
   }
 }
 
 // This is the second missing export
 export function stopTimerSound() {
-  // Stop any currently playing timer sound
+  if (alertRepeatInterval) {
+    if (typeof alertRepeatInterval === 'number') {
+      clearInterval(alertRepeatInterval);
+    }
+    alertRepeatInterval = null;
+  }
   if (timerSoundSource) {
     try {
       timerSoundSource.stop();
-    } catch (e) {
-      // Ignore errors if sound has already stopped
-    }
+    } catch (e) {}
     timerSoundSource = null;
   }
-
-  // Also stop any active audio element
   if (activeAudio) {
     activeAudio.pause();
     activeAudio.currentTime = 0;
@@ -130,108 +159,54 @@ export function stopTimerSound() {
   }
 }
 
-// Sound URLs for different sound types
-const SOUND_URLS = {
-  beep: null, // Uses oscillator
-  bell: 'https://assets.mixkit.co/active_storage/sfx/255/255-preview.mp3',
-  alarm: 'https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3',
-};
-
-// Play a sound from URL
+// Play a sound from URL or beep, repeating until stopped
 export function playSound(
   soundType = 'beep',
   customUrl = null,
   isTest = false
 ) {
-  // Stop any existing sound
   stopTimerSound();
-
-  // Use oscillator for beep type
   if (soundType === 'beep') {
     if (isTest) {
       playBeep(440, 0.2, 0.3);
     } else {
-      playTimerExpiredSound();
+      startRepeatingBeep();
     }
     return;
   }
-
-  // Get the appropriate URL
   let soundUrl = soundType === 'custom' ? customUrl : SOUND_URLS[soundType];
-
-  // Fallback to beep if no URL is available
   if (!soundUrl) {
-    console.warn('No sound URL for type:', soundType);
     if (isTest) {
       playBeep(440, 0.2, 0.3);
     } else {
-      playTimerExpiredSound();
+      startRepeatingBeep();
     }
     return;
   }
-
-  try {
-    // Create new audio element
+  if (isTest) {
+    // Play once for test
     const audio = new Audio(soundUrl);
-    activeAudio = audio; // Use the already declared variable
-
-    // Shorter duration for test sounds
-    if (isTest) {
-      setTimeout(() => {
-        audio.pause();
-        audio.currentTime = 0;
-      }, 1000);
-    }
-
-    audio.play().catch((e) => {
-      console.error('Error playing audio:', e);
-      // Fallback to beep on error
-      playBeep(440, 0.5, 0.5);
-    });
-  } catch (e) {
-    console.error('Error creating audio element:', e);
-    // Fallback to beep
-    playBeep(440, 0.5, 0.5);
+    activeAudio = audio;
+    setTimeout(() => {
+      audio.pause();
+      audio.currentTime = 0;
+    }, 1000);
+    audio.play().catch(() => playBeep(440, 0.5, 0.5));
+  } else {
+    startRepeatingAudio(soundUrl);
   }
 }
 
 // Make sure the playAlertSound function is exported
 export function playAlertSound(soundType, customUrl, isTest = false) {
-  // Determine which sound to play based on type
-  switch (soundType) {
-    case 'beep':
-      // Play a simple beep
-      if (isTest) {
-        // Shorter test sound
-        playBeep(440, 0.2, 0.3);
-      } else {
-        // Full alarm
-        playTimerExpiredSound();
-      }
-      break;
-
-    case 'bell':
-      // Play a bell sound
-      playSound('bell', null, isTest);
-      break;
-
-    case 'alarm':
-      // Play an alarm sound
-      playSound('alarm', null, isTest);
-      break;
-
-    case 'custom':
-      // Play custom sound URL if provided
-      if (customUrl) {
-        playSound('custom', customUrl, isTest);
-      } else {
-        // Fall back to beep
-        playBeep(440, 0.5, 0.5);
-      }
-      break;
-
-    default:
-      // Default to beep
-      playBeep(440, 0.5, 0.5);
+  if (isTest) {
+    playSound(soundType, customUrl, true);
+  } else {
+    playSound(soundType, customUrl, false);
   }
+}
+
+// Allow setting repeat mode from settings
+export function setRepeatAlertSoundMode(repeat) {
+  repeatAlertSound = !!repeat;
 }

@@ -13,9 +13,11 @@
   "main": "src/main.js",
   "scripts": {
     "start": "webpack serve --mode development --open",
-    "dev": "concurrently \"npm:sass:watch\" \"npm:start\"",
+    "dev": "npm run build:dev && concurrently \"npm:sass:watch\" \"npm:start\"",
     "sass": "sass src/styles/main.scss:src/styles/main.css --style compressed",
     "sass:watch": "sass --watch src/styles/main.scss:src/styles/main.css",
+    "build:webpack": "npx webpack --mode production",
+    "build:dev": "npm run build:webpack && node build.js",
     "build": "node build.js",
     "clean": "node clean-build.js",
     "upload": "npm run build && sh upload.sh"

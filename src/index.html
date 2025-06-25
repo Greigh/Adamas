@@ -340,8 +340,12 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="auto-copy-toggle" />
+                  <label class="switch" for="auto-copy-toggle">
+                    <input
+                      type="checkbox"
+                      id="auto-copy-toggle"
+                      aria-label="Auto Copy Pattern Result"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -362,8 +366,12 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="dark-mode-toggle" />
+                  <label class="switch" for="dark-mode-toggle">
+                    <input
+                      type="checkbox"
+                      id="dark-mode-toggle"
+                      aria-label="Dark Mode"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -391,8 +399,13 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="toggle-formatter" checked />
+                  <label class="switch" for="toggle-formatter">
+                    <input
+                      type="checkbox"
+                      id="toggle-formatter"
+                      checked
+                      aria-label="Show Number Formatter"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -406,8 +419,13 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="toggle-callflow" checked />
+                  <label class="switch" for="toggle-callflow">
+                    <input
+                      type="checkbox"
+                      id="toggle-callflow"
+                      checked
+                      aria-label="Show Call Flow Builder"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -419,8 +437,13 @@
                   <div class="setting-description">Show the notes section</div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="toggle-notes" checked />
+                  <label class="switch" for="toggle-notes">
+                    <input
+                      type="checkbox"
+                      id="toggle-notes"
+                      checked
+                      aria-label="Show Notes"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -434,8 +457,13 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="toggle-holdtimer" checked />
+                  <label class="switch" for="toggle-holdtimer">
+                    <input
+                      type="checkbox"
+                      id="toggle-holdtimer"
+                      checked
+                      aria-label="Show Hold Timer"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -456,8 +484,12 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="timer-auto-start" />
+                  <label class="switch" for="timer-auto-start">
+                    <input
+                      type="checkbox"
+                      id="timer-auto-start"
+                      aria-label="Auto-start on call"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -471,8 +503,33 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <label class="switch">
-                    <input type="checkbox" id="timer-sound-alerts" />
+                  <label class="switch" for="timer-sound-alerts">
+                    <input
+                      type="checkbox"
+                      id="timer-sound-alerts"
+                      aria-label="Sound alerts"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Repeat Alert Sound Toggle -->
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Repeat Alert Sound</div>
+                  <div class="setting-description">
+                    Repeat the alert sound until stopped (recommended for missed
+                    timer alerts)
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch" for="repeat-alert-sound-toggle">
+                    <input
+                      type="checkbox"
+                      id="repeat-alert-sound-toggle"
+                      aria-label="Repeat Alert Sound"
+                    />
                     <span class="slider"></span>
                   </label>
                 </div>
@@ -487,7 +544,10 @@
                   </div>
                 </div>
                 <div class="setting-control">
-                  <select id="timer-alert-sound">
+                  <label for="timer-alert-sound" class="sr-only"
+                    >Alert Sound</label
+                  >
+                  <select id="timer-alert-sound" aria-label="Alert Sound">
                     <option value="beep">Beep</option>
                     <option value="ding">Ding</option>
                     <option value="alarm">Alarm</option>
@@ -502,11 +562,15 @@
                   <p>Allow users to delete individual hold history entries</p>
                 </div>
                 <div class="setting-control">
-                  <label class="toggle-switch">
+                  <label
+                    class="toggle-switch"
+                    for="timer-allow-history-deletion"
+                  >
                     <input
                       type="checkbox"
                       id="timer-allow-history-deletion"
                       name="timer-allow-history-deletion"
+                      aria-label="Enable Hold History Deletion"
                     />
                     <span class="slider"></span>
                   </label>
