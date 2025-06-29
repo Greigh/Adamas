@@ -30,6 +30,7 @@ export let appSettings = {
   popupAlwaysOnTop: true,
   popupWidth: 600,
   popupHeight: 400,
+  preferPopupWindows: false,
   timerAutoStart: true,
   timerSoundAlerts: true,
   timerWarningTime: 300,
@@ -132,6 +133,8 @@ export function applySettings() {
       option.style.display = appSettings.enablePopupWindows ? '' : 'none';
     });
   }
+  const preferPopup = document.getElementById('prefer-popup-windows');
+  if (preferPopup) preferPopup.checked = appSettings.preferPopupWindows;
   const popupAlwaysOnTop = document.getElementById('popup-always-on-top');
   if (popupAlwaysOnTop) popupAlwaysOnTop.checked = appSettings.popupAlwaysOnTop;
   const popupWidth = document.getElementById('popup-width');
@@ -273,6 +276,14 @@ export function setupSettingsEventListeners() {
   if (popupEnable) {
     popupEnable.addEventListener('change', function () {
       appSettings.enablePopupWindows = this.checked;
+      saveSettings(appSettings);
+      applySettings();
+    });
+  }
+  const preferPopup = document.getElementById('prefer-popup-windows');
+  if (preferPopup) {
+    preferPopup.addEventListener('change', function () {
+      appSettings.preferPopupWindows = this.checked;
       saveSettings(appSettings);
       applySettings();
     });

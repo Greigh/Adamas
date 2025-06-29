@@ -23,6 +23,12 @@
   resize: both;
   overflow: auto;
 
+  // Make pattern popups slightly narrower by default for readability
+  &.pattern-popup {
+    min-width: 360px;
+    max-width: 540px;
+  }
+
   .floating-header {
     display: flex;
     justify-content: space-between;
@@ -37,8 +43,9 @@
     }
 
     .floating-controls {
-      display: flex;
-      gap: map.get($spacing, 2);
+  display: flex;
+  gap: map.get($spacing, 2);
+  align-items: center;
 
       button {
         background: none;
@@ -60,6 +67,16 @@
 
   .floating-content {
     padding: map.get($spacing, 4);
+    max-height: 60vh;
+    overflow-y: auto;
+
+    // Improve contrast for results and inputs
+    .input-group input,
+    .input-group button,
+    .pattern-result {
+      background: transparent;
+      color: var(--gray-900);
+    }
   }
 
   &:hover {
@@ -231,6 +248,12 @@
       transparent 70%
     );
   }
+}
+
+// Subtle overlay backdrop (visible when floating windows exist)
+.floating-overlay.visible {
+  background: rgba(0,0,0,0.06);
+  pointer-events: auto;
 }
 
 // Add mobile media queries at the end

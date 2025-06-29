@@ -29,22 +29,22 @@ export function renderNotes() {
       const saveBtn = document.createElement('button');
       saveBtn.textContent = 'Save';
       saveBtn.className = 'save-note-btn';
-      saveBtn.onclick = () => {
+      saveBtn.addEventListener('click', () => {
         notes[idx].text = textarea.value.trim();
         notes[idx].editing = false;
         notes[idx].updatedAt = new Date().toISOString();
         saveNotes(notes);
         renderNotes();
-      };
+      });
 
       const cancelBtn = document.createElement('button');
       cancelBtn.textContent = 'Cancel';
       cancelBtn.className = 'cancel-edit-btn';
-      cancelBtn.onclick = () => {
+      cancelBtn.addEventListener('click', () => {
         notes[idx].editing = false;
         saveNotes(notes);
         renderNotes();
-      };
+      });
       contentDiv.appendChild(saveBtn);
       contentDiv.appendChild(cancelBtn);
     } else {
@@ -79,27 +79,27 @@ export function renderNotes() {
       const editBtn = document.createElement('button');
       editBtn.textContent = 'Edit';
       editBtn.className = 'edit-note-btn';
-      editBtn.onclick = () => {
+      editBtn.addEventListener('click', () => {
         notes[idx].editing = true;
         saveNotes(notes);
         renderNotes();
-      };
+      });
       actionsDiv.appendChild(editBtn);
 
       const delBtn = document.createElement('button');
       delBtn.textContent = 'Delete';
       delBtn.className = 'delete-note-btn';
-      delBtn.onclick = () => {
+      delBtn.addEventListener('click', () => {
         notes.splice(idx, 1);
         saveNotes(notes);
         renderNotes();
-      };
+      });
       actionsDiv.appendChild(delBtn);
 
       const copyBtn = document.createElement('button');
       copyBtn.textContent = 'Copy';
       copyBtn.className = 'copy-note-btn';
-      copyBtn.onclick = () => {
+      copyBtn.addEventListener('click', () => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(note.text)
@@ -125,7 +125,7 @@ export function renderNotes() {
           }
           document.body.removeChild(textarea);
         }
-      };
+      });
       actionsDiv.appendChild(copyBtn);
 
       li.appendChild(actionsDiv);
@@ -224,7 +224,7 @@ function createNotesUI(notesId) {
                 <div class="drag-handle">⋮⋮</div>
                 <div class="title-container">
                     <h2 class="section-title" data-original="Notes">Notes</h2>
-                    <button class="edit-title-btn" onclick="editSectionTitle('${notesId}')" title="Edit Title">✎</button>
+                    <button class="edit-title-btn" data-action="edit-title" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
                     <button class="minimize-btn" title="Minimize">−</button>
@@ -306,6 +306,53 @@ function setupNotesInstanceListeners(notesId) {
         }
       }
     });
+  }
+
+  // Attach edit-title handler for the title edit button
+  const noteSection = document.getElementById(notesId);
+  if (noteSection) {
+    const editTitleBtn = noteSection.querySelector('button[data-action="edit-title"]');
+    if (editTitleBtn) {
+      editTitleBtn.addEventListener('click', () => {
+        const titleContainer = editTitleBtn.closest('.title-container');
+        if (!titleContainer) return;
+        const titleElem = titleContainer.querySelector('.section-title');
+        if (!titleElem) return;
+        // Prevent multiple inputs
+        if (titleContainer.querySelector('.title-input')) return;
+        const currentTitle = titleElem.textContent;
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentTitle;
+        input.className = 'title-input';
+        input.style.marginLeft = '0.5rem';
+        input.style.fontSize = '1.1em';
+        input.style.fontWeight = '600';
+        input.style.width = Math.max(120, currentTitle.length * 12) + 'px';
+        titleElem.style.display = 'none';
+        editTitleBtn.style.display = 'none';
+        titleContainer.appendChild(input);
+        input.focus();
+        input.select();
+        // Save on blur or Enter
+        function saveTitle() {
+          const newTitle = input.value.trim() || currentTitle;
+          titleElem.textContent = newTitle;
+          titleElem.style.display = '';
+          editTitleBtn.style.display = '';
+          input.remove();
+        }
+        input.addEventListener('blur', saveTitle);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') saveTitle();
+          else if (e.key === 'Escape') {
+            input.value = currentTitle;
+            saveTitle();
+          }
+        });
+      });
+    }
   }
 }
 

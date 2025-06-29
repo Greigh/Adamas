@@ -4,11 +4,18 @@ import '../styles/main.scss';
 import { initializeSettings, appSettings } from './modules/settings.js';
 import { initializeTheme, setupThemeToggle } from './modules/themes.js';
 import { setupTimerEventListeners } from './modules/timer.js';
-import { setupPatternEventListeners } from './modules/patterns.js';
+import * as patternsModule from './modules/patterns.js';
 import { setupCallFlowEventListeners } from './modules/callflow.js';
 import { setupNotesEventListeners } from './modules/notes.js';
 import { setupSettingsEventListeners } from './modules/settings.js';
-import { minimizeSection, popOutSection } from './modules/draggable.js';
+import {
+  minimizeSection,
+  popOutSection,
+  closeFloatingWindow,
+  minimizeFloatingWindow,
+  openSectionInFloatingWindow,
+  openSectionInBrowserPopup,
+} from './modules/draggable.js';
 
 // Tab navigation functions
 function openNotesTab() {
@@ -36,6 +43,12 @@ function openTimerTab() {
 // Expose tab functions globally for backward compatibility
 window.openNotesTab = openNotesTab;
 window.openTimerTab = openTimerTab;
+
+// Expose floating window helpers for inline handlers / popups
+window.closeFloatingWindow = closeFloatingWindow;
+window.minimizeFloatingWindow = minimizeFloatingWindow;
+window.openSectionInFloatingWindow = openSectionInFloatingWindow;
+window.openSectionInBrowserPopup = openSectionInBrowserPopup;
 
 // Check if element is in viewport
 function isElementInViewport(element) {
@@ -207,7 +220,8 @@ function setupAllEventListeners() {
       if (button.classList.contains('minimize-btn')) {
         minimizeSection(section.id);
       } else if (button.classList.contains('float-btn')) {
-        popOutSection(section.id, appSettings.enablePopupWindows);
+        // Always open in a browser popup when the popout/float button is clicked
+        popOutSection(section.id, true);
       }
       // Add handling for edit-title-btn if needed
       else if (button.classList.contains('edit-title-btn')) {
@@ -267,6 +281,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set up all event listeners for the application
     setupAllEventListeners();
+
+    // Ensure patterns module is available and wired (eagerly attach listeners)
+    try {
+      if (patternsModule && typeof patternsModule.setupPatternEventListeners === 'function') {
+        patternsModule.setupPatternEventListeners();
+        window.patternsModule = patternsModule;
+      }
+    } catch (e) {
+      console.error('Error initializing patterns module eagerly:', e);
+    }
+    // If floating clones are created dynamically, the opener will dispatch
+    // a `floating:created` CustomEvent with detail.root = cloned root.
+    // Ensure any loaded patternsModule attaches to those clones.
+    try {
+      document.addEventListener('floating:created', (ev) => {
+        try {
+          const root = ev && ev.detail && ev.detail.root;
+          if (!root) return;
+          if (window.patternsModule && typeof window.patternsModule.attachPatternEventListeners === 'function') {
+            window.patternsModule.attachPatternEventListeners(root);
+            try { root.setAttribute && root.setAttribute('data-patterns-attached', 'true'); } catch (e) {}
+          }
+        } catch (err) {
+          console.error('Error handling floating:created event:', err);
+        }
+      });
+    } catch (err) {
+      console.error('Error registering floating:created listener:', err);
+    }
 
     // Set initial UI state
     showMainApp();

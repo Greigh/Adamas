@@ -67,6 +67,39 @@
                       id="patternNumberInput"
                       placeholder="Enter number to format..."
                     />
+                    <span
+                      class="tooltip-wrapper"
+                      style="
+                        position: relative;
+                        display: inline-block;
+                        margin-left: 4px;
+                      "
+                    >
+                      <button id="pastePatternBtn" class="button">Paste</button>
+                      <span
+                        class="tooltip-text"
+                        role="tooltip"
+                        aria-hidden="true"
+                        style="
+                          visibility: hidden;
+                          background: #111827;
+                          color: #fff;
+                          text-align: center;
+                          border-radius: 4px;
+                          padding: 6px 8px;
+                          position: absolute;
+                          z-index: 10;
+                          bottom: 125%;
+                          left: 50%;
+                          transform: translateX(-50%);
+                          white-space: nowrap;
+                          font-size: 0.85rem;
+                        "
+                      >
+                        Uses Clipboard API; falls back to a paste prompt if
+                        blocked.
+                      </span>
+                    </span>
                     <button id="formatPatternBtn" class="button">Format</button>
                     <button id="clearPatternBtn" class="button btn-secondary">
                       Clear
@@ -330,6 +363,27 @@
             <div class="settings-section">
               <h3>Pattern Formatter</h3>
               <p>Configure number pattern formatting behavior:</p>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Prefer Browser Popups</div>
+                  <div class="setting-description">
+                    When enabled, the popout button will open the section in a
+                    separate browser window. If the browser blocks popups, a new
+                    tab will be opened as a fallback.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch" for="prefer-popup-windows">
+                    <input
+                      type="checkbox"
+                      id="prefer-popup-windows"
+                      aria-label="Prefer Browser Popups"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
 
               <div class="setting-item">
                 <div class="setting-info">

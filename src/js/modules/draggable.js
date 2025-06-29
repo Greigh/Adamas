@@ -4,6 +4,100 @@ import { appSettings } from './settings.js';
 export let draggedElement = null;
 export let floatingWindows = new Map();
 
+function addPoppedOutIndicator(sectionId, text = 'Popped Out') {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.classList.add('popped-out');
+    if (!section.querySelector('.popped-out-indicator')) {
+        const span = document.createElement('span');
+        span.className = 'popped-out-indicator';
+        span.title = text;
+        span.textContent = text;
+        span.style.marginLeft = '8px';
+        span.style.fontSize = '0.85em';
+        span.style.color = '#1976d2';
+        const header = section.querySelector('.section-header .title-container') || section.querySelector('.section-header');
+        if (header) header.appendChild(span);
+    }
+}
+
+function removePoppedOutIndicator(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.classList.remove('popped-out');
+    const indicator = section.querySelector('.popped-out-indicator');
+    if (indicator) indicator.remove();
+}
+
+function addDockButton(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    if (section.querySelector('.dock-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'dock-btn';
+    btn.textContent = 'Dock';
+    btn.title = 'Mark as closed / Dock back';
+    btn.style.marginLeft = '8px';
+    const header = section.querySelector('.section-header .title-container') || section.querySelector('.section-header');
+    if (header) header.appendChild(btn);
+}
+
+function removeDockButton(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const btn = section.querySelector('.dock-btn');
+    if (btn) btn.remove();
+}
+
+// Delegated handler for dock buttons in case of external tabs
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.dock-btn');
+    if (!btn) return;
+    const section = btn.closest('.draggable-section');
+    if (!section) return;
+    const sectionId = section.id;
+    const stored = floatingWindows.get(sectionId);
+    // Remove local markers
+    floatingWindows.delete(sectionId);
+    removePoppedOutIndicator(sectionId);
+    removeDockButton(sectionId);
+    section.style.display = '';
+
+    // If we have a server popup id, attempt to delete it
+    if (stored && stored.popupId) {
+        fetch(`/popup/${stored.popupId}`, { method: 'DELETE' }).catch(() => {
+            // ignore errors
+        });
+    }
+});
+
+// Helper to POST popup HTML to server. Tries same-origin first, then localhost:8080 as fallback.
+function postPopupHTML(html) {
+    const payload = { html };
+    return fetch('/popup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    })
+        .then((res) => {
+            if (res.ok) return res.json();
+            // fallback to localhost:8080
+            return fetch('http://localhost:8080/popup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }).then((r2) => (r2.ok ? r2.json() : Promise.reject(new Error('Popup POST failed'))));
+        })
+        .catch(() => {
+            // Try fallback host explicitly
+            return fetch('http://localhost:8080/popup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }).then((r2) => (r2.ok ? r2.json() : Promise.reject(new Error('Popup POST failed'))));
+        });
+}
+
 export function minimizeSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (!section) return;
@@ -22,7 +116,12 @@ export function minimizeSection(sectionId) {
 }
 
 export function popOutSection(sectionId, enablePopupWindows = false) {
-    if (enablePopupWindows) {
+    // Preference: explicit argument wins, otherwise consult appSettings
+    const usePopup = typeof enablePopupWindows === 'boolean' && enablePopupWindows
+        ? true
+        : !!(appSettings && appSettings.preferPopupWindows);
+
+    if (usePopup) {
         openSectionInBrowserPopup(sectionId);
     } else {
         openSectionInFloatingWindow(sectionId);
@@ -52,6 +151,7 @@ export function closeFloatingWindow(sectionId) {
             popBtn.textContent = '⧉';
             popBtn.title = 'Pop Out';
         }
+    removePoppedOutIndicator(sectionId);
     }
 }
 
@@ -196,73 +296,140 @@ function makeFloatingWindowDraggable(windowElement) {
 }
 
 function openSectionInFloatingWindow(sectionId) {
-    const section = document.getElementById(sectionId);
-    const overlay = document.getElementById('floating-overlay');
-    
-    if (floatingWindows.has(sectionId)) {
-        closeFloatingWindow(sectionId);
-        return;
-    }
-    
-    // Hide original section
-    section.style.display = 'none';
-    
-    // Create floating window
-    const floatingWindow = document.createElement('div');
-    floatingWindow.className = 'floating-window';
-    floatingWindow.style.left = '100px';
-    floatingWindow.style.top = '100px';
-    floatingWindow.style.width = '500px';
-    
-    // Get the correct section title from the section-title element
-    const titleElement = section.querySelector('.section-title');
-    const sectionTitle = titleElement ? titleElement.textContent : 'Section';
-    // Clone the content and modify IDs to make them unique
-    const content = section.querySelector('.section-content').cloneNode(true);
-    
-    // Update all IDs in the cloned content
-    content.querySelectorAll('[id]').forEach(element => {
-        const originalId = element.id;
-        element.id = `floating-${sectionId}-${originalId}`;
+    console.log('DRAGGABLE: openSectionInFloatingWindow called with:', sectionId);
+    // Return a Promise that resolves when the floating content has been
+    // fully wired (patterns attached). Callers may await this to avoid
+    // race conditions where tests or users interact with the clone too
+    // early.
+    return new Promise((resolve) => {
+        console.log('DRAGGABLE: Inside Promise constructor');
+        const section = document.getElementById(sectionId);
+        const overlay = document.getElementById('floating-overlay');
         
-        // Update any labels that reference this ID
-        const labels = content.querySelectorAll(`label[for="${originalId}"]`);
-        labels.forEach(label => {
-            label.setAttribute('for', `floating-${sectionId}-${originalId}`);
-        });
-        
-        // Update name attributes to match IDs to help with autofill
-        if (element.hasAttribute('name')) {
-            element.setAttribute('name', `floating-${sectionId}-${element.getAttribute('name')}`);
+        if (floatingWindows.has(sectionId)) {
+            closeFloatingWindow(sectionId);
+            resolve(null);
+            return;
         }
-    });
-    
-    floatingWindow.innerHTML = `
-        <div class="floating-header">
-            <h3>${sectionTitle}</h3>
-            <div class="floating-controls">
-                <button onclick="window.minimizeFloatingWindow('${sectionId}')" title="Minimize">−</button>
-                <button onclick="window.closeFloatingWindow('${sectionId}')" class="close-btn" title="Close">×</button>
+        
+        // Hide original section
+        section.style.display = 'none';
+        
+        // Create floating window
+        const floatingWindow = document.createElement('div');
+        floatingWindow.className = 'floating-window';
+        floatingWindow.style.left = '100px';
+        floatingWindow.style.top = '100px';
+        floatingWindow.style.width = '500px';
+        
+        // Get the correct section title from the section-title element
+        const titleElement = section.querySelector('.section-title');
+        const sectionTitle = titleElement ? titleElement.textContent : 'Section';
+
+        // Build floating window shell
+        floatingWindow.innerHTML = `
+            <div class="floating-header">
+                <h3>${sectionTitle}</h3>
+                <div class="floating-controls">
+                    <button data-action="minimize" title="Minimize">−</button>
+                    <button data-action="close" class="close-btn" title="Close">×</button>
+                </div>
             </div>
-        </div>
-        <div class="floating-content"></div>
-    `;
-    
-    floatingWindow.querySelector('.floating-content').appendChild(content);
-    overlay.appendChild(floatingWindow);
-    
-    // Make floating window draggable
-    makeFloatingWindowDraggable(floatingWindow);
-    
-    // Store reference
-    floatingWindows.set(sectionId, floatingWindow);
-    
-    // Update pop-out button
-    const popBtn = section.querySelector('.popup-btn');
-    if (popBtn) {
-        popBtn.textContent = '⧈';
-        popBtn.title = 'Dock';
-    }
+            <div class="floating-content"></div>
+        `;
+
+        // Copy classes from the original section to the floating window so it receives card styles
+        try {
+            section.classList.forEach(c => floatingWindow.classList.add(c));
+        } catch (e) {}
+
+        // Create a deep clone of the original section so it preserves header and full structure
+        const wrapper = section.cloneNode(true);
+        wrapper.id = `floating-${sectionId}`;
+
+        // Update all IDs in the wrapper to avoid collisions
+        wrapper.querySelectorAll('[id]').forEach(element => {
+            const originalId = element.id;
+            const newId = `floating-${sectionId}-${originalId}`;
+            element.id = newId;
+
+            // Update labels within the wrapper that reference this ID
+            const labels = wrapper.querySelectorAll(`label[for="${originalId}"]`);
+            labels.forEach(label => label.setAttribute('for', newId));
+
+            if (element.hasAttribute('name')) {
+                element.setAttribute('name', `floating-${sectionId}-${element.getAttribute('name')}`);
+            }
+        });
+
+        // Append wrapper so the floating window contains a '.card' like the main page
+        floatingWindow.querySelector('.floating-content').appendChild(wrapper);
+
+        // Attach pattern listeners to the wrapper if present. Do a dynamic import
+        // and attach after appending so listeners bind to live nodes. Resolve the
+        // returned Promise after attach completes (or after a small timeout
+        // fallback) so callers can await readiness.
+        overlay.appendChild(floatingWindow);
+
+        // Attach event listeners for controls instead of inline onclick
+        const minimizeBtn = floatingWindow.querySelector('button[data-action="minimize"]');
+        const closeBtn = floatingWindow.querySelector('button[data-action="close"]');
+        if (minimizeBtn) {
+            minimizeBtn.addEventListener('click', () => minimizeFloatingWindow(sectionId));
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => closeFloatingWindow(sectionId));
+        }
+
+        // Make floating window draggable
+        makeFloatingWindowDraggable(floatingWindow);
+        
+        // Store reference
+        floatingWindows.set(sectionId, floatingWindow);
+        addPoppedOutIndicator(sectionId, 'Floating');
+        
+        // Update pop-out button
+        const popBtn = section.querySelector('.popup-btn');
+        if (popBtn) {
+            popBtn.textContent = '⧈';
+            popBtn.title = 'Dock';
+        }
+        // Add popped-out indicator
+        section.classList.add('popped-out');
+        if (!section.querySelector('.popped-out-indicator')) {
+            const span = document.createElement('span');
+            span.className = 'popped-out-indicator';
+            span.title = 'Floating (in-page)';
+            span.textContent = 'Floating';
+            span.style.marginLeft = '8px';
+            span.style.fontSize = '0.85em';
+            span.style.color = '#1976d2';
+            const header = section.querySelector('.section-header .title-container') || section.querySelector('.section-header');
+            if (header) header.appendChild(span);
+        }
+
+        // Attach patterns asynchronously and resolve when done
+        (async () => {
+            try {
+                console.log('DRAGGABLE: Starting pattern attachment for', sectionId);
+                const mod = window.patternsModule || (await import('./patterns.js'));
+                if (mod && typeof mod.attachPatternEventListeners === 'function') {
+                    console.log('DRAGGABLE: Calling attachPatternEventListeners');
+                    mod.attachPatternEventListeners(wrapper);
+                    window.patternsModule = mod;
+                    wrapper.setAttribute('data-patterns-attached', 'true');
+                    console.log('DRAGGABLE: Patterns attached successfully, resolving promise');
+                    resolve(floatingWindow);
+                } else {
+                    console.log('DRAGGABLE: Patterns module not available, resolving anyway');
+                    resolve(floatingWindow);
+                }
+            } catch (err) {
+                console.log('DRAGGABLE: Pattern attach failed:', err);
+                resolve(floatingWindow);
+            }
+        })();
+    });
 }
 
 function openSectionInBrowserPopup(sectionId) {
@@ -425,34 +592,151 @@ function openSectionInBrowserPopup(sectionId) {
         'status=no'
     ];
     
-    const popup = window.open('', `${sectionId}-popup`, features.join(','));
-    popup.document.write(popupHTML);
-    popup.document.close();
-    
-    // Store reference
-    floatingWindows.set(sectionId, popup);
-    
-    // Update pop-out button
-    const popBtn = section.querySelector('.popup-btn');
-    if (popBtn) {
-        popBtn.textContent = '⧈';
-        popBtn.title = 'Close Popup';
+    // Try to open a real popup window
+    let popup = null;
+    try {
+        popup = window.open('', `${sectionId}-popup`, features.join(','));
+    } catch (err) {
+        popup = null;
     }
-    
-    // Listen for popup closing
-    const checkClosed = setInterval(() => {
-        if (popup.closed) {
-            clearInterval(checkClosed);
-            floatingWindows.delete(sectionId);
-            section.style.display = '';
-            
-            const popBtn = section.querySelector('.popup-btn');
-            if (popBtn) {
-                popBtn.textContent = '⧉';
-                popBtn.title = 'Pop Out';
-            }
-        }
-    }, 1000);
+
+    if (popup) {
+        // Instead of writing directly into the blank popup, prefer creating a
+        // server-served URL for larger content. POST popupHTML to the server
+        // and open the returned URL.
+        fetch('/popup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html: popupHTML }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                const url = data && data.url ? data.url : null;
+                const popupId = data && data.id ? data.id : null;
+                if (!url) {
+                    // Fall back to writing into popup
+                    popup.document.write(popupHTML);
+                    popup.document.close();
+                    floatingWindows.set(sectionId, popup);
+                    addPoppedOutIndicator(sectionId, 'Popup');
+                    const popBtn = section.querySelector('.popup-btn');
+                    if (popBtn) {
+                        popBtn.textContent = '⧈';
+                        popBtn.title = 'Close Popup';
+                    }
+                    return;
+                }
+
+                // Try to open the server URL in the popup window
+                try {
+                    popup.location.href = url;
+                    floatingWindows.set(sectionId, popup);
+                    addPoppedOutIndicator(sectionId, 'Popup');
+
+                    const popBtn = section.querySelector('.popup-btn');
+                    if (popBtn) {
+                        popBtn.textContent = '⧈';
+                        popBtn.title = 'Close Popup';
+                    }
+
+                    // Monitor popup close
+                    const checkClosed = setInterval(() => {
+                        if (popup.closed) {
+                            clearInterval(checkClosed);
+                            floatingWindows.delete(sectionId);
+                            section.style.display = '';
+
+                            const popBtn = section.querySelector('.popup-btn');
+                            if (popBtn) {
+                                popBtn.textContent = '⧉';
+                                popBtn.title = 'Pop Out';
+                            }
+                        }
+                    }, 1000);
+                } catch (err) {
+                    // If for some reason we can't assign the location, fallback to anchor
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    floatingWindows.set(sectionId, { externalTab: true, url, popupId });
+                    addPoppedOutIndicator(sectionId, 'New Tab');
+                    addDockButton(sectionId);
+                    const popBtn = section.querySelector('.popup-btn');
+                    if (popBtn) {
+                        popBtn.textContent = '⧈';
+                        popBtn.title = 'Opened in New Tab';
+                    }
+                }
+            })
+            .catch(() => {
+                // If POST fails, write into popup directly as a fallback
+                popup.document.write(popupHTML);
+                popup.document.close();
+                floatingWindows.set(sectionId, popup);
+            });
+    } else {
+        // Popup was blocked — try to POST HTML to server and open returned URL in new tab
+        fetch('/popup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html: popupHTML }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                const url = data && data.url ? data.url : null;
+                const popupId = data && data.id ? data.id : null;
+                if (!url) {
+                    // Last resort: open as data URI
+                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(popupHTML);
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    floatingWindows.set(sectionId, { externalTab: true, popupId });
+                    addPoppedOutIndicator(sectionId, 'New Tab');
+                    addDockButton(sectionId);
+                    const popBtn = section.querySelector('.popup-btn');
+                    if (popBtn) {
+                        popBtn.textContent = '⧈';
+                        popBtn.title = 'Opened in New Tab';
+                    }
+                    return;
+                }
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                floatingWindows.set(sectionId, { externalTab: true, url, popupId });
+                addPoppedOutIndicator(sectionId, 'New Tab');
+                addDockButton(sectionId);
+                const popBtn = section.querySelector('.popup-btn');
+                if (popBtn) {
+                    popBtn.textContent = '⧈';
+                    popBtn.title = 'Opened in New Tab';
+                }
+            })
+            .catch(() => {
+                // As a last resort, fall back to floating DIV
+                openSectionInFloatingWindow(sectionId);
+            });
+    }
 }
 
 // Export these functions so they can be imported elsewhere
@@ -558,4 +842,14 @@ export function setupSectionToggle(section) {
 }
 
 // Initialize draggable sections
+// Expose these functions to the global window so inline handlers (and popups)
+// can call them even if modules haven't attached globals yet.
+if (typeof window !== 'undefined') {
+    // Only assign if not already set to avoid overwriting existing implementations
+    if (typeof window.closeFloatingWindow !== 'function') window.closeFloatingWindow = closeFloatingWindow;
+    if (typeof window.minimizeFloatingWindow !== 'function') window.minimizeFloatingWindow = minimizeFloatingWindow;
+    if (typeof window.openSectionInFloatingWindow !== 'function') window.openSectionInFloatingWindow = openSectionInFloatingWindow;
+    if (typeof window.openSectionInBrowserPopup !== 'function') window.openSectionInBrowserPopup = openSectionInBrowserPopup;
+}
+
 initDragAndDrop();
