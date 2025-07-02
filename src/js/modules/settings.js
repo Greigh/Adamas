@@ -565,12 +565,30 @@ export function setupSettingsEventListeners() {
     });
   }
 
+  // Show/hide custom sound URL input based on alert sound selection
+  // Use the already-declared alertSound and customSoundOption
+  if (alertSound && customSoundOption && customSoundUrl) {
+    function updateCustomUrlVisibility() {
+      if (alertSound.value === 'custom') {
+        customSoundOption.style.display = '';
+        customSoundUrl.focus();
+      } else {
+        customSoundOption.style.display = 'none';
+        customSoundUrl.blur();
+      }
+    }
+    alertSound.addEventListener('change', updateCustomUrlVisibility);
+    // Initial state
+    updateCustomUrlVisibility();
+  }
+
   // Test sound button
   const testSoundBtn = document.getElementById('test-sound-btn');
   if (testSoundBtn) {
     testSoundBtn.addEventListener('click', function () {
       const soundType = document.getElementById('timer-alert-sound').value;
       const customUrl = document.getElementById('custom-sound-url').value;
+      playAlertSound(soundType, customUrl, true); // Play a short test sound immediately
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard
           .writeText(`${soundType === 'custom' ? customUrl : soundType}`)
@@ -596,7 +614,6 @@ export function setupSettingsEventListeners() {
         }
         document.body.removeChild(textarea);
       }
-      playAlertSound(soundType, customUrl, true); // Play a short test sound
     });
   }
 

@@ -311,6 +311,8 @@
     width: 100%;
     min-width: 160px;
     cursor: pointer;
+    margin-bottom: map.get($spacing, 2); // Add spacing below dropdown
+    display: block; // Ensure it takes full width and custom sound is below
 
     &:focus {
       border-color: var(--primary-blue);
@@ -345,6 +347,76 @@
     }
     &:hover {
       border-color: var(--primary-blue);
+    }
+  }
+
+  // Custom sound URL input styling (always below the dropdown)
+  .custom-sound-option {
+    margin-top: 0; // Remove margin if already added by dropdown
+    margin-bottom: map.get($spacing, 3);
+    width: 100%;
+    display: block;
+
+    label {
+      display: block;
+      font-size: map.get($font-sizes, base);
+      color: var(--gray-800);
+      margin-bottom: map.get($spacing, 1);
+      min-width: 90px;
+    }
+
+    input[type='url'],
+    input[type='text'] {
+      width: 100%;
+      padding: map.get($spacing, 2) map.get($spacing, 3);
+      border: 2px solid var(--gray-200);
+      border-radius: map.get($radius, base);
+      font-size: map.get($font-sizes, base);
+      color: var(--gray-900);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: none;
+      min-width: 0;
+      margin-top: 0;
+
+      &:focus {
+        border-color: var(--primary-blue);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.08);
+      }
+      &::placeholder {
+        color: var(--gray-400);
+        opacity: 1;
+      }
+    }
+  }
+
+  [data-theme='dark'] .custom-sound-option {
+    label {
+      color: var(--dark-text);
+    }
+    input[type='url'],
+    input[type='text'] {
+      background: var(--dark-surface);
+      color: var(--dark-text);
+      border-color: var(--dark-border);
+      &::placeholder {
+        color: var(--dark-text-muted);
+      }
+      &:focus {
+        border-color: #90caf9;
+        background: var(--dark-bg);
+      }
+    }
+  }
+
+  // Responsive tweak for custom sound input
+  @media (max-width: map.get($breakpoints, md)) {
+    .custom-sound-option {
+      input[type='url'],
+      input[type='text'] {
+        max-width: 100%;
+      }
     }
   }
 }

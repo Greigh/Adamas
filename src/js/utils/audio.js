@@ -9,9 +9,9 @@ let repeatAlertSound = true;
 
 // Sound URLs for different sound types
 const SOUND_URLS = {
-  endgame: '/audio/276-preview.mp3', // End game sound
-  bell: '/audio/933-preview.mp3', // Bell sound
-  towerbell: '/audio/1071-preview.mp3', // Tower Bell sound
+  endgame: '/audio/endgame.mp3', // End game sound
+  bell: '/audio/bell.mp3', // Bell sound
+  towerbell: '/audio/tower.mp3', // Tower Bell sound
   custom: null, // Will be set by user
 };
 
@@ -25,9 +25,6 @@ export function initAudio() {
       latencyHint: 'interactive',
       sampleRate: 44100,
     });
-
-    // Remove or comment out noisy console logs in production
-    // (audio.js:25) Remove 'Audio context initialized' log
 
     // Resume context on user interaction
     document.addEventListener(
@@ -175,6 +172,16 @@ export function playSound(
     return;
   }
   let soundUrl = soundType === 'custom' ? customUrl : SOUND_URLS[soundType];
+  // Add support for custom URLs: if customUrl is provided and not empty, use it
+  if (soundType === 'custom' && (!customUrl || customUrl.trim() === '')) {
+    // If no custom URL is set, fall back to beep
+    if (isTest) {
+      playBeep(440, 0.2, 0.3);
+    } else {
+      startRepeatingBeep();
+    }
+    return;
+  }
   if (!soundUrl) {
     if (isTest) {
       playBeep(440, 0.2, 0.3);
@@ -187,11 +194,13 @@ export function playSound(
     // Play once for test
     const audio = new Audio(soundUrl);
     activeAudio = audio;
+    audio.currentTime = 0;
+    audio.volume = 1.0;
+    audio.play().catch(() => playBeep(440, 0.5, 0.5));
     setTimeout(() => {
       audio.pause();
       audio.currentTime = 0;
-    }, 1000);
-    audio.play().catch(() => playBeep(440, 0.5, 0.5));
+    }, 1200);
   } else {
     startRepeatingAudio(soundUrl);
   }

@@ -535,8 +535,26 @@
                 </div>
               </div>
 
-              <!-- Add Sound Selection Option -->
               <div class="setting-item">
+                <div class="setting-info">
+                  <h4>Enable Hold History Deletion</h4>
+                  <p>Allow users to delete individual hold history entries</p>
+                </div>
+                <div class="setting-control">
+                  <label class="switch" for="timer-allow-history-deletion">
+                    <input
+                      type="checkbox"
+                      id="timer-allow-history-deletion"
+                      name="timer-allow-history-deletion"
+                      aria-label="Enable Hold History Deletion"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Add Sound Selection Option -->
+              <div class="setting-item sound-setting-item">
                 <div class="setting-info">
                   <div class="setting-label">Alert Sound</div>
                   <div class="setting-description">
@@ -547,33 +565,33 @@
                   <label for="timer-alert-sound" class="sr-only"
                     >Alert Sound</label
                   >
-                  <select id="timer-alert-sound" aria-label="Alert Sound">
-                    <option value="beep">Beep</option>
-                    <option value="ding">Ding</option>
-                    <option value="alarm">Alarm</option>
-                    <option value="chime">Chime</option>
+                  <select
+                    id="timer-alert-sound"
+                    aria-label="Alert Sound"
+                    class="sound-select"
+                    style="display: block; width: 100%; margin-bottom: 8px"
+                  >
+                    <option value="endgame">Endgame</option>
+                    <option value="bell">Bell</option>
+                    <option value="towerbell">Tower Bell</option>
                     <option value="custom">Custom URL</option>
                   </select>
-                </div>
-              </div>
-              <div class="setting-item">
-                <div class="setting-info">
-                  <h4>Enable Hold History Deletion</h4>
-                  <p>Allow users to delete individual hold history entries</p>
-                </div>
-                <div class="setting-control">
-                  <label
-                    class="toggle-switch"
-                    for="timer-allow-history-deletion"
+                  <div
+                    class="custom-sound-option"
+                    style="display: none; width: 100%"
                   >
+                    <label
+                      for="custom-sound-url"
+                      style="display: block; margin-bottom: 4px"
+                      >Custom Sound URL:</label
+                    >
                     <input
-                      type="checkbox"
-                      id="timer-allow-history-deletion"
-                      name="timer-allow-history-deletion"
-                      aria-label="Enable Hold History Deletion"
+                      type="text"
+                      id="custom-sound-url"
+                      placeholder="Paste direct .mp3 URL here"
+                      style="width: 100%"
                     />
-                    <span class="slider"></span>
-                  </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -589,6 +607,10 @@
             <a href="terms.html">Terms of Use</a> &bull;
             <a href="contact.html">Contact Us</a>
           </p>
+          <div class="build-date" style="font-size: 0.9em; color: #888">
+            Last updated:
+            <!--BUILD_DATE-->
+          </div>
         </div>
       </footer>
     </div>

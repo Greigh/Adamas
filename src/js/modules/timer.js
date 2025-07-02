@@ -74,7 +74,10 @@ export function updateTimerDisplay() {
         !holdTimer.soundPlaying &&
         appSettings.timerSoundAlerts
       ) {
-        playTimerExpiredSound();
+        // Play the selected alert sound
+        const soundType = appSettings.timerAlertSound || 'endgame';
+        const customUrl = appSettings.timerCustomSoundUrl || null;
+        playTimerExpiredSound(soundType, customUrl);
         holdTimer.soundPlaying = true;
       }
     } else {
@@ -92,6 +95,14 @@ export function updateTimerDisplay() {
         currentTime = Math.floor(
           (Date.now() - holdTimer.startTime - holdTimer.totalPausedTime) / 1000
         );
+      }
+      // For regular timer, check against warning time
+      const warningTime = appSettings.timerWarningTime;
+      if (currentTime >= warningTime && !holdTimer.warningShown) {
+        const timerContainer = document.getElementById('hold-timer');
+        timerContainer.classList.add('timer-warning');
+        showTimerWarning(currentTime);
+        holdTimer.warningShown = true;
       }
     }
   } else if (holdTimer.isCountdown) {
