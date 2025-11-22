@@ -66,38 +66,17 @@
                       type="text"
                       id="patternNumberInput"
                       placeholder="Enter number to format..."
+                      aria-label="Number to format"
                     />
-                    <span
-                      class="tooltip-wrapper"
-                      style="
-                        position: relative;
-                        display: inline-block;
-                        margin-left: 4px;
-                      "
-                    >
+                    <span class="tooltip-wrapper">
                       <button id="pastePatternBtn" class="button">Paste</button>
                       <span
                         class="tooltip-text"
                         role="tooltip"
                         aria-hidden="true"
-                        style="
-                          visibility: hidden;
-                          background: #111827;
-                          color: #fff;
-                          text-align: center;
-                          border-radius: 4px;
-                          padding: 6px 8px;
-                          position: absolute;
-                          z-index: 10;
-                          bottom: 125%;
-                          left: 50%;
-                          transform: translateX(-50%);
-                          white-space: nowrap;
-                          font-size: 0.85rem;
-                        "
                       >
-                        Uses Clipboard API; falls back to a paste prompt if
-                        blocked.
+                        font-size: 0.85rem; " > Uses Clipboard API; falls back
+                        to a paste prompt if blocked.
                       </span>
                     </span>
                     <button id="formatPatternBtn" class="button">Format</button>
@@ -206,6 +185,7 @@
                       id="step-input"
                       name="step-input"
                       placeholder="Enter step description..."
+                      aria-label="Call flow step description"
                     />
                     <button id="add-step-btn" class="button">Add Step</button>
                   </div>
@@ -216,6 +196,7 @@
                       id="bulk-steps-area"
                       name="bulk-steps-area"
                       placeholder="Enter multiple steps, one per line..."
+                      aria-label="Bulk steps input"
                     ></textarea>
                     <button id="bulk-add-btn" class="button">Bulk Add</button>
                   </div>
@@ -251,8 +232,9 @@
                   id="notes-input"
                   name="notes-input"
                   placeholder="Type a note and press Add..."
+                  aria-label="Note input"
                 ></textarea>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px">
+                <div class="flex-gap-10 mb-10">
                   <button id="add-note-btn" class="button">Add Note</button>
                   <button id="clear-notes-btn" class="button btn-danger">
                     Clear All Notes
@@ -311,8 +293,7 @@
                 </button>
                 <button
                   id="stop-sound-btn"
-                  class="button timer-btn danger"
-                  style="display: none"
+                  class="button timer-btn danger hidden"
                 >
                   Stop Sound
                 </button>
@@ -345,13 +326,26 @@
                 </div>
                 <ul id="hold-history" class="history-list"></ul>
               </div>
+
+              <!-- Multiple Timers Section -->
+              <div class="multiple-timers">
+                <div class="timers-header">
+                  <h4>Multiple Timers</h4>
+                  <button id="add-timer-btn" class="button btn-sm">
+                    Add Timer
+                  </button>
+                </div>
+                <div id="timers-container" class="timers-container">
+                  <!-- Timers will be added here dynamically -->
+                </div>
+              </div>
             </div>
           </section>
         </div>
       </div>
 
       <!-- Settings View -->
-      <div id="settings-view" class="app-view" style="display: none">
+      <div id="settings-view" class="app-view hidden">
         <div class="settings-container">
           <div class="settings-header">
             <h1>App Settings</h1>
@@ -365,6 +359,27 @@
               <p>Configure number pattern formatting behavior:</p>
 
               <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Enable Popup Windows</div>
+                  <div class="setting-description">
+                    Allow sections to be opened in separate browser windows.
+                    When disabled, all sections will use floating overlays
+                    instead.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch" for="enable-popup-windows">
+                    <input
+                      type="checkbox"
+                      id="enable-popup-windows"
+                      aria-label="Enable Popup Windows"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item popup-options">
                 <div class="setting-info">
                   <div class="setting-label">Prefer Browser Popups</div>
                   <div class="setting-description">
@@ -382,6 +397,44 @@
                     />
                     <span class="slider"></span>
                   </label>
+                </div>
+              </div>
+
+              <div class="setting-item popup-options">
+                <div class="setting-info">
+                  <div class="setting-label">Popup Window Width</div>
+                  <div class="setting-description">
+                    Default width for popup windows (in pixels).
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <input
+                    type="number"
+                    id="popup-width"
+                    min="400"
+                    max="1920"
+                    value="600"
+                    aria-label="Popup Window Width"
+                  />
+                </div>
+              </div>
+
+              <div class="setting-item popup-options">
+                <div class="setting-info">
+                  <div class="setting-label">Popup Window Height</div>
+                  <div class="setting-description">
+                    Default height for popup windows (in pixels).
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <input
+                    type="number"
+                    id="popup-height"
+                    min="300"
+                    max="1080"
+                    value="400"
+                    aria-label="Popup Window Height"
+                  />
                 </div>
               </div>
 
@@ -622,30 +675,179 @@
                   <select
                     id="timer-alert-sound"
                     aria-label="Alert Sound"
-                    class="sound-select"
-                    style="display: block; width: 100%; margin-bottom: 8px"
+                    class="sound-select block-w-full-mb-8"
                   >
                     <option value="endgame">Endgame</option>
                     <option value="bell">Bell</option>
                     <option value="towerbell">Tower Bell</option>
                     <option value="custom">Custom URL</option>
                   </select>
-                  <div
-                    class="custom-sound-option"
-                    style="display: none; width: 100%"
-                  >
-                    <label
-                      for="custom-sound-url"
-                      style="display: block; margin-bottom: 4px"
+                  <div class="custom-sound-option">
+                    <label for="custom-sound-url" class="block-mb-4px"
                       >Custom Sound URL:</label
                     >
                     <input
                       type="text"
                       id="custom-sound-url"
                       placeholder="Paste direct .mp3 URL here"
-                      style="width: 100%"
+                      class="w-full"
+                      aria-label="Custom sound URL"
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data Management Section -->
+            <div class="settings-section">
+              <h3>Data Management</h3>
+              <p>Export, import, backup, and restore your application data:</p>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Export Data</div>
+                  <div class="setting-description">
+                    Download all your application data as a JSON file for backup
+                    or transfer to another device.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="export-data-btn" class="button btn-sm">
+                    Export Data
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Import Data</div>
+                  <div class="setting-description">
+                    Import data from a previously exported JSON file. This will
+                    merge with existing data.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="import-data-btn" class="button btn-sm">
+                    Import Data
+                  </button>
+                  <input
+                    type="file"
+                    id="import-data-file"
+                    accept=".json"
+                    style="display: none"
+                  />
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Create Backup</div>
+                  <div class="setting-description">
+                    Create an automatic backup stored locally. Only the last 5
+                    backups are kept.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="backup-data-btn" class="button btn-sm">
+                    Create Backup
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Restore from Backup</div>
+                  <div class="setting-description">
+                    Restore data from a backup file. This will overwrite
+                    existing data.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="restore-data-btn" class="button btn-sm">
+                    Restore Backup
+                  </button>
+                  <input
+                    type="file"
+                    id="restore-data-file"
+                    accept=".json"
+                    style="display: none"
+                  />
+                </div>
+              </div>
+
+              <div class="setting-item danger">
+                <div class="setting-info">
+                  <div class="setting-label">Clear All Data</div>
+                  <div class="setting-description">
+                    Permanently delete ALL application data. This action cannot
+                    be undone.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="clear-data-btn" class="button btn-sm btn-danger">
+                    Clear All Data
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Monitoring Section -->
+            <div class="settings-section">
+              <h3>Performance Monitoring</h3>
+              <p>Monitor application performance metrics and diagnostics:</p>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Performance Metrics</div>
+                  <div class="setting-description">
+                    View real-time performance metrics including load times,
+                    memory usage, and Core Web Vitals.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="view-metrics-btn" class="button btn-sm">
+                    View Metrics
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Export Performance Data</div>
+                  <div class="setting-description">
+                    Download performance metrics as JSON for analysis.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="export-metrics-btn" class="button btn-sm">
+                    Export Data
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Reset Metrics</div>
+                  <div class="setting-description">
+                    Clear all collected performance metrics and start fresh.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <button id="reset-metrics-btn" class="button btn-sm">
+                    Reset Metrics
+                  </button>
+                </div>
+              </div>
+
+              <!-- Performance Metrics Display -->
+              <div
+                id="performance-metrics"
+                class="performance-metrics"
+                style="display: none"
+              >
+                <h4>Current Metrics</h4>
+                <div id="metrics-grid" class="metrics-grid">
+                  <!-- Metrics will be populated here -->
                 </div>
               </div>
             </div>
@@ -661,7 +863,7 @@
             <a href="terms.html">Terms of Use</a> &bull;
             <a href="contact.html">Contact Us</a>
           </p>
-          <div class="build-date" style="font-size: 0.9em; color: #888">
+          <div class="build-date">
             Last updated:
             <!--BUILD_DATE-->
           </div>

@@ -89,7 +89,7 @@ export function formatNumber(root = document) {
   const copyButton = getElement(root, 'copyPatternBtn');
   const resultDiv = getElement(root, 'patternResult');
   if (!inputEl || !resultDiv) return;
-  try { console.log('PATTERNS: formatNumber invoked for root', root && (root.id || root.tagName)); } catch (e) {}
+  
   const originalDigits = (inputEl.value || '').replace(/\D/g, '');
   const result = formatDigits(originalDigits);
 
@@ -256,7 +256,7 @@ export async function pasteFromClipboard(providedText, root = document) {
   if (text && numberInputLocal) {
     const normalized = normalizeNumber(text);
     numberInputLocal.value = normalized || text;
-    try { console.log('[patterns] pasteFromClipboard calling formatNumber', { rootId: root && root.id, value: numberInputLocal.value }); } catch (e) {}
+    
     formatNumber(root);
     return normalized || text;
   }
@@ -283,23 +283,23 @@ export function attachPatternEventListeners(root = document) {
 
   const formatTabBtn = root.querySelector('[data-pattern-tab="format-tab"]');
   const patternsTabBtn = root.querySelector('[data-pattern-tab="patterns-tab"]');
-  try { if (formatTabBtn) formatTabBtn.addEventListener('click', (event) => openPatternTab('format-tab', event, root)); } catch (e) { console.log('[patterns] failed to attach formatTabBtn listener', e && (e.message || e)); }
-  try { if (patternsTabBtn) patternsTabBtn.addEventListener('click', (event) => openPatternTab('patterns-tab', event, root)); } catch (e) { console.log('[patterns] failed to attach patternsTabBtn listener', e && (e.message || e)); }
+  try { if (formatTabBtn) formatTabBtn.addEventListener('click', (event) => openPatternTab('format-tab', event, root)); } catch (e) { }
+  try { if (patternsTabBtn) patternsTabBtn.addEventListener('click', (event) => openPatternTab('patterns-tab', event, root)); } catch (e) { }
 
   // Inputs and buttons scoped to the root
   const numberInput = getElement(root, 'patternNumberInput');
   const copyBtn = getElement(root, 'copyPatternBtn');
 
   if (numberInput) {
-    try { numberInput.addEventListener('input', () => formatNumber(root)); } catch (e) { console.log('[patterns] failed to attach numberInput listener', e && (e.message || e)); }
+    try { numberInput.addEventListener('input', () => formatNumber(root)); } catch (e) { }
   }
   if (copyBtn) {
-    try { copyBtn.addEventListener('click', () => copyResult(root)); } catch (e) { console.log('[patterns] failed to attach copyBtn listener', e && (e.message || e)); }
+    try { copyBtn.addEventListener('click', () => copyResult(root)); } catch (e) { }
   }
 
   const pasteBtn = getElement(root, 'pastePatternBtn');
   if (pasteBtn) {
-    try { pasteBtn.addEventListener('click', () => { pasteFromClipboard(undefined, root); }); } catch (e) { console.log('[patterns] failed to attach pasteBtn listener', e && (e.message || e)); }
+    try { pasteBtn.addEventListener('click', () => { pasteFromClipboard(undefined, root); }); } catch (e) { }
     // Tooltip show/hide for accessibility
     const tooltip = pasteBtn.closest('.tooltip-wrapper')?.querySelector('.tooltip-text');
     if (tooltip) {
@@ -324,7 +324,7 @@ export function attachPatternEventListeners(root = document) {
 
   const formatBtn = getElement(root, 'formatPatternBtn');
   if (formatBtn) {
-    try { formatBtn.addEventListener('click', () => formatNumber(root)); } catch (e) { console.log('[patterns] failed to attach formatBtn listener', e && (e.message || e)); }
+    try { formatBtn.addEventListener('click', () => formatNumber(root)); } catch (e) { }
   }
 
   const clearBtn = getElement(root, 'clearPatternBtn');
@@ -334,12 +334,12 @@ export function attachPatternEventListeners(root = document) {
 
   const addBtn = getElement(root, 'addPatternBtn');
   if (addBtn) {
-    try { addBtn.addEventListener('click', addPattern); } catch (e) { console.log('[patterns] failed to attach addBtn listener', e && (e.message || e)); }
+    try { addBtn.addEventListener('click', addPattern); } catch (e) { }
   }
   try {
     if (root && root.setAttribute) {
       root.setAttribute('data-patterns-attached', 'true');
-      try { console.log('PATTERNS: attachPatternEventListeners completed', root && (root.id || root.tagName)); } catch (e) {}
+      
     }
   } catch (e) {}
 }

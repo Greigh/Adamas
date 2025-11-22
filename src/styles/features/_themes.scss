@@ -53,9 +53,11 @@ body {
   }
 
   // Override any remaining light mode styles
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--dark-border) var(--dark-bg);
+  @supports (scrollbar-width: thin) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--dark-border) var(--dark-bg);
+    }
   }
 
   *::-webkit-scrollbar {

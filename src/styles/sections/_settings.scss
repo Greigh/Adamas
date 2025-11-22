@@ -294,9 +294,9 @@
 
   // Timer alert sound dropdown (Safari-friendly)
   #timer-alert-sound {
-    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    appearance: none;
     background: var(--white)
       url('data:image/svg+xml;utf8,<svg fill="%23475569" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
       no-repeat right 0.75rem center/1.25em 1.25em;
@@ -572,6 +572,124 @@
   #settings-view {
     .settings-container {
       max-width: 1400px; // Even more space on very large screens
+    }
+  }
+}
+
+// Notification styles for data management
+.notification {
+  position: fixed;
+  top: map.get($spacing, 4);
+  right: map.get($spacing, 4);
+  padding: map.get($spacing, 3) map.get($spacing, 4);
+  border-radius: map.get($radius, lg);
+  color: white;
+  font-weight: map.get($font-weights, medium);
+  z-index: 1000;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: slideInRight 0.3s ease-out;
+
+  &.notification-success {
+    background: var(--success-green);
+  }
+
+  &.notification-error {
+    background: var(--error-red);
+  }
+
+  &.notification-info {
+    background: var(--primary-blue);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Performance metrics styles
+.performance-metrics {
+  margin-top: map.get($spacing, 6);
+  padding: map.get($spacing, 4);
+  background: var(--gray-50);
+  border-radius: map.get($radius, lg);
+  border: 1px solid var(--gray-200);
+
+  h4 {
+    margin: 0 0 map.get($spacing, 4) 0;
+    color: var(--gray-800);
+    font-size: map.get($font-sizes, lg);
+    font-weight: map.get($font-weights, semibold);
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: map.get($spacing, 3);
+  }
+
+  .metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: map.get($spacing, 3);
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: map.get($radius, md);
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--primary-blue);
+      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
+    }
+
+    .metric-label {
+      font-weight: map.get($font-weights, medium);
+      color: var(--gray-700);
+      font-size: map.get($font-sizes, sm);
+    }
+
+    .metric-value {
+      font-family: $font-family-mono;
+      font-weight: map.get($font-weights, bold);
+      color: var(--primary-blue);
+      font-size: map.get($font-sizes, base);
+    }
+  }
+}
+
+// Dark mode adjustments
+body.dark-mode {
+  .performance-metrics {
+    background: var(--gray-800);
+    border-color: var(--gray-700);
+
+    h4 {
+      color: var(--gray-100);
+    }
+
+    .metric-item {
+      background: var(--gray-700);
+      border-color: var(--gray-600);
+
+      &:hover {
+        border-color: var(--primary-blue);
+      }
+
+      .metric-label {
+        color: var(--gray-300);
+      }
+
+      .metric-value {
+        color: var(--primary-blue);
+      }
     }
   }
 }

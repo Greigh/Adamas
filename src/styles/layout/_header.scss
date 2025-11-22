@@ -49,6 +49,7 @@
   cursor: pointer;
   transition: map.get($transitions, base);
   outline: none;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 

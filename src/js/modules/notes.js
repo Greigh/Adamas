@@ -136,41 +136,53 @@ export function renderNotes() {
 }
 
 export function setupNotesEventListeners() {
-  const addNoteBtn = document.getElementById('add-note-btn');
   const notesInput = document.getElementById('notes-input');
+  const addNoteBtn = document.getElementById('add-note-btn');
+  const notesFeed = document.getElementById('notes-feed');
+  const searchInput = document.getElementById('notes-search');
+  const clearSearchBtn = document.getElementById('clear-search-btn');
 
+  // Local addNote function that gets text from input
+  function addNote() {
+    if (notesInput && notesInput.value.trim()) {
+      const text = notesInput.value.trim();
+      notesInput.value = ''; // Clear input after adding
+      window.addNote(text); // Call global addNote function
+    }
+  }
+
+  // Add note functionality
   if (addNoteBtn && notesInput) {
-    addNoteBtn.addEventListener('click', () => {
-      const noteText = notesInput.value.trim();
-      if (noteText) {
-        const notes = loadNotes();
-        notes.unshift({
-          text: noteText,
-          timestamp: new Date().toISOString(),
-          editing: false,
-        });
-        saveNotes(notes);
-        renderNotes();
-        notesInput.value = '';
-      }
-    });
-
-    notesInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && e.ctrlKey) {
-        addNoteBtn.click();
+    addNoteBtn.addEventListener('click', addNote);
+    notesInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addNote();
       }
     });
   }
 
-  const clearNotesBtn = document.getElementById('clear-notes-btn');
-  if (clearNotesBtn) {
-    clearNotesBtn.addEventListener('click', () => {
-      if (confirm('Clear all notes? This cannot be undone.')) {
-        saveNotes([]);
-        renderNotes();
+  // Search functionality
+  if (searchInput) {
+    searchInput.addEventListener('input', filterNotes);
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        filterNotes();
+        searchInput.blur();
       }
     });
   }
+
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      filterNotes();
+    });
+  }
+
+  // Load and display existing notes
+  loadNotes();
 }
 
 export class NotesInstance {

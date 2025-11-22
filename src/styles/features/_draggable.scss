@@ -22,6 +22,8 @@
 
 .drag-handle {
   cursor: grab;
+  -webkit-user-select: none;
+  -moz-user-select: none;
   user-select: none;
   padding: map.get($spacing, 2);
   border-radius: map.get($radius, base);

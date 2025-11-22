@@ -149,10 +149,13 @@ input[type="radio"] {
     height: 4px;
     background: var(--gray-200);
     border-radius: map.get($radius, full);
+    -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
     cursor: pointer;
 
     &::-webkit-slider-thumb {
+      -webkit-appearance: none;
       appearance: none;
       width: 16px;
       height: 16px;

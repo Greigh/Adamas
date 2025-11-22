@@ -49,6 +49,116 @@
 .rounded-xl { border-radius: map.get($radius, xl); }
 .rounded-full { border-radius: map.get($radius, full); }
 
+// Width utilities
+.w-full { width: 100%; }
+
+// Container utilities
+.max-w-600 { 
+  max-width: 600px; 
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auto-margin { 
+  margin: 2rem auto; 
+}
+
+// Build date styles
+.build-date {
+  font-size: 0.9em;
+  color: var(--gray-400);
+}
+
+// Message utilities
+.success-message {
+  display: none;
+  margin-top: 1rem;
+  color: var(--success);
+}
+
+.error-message {
+  display: none;
+  margin-top: 1rem;
+  color: var(--error);
+}
+
+// Flex gap utilities
+.flex-gap-10 {
+  display: flex;
+  gap: 10px;
+}
+
+// Margin utilities extended
+.mb-2 { margin-bottom: map.get($spacing, 2); }
+.mb-1 { margin-bottom: map.get($spacing, 1); }
+.mb-10 { margin-bottom: 10px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-4px { margin-bottom: 4px; }
+
+// Display utilities with width
+.block-w-full {
+  display: block;
+  width: 100%;
+}
+
+.block-w-full-mb-8 {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+// Tooltip wrapper
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background: var(--gray-900);
+  color: var(--white);
+  text-align: center;
+  border-radius: 4px;
+  padding: 6px 8px;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-md);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--gray-900) transparent transparent transparent;
+  }
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+// Custom sound option
+.custom-sound-option {
+  display: none;
+  width: 100%;
+}
+
+.block-mb-4px {
+  display: block;
+  margin-bottom: 4px;
+}
+
 // Shadow utilities
 .shadow-sm { box-shadow: var(--shadow-sm); }
 .shadow-md { box-shadow: var(--shadow-md); }

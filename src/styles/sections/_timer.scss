@@ -205,7 +205,7 @@
         cursor: pointer;
 
         &:hover {
-          background: color.adjust(#dc2626, $lightness: -10%);
+          background: #b91c1c; // Darker red
         }
       }
 
@@ -315,7 +315,7 @@
     background-color: var(--error);
 
     &:hover {
-      background-color: color.adjust(#dc2626, $lightness: -10%);
+      background-color: #b91c1c; // Darker red
     }
   }
 
@@ -727,6 +727,173 @@
       .timer-display {
         background: rgba(220, 38, 38, 0.15);
       }
+    }
+  }
+}
+
+// Multiple Timers Section
+.multiple-timers {
+  margin-top: map.get($spacing, 6);
+  padding-top: map.get($spacing, 6);
+  border-top: 1px solid var(--gray-200);
+
+  .timers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 4);
+
+    h4 {
+      margin: 0;
+      color: var(--gray-800);
+      font-size: map.get($font-sizes, lg);
+      font-weight: map.get($font-weights, semibold);
+    }
+  }
+
+  .timers-container {
+    display: grid;
+    gap: map.get($spacing, 4);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .timer-instance {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+    position: relative;
+
+    .timer-instance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: map.get($spacing, 3);
+
+      .timer-instance-title {
+        font-weight: map.get($font-weights, semibold);
+        color: var(--gray-800);
+        font-size: map.get($font-sizes, base);
+
+        input {
+          border: 1px solid var(--gray-300);
+          border-radius: map.get($radius, sm);
+          padding: map.get($spacing, 1);
+          font-size: map.get($font-sizes, sm);
+          width: 120px;
+        }
+      }
+
+      .timer-instance-controls {
+        display: flex;
+        gap: map.get($spacing, 2);
+
+        .timer-instance-btn {
+          padding: map.get($spacing, 1) map.get($spacing, 2);
+          border: 1px solid var(--gray-300);
+          border-radius: map.get($radius, sm);
+          background: white;
+          color: var(--gray-700);
+          font-size: map.get($font-sizes, xs);
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+          }
+
+          &.start {
+            background: var(--success-green);
+            color: white;
+            border-color: var(--success-green);
+
+            &:hover {
+              background: #16a34a; // Darker green
+            }
+          }
+
+          &.pause {
+            background: var(--warning-orange);
+            color: white;
+            border-color: var(--warning-orange);
+
+            &:hover {
+              background: #c2410c; // Darker orange
+            }
+          }
+
+          &.stop {
+            background: var(--error-red);
+            color: white;
+            border-color: var(--error-red);
+
+            &:hover {
+              background: #b91c1c; // Darker red
+            }
+          }
+
+          &.delete {
+            background: var(--error-red);
+            color: white;
+            border-color: var(--error-red);
+
+            &:hover {
+              background: #b91c1c; // Darker red
+            }
+          }
+        }
+      }
+    }
+
+    .timer-instance-display {
+      text-align: center;
+      margin-bottom: map.get($spacing, 3);
+
+      .timer-instance-time {
+        font-family: $font-family-mono;
+        font-size: map.get($font-sizes, '2xl');
+        font-weight: map.get($font-weights, bold);
+        color: var(--primary-blue);
+        margin-bottom: map.get($spacing, 1);
+      }
+
+      .timer-instance-status {
+        font-size: map.get($font-sizes, sm);
+        color: var(--gray-600);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    .timer-instance-details {
+      font-size: map.get($font-sizes, xs);
+      color: var(--gray-500);
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: map.get($spacing, 1);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    &.running {
+      border-color: var(--success-green);
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    &.paused {
+      border-color: var(--warning-orange);
+      background: rgba(251, 146, 60, 0.05);
+    }
+
+    &.expired {
+      border-color: var(--error-red);
+      background: rgba(220, 38, 38, 0.05);
     }
   }
 }

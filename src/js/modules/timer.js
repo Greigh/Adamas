@@ -5,6 +5,150 @@ import { saveData, loadData } from './storage.js';
 import { playTimerExpiredSound, stopTimerSound } from '../utils/audio.js';
 import { formatTime } from '../utils/helpers.js';
 
+// Timer instances management
+export const timerInstances = new Map();
+
+// Create a new timer instance
+export function createTimerInstance(id = null) {
+  if (!id) {
+    id = 'timer-' + Date.now();
+  }
+
+  if (timerInstances.has(id)) {
+    return timerInstances.get(id);
+  }
+
+  const timer = {
+    id,
+    seconds: 0,
+    isRunning: false,
+    interval: null,
+    startTime: null,
+    pausedTime: 0,
+    category: 'General',
+    description: '',
+    history: [],
+    onTick: null,
+    onComplete: null
+  };
+
+  timerInstances.set(id, timer);
+  return timer;
+}
+
+// Get timer instance
+export function getTimerInstance(id) {
+  return timerInstances.get(id);
+}
+
+// Remove timer instance
+export function removeTimerInstance(id) {
+  const timer = timerInstances.get(id);
+  if (timer) {
+    if (timer.interval) {
+      clearInterval(timer.interval);
+    }
+    timerInstances.delete(id);
+  }
+}
+
+// Start timer
+export function startTimer(id = 'main') {
+  const timer = getTimerInstance(id) || createTimerInstance(id);
+
+  if (timer.isRunning) return;
+
+  timer.isRunning = true;
+  timer.startTime = Date.now() - (timer.pausedTime * 1000);
+
+  timer.interval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - timer.startTime) / 1000);
+    timer.seconds = elapsed;
+
+    if (timer.onTick) {
+      timer.onTick(timer.seconds);
+    }
+
+    // Check for warnings and alerts
+    checkTimerAlerts(timer);
+  }, 1000);
+}
+
+// Pause timer
+export function pauseTimer(id = 'main') {
+  const timer = getTimerInstance(id);
+  if (!timer || !timer.isRunning) return;
+
+  timer.isRunning = false;
+  timer.pausedTime = timer.seconds;
+  clearInterval(timer.interval);
+}
+
+// Stop timer
+export function stopTimer(id = 'main') {
+  const timer = getTimerInstance(id);
+  if (!timer) return;
+
+  timer.isRunning = false;
+  timer.pausedTime = 0;
+  clearInterval(timer.interval);
+
+  // Add to history
+  if (timer.seconds > 0) {
+    timer.history.push({
+      duration: timer.seconds,
+      category: timer.category,
+      description: timer.description,
+      endTime: new Date().toISOString()
+    });
+  }
+
+  timer.seconds = 0;
+  timer.startTime = null;
+
+  if (timer.onComplete) {
+    timer.onComplete(timer);
+  }
+}
+
+// Get formatted time
+// Using formatTime from helpers.js
+
+// Check for timer alerts
+function checkTimerAlerts(timer) {
+  const { appSettings } = window;
+  if (!appSettings) return;
+
+  const warningTime = appSettings.timerWarningTime || 300;
+  const remaining = warningTime - timer.seconds;
+
+  if (remaining === 60 && appSettings.timerShowNotifications) {
+    showNotification('Timer Warning', '1 minute remaining');
+  }
+
+  if (remaining === 0) {
+    playAlertSound();
+    if (appSettings.timerShowNotifications) {
+      showNotification('Timer Alert', 'Time is up!');
+    }
+  }
+}
+
+// Play alert sound
+function playAlertSound() {
+  // Use the audio utility if available
+  if (window.playAlertSound) {
+    window.playAlertSound();
+  }
+}
+
+// Show notification
+function showNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body });
+  }
+}
+
 // Timer state object
 let holdTimer;
 
@@ -252,7 +396,7 @@ function parseTimeInput(input) {
 }
 
 // Modify the startTimer function to ensure proper countdown startup
-export function startTimer() {
+export function startHoldTimer() {
   stopTimerSound(); // Stop any playing sounds when starting/resuming
 
   if (!holdTimer.isRunning) {
@@ -290,8 +434,8 @@ export function startTimer() {
   updateTimerDisplay();
 }
 
-// Export pauseTimer function
-export function pauseTimer() {
+// Export pauseHoldTimer function
+export function pauseHoldTimer() {
   if (holdTimer.isRunning && !holdTimer.isPaused) {
     holdTimer.isPaused = true;
     holdTimer.pauseStartTime = Date.now();
@@ -584,8 +728,8 @@ export function setupCountdownControls() {
   }
 
   // The redundant logic for setting contenteditable and adding listeners has been removed.
-  // This is now handled exclusively by the updateTimerDisplay() function.
 }
+  // This is now handled exclusively by the updateTimerDisplay() function.
 
 // Function to update timer mode display
 export function updateTimerModeDisplay() {
@@ -678,7 +822,7 @@ function updateTimerButtons() {
 
 // Export the setupTimerEventListeners function
 export function setupTimerEventListeners() {
-  document.getElementById('start-timer')?.addEventListener('click', startTimer);
+  document.getElementById('start-timer')?.addEventListener('click', startHoldTimer);
   document.getElementById('pause-timer')?.addEventListener('click', pauseTimer);
   document.getElementById('reset-timer')?.addEventListener('click', resetTimer);
   document
@@ -735,4 +879,254 @@ window.holdTimer = holdTimer;
 export function ensureFormFixerExists() {
   // This is a utility function to help identify if the form-fixer script exists
   return true;
+}
+
+// Multiple Timers Management
+let nextTimerId = 1;
+
+// Initialize multiple timers functionality
+export function initializeMultipleTimers() {
+  const addTimerBtn = document.getElementById('add-timer-btn');
+  if (addTimerBtn) {
+    addTimerBtn.addEventListener('click', addNewTimerInstance);
+  }
+
+  // Load saved timers
+  loadSavedTimers();
+}
+
+// Add a new timer instance to the UI
+function addNewTimerInstance() {
+  const timerId = `timer-${nextTimerId++}`;
+  const timer = createTimerInstance(timerId);
+
+  // Set default properties
+  timer.category = 'General';
+  timer.description = `Timer ${nextTimerId - 1}`;
+
+  createTimerUI(timer);
+  saveTimerInstances();
+}
+
+// Create UI for a timer instance
+function createTimerUI(timer) {
+  const container = document.getElementById('timers-container');
+  if (!container) return;
+
+  const timerElement = document.createElement('div');
+  timerElement.className = 'timer-instance';
+  timerElement.id = `timer-instance-${timer.id}`;
+
+  timerElement.innerHTML = `
+    <div class="timer-instance-header">
+      <div class="timer-instance-title">
+        <input type="text" value="${timer.description}" placeholder="Timer name" maxlength="20">
+      </div>
+      <div class="timer-instance-controls">
+        <button class="timer-instance-btn start" data-timer-id="${timer.id}">Start</button>
+        <button class="timer-instance-btn pause" data-timer-id="${timer.id}" disabled>Pause</button>
+        <button class="timer-instance-btn stop" data-timer-id="${timer.id}">Stop</button>
+        <button class="timer-instance-btn delete" data-timer-id="${timer.id}">×</button>
+      </div>
+    </div>
+    <div class="timer-instance-display">
+      <div class="timer-instance-time" id="time-${timer.id}">00:00</div>
+      <div class="timer-instance-status" id="status-${timer.id}">Ready</div>
+    </div>
+    <div class="timer-instance-details">
+      <div class="detail-row">
+        <span>Category:</span>
+        <select id="category-${timer.id}" class="timer-category">
+          <option value="General">General</option>
+          <option value="Call">Call</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Break">Break</option>
+          <option value="Task">Task</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <span>Sessions:</span>
+        <span id="sessions-${timer.id}">0</span>
+      </div>
+      <div class="detail-row">
+        <span>Total Time:</span>
+        <span id="total-${timer.id}">00:00</span>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(timerElement);
+
+  // Set up event listeners
+  setupTimerInstanceListeners(timerElement, timer);
+
+  // Set initial category
+  const categorySelect = timerElement.querySelector(`#category-${timer.id}`);
+  categorySelect.value = timer.category;
+
+  updateTimerInstanceDisplay(timer);
+}
+
+// Set up event listeners for a timer instance
+function setupTimerInstanceListeners(element, timer) {
+  const titleInput = element.querySelector('.timer-instance-title input');
+  const startBtn = element.querySelector('.timer-instance-btn.start');
+  const pauseBtn = element.querySelector('.timer-instance-btn.pause');
+  const stopBtn = element.querySelector('.timer-instance-btn.stop');
+  const deleteBtn = element.querySelector('.timer-instance-btn.delete');
+  const categorySelect = element.querySelector('.timer-category');
+
+  // Title change
+  titleInput.addEventListener('input', (e) => {
+    timer.description = e.target.value;
+    saveTimerInstances();
+  });
+
+  // Category change
+  categorySelect.addEventListener('change', (e) => {
+    timer.category = e.target.value;
+    saveTimerInstances();
+  });
+
+  // Start button
+  startBtn.addEventListener('click', () => {
+    startTimer(timer.id);
+    updateTimerInstanceButtons(timer);
+  });
+
+  // Pause button
+  pauseBtn.addEventListener('click', () => {
+    if (timer.isRunning) {
+      pauseTimer(timer.id);
+    } else {
+      startTimer(timer.id);
+    }
+    updateTimerInstanceButtons(timer);
+  });
+
+  // Stop button
+  stopBtn.addEventListener('click', () => {
+    stopTimer(timer.id);
+    updateTimerInstanceButtons(timer);
+    updateTimerInstanceDisplay(timer);
+  });
+
+  // Delete button
+  deleteBtn.addEventListener('click', () => {
+    if (confirm(`Delete timer "${timer.description}"?`)) {
+      removeTimerInstance(timer.id);
+      element.remove();
+      saveTimerInstances();
+    }
+  });
+
+  // Set up timer callbacks
+  timer.onTick = (seconds) => {
+    updateTimerInstanceDisplay(timer);
+  };
+
+  timer.onComplete = (completedTimer) => {
+    updateTimerInstanceDisplay(completedTimer);
+    updateTimerInstanceButtons(completedTimer);
+  };
+}
+
+// Update timer instance display
+function updateTimerInstanceDisplay(timer) {
+  const timeElement = document.getElementById(`time-${timer.id}`);
+  const statusElement = document.getElementById(`status-${timer.id}`);
+  const sessionsElement = document.getElementById(`sessions-${timer.id}`);
+  const totalElement = document.getElementById(`total-${timer.id}`);
+  const timerElement = document.getElementById(`timer-instance-${timer.id}`);
+
+  if (!timeElement || !statusElement) return;
+
+  // Update time display
+  timeElement.textContent = formatTime(timer.seconds);
+
+  // Update status
+  let status = 'Ready';
+  if (timer.isRunning) {
+    status = 'Running';
+  } else if (timer.seconds > 0) {
+    status = 'Paused';
+  }
+  statusElement.textContent = status;
+
+  // Update sessions count
+  if (sessionsElement) {
+    sessionsElement.textContent = timer.history.length;
+  }
+
+  // Update total time
+  if (totalElement) {
+    const totalSeconds = timer.history.reduce((sum, session) => sum + session.duration, 0);
+    totalElement.textContent = formatTime(totalSeconds);
+  }
+
+  // Update CSS classes
+  if (timerElement) {
+    timerElement.classList.remove('running', 'paused', 'expired');
+    if (timer.isRunning) {
+      timerElement.classList.add('running');
+    } else if (timer.seconds > 0) {
+      timerElement.classList.add('paused');
+    }
+  }
+}
+
+// Update timer instance buttons
+function updateTimerInstanceButtons(timer) {
+  const startBtn = document.querySelector(`[data-timer-id="${timer.id}"].start`);
+  const pauseBtn = document.querySelector(`[data-timer-id="${timer.id}"].pause`);
+  const stopBtn = document.querySelector(`[data-timer-id="${timer.id}"].stop`);
+
+  if (!startBtn || !pauseBtn || !stopBtn) return;
+
+  if (timer.isRunning) {
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    pauseBtn.textContent = 'Pause';
+    stopBtn.disabled = false;
+  } else {
+    startBtn.disabled = false;
+    pauseBtn.disabled = timer.seconds === 0;
+    pauseBtn.textContent = timer.seconds > 0 ? 'Resume' : 'Pause';
+    stopBtn.disabled = timer.seconds === 0;
+  }
+}
+
+// Save timer instances to storage
+function saveTimerInstances() {
+  const timersData = {};
+  timerInstances.forEach((timer, id) => {
+    timersData[id] = {
+      id: timer.id,
+      category: timer.category,
+      description: timer.description,
+      history: timer.history
+    };
+  });
+  saveData('multipleTimers', timersData);
+}
+
+// Load saved timer instances
+function loadSavedTimers() {
+  const savedTimers = loadData('multipleTimers');
+  if (!savedTimers) return;
+
+  Object.values(savedTimers).forEach(timerData => {
+    const timer = createTimerInstance(timerData.id);
+    timer.category = timerData.category || 'General';
+    timer.description = timerData.description || 'Timer';
+    timer.history = timerData.history || [];
+    createTimerUI(timer);
+  });
+
+  // Update next timer ID
+  const maxId = Math.max(...Object.keys(savedTimers).map(id => {
+    const match = id.match(/timer-(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  }), 0);
+  nextTimerId = maxId + 1;
 }

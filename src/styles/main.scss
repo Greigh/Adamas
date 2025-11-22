@@ -94,3 +94,110 @@ body {
     font-size: map.get(variables.$font-sizes, sm);
   }
 }
+
+// Update notification styles
+.update-notification {
+  position: fixed;
+  top: map.get(variables.$spacing, 4);
+  right: map.get(variables.$spacing, 4);
+  z-index: 1000;
+  max-width: 400px;
+  background: var(--gray-900);
+  color: white;
+  border-radius: map.get(variables.$radius, lg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+
+  .update-notification-content {
+    display: flex;
+    align-items: center;
+    gap: map.get(variables.$spacing, 3);
+    padding: map.get(variables.$spacing, 4);
+  }
+
+  .update-notification-icon {
+    font-size: map.get(variables.$font-sizes, '2xl');
+    flex-shrink: 0;
+  }
+
+  .update-notification-text {
+    flex: 1;
+  }
+
+  .update-notification-title {
+    font-weight: map.get(variables.$font-weights, semibold);
+    font-size: map.get(variables.$font-sizes, base);
+    margin-bottom: map.get(variables.$spacing, 1);
+  }
+
+  .update-notification-message {
+    font-size: map.get(variables.$font-sizes, sm);
+    color: var(--gray-300);
+  }
+
+  .update-notification-actions {
+    display: flex;
+    flex-direction: column;
+    gap: map.get(variables.$spacing, 2);
+  }
+
+  .update-btn {
+    padding: map.get(variables.$spacing, 2) map.get(variables.$spacing, 3);
+    border: none;
+    border-radius: map.get(variables.$radius, sm);
+    font-size: map.get(variables.$font-sizes, sm);
+    font-weight: map.get(variables.$font-weights, medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.update-refresh {
+      background: var(--primary-blue);
+      color: white;
+
+      &:hover {
+        background: #1565c0; // Darker blue
+      }
+    }
+
+    &.update-dismiss {
+      background: var(--gray-700);
+      color: var(--gray-200);
+
+      &:hover {
+        background: var(--gray-600);
+      }
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Dark mode adjustments
+body.dark-mode {
+  .update-notification {
+    background: var(--gray-800);
+    color: var(--gray-100);
+
+    .update-notification-message {
+      color: var(--gray-400);
+    }
+
+    .update-btn.update-dismiss {
+      background: var(--gray-600);
+      color: var(--gray-300);
+
+      &:hover {
+        background: var(--gray-500);
+      }
+    }
+  }
+}

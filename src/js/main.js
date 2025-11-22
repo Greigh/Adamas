@@ -16,6 +16,8 @@ import {
   openSectionInFloatingWindow,
   openSectionInBrowserPopup,
 } from './modules/draggable.js';
+import { initFloating, getFloatingManager } from './modules/floating.js';
+import { setupKeyboardShortcuts } from './utils/keyboard-shortcuts.js';
 
 // Tab navigation functions
 function openNotesTab() {
@@ -109,18 +111,55 @@ function handleResize() {
 
 // Show the main app content
 function showMainApp() {
-  document.getElementById('main-app').style.display = '';
-  document.getElementById('settings-view').style.display = 'none';
+  document.getElementById('main-app').classList.remove('hidden');
+  document.getElementById('settings-view').classList.add('hidden');
   document.getElementById('main-tab')?.classList.add('active');
   document.getElementById('settings-tab')?.classList.remove('active');
 }
 
 // Show settings panel
 function showSettings() {
-  document.getElementById('main-app').style.display = 'none';
-  document.getElementById('settings-view').style.display = '';
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('settings-view').classList.remove('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.add('active');
+}
+
+// Show service worker update notification
+function showUpdateNotification() {
+  const notification = document.createElement('div');
+  notification.className = 'update-notification';
+  notification.innerHTML = `
+    <div class="update-notification-content">
+      <div class="update-notification-icon">🔄</div>
+      <div class="update-notification-text">
+        <div class="update-notification-title">Update Available</div>
+        <div class="update-notification-message">A new version of the app is available.</div>
+      </div>
+      <div class="update-notification-actions">
+        <button class="update-btn update-refresh">Refresh</button>
+        <button class="update-btn update-dismiss">Later</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Add event listeners
+  notification.querySelector('.update-refresh').addEventListener('click', () => {
+    window.location.reload();
+  });
+
+  notification.querySelector('.update-dismiss').addEventListener('click', () => {
+    notification.remove();
+  });
+
+  // Auto-dismiss after 10 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.remove();
+    }
+  }, 10000);
 }
 
 // Secondary modules loading (lazy-loaded)
@@ -131,6 +170,7 @@ function loadSecondaryModules() {
       .then((module) => {
         module.initializeTimer();
         module.setupTimerEventListeners();
+        module.initializeMultipleTimers();
       })
       .catch((err) => {
         console.error('Error loading timer module:', err);
@@ -282,6 +322,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up all event listeners for the application
     setupAllEventListeners();
 
+    // Initialize keyboard shortcuts
+    setupKeyboardShortcuts();
+
+    // Initialize the enhanced floating system
+    initFloating();
+    
+    // Make floating manager globally available
+    window.floatingManager = getFloatingManager();
+
     // Ensure patterns module is available and wired (eagerly attach listeners)
     try {
       if (patternsModule && typeof patternsModule.setupPatternEventListeners === 'function') {
@@ -320,6 +369,30 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up resize handler for responsive behavior
     window.addEventListener('resize', handleResize);
     handleResize(); // Call once to set initial responsive state
+
+    // Register service worker for offline functionality
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered successfully:', registration.scope);
+
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New version available
+                  showUpdateNotification();
+                }
+              });
+            }
+          });
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
 
     // Show "app ready" indication if needed
     document.body.classList.add('app-ready');
