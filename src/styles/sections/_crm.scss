@@ -1,0 +1,239 @@
+// CRM Integration Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// CRM Integration Section
+#crm-integration {
+  .crm-config {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 4);
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: map.get($spacing, 2);
+
+      label {
+        font-weight: 500;
+        color: var(--text-color);
+        font-size: map.get($font-sizes, sm);
+      }
+
+      select {
+        padding: map.get($spacing, 2) map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--bg-color);
+        color: var(--text-color);
+
+        &:focus {
+          outline: none;
+          border-color: var(--primary-blue);
+        }
+      }
+    }
+  }
+
+  .crm-config {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+
+    .config-section {
+      margin-bottom: map.get($spacing, 4);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h4 {
+        margin: 0 0 map.get($spacing, 3) 0;
+        color: var(--text-color);
+        font-size: map.get($font-sizes, base);
+      }
+
+      .form-group {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: map.get($spacing, 3);
+        align-items: center;
+        margin-bottom: map.get($spacing, 3);
+
+        label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        input, select {
+          padding: map.get($spacing, 2) map.get($spacing, 3);
+          border: 1px solid var(--border-color);
+          border-radius: map.get($radius, base);
+          background: var(--bg-color);
+          color: var(--text-color);
+
+          &:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+          }
+        }
+      }
+    }
+  }
+
+  .customer-search {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+
+    .search-form {
+      display: flex;
+      gap: map.get($spacing, 3);
+      margin-bottom: map.get($spacing, 4);
+
+      input {
+        flex: 1;
+        padding: map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--bg-color);
+        color: var(--text-color);
+
+        &:focus {
+          outline: none;
+          border-color: var(--primary-blue);
+        }
+      }
+
+      .button {
+        padding: map.get($spacing, 3) map.get($spacing, 4);
+        white-space: nowrap;
+      }
+    }
+
+    .search-results {
+      .customer-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        margin-bottom: map.get($spacing, 2);
+        background: var(--bg-color);
+        cursor: pointer;
+
+        &:hover {
+          background: var(--hover-bg);
+        }
+
+        .customer-info {
+          h4 {
+            margin: 0 0 map.get($spacing, 1) 0;
+            color: var(--text-color);
+          }
+
+          .customer-details {
+            font-size: map.get($font-sizes, sm);
+            color: var(--text-muted);
+          }
+        }
+
+        .customer-actions {
+          display: flex;
+          gap: map.get($spacing, 2);
+
+          .button {
+            padding: map.get($spacing, 2) map.get($spacing, 3);
+            font-size: map.get($font-sizes, sm);
+          }
+        }
+      }
+    }
+  }
+
+  .recent-interactions {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+
+    .interaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: map.get($spacing, 3);
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .interaction-info {
+        h5 {
+          margin: 0 0 map.get($spacing, 1) 0;
+          color: var(--text-color);
+          font-size: map.get($font-sizes, base);
+        }
+
+        .interaction-meta {
+          font-size: map.get($font-sizes, sm);
+          color: var(--text-muted);
+        }
+      }
+
+      .interaction-status {
+        padding: map.get($spacing, 1) map.get($spacing, 2);
+        border-radius: map.get($radius, sm);
+        font-size: map.get($font-sizes, xs);
+        font-weight: 500;
+        text-transform: uppercase;
+
+        &.completed {
+          background: var(--success-color);
+          color: white;
+        }
+
+        &.pending {
+          background: var(--warning-color);
+          color: white;
+        }
+
+        &.failed {
+          background: var(--error-color);
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  #crm-integration {
+    .crm-config, .customer-search, .recent-interactions {
+      background: var(--card-bg-dark);
+      border-color: var(--border-color-dark);
+    }
+
+    .customer-item, .interaction-item {
+      background: var(--bg-color-dark);
+      border-color: var(--border-color-dark);
+
+      &:hover {
+        background: var(--hover-bg-dark);
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

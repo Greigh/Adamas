@@ -478,6 +478,286 @@
   }
 }
 
+// Multiple Timers Styles
+.multiple-timers {
+  margin-top: map.get($spacing, 6);
+  padding-top: map.get($spacing, 4);
+  border-top: 1px solid var(--border-color);
+
+  .timers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 4);
+
+    h4 {
+      margin: 0;
+      color: var(--text-color);
+      font-size: map.get($font-sizes, lg);
+      font-weight: 600;
+    }
+  }
+
+  .timers-container {
+    display: flex;
+    flex-direction: column;
+    gap: map.get($spacing, 4);
+  }
+}
+
+.timer-instance {
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-hover) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: map.get($radius, lg);
+  padding: map.get($spacing, 4);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: map.get($transitions, base);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
+    border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  &.running {
+    border-color: var(--success-color);
+
+    &::before {
+      background: linear-gradient(90deg, var(--success-color), var(--success-color-light));
+    }
+  }
+
+  &.paused {
+    border-color: var(--warning-color);
+
+    &::before {
+      background: linear-gradient(90deg, var(--warning-color), var(--warning-color-light));
+    }
+  }
+
+  &.expired {
+    border-color: var(--error-color);
+
+    &::before {
+      background: linear-gradient(90deg, var(--error-color), var(--error-color-light));
+    }
+  }
+}
+
+.timer-instance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: map.get($spacing, 3);
+  padding-bottom: map.get($spacing, 2);
+  border-bottom: 1px solid var(--border-color);
+
+  .timer-instance-title {
+    flex: 1;
+
+    input {
+      width: 100%;
+      padding: map.get($spacing, 1) map.get($spacing, 2);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, base);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: map.get($font-sizes, sm);
+      font-weight: 600;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+      }
+    }
+  }
+
+  .timer-instance-controls {
+    display: flex;
+    gap: map.get($spacing, 2);
+
+    .timer-instance-btn {
+      padding: map.get($spacing, 1) map.get($spacing, 3);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, base);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: map.get($font-sizes, xs);
+      font-weight: 600;
+      cursor: pointer;
+      transition: map.get($transitions, base);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &:hover {
+        background: var(--bg-hover);
+        transform: translateY(-1px);
+      }
+
+      &.start {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+
+        &:hover {
+          background: var(--success-color-dark);
+        }
+
+        &:disabled {
+          background: var(--text-muted);
+          border-color: var(--text-muted);
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+
+      &.pause {
+        background: var(--warning-color);
+        color: white;
+        border-color: var(--warning-color);
+
+        &:hover {
+          background: var(--warning-color-dark);
+        }
+
+        &:disabled {
+          background: var(--text-muted);
+          border-color: var(--text-muted);
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+
+      &.stop {
+        background: var(--error-color);
+        color: white;
+        border-color: var(--error-color);
+
+        &:hover {
+          background: var(--error-color-dark);
+        }
+
+        &:disabled {
+          background: var(--text-muted);
+          border-color: var(--text-muted);
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+
+      &.delete {
+        background: transparent;
+        color: var(--error-color);
+        border-color: var(--error-color);
+
+        &:hover {
+          background: var(--error-color);
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+.timer-instance-display {
+  text-align: center;
+  margin-bottom: map.get($spacing, 3);
+
+  .timer-instance-time {
+    font-size: map.get($font-sizes, '3xl');
+    font-weight: 700;
+    color: var(--primary-blue);
+    font-family: var(--font-family-mono);
+    margin-bottom: map.get($spacing, 1);
+  }
+
+  .timer-instance-status {
+    font-size: map.get($font-sizes, sm);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+}
+
+.timer-instance-details {
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: map.get($spacing, 1) 0;
+    font-size: map.get($font-sizes, sm);
+
+    span:first-child {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    span:last-child {
+      color: var(--text-color);
+      font-weight: 600;
+    }
+  }
+
+  select.timer-category {
+    padding: map.get($spacing, 1);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, base);
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-size: map.get($font-sizes, xs);
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+    }
+  }
+}
+
+// Dark mode styles
+[data-theme="dark"] {
+  .timer-instance {
+    .timer-instance-title input {
+      background: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-text);
+
+      &:focus {
+        border-color: var(--primary-blue);
+      }
+    }
+
+    .timer-instance-btn {
+      background: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-text);
+
+      &:hover {
+        background: var(--dark-bg-hover);
+      }
+    }
+  }
+
+  .timer-instance-details select.timer-category {
+    background: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+  }
+}
+
 // Animation for expired state
 @keyframes expired-pulse {
   0% {

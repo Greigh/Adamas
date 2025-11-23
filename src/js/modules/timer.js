@@ -886,6 +886,19 @@ let nextTimerId = 1;
 
 // Initialize multiple timers functionality
 export function initializeMultipleTimers() {
+  // Check if multiple timers are enabled in settings
+  const { appSettings } = window;
+  const multipleTimersEnabled = appSettings && appSettings.multipleTimers;
+
+  const multipleTimersSection = document.querySelector('.multiple-timers');
+  if (multipleTimersSection) {
+    multipleTimersSection.style.display = multipleTimersEnabled ? '' : 'none';
+  }
+
+  if (!multipleTimersEnabled) {
+    return; // Don't initialize if disabled
+  }
+
   const addTimerBtn = document.getElementById('add-timer-btn');
   if (addTimerBtn) {
     addTimerBtn.addEventListener('click', addNewTimerInstance);
@@ -897,6 +910,15 @@ export function initializeMultipleTimers() {
 
 // Add a new timer instance to the UI
 function addNewTimerInstance() {
+  const { appSettings } = window;
+  const maxTimers = (appSettings && appSettings.maxTimers) || 3;
+  const currentTimerCount = document.querySelectorAll('.timer-instance').length;
+
+  if (currentTimerCount >= maxTimers) {
+    alert(`Maximum of ${maxTimers} timers allowed.`);
+    return;
+  }
+
   const timerId = `timer-${nextTimerId++}`;
   const timer = createTimerInstance(timerId);
 

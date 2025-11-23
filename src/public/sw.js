@@ -76,6 +76,13 @@ self.addEventListener('fetch', (event) => {
   // Skip external requests
   if (!url.origin.includes(self.location.origin)) return;
 
+  // Skip webpack development files
+  if (url.pathname.includes('.hot-update.') ||
+      url.pathname.includes('__webpack_hmr') ||
+      url.pathname.startsWith('/sockjs-node/')) {
+    return;
+  }
+
   // Handle API requests differently
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(

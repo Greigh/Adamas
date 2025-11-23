@@ -22,6 +22,16 @@ export let appSettings = {
   showCallflow: true,
   showNotes: true,
   showHoldtimer: true,
+  showCalllogging: false,
+  showCrm: false,
+  showScripts: false,
+  showTasks: false,
+  showVoicerecording: false,
+  showCollaboration: false,
+  showWorkflows: false,
+  showAi: false,
+  showMultichannel: false,
+  showMobile: false,
   exportPatterns: true,
   exportSteps: true,
   exportNotes: true,
@@ -43,7 +53,7 @@ export let appSettings = {
   timerCustomSoundUrl: '',
   repeatAlertSound: true, // New setting for repeat alert sound
   customTitles: {},
-  layoutMode: 'grid',
+  layoutMode: 'vertical', // Layout mode: 'vertical' or 'grid'
   gridColumns: 2,
   gridSpacing: 24,
   savedLayouts: {},
@@ -95,6 +105,16 @@ export function applySettings() {
     'toggle-callflow': 'callflow',
     'toggle-notes': 'notes',
     'toggle-holdtimer': 'holdtimer',
+    'toggle-calllogging': 'calllogging',
+    'toggle-crm': 'crm',
+    'toggle-scripts': 'scripts',
+    'toggle-tasks': 'tasks',
+    'toggle-voicerecording': 'voicerecording',
+    'toggle-collaboration': 'collaboration',
+    'toggle-workflows': 'workflows',
+    'toggle-ai': 'ai',
+    'toggle-multichannel': 'multichannel',
+    'toggle-mobile': 'mobile',
   };
 
   Object.entries(toggles).forEach(([toggleId, section]) => {
@@ -171,6 +191,10 @@ export function applySettings() {
 
   // Apply layout settings
   applyLayout();
+  const layoutModeSelect = document.getElementById('layout-mode');
+  if (layoutModeSelect) {
+    layoutModeSelect.value = appSettings.layoutMode;
+  }
 
   // Apply instance settings
   const multipleTimers = document.getElementById('enable-multiple-timers');
@@ -196,6 +220,9 @@ export function applySettings() {
       option.style.display = appSettings.multipleNotes ? '' : 'none';
     }
   });
+
+  // Update multiple timers visibility
+  updateMultipleTimersVisibility(appSettings.multipleTimers);
 
   // Apply repeat alert sound mode
   if (repeatAlertSoundToggle) {
@@ -238,6 +265,16 @@ export function setupSettingsEventListeners() {
     'toggle-callflow',
     'toggle-notes',
     'toggle-holdtimer',
+    'toggle-calllogging',
+    'toggle-crm',
+    'toggle-scripts',
+    'toggle-tasks',
+    'toggle-voicerecording',
+    'toggle-collaboration',
+    'toggle-workflows',
+    'toggle-ai',
+    'toggle-multichannel',
+    'toggle-mobile',
   ];
   settingsToggles.forEach((toggleId) => {
     const toggle = document.getElementById(toggleId);
@@ -417,6 +454,16 @@ export function setupSettingsEventListeners() {
     });
   }
 
+  // Layout mode select
+  const layoutModeSelect = document.getElementById('layout-mode');
+  if (layoutModeSelect) {
+    layoutModeSelect.addEventListener('change', function () {
+      appSettings.layoutMode = this.value;
+      saveSettings(appSettings);
+      applyLayout();
+    });
+  }
+
   const resetLayoutBtn = document.getElementById('reset-layout-btn');
   if (resetLayoutBtn) {
     resetLayoutBtn.addEventListener('click', resetLayout);
@@ -487,6 +534,8 @@ export function setupSettingsEventListeners() {
           option.style.display = this.checked ? '' : 'none';
         }
       });
+      // Update multiple timers visibility
+      updateMultipleTimersVisibility(this.checked);
       saveSettings(appSettings);
     });
   }
@@ -741,6 +790,10 @@ function applyLayout() {
   const container = document.querySelector('.sortable-container');
   if (!container) return;
 
+  // Set data attribute for CSS-based layout
+  container.setAttribute('data-layout', appSettings.layoutMode);
+
+  // For grid mode, apply additional inline styles if needed
   if (appSettings.layoutMode === 'grid') {
     container.style.display = 'grid';
     container.style.gridTemplateColumns = `repeat(${appSettings.gridColumns}, 1fr)`;
@@ -754,7 +807,11 @@ function applyLayout() {
       section.style.top = '';
     });
   } else {
-    container.style.display = 'block';
+    // Reset to default flex layout (don't override CSS display: flex)
+    container.style.display = '';
+    container.style.gridTemplateColumns = '';
+    container.style.gap = '';
+    container.style.padding = '';
     container.style.position = 'relative';
     container.style.height = '100%';
   }
@@ -858,6 +915,14 @@ export async function lazyLoadDynamicComponent(componentId, moduleType) {
 const repeatAlertSoundToggle = document.getElementById(
   'repeat-alert-sound-toggle'
 );
+
+// Update multiple timers visibility
+function updateMultipleTimersVisibility(enabled) {
+  const multipleTimersSection = document.querySelector('.multiple-timers');
+  if (multipleTimersSection) {
+    multipleTimersSection.style.display = enabled ? '' : 'none';
+  }
+}
 
 // Add new sound options to the alert sound dropdown if present
 document.addEventListener('DOMContentLoaded', () => {

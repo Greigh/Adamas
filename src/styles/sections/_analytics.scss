@@ -1,0 +1,156 @@
+// Analytics Dashboard Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Analytics Dashboard Section
+#analytics-dashboard {
+  .analytics-tabs {
+    display: flex;
+    gap: map.get($spacing, 2);
+    margin-bottom: map.get($spacing, 6);
+    border-bottom: 1px solid var(--border-color);
+
+    .analytics-tab {
+      background: transparent;
+      border: none;
+      padding: map.get($spacing, 3) map.get($spacing, 4);
+      border-radius: map.get($radius, base) map.get($radius, base) 0 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: map.get($transitions, base);
+
+      &.active {
+        background: var(--primary-blue);
+        color: white;
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      &:hover:not(.active) {
+        background: var(--bg-hover);
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .analytics-content {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, lg);
+      padding: map.get($spacing, 5);
+      text-align: center;
+      transition: map.get($transitions, base);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      h3 {
+        margin: 0 0 map.get($spacing, 3) 0;
+        font-size: map.get($font-sizes, base);
+        color: var(--text-color);
+        font-weight: 600;
+      }
+
+      .metric-value {
+        font-size: map.get($font-sizes, '3xl');
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: map.get($spacing, 2);
+        display: block;
+      }
+    }
+  }
+
+  .performance-metrics {
+    display: grid;
+    gap: map.get($spacing, 4);
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: map.get($spacing, 4);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, base);
+
+      span:last-child {
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+    }
+  }
+
+  canvas {
+    max-width: 100%;
+    height: 300px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, base);
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  #analytics-dashboard {
+    .analytics-tabs {
+      border-bottom-color: var(--dark-border);
+    }
+
+    .analytics-tab {
+      &:hover:not(.active) {
+        background: var(--dark-surface);
+        color: var(--dark-text);
+      }
+    }
+
+    .metric-card {
+      background: var(--dark-surface);
+      border-color: var(--dark-border);
+
+      h3 {
+        color: var(--dark-text);
+      }
+    }
+
+    .performance-metrics {
+      background: var(--dark-bg);
+      padding: map.get($spacing, 4);
+      border-radius: map.get($radius, base);
+
+      .metric {
+        background: var(--dark-surface);
+        border-color: var(--dark-border);
+
+        span:first-child {
+          color: var(--dark-text);
+        }
+
+        span:last-child {
+          color: var(--primary-blue);
+        }
+      }
+    }
+
+    canvas {
+      background: var(--dark-bg);
+      border-color: var(--dark-border);
+    }
+  }
+}

@@ -1,0 +1,281 @@
+// Script Library Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Script Library Section
+#script-library {
+  .script-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 6);
+
+    .search-filter {
+      display: flex;
+      gap: map.get($spacing, 3);
+      align-items: center;
+
+      input[type="search"] {
+        padding: map.get($spacing, 2) map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--bg-color);
+        color: var(--text-color);
+        width: 250px;
+
+        &:focus {
+          outline: none;
+          border-color: var(--primary-blue);
+        }
+      }
+
+      select {
+        padding: map.get($spacing, 2) map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--bg-color);
+        color: var(--text-color);
+      }
+    }
+
+    .add-script-btn {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: map.get($spacing, 3) map.get($spacing, 4);
+      border-radius: map.get($radius, base);
+      cursor: pointer;
+      font-weight: 500;
+
+      &:hover {
+        background: var(--primary-blue-dark);
+      }
+    }
+  }
+
+  .scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: map.get($spacing, 4);
+
+    .script-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, lg);
+      padding: map.get($spacing, 4);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .script-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: map.get($spacing, 3);
+
+        .script-info {
+          flex: 1;
+
+          h3 {
+            margin: 0 0 map.get($spacing, 1) 0;
+            color: var(--text-color);
+            font-size: map.get($font-sizes, lg);
+          }
+
+          .script-meta {
+            font-size: map.get($font-sizes, sm);
+            color: var(--text-muted);
+
+            .category {
+              background: var(--primary-blue);
+              color: white;
+              padding: 2px map.get($spacing, 2);
+              border-radius: map.get($radius, sm);
+              text-transform: uppercase;
+              font-size: map.get($font-sizes, xs);
+              font-weight: 500;
+            }
+          }
+        }
+
+        .script-actions {
+          display: flex;
+          gap: map.get($spacing, 1);
+
+          .action-btn {
+            background: none;
+            border: none;
+            padding: map.get($spacing, 1);
+            cursor: pointer;
+            border-radius: map.get($radius, sm);
+            color: var(--text-muted);
+
+            &:hover {
+              background: var(--hover-bg);
+              color: var(--text-color);
+            }
+
+            &.edit-btn {
+              &:hover {
+                color: var(--primary-blue);
+              }
+            }
+
+            &.delete-btn {
+              &:hover {
+                color: var(--error-color);
+              }
+            }
+          }
+        }
+      }
+
+      .script-preview {
+        font-size: map.get($font-sizes, sm);
+        color: var(--text-color);
+        line-height: 1.5;
+        margin-bottom: map.get($spacing, 3);
+
+        // Truncate text
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .script-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: map.get($font-sizes, sm);
+        color: var(--text-muted);
+
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: map.get($spacing, 1);
+
+          .icon {
+            font-size: map.get($font-sizes, base);
+          }
+        }
+      }
+    }
+  }
+
+  .script-editor {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+    margin-top: map.get($spacing, 6);
+
+    .editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: map.get($spacing, 4);
+
+      .editor-title {
+        h3 {
+          margin: 0;
+          color: var(--text-color);
+        }
+      }
+
+      .editor-actions {
+        display: flex;
+        gap: map.get($spacing, 2);
+
+        .button {
+          padding: map.get($spacing, 2) map.get($spacing, 3);
+          font-size: map.get($font-sizes, sm);
+        }
+      }
+    }
+
+    .editor-form {
+      display: grid;
+      gap: map.get($spacing, 4);
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: map.get($spacing, 3);
+        align-items: start;
+
+        label {
+          font-weight: 500;
+          color: var(--text-color);
+          padding-top: map.get($spacing, 3);
+        }
+
+        input, select, textarea {
+          padding: map.get($spacing, 3);
+          border: 1px solid var(--border-color);
+          border-radius: map.get($radius, base);
+          background: var(--bg-color);
+          color: var(--text-color);
+
+          &:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+          }
+        }
+
+        textarea {
+          resize: vertical;
+          min-height: 200px;
+          font-family: inherit;
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: map.get($spacing, 8) map.get($spacing, 4);
+    color: var(--text-muted);
+
+    .empty-icon {
+      font-size: map.get($font-sizes, '4xl');
+      margin-bottom: map.get($spacing, 4);
+      opacity: 0.5;
+    }
+
+    h3 {
+      margin: 0 0 map.get($spacing, 2) 0;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0 0 map.get($spacing, 4) 0;
+      font-size: map.get($font-sizes, base);
+    }
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  #script-library {
+    .script-card, .script-editor {
+      background: var(--card-bg-dark);
+      border-color: var(--border-color-dark);
+
+      &:hover {
+        box-shadow: var(--shadow-lg-dark);
+      }
+    }
+
+    .action-btn {
+      &:hover {
+        background: var(--hover-bg-dark);
+      }
+    }
+  }
+}

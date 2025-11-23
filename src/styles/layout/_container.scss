@@ -14,10 +14,33 @@
 
 // Content sections
 .sortable-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: map.get($spacing, 6);
   margin-top: map.get($spacing, 6);
+}
+
+#stats-view .sortable-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: map.get($spacing, 6);
+  margin-top: map.get($spacing, 6);
+}
+
+[data-layout="grid"] .sortable-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: map.get($spacing, 6);
+  margin-top: map.get($spacing, 6);
+}
+
+// On smaller screens, force vertical layout
+@media (max-width: map.get($breakpoints, md)) {
+  #stats-view .sortable-container,
+  [data-layout="grid"] .sortable-container {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .draggable-section {

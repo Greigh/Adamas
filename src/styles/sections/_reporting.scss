@@ -1,0 +1,415 @@
+// Advanced Reporting Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Advanced Reporting Section
+#advanced-reporting {
+  .reporting-controls {
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-hover) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 6);
+    margin-bottom: map.get($spacing, 6);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
+      border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
+    }
+
+    .controls-header {
+      margin-bottom: map.get($spacing, 5);
+      position: relative;
+
+      h3 {
+        margin: 0 0 map.get($spacing, 2) 0;
+        color: var(--text-color);
+        font-size: map.get($font-sizes, xl);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: map.get($font-sizes, base);
+        line-height: 1.5;
+      }
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: map.get($spacing, 4);
+      margin-bottom: map.get($spacing, 5);
+
+      .filter-group {
+        .filter-label {
+          display: block;
+          margin-bottom: map.get($spacing, 2);
+          font-weight: 600;
+          color: var(--text-color);
+          font-size: map.get($font-sizes, sm);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        select, input[type="date"], input[type="text"] {
+          width: 100%;
+          padding: map.get($spacing, 3) map.get($spacing, 4);
+          border: 2px solid var(--border-color);
+          border-radius: map.get($radius, base);
+          background: var(--bg-color);
+          color: var(--text-color);
+          font-size: map.get($font-sizes, base);
+          transition: map.get($transitions, base);
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+
+          &:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+          }
+
+          &::placeholder {
+            color: var(--text-muted);
+          }
+        }
+      }
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: map.get($spacing, 3);
+      flex-wrap: wrap;
+      justify-content: center;
+
+      .btn {
+        padding: map.get($spacing, 3) map.get($spacing, 5);
+        border-radius: map.get($radius, base);
+        font-weight: 600;
+        cursor: pointer;
+        transition: map.get($transitions, base);
+        border: 2px solid transparent;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: map.get($font-sizes, sm);
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        &:hover::before {
+          width: 300px;
+          height: 300px;
+        }
+
+        &.btn-primary {
+          background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+          color: white;
+          box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+
+          &:hover {
+            background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+          }
+        }
+
+        &.btn-secondary {
+          background: var(--bg-hover);
+          color: var(--text-color);
+          border-color: var(--border-color);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          &:hover {
+            background: var(--bg-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+        }
+
+        &.btn-outline {
+          background: transparent;
+          color: var(--primary-blue);
+          border-color: var(--primary-blue);
+          box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+
+          &:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+          }
+        }
+      }
+    }
+  }
+
+    .reports-output {
+    .reports-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: map.get($spacing, 5);
+      padding-bottom: map.get($spacing, 3);
+      border-bottom: 2px solid var(--border-color);
+
+      h4 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: map.get($font-sizes, lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .export-options {
+        display: flex;
+        gap: map.get($spacing, 2);
+
+        .btn {
+          padding: map.get($spacing, 2) map.get($spacing, 4);
+          border-radius: map.get($radius, base);
+          font-size: map.get($font-sizes, sm);
+          font-weight: 600;
+          cursor: pointer;
+          transition: map.get($transitions, base);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border: 2px solid transparent;
+
+          &.btn-export {
+            background: linear-gradient(135deg, var(--success-color), var(--success-color-light));
+            color: white;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+
+            &:hover {
+              background: linear-gradient(135deg, var(--success-color-dark), var(--success-color));
+              transform: translateY(-1px);
+              box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            }
+          }
+
+          &.btn-print {
+            background: linear-gradient(135deg, var(--warning-color), var(--warning-color-light));
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+
+            &:hover {
+              background: linear-gradient(135deg, var(--warning-color-dark), var(--warning-color));
+              transform: translateY(-1px);
+              box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+            }
+          }
+        }
+      }
+    }
+
+    .report-card {
+      background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-hover) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, lg);
+      padding: map.get($spacing, 5);
+      margin-bottom: map.get($spacing, 4);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: map.get($transitions, base);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
+        border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: map.get($spacing, 4);
+        padding-bottom: map.get($spacing, 3);
+        border-bottom: 1px solid var(--border-color);
+
+        h5 {
+          margin: 0;
+          color: var(--text-color);
+          font-size: map.get($font-sizes, lg);
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: map.get($spacing, 2);
+
+          &::before {
+            content: '📊';
+            font-size: map.get($font-sizes, xl);
+          }
+        }
+
+        .card-meta {
+          display: flex;
+          gap: map.get($spacing, 3);
+          font-size: map.get($font-sizes, sm);
+          color: var(--text-muted);
+
+          .meta-item {
+            display: flex;
+            align-items: center;
+            gap: map.get($spacing, 1);
+
+            &::before {
+              content: '⏰';
+              font-size: map.get($font-sizes, base);
+            }
+          }
+        }
+      }
+
+      .card-content {
+        .metric-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: map.get($spacing, 4);
+          margin-bottom: map.get($spacing, 4);
+
+          .metric-item {
+            text-align: center;
+            padding: map.get($spacing, 3);
+            background: var(--bg-hover);
+            border-radius: map.get($radius, base);
+            border: 1px solid var(--border-color);
+
+            .metric-value {
+              display: block;
+              font-size: map.get($font-sizes, xl);
+              font-weight: 700;
+              color: var(--primary-blue);
+              margin-bottom: map.get($spacing, 1);
+            }
+
+            .metric-label {
+              font-size: map.get($font-sizes, sm);
+              color: var(--text-muted);
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              font-weight: 600;
+            }
+          }
+        }
+
+        .data-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: map.get($spacing, 4);
+          background: var(--bg-color);
+          border-radius: map.get($radius, base);
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+          th, td {
+            padding: map.get($spacing, 3) map.get($spacing, 4);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: map.get($font-sizes, sm);
+          }
+
+          th {
+            background: linear-gradient(135deg, var(--bg-hover) 0%, var(--card-bg) 100%);
+            font-weight: 600;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+          }
+
+          td {
+            color: var(--text-color);
+
+            &:last-child {
+              font-weight: 600;
+              color: var(--primary-blue);
+            }
+          }
+
+          tr {
+            transition: background-color 0.2s ease;
+
+            &:hover {
+              background: var(--bg-hover);
+            }
+
+            &:last-child {
+              td {
+                border-bottom: none;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .no-reports {
+      text-align: center;
+      padding: map.get($spacing, 8) map.get($spacing, 4);
+      background: linear-gradient(135deg, var(--bg-hover) 0%, var(--card-bg) 100%);
+      border: 2px dashed var(--border-color);
+      border-radius: map.get($radius, lg);
+      color: var(--text-muted);
+      position: relative;
+
+      &::before {
+        content: '📋';
+        font-size: 3rem;
+        display: block;
+        margin-bottom: map.get($spacing, 3);
+        opacity: 0.5;
+      }
+
+      h4 {
+        margin: 0 0 map.get($spacing, 2) 0;
+        color: var(--text-color);
+        font-size: map.get($font-sizes, lg);
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        font-size: map.get($font-sizes, base);
+        line-height: 1.5;
+      }
+    }
+  }
+}

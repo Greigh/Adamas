@@ -1,0 +1,151 @@
+// Call Logging Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Call Logging Section
+#call-logging {
+  .call-log-form {
+    display: grid;
+    gap: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: map.get($spacing, 4);
+
+      @media (max-width: map.get($breakpoints, sm)) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: map.get($spacing, 2);
+    }
+
+    label {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    input, select, textarea {
+      padding: map.get($spacing, 3);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, base);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: map.get($font-sizes, base);
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 2px rgba(var(--primary-blue-rgb), 0.2);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+  }
+
+  .call-controls {
+    display: flex;
+    gap: map.get($spacing, 3);
+    margin-bottom: map.get($spacing, 4);
+    flex-wrap: wrap;
+
+    .button {
+      flex: 1;
+      min-width: 120px;
+
+      &.active {
+        background: var(--success-color);
+        color: white;
+      }
+
+      &.inactive {
+        background: var(--error-color);
+        color: white;
+      }
+    }
+  }
+
+  .call-history {
+    .call-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, base);
+      padding: map.get($spacing, 4);
+      margin-bottom: map.get($spacing, 3);
+
+      .call-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: map.get($spacing, 2);
+
+        .caller-info {
+          h4 {
+            margin: 0;
+            color: var(--text-color);
+          }
+
+          .call-type {
+            font-size: map.get($font-sizes, sm);
+            color: var(--text-muted);
+            text-transform: capitalize;
+          }
+        }
+
+        .call-time {
+          text-align: right;
+          font-size: map.get($font-sizes, sm);
+          color: var(--text-muted);
+        }
+      }
+
+      .call-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: map.get($spacing, 3);
+        margin-bottom: map.get($spacing, 3);
+
+        .detail-item {
+          .label {
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: map.get($font-sizes, sm);
+          }
+
+          .value {
+            color: var(--text-muted);
+            font-size: map.get($font-sizes, sm);
+          }
+        }
+      }
+
+      .call-notes {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        padding: map.get($spacing, 3);
+        font-size: map.get($font-sizes, sm);
+        color: var(--text-color);
+        white-space: pre-wrap;
+      }
+    }
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  #call-logging {
+    .call-item {
+      background: var(--card-bg-dark);
+      border-color: var(--border-color-dark);
+    }
+  }
+}

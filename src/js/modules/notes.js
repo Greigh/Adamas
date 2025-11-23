@@ -1,5 +1,5 @@
 // Notes management module
-import { saveNotes, loadNotes } from './storage.js';
+import { saveNotes, loadNotes, saveNotesData, loadNotesData } from './storage.js';
 import { appSettings } from './settings.js'; // Add this import
 
 export function renderNotes() {
@@ -139,8 +139,6 @@ export function setupNotesEventListeners() {
   const notesInput = document.getElementById('notes-input');
   const addNoteBtn = document.getElementById('add-note-btn');
   const notesFeed = document.getElementById('notes-feed');
-  const searchInput = document.getElementById('notes-search');
-  const clearSearchBtn = document.getElementById('clear-search-btn');
 
   // Local addNote function that gets text from input
   function addNote() {
@@ -159,25 +157,6 @@ export function setupNotesEventListeners() {
         e.preventDefault();
         addNote();
       }
-    });
-  }
-
-  // Search functionality
-  if (searchInput) {
-    searchInput.addEventListener('input', filterNotes);
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        searchInput.value = '';
-        filterNotes();
-        searchInput.blur();
-      }
-    });
-  }
-
-  if (clearSearchBtn) {
-    clearSearchBtn.addEventListener('click', () => {
-      if (searchInput) searchInput.value = '';
-      filterNotes();
     });
   }
 
@@ -215,6 +194,8 @@ export function createNotes() {
   // Create new notes with animated entry
   setTimeout(() => {
     const notes = new NotesInstance(id);
+    // Load existing data for this instance
+    notes.notes = loadNotesData(id);
     notesInstances.set(id, notes);
 
     createNotesUI(id);
@@ -294,6 +275,8 @@ function setupNotesInstanceListeners(notesId) {
             timestamp: new Date().toISOString(),
             editing: false,
           });
+          // Save the instance notes data
+          saveNotesData(notesId, notes.notes);
           renderNotesInstance(notesId);
           notesInput.value = '';
         }
@@ -314,6 +297,8 @@ function setupNotesInstanceListeners(notesId) {
         const notes = notesInstances.get(notesId);
         if (notes) {
           notes.notes = [];
+          // Save the empty notes array
+          saveNotesData(notesId, notes.notes);
           renderNotesInstance(notesId);
         }
       }
@@ -402,6 +387,8 @@ function renderNotesInstance(notesId) {
         notes[idx].text = textarea.value.trim();
         notes[idx].editing = false;
         notes[idx].updatedAt = new Date().toISOString();
+        // Save the instance notes data
+        saveNotesData(notesId, notes);
         renderNotesInstance(notesId);
       };
 
@@ -457,6 +444,8 @@ function renderNotesInstance(notesId) {
       delBtn.className = 'delete-note-btn';
       delBtn.onclick = () => {
         notes.splice(idx, 1);
+        // Save the updated notes array
+        saveNotesData(notesId, notes);
         renderNotesInstance(notesId);
       };
       actionsDiv.appendChild(delBtn);

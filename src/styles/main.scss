@@ -13,6 +13,15 @@
 @use 'sections/patterns';
 @use 'sections/settings';
 @use 'sections/timer';
+@use 'sections/call-logging';
+@use 'sections/analytics';
+@use 'sections/qa';
+@use 'sections/performance';
+@use 'sections/reporting';
+@use 'sections/dashboards';
+@use 'sections/crm';
+@use 'sections/scripts';
+@use 'sections/tasks';
 
 // Layout
 @use 'layout/container';

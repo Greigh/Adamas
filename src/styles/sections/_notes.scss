@@ -5,14 +5,30 @@
 #notes {
   .notes-input-area {
     margin-bottom: map.get($spacing, 6);
+    background: var(--bg-hover);
+    padding: map.get($spacing, 4);
+    border-radius: map.get($radius, md);
+    border: 1px solid var(--border-color);
   }
 
   .notes-input {
     width: 100%;
-    min-height: 100px;
+    min-height: 80px;
     resize: vertical;
     margin-bottom: map.get($spacing, 3);
     font-family: $font-family-sans;
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, sm);
+    padding: map.get($spacing, 3);
+    background: var(--white);
+    color: var(--gray-800);
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
   }
 
   .notes-feed {
@@ -39,36 +55,36 @@
 
   .note-item {
     background: var(--white);
-    border-radius: map.get($radius, base);
+    border-radius: map.get($radius, md);
     padding: map.get($spacing, 4);
     margin-bottom: map.get($spacing, 4);
     box-shadow: var(--shadow-sm);
-    border-bottom: 1px solid var(--gray-200);
-    transition: map.get($transitions, base);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
     position: relative;
 
     &:hover {
       box-shadow: var(--shadow-md);
-      transform: translateX(4px);
+      border-color: var(--primary-blue);
+      transform: translateX(2px);
     }
 
     &:last-child {
       margin-bottom: 0;
-      border-bottom: none;
     }
 
-    // Timeline dot - FIXED: Use consistent rem units
+    // Timeline dot
     &::before {
       content: '';
       position: absolute;
-      left: calc(-#{map.get($spacing, 6)} - 0.375rem); // 6px converted to rem
+      left: calc(-#{map.get($spacing, 6)} - 0.375rem);
       top: map.get($spacing, 4);
-      width: 0.75rem; // 12px in rem
-      height: 0.75rem; // 12px in rem
+      width: 0.75rem;
+      height: 0.75rem;
       background: var(--primary-blue);
       border-radius: map.get($radius, full);
-      border: 0.1875rem solid var(--white); // 3px in rem
-      box-shadow: 0 0 0 0.125rem var(--primary-blue); // 2px in rem
+      border: 0.1875rem solid var(--white);
+      box-shadow: 0 0 0 0.125rem var(--primary-blue);
     }
   }
 
@@ -99,11 +115,19 @@
   .note-actions {
     display: flex;
     gap: map.get($spacing, 2);
+    margin-top: map.get($spacing, 3);
+    padding-top: map.get($spacing, 3);
+    border-top: 1px solid var(--gray-200);
 
     button {
-      padding: map.get($spacing, 1) map.get($spacing, 2);
+      padding: map.get($spacing, 1) map.get($spacing, 3);
       font-size: map.get($font-sizes, xs);
       border-radius: map.get($radius, sm);
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
     }
   }
 
@@ -114,25 +138,27 @@
     margin-bottom: map.get($spacing, 3);
     font-family: $font-family-sans;
   }
-
-  .notes-controls {
-    display: flex;
-    justify-content: space-between;
-    gap: map.get($spacing, 2);
-    align-items: center;
-    margin-top: map.get($spacing, 4);
-
-    .notes-count {
-      font-size: map.get($font-sizes, sm);
-      color: var(--gray-500);
-      margin-left: auto;
-    }
-  }
 }
 
 // Dark mode
 [data-theme='dark'] {
   #notes {
+    .notes-input-area {
+      background: var(--dark-bg);
+      border-color: var(--dark-border);
+    }
+
+    .notes-input {
+      background: var(--dark-surface);
+      color: var(--dark-text);
+      border-color: var(--dark-border);
+
+      &:focus {
+        border-color: #90caf9;
+        box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.2);
+      }
+    }
+
     .notes-feed {
       border-color: var(--dark-border);
 
@@ -143,16 +169,17 @@
 
     .note-item {
       background: var(--dark-surface);
-      border-bottom-color: var(--dark-border);
+      border-color: var(--dark-border);
 
       &:hover {
         background: var(--dark-bg);
+        border-color: #90caf9;
       }
 
       &::before {
         background: #90caf9;
         border-color: var(--dark-surface);
-        box-shadow: 0 0 0 0.125rem #90caf9; // 2px in rem
+        box-shadow: 0 0 0 0.125rem #90caf9;
       }
     }
 
@@ -168,8 +195,8 @@
       color: var(--dark-text-muted);
     }
 
-    .notes-controls .notes-count {
-      color: var(--dark-text-muted);
+    .note-actions {
+      border-top-color: var(--dark-border);
     }
   }
 }

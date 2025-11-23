@@ -19,6 +19,22 @@ import {
 import { initFloating, getFloatingManager } from './modules/floating.js';
 import { setupKeyboardShortcuts } from './utils/keyboard-shortcuts.js';
 
+// Import new feature modules
+import { initializeCallLogging } from './modules/call-logging.js';
+import { initializeAnalytics, initializeCharts } from './modules/analytics.js';
+import { initializeCRM } from './modules/crm.js';
+import { initializeScripts } from './modules/scripts.js';
+import { initializeTasks } from './modules/tasks.js';
+import { initializeVoiceRecording } from './modules/voice-recording.js';
+import { initializeQA } from './modules/qa.js';
+import { initializePerformanceMetrics } from './modules/performance-metrics.js';
+import { initializeCollaboration } from './modules/collaboration.js';
+import { initializeAdvancedReporting } from './modules/reporting.js';
+import { initializeWorkflows } from './modules/workflows.js';
+import { initializeAIInsights } from './modules/ai-insights.js';
+import { initializeMultiChannel } from './modules/multichannel.js';
+import { initializeMobileCompanion } from './modules/mobile.js';
+
 // Tab navigation functions
 function openNotesTab() {
   document.querySelectorAll('.tab-content').forEach((tab) => {
@@ -113,16 +129,39 @@ function handleResize() {
 function showMainApp() {
   document.getElementById('main-app').classList.remove('hidden');
   document.getElementById('settings-view').classList.add('hidden');
+  document.getElementById('stats-view').classList.add('hidden');
   document.getElementById('main-tab')?.classList.add('active');
   document.getElementById('settings-tab')?.classList.remove('active');
+  document.getElementById('stats-tab')?.classList.remove('active');
 }
 
 // Show settings panel
 function showSettings() {
   document.getElementById('main-app').classList.add('hidden');
   document.getElementById('settings-view').classList.remove('hidden');
+  document.getElementById('stats-view').classList.add('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.add('active');
+  document.getElementById('stats-tab')?.classList.remove('active');
+}
+
+// Show stats panel
+function showStats() {
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('settings-view').classList.add('hidden');
+  document.getElementById('stats-view').classList.remove('hidden');
+  document.getElementById('main-tab')?.classList.remove('active');
+  document.getElementById('settings-tab')?.classList.remove('active');
+  document.getElementById('stats-tab')?.classList.add('active');
+
+  // Initialize stats modules if not already done
+  if (!window.statsInitialized) {
+    initializeAnalytics();
+    initializePerformanceMetrics();
+    initializeAdvancedReporting();
+    initializeQA();
+    window.statsInitialized = true;
+  }
 }
 
 // Show service worker update notification
@@ -206,7 +245,6 @@ function loadSecondaryModules() {
     import('./modules/notes.js')
       .then((module) => {
         module.initializeNotes();
-        module.setupNotesEventListeners();
       })
       .catch((err) => {
         console.error('Error loading notes module:', err);
@@ -241,11 +279,12 @@ if (!document.getElementById('floating-overlay')) {
 }
 
 function setupAllEventListeners() {
-  // Main navigation
+  // Navigation
   document.getElementById('main-tab')?.addEventListener('click', showMainApp);
   document
     .getElementById('settings-tab')
     ?.addEventListener('click', showSettings);
+  document.getElementById('stats-tab')?.addEventListener('click', showStats);
 
   // Event delegation for section controls (minimize, float, etc.)
   const container = document.querySelector('.container');
@@ -360,6 +399,27 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('Error registering floating:created listener:', err);
     }
 
+    // Initialize new feature modules
+    try {
+      initializeCallLogging();
+      initializeAnalytics();
+      initializeCharts();
+      initializeCRM();
+      initializeScripts();
+      initializeTasks();
+      initializeVoiceRecording();
+      initializeQA();
+      initializePerformanceMetrics();
+      initializeCollaboration();
+      initializeAdvancedReporting();
+      initializeWorkflows();
+      initializeAIInsights();
+      initializeMultiChannel();
+      initializeMobileCompanion();
+    } catch (error) {
+      console.error('Error initializing new feature modules:', error);
+    }
+
     // Set initial UI state
     showMainApp();
 
@@ -370,28 +430,40 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', handleResize);
     handleResize(); // Call once to set initial responsive state
 
-    // Register service worker for offline functionality
+    // Handle service worker for offline functionality
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('Service Worker registered successfully:', registration.scope);
-
-          // Check for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New version available
-                  showUpdateNotification();
-                }
-              });
-            }
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // In development mode, unregister any existing service workers
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => {
+            registration.unregister().then(() => {
+              console.log('Service Worker unregistered in development mode');
+            });
           });
-        })
-        .catch((error) => {
-          console.error('Service Worker registration failed:', error);
         });
+      } else {
+        // In production mode, register service worker
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('Service Worker registered successfully:', registration.scope);
+
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New version available
+                    showUpdateNotification();
+                  }
+                });
+              }
+            });
+          })
+          .catch((error) => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
     }
 
     // Show "app ready" indication if needed

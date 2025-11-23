@@ -1,0 +1,267 @@
+// Task Management Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+// Task Management Section
+#task-management {
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 6);
+
+    .task-filters {
+      display: flex;
+      gap: map.get($spacing, 3);
+      align-items: center;
+
+      select {
+        padding: map.get($spacing, 2) map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--bg-color);
+        color: var(--text-color);
+      }
+    }
+
+    .add-task-btn {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: map.get($spacing, 3) map.get($spacing, 4);
+      border-radius: map.get($radius, base);
+      cursor: pointer;
+      font-weight: 500;
+
+      &:hover {
+        background: var(--primary-blue-dark);
+      }
+    }
+  }
+
+  .task-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: map.get($spacing, 4);
+
+    .task-column {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, lg);
+      padding: map.get($spacing, 4);
+
+      .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: map.get($spacing, 4);
+        padding-bottom: map.get($spacing, 2);
+        border-bottom: 1px solid var(--border-color);
+
+        h3 {
+          margin: 0;
+          color: var(--text-color);
+          font-size: map.get($font-sizes, lg);
+
+          .task-count {
+            background: var(--primary-blue);
+            color: white;
+            padding: 2px map.get($spacing, 2);
+            border-radius: map.get($radius, sm);
+            font-size: map.get($font-sizes, xs);
+            font-weight: 500;
+            margin-left: map.get($spacing, 2);
+          }
+        }
+      }
+
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: map.get($spacing, 3);
+        min-height: 200px;
+      }
+    }
+  }
+
+  .task-card {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, base);
+    padding: map.get($spacing, 3);
+    cursor: move;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: map.get($spacing, 2);
+
+      .task-title {
+        flex: 1;
+        font-weight: 500;
+        color: var(--text-color);
+        margin: 0;
+        font-size: map.get($font-sizes, base);
+      }
+
+      .task-priority {
+        padding: 2px map.get($spacing, 2);
+        border-radius: map.get($radius, sm);
+        font-size: map.get($font-sizes, xs);
+        font-weight: 500;
+        text-transform: uppercase;
+
+        &.high {
+          background: var(--error-color);
+          color: white;
+        }
+
+        &.medium {
+          background: var(--warning-color);
+          color: white;
+        }
+
+        &.low {
+          background: var(--success-color);
+          color: white;
+        }
+      }
+    }
+
+    .task-content {
+      font-size: map.get($font-sizes, sm);
+      color: var(--text-muted);
+      margin-bottom: map.get($spacing, 2);
+      line-height: 1.4;
+    }
+
+    .task-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: map.get($font-sizes, xs);
+      color: var(--text-muted);
+
+      .task-assignee {
+        font-weight: 500;
+      }
+
+      .task-due-date {
+        &.overdue {
+          color: var(--error-color);
+          font-weight: 500;
+        }
+
+        &.due-soon {
+          color: var(--warning-color);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .task-detail-modal {
+    .modal-content {
+      max-width: 600px;
+      width: 90vw;
+
+      .task-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: map.get($spacing, 4);
+
+        .task-detail-title {
+          flex: 1;
+          margin: 0;
+          color: var(--text-color);
+          font-size: map.get($font-sizes, xl);
+        }
+
+        .task-detail-actions {
+          display: flex;
+          gap: map.get($spacing, 2);
+
+          .button {
+            padding: map.get($spacing, 2) map.get($spacing, 3);
+            font-size: map.get($font-sizes, sm);
+          }
+        }
+      }
+
+      .task-detail-content {
+        display: grid;
+        gap: map.get($spacing, 4);
+
+        .detail-section {
+          h4 {
+            margin: 0 0 map.get($spacing, 2) 0;
+            color: var(--text-color);
+            font-size: map.get($font-sizes, base);
+          }
+
+          .form-group {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: map.get($spacing, 3);
+            align-items: center;
+
+            label {
+              font-weight: 500;
+              color: var(--text-color);
+            }
+
+            input, select, textarea {
+              padding: map.get($spacing, 2) map.get($spacing, 3);
+              border: 1px solid var(--border-color);
+              border-radius: map.get($radius, base);
+              background: var(--bg-color);
+              color: var(--text-color);
+
+              &:focus {
+                outline: none;
+                border-color: var(--primary-blue);
+              }
+            }
+
+            textarea {
+              resize: vertical;
+              min-height: 100px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .empty-column {
+    text-align: center;
+    padding: map.get($spacing, 4);
+    color: var(--text-muted);
+    font-style: italic;
+  }
+}
+
+// Dark mode
+[data-theme="dark"] {
+  #task-management {
+    .task-column, .task-card {
+      background: var(--card-bg-dark);
+      border-color: var(--border-color-dark);
+    }
+
+    .task-card {
+      background: var(--bg-color-dark);
+
+      &:hover {
+        box-shadow: var(--shadow-md-dark);
+      }
+    }
+  }
+}
