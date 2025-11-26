@@ -98,7 +98,7 @@ const defaultDashboards = [
 export function initializeAdvancedAnalytics(doc = document) {
   loadAnalyticsData();
   setupAnalyticsEventListeners(doc);
-  renderAnalyticsDashboard(doc);
+  renderAdvancedAnalyticsUI(doc);
   initializeCharts();
 }
 
@@ -171,8 +171,8 @@ function setupAnalyticsEventListeners(doc) {
   setInterval(updateLiveData, 30000); // Update every 30 seconds
 }
 
-function renderAnalyticsDashboard(doc) {
-  const container = doc.getElementById('analytics-dashboard-container');
+function renderAdvancedAnalyticsUI(doc) {
+  const container = doc.getElementById('advanced-analytics-container');
   if (!container) return;
 
   const activeDashboard = analyticsState.dashboards.find(d => d.id === analyticsState.activeDashboard);
@@ -181,7 +181,7 @@ function renderAnalyticsDashboard(doc) {
     <div class="analytics-section">
       <div class="analytics-header">
         <div class="dashboard-selector">
-          <h3>Analytics Dashboard</h3>
+          <h3>Advanced Analytics</h3>
           <select id="dashboard-select" onchange="switchDashboard(this.value)">
             ${analyticsState.dashboards.map(d => `
               <option value="${d.id}" ${d.id === analyticsState.activeDashboard ? 'selected' : ''}>

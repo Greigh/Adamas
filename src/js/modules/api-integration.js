@@ -289,7 +289,7 @@ function startAPIServer() {
 
     // Register service worker for API handling (only in production)
     if ('serviceWorker' in navigator && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('/callcenterhelper/sw.js')
         .then(() => console.log('API Service Worker registered'))
         .catch(err => console.log('Service Worker registration failed:', err));
     }

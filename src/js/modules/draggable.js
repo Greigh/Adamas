@@ -266,6 +266,10 @@ export function initDragAndDrop() {
             function onMouseUp() {
                 if (draggedElement) {
                     draggedElement.classList.remove('dragging');
+                    // Reset positioning to ensure sections stay in document flow
+                    draggedElement.style.position = '';
+                    draggedElement.style.left = '';
+                    draggedElement.style.top = '';
                     draggedElement = null;
                 }
                 document.removeEventListener('mousemove', onMouseMove);
@@ -812,6 +816,11 @@ export function setupDraggable(section) {
     function onMouseUp() {
         isDragging = false;
         section.classList.remove('dragging');
+        
+        // Reset positioning to ensure sections stay in document flow
+        section.style.position = '';
+        section.style.left = '';
+        section.style.top = '';
         
         // Remove event listeners
         document.removeEventListener('mousemove', onMouseMove);

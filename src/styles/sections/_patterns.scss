@@ -51,6 +51,92 @@
     }
   }
 
+  .pattern-history {
+    margin-top: map.get($spacing, 4);
+    border-top: 1px solid var(--gray-200);
+    padding-top: map.get($spacing, 4);
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: map.get($spacing, 3);
+
+      h4 {
+        margin: 0;
+        font-size: map.get($font-sizes, base);
+        font-weight: map.get($font-weights, semibold);
+        color: var(--gray-700);
+      }
+    }
+
+    .history-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--gray-200);
+      border-radius: map.get($radius, base);
+      background: var(--gray-50);
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: map.get($spacing, 2);
+      padding: map.get($spacing, 3);
+      border-bottom: 1px solid var(--gray-200);
+      transition: map.get($transitions, fast);
+
+      &:hover {
+        background: var(--gray-100);
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .history-input,
+      .history-result {
+        font-family: $font-family-mono;
+        font-size: map.get($font-sizes, sm);
+        font-weight: map.get($font-weights, medium);
+        padding: map.get($spacing, 1) map.get($spacing, 2);
+        background: white;
+        border: 1px solid var(--gray-300);
+        border-radius: map.get($radius, sm);
+        min-width: 120px;
+        text-align: center;
+      }
+
+      .history-arrow {
+        color: var(--gray-500);
+        font-weight: map.get($font-weights, bold);
+      }
+
+      .history-use-btn {
+        padding: map.get($spacing, 1) map.get($spacing, 2);
+        font-size: map.get($font-sizes, xs);
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: map.get($radius, sm);
+        cursor: pointer;
+        transition: map.get($transitions, fast);
+
+        &:hover {
+          background: var(--primary-dark);
+        }
+      }
+    }
+
+    .no-history {
+      text-align: center;
+      color: var(--gray-500);
+      font-style: italic;
+      padding: map.get($spacing, 4);
+      margin: 0;
+    }
+  }
+
   .pattern-table {
     width: 100%;
     border-collapse: collapse;
@@ -173,6 +259,43 @@
     }
 
     .empty-patterns-msg {
+      color: var(--dark-text-muted);
+    }
+  }
+
+  // Dark mode for history
+  .pattern-history {
+    border-top-color: var(--dark-border);
+
+    .history-header h4 {
+      color: var(--dark-text);
+    }
+
+    .history-list {
+      border-color: var(--dark-border);
+      background: var(--dark-surface);
+    }
+
+    .history-item {
+      border-bottom-color: var(--dark-border);
+
+      &:hover {
+        background: var(--dark-bg);
+      }
+
+      .history-input,
+      .history-result {
+        background: var(--dark-bg);
+        border-color: var(--dark-border);
+        color: var(--dark-text);
+      }
+
+      .history-arrow {
+        color: var(--dark-text-muted);
+      }
+    }
+
+    .no-history {
       color: var(--dark-text-muted);
     }
   }

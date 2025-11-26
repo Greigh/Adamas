@@ -70,6 +70,9 @@
                 Result will appear here
               </div>
               <button id="copyPatternBtn" class="button" disabled>Copy</button>
+              <div id="patternHistory" class="pattern-history">
+                <!-- History will be populated here -->
+              </div>
             </div>
           </section>
 
@@ -989,10 +992,11 @@
               <div class="section-content section-content--cols">
                 <p>Choose which sections to display on the main page:</p>
 
-              <!-- Core Features -->
-              <div class="section-group">
-                <h4>Core Features</h4>
-                <div class="toggle-grid">
+                <div class="section-groups-grid">
+                  <!-- Core Features -->
+                  <div class="section-group">
+                    <h4>Core Features</h4>
+                    <div class="toggle-grid">
                   <div class="toggle-item">
                     <label class="toggle-label" for="toggle-formatter">
                       <input
@@ -1159,6 +1163,7 @@
                         type="checkbox"
                         id="toggle-collaboration"
                         name="toggle-collaboration"
+                        checked
                         aria-label="Show Team Collaboration"
                       />
                       <span
@@ -1181,6 +1186,7 @@
                         type="checkbox"
                         id="toggle-workflows"
                         name="toggle-workflows"
+                        checked
                         aria-label="Show Automated Workflows"
                       />
                       <span
@@ -1197,6 +1203,7 @@
                         type="checkbox"
                         id="toggle-multichannel"
                         name="toggle-multichannel"
+                        checked
                         aria-label="Show Multi-Channel Support"
                       />
                       <span
@@ -1219,6 +1226,7 @@
                         type="checkbox"
                         id="toggle-feedback"
                         name="toggle-feedback"
+                        checked
                         aria-label="Show Customer Feedback"
                       />
                       <span
@@ -1235,6 +1243,7 @@
                         type="checkbox"
                         id="toggle-knowledge-base"
                         name="toggle-knowledge-base"
+                        checked
                         aria-label="Show Knowledge Base"
                       />
                       <span
@@ -1251,6 +1260,7 @@
                         type="checkbox"
                         id="toggle-time-tracking"
                         name="toggle-time-tracking"
+                        checked
                         aria-label="Show Time Tracking"
                       />
                       <span
@@ -1267,6 +1277,7 @@
                         type="checkbox"
                         id="toggle-advanced-analytics"
                         name="toggle-advanced-analytics"
+                        checked
                         aria-label="Show Advanced Analytics"
                       />
                       <span
@@ -1283,6 +1294,7 @@
                         type="checkbox"
                         id="toggle-api-integration"
                         name="toggle-api-integration"
+                        checked
                         aria-label="Show API Integration"
                       />
                       <span
@@ -1353,7 +1365,9 @@
 
                 </div>
               </div>
-            </div>
+
+                </div>
+              </div>
             <!-- Visible Sections remain inside the top grid -->
             </section>
 
@@ -1622,19 +1636,10 @@
                     <div class="file-upload-group">
                       <button
                         id="import-data-btn"
-                        class="button btn-sm file-upload-btn"
+                        class="button btn-sm"
                       >
                         📁 Import Data
                       </button>
-                      <input
-                        type="file"
-                        id="import-data-file"
-                        name="import-data-file"
-                        accept=".json"
-                        aria-label="Import data file"
-                        class="file-input"
-                      />
-                      <div class="file-info" id="import-file-info"></div>
                     </div>
                   </div>
                 </div>
@@ -1666,19 +1671,10 @@
                     <div class="file-upload-group">
                       <button
                         id="restore-data-btn"
-                        class="button btn-sm file-upload-btn"
+                        class="button btn-sm"
                       >
                         🔄 Restore Backup
                       </button>
-                      <input
-                        type="file"
-                        id="restore-data-file"
-                        name="restore-data-file"
-                        accept=".json"
-                        aria-label="Restore backup file"
-                        class="file-input"
-                      />
-                      <div class="file-info" id="restore-file-info"></div>
                     </div>
                   </div>
                 </div>
@@ -1812,7 +1808,7 @@
                   <h4>CRM Configuration</h4>
 
                   <!-- Cisco Finesse Configuration -->
-                  <form id="finesse-config-form" class="crm-provider-config">
+                  <div id="finesse-config-form" class="crm-provider-config">
                     <div class="setting-item">
                       <div class="setting-info">
                         <div class="setting-label">Finesse Server URL</div>
@@ -1828,6 +1824,7 @@
                           name="finesse-url"
                           placeholder="https://finesse-server:8445"
                           aria-label="Finesse server URL"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
@@ -1846,6 +1843,7 @@
                           name="finesse-username"
                           placeholder="agent_username"
                           aria-label="Finesse agent username"
+                          autocomplete="username"
                         />
                       </div>
                     </div>
@@ -1868,10 +1866,10 @@
                         />
                       </div>
                     </div>
-                  </form>
+                  </div>
 
                   <!-- Five9 Configuration -->
-                  <form id="five9-config-form" class="crm-provider-config hidden">
+                  <div id="five9-config-form" class="crm-provider-config hidden">
                     <div class="setting-item">
                       <div class="setting-info">
                         <div class="setting-label">Five9 Domain</div>
@@ -1886,6 +1884,7 @@
                           name="five9-domain"
                           placeholder="yourcompany.five9.com"
                           aria-label="Five9 domain"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
@@ -1904,6 +1903,7 @@
                           name="five9-username"
                           placeholder="api_username"
                           aria-label="Five9 API username"
+                          autocomplete="username"
                         />
                       </div>
                     </div>
@@ -1926,10 +1926,10 @@
                         />
                       </div>
                     </div>
-                  </form>
+                  </div>
 
                   <!-- Salesforce Configuration -->
-                  <form id="salesforce-config-form" class="crm-provider-config hidden">
+                  <div id="salesforce-config-form" class="crm-provider-config hidden">
                     <div class="setting-item">
                       <div class="setting-info">
                         <div class="setting-label">Salesforce Instance URL</div>
@@ -1963,6 +1963,7 @@
                           name="salesforce-consumer-key"
                           placeholder="Your Consumer Key"
                           aria-label="Salesforce Consumer Key"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
@@ -2000,6 +2001,7 @@
                           name="salesforce-username"
                           placeholder="user@company.com"
                           aria-label="Salesforce username"
+                          autocomplete="username"
                         />
                       </div>
                     </div>
@@ -2022,10 +2024,10 @@
                         />
                       </div>
                     </div>
-                  </form>
+                  </div>
 
                   <!-- Zendesk Configuration -->
-                  <form id="zendesk-config-form" class="crm-provider-config hidden">
+                  <div id="zendesk-config-form" class="crm-provider-config hidden">
                     <div class="setting-item">
                       <div class="setting-info">
                         <div class="setting-label">Zendesk Subdomain</div>
@@ -2040,6 +2042,7 @@
                           name="zendesk-subdomain"
                           placeholder="yourcompany"
                           aria-label="Zendesk subdomain"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
@@ -2077,13 +2080,16 @@
                           name="zendesk-email"
                           placeholder="admin@company.com"
                           aria-label="Zendesk email"
+                          autocomplete="username"
                         />
                       </div>
                     </div>
-                  </form>
+                  </div>
 
                   <!-- HubSpot Configuration -->
-                  <form id="hubspot-config-form" class="crm-provider-config hidden">
+                  <div id="hubspot-config-form" class="crm-provider-config hidden">
+                    <!-- Hidden username field for accessibility -->
+                    <input type="text" id="hubspot-username" name="hubspot-username" autocomplete="username" style="display: none;" aria-hidden="true">
                     <div class="setting-item">
                       <div class="setting-info">
                         <div class="setting-label">HubSpot API Key</div>
@@ -2099,14 +2105,14 @@
                           name="hubspot-api-key"
                           placeholder="Your HubSpot API key"
                           aria-label="HubSpot API key"
-                          autocomplete="new-password"
+                          autocomplete="current-password"
                         />
                       </div>
                     </div>
-                  </form>
+                  </div>
 
                   <!-- Microsoft Dynamics 365 Configuration -->
-                  <form id="dynamics-config-form" class="crm-provider-config hidden">
+                  <div id="dynamics-config-form" class="crm-provider-config hidden">
                     <div class="setting-item">
                       <div class="setting-info">
                         <div class="setting-label">Dynamics 365 URL</div>
@@ -2122,6 +2128,7 @@
                           name="dynamics-url"
                           placeholder="https://yourorg.crm.dynamics.com"
                           aria-label="Dynamics 365 URL"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
@@ -2140,6 +2147,7 @@
                           name="dynamics-client-id"
                           placeholder="Your Client ID"
                           aria-label="Dynamics Client ID"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
@@ -2177,10 +2185,11 @@
                           name="dynamics-tenant-id"
                           placeholder="Your Tenant ID"
                           aria-label="Dynamics Tenant ID"
+                          autocomplete="off"
                         />
                       </div>
                     </div>
-                  </form>
+                  </div>
                 </div>
 
                 <div class="setting-item crm-connection-item">

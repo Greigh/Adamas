@@ -1,5 +1,5 @@
 // Number pattern formatter module
-import { savePatterns, loadPatterns, loadData } from './storage.js';
+import { savePatterns, loadPatterns, loadData, saveData } from './storage.js';
 import { showConfirmModal } from '../utils/modal.js';
 
 export let patterns = [
@@ -308,6 +308,10 @@ export function formatNumber(root = document) {
   resultDiv.textContent = result;
   const autoCopy = loadData('autoCopyPattern', true);
   if (result && result !== 'No matching pattern found') {
+    // Save to history
+    saveToHistory(originalDigits, result);
+    // Update history display
+    displayHistory(root);
     if (copyButton) {
       copyButton.style.display = 'inline-block';
       copyButton.disabled = false;
@@ -318,6 +322,87 @@ export function formatNumber(root = document) {
   } else if (copyButton) {
     copyButton.style.display = 'none';
     copyButton.disabled = true;
+  }
+}
+
+// History management functions
+function saveToHistory(input, result) {
+  const history = loadData('patternHistory', []);
+  const entry = {
+    input,
+    result,
+    timestamp: Date.now()
+  };
+  
+  // Remove duplicates (same input and result)
+  const filtered = history.filter(item => !(item.input === input && item.result === result));
+  
+  // Add new entry at the beginning
+  filtered.unshift(entry);
+  
+  // Keep only the last 50 entries
+  const trimmed = filtered.slice(0, 50);
+  
+  saveData('patternHistory', trimmed);
+}
+
+export function loadHistory() {
+  return loadData('patternHistory', []);
+}
+
+export function clearHistory() {
+  saveData('patternHistory', []);
+}
+
+export function displayHistory(root = document) {
+  const history = loadHistory();
+  const historyContainer = root.querySelector('#patternHistory');
+  if (!historyContainer) return;
+  
+  if (history.length === 0) {
+    historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
+    return;
+  }
+  
+  const historyList = history.map((entry, index) => `
+    <div class="history-item" data-index="${index}">
+      <div class="history-input">${entry.input}</div>
+      <div class="history-arrow">→</div>
+      <div class="history-result">${entry.result}</div>
+      <button class="history-use-btn" title="Use this result">Use</button>
+    </div>
+  `).join('');
+  
+  historyContainer.innerHTML = `
+    <div class="history-header">
+      <h4>Recent Formats</h4>
+      <button id="clearHistoryBtn" class="button btn-secondary">Clear History</button>
+    </div>
+    <div class="history-list">
+      ${historyList}
+    </div>
+  `;
+  
+  // Add event listeners
+  historyContainer.querySelectorAll('.history-use-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.closest('.history-item').dataset.index);
+      const entry = history[index];
+      const inputEl = root.querySelector('#patternNumberInput');
+      const resultDiv = root.querySelector('#patternResult');
+      if (inputEl) inputEl.value = entry.input;
+      if (resultDiv) resultDiv.textContent = entry.result;
+      // Trigger format to update UI
+      formatNumber(root);
+    });
+  });
+  
+  const clearBtn = historyContainer.querySelector('#clearHistoryBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      clearHistory();
+      displayHistory(root);
+    });
   }
 }
 
@@ -598,6 +683,8 @@ export function attachPatternEventListeners(root = document) {
   }
   // Ensure update pattern table attaches all event handlers and DnD
   try { updatePatternTable(); } catch (e) {}
+  // Display history
+  try { displayHistory(root); } catch (e) {}
   try {
     if (root && root.setAttribute) {
       root.setAttribute('data-patterns-attached', 'true');

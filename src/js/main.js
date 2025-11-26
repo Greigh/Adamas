@@ -92,19 +92,32 @@ const lazyLoadAdvancedModules = async () => {
       })
     ]);
 
-    // Initialize lazy-loaded modules with error handling
-    try { initializeCollaboration(); } catch (e) { console.error('Error initializing collaboration:', e); }
-    try { initializeAdvancedReporting(); } catch (e) { console.error('Error initializing reporting:', e); }
-    try { initializeWorkflows(); } catch (e) { console.error('Error initializing workflows:', e); }
-    try { initializeAIInsights(); } catch (e) { console.error('Error initializing AI insights:', e); }
-    try { initializeMultiChannel(); } catch (e) { console.error('Error initializing multichannel:', e); }
-    try { initializeFeedback(); } catch (e) { console.error('Error initializing feedback:', e); }
-    try { initializeKnowledgeBase(); } catch (e) { console.error('Error initializing knowledge base:', e); }
-    try { initializeTimeTracking(); } catch (e) { console.error('Error initializing time tracking:', e); }
-    try { initializeAdvancedAnalytics(); } catch (e) { console.error('Error initializing advanced analytics:', e); }
-    try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
+    // Wait for DOM to be ready before initializing
+    const initializeWhenReady = () => {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeModules);
+      } else {
+        initializeModules();
+      }
+    };
 
-    advancedModulesLoaded = true;
+    const initializeModules = () => {
+      // Initialize lazy-loaded modules with error handling
+      try { initializeCollaboration(); } catch (e) { console.error('Error initializing collaboration:', e); }
+      try { initializeAdvancedReporting(); } catch (e) { console.error('Error initializing reporting:', e); }
+      try { initializeWorkflows(); } catch (e) { console.error('Error initializing workflows:', e); }
+      try { initializeAIInsights(); } catch (e) { console.error('Error initializing AI insights:', e); }
+      try { initializeMultiChannel(); } catch (e) { console.error('Error initializing multichannel:', e); }
+      try { initializeFeedback(); } catch (e) { console.error('Error initializing feedback:', e); }
+      try { initializeKnowledgeBase(); } catch (e) { console.error('Error initializing knowledge base:', e); }
+      try { initializeTimeTracking(); } catch (e) { console.error('Error initializing time tracking:', e); }
+      try { initializeAdvancedAnalytics(); } catch (e) { console.error('Error initializing advanced analytics:', e); }
+      try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
+
+      advancedModulesLoaded = true;
+    };
+
+    initializeWhenReady();
   } catch (error) {
     console.error('Failed to load advanced modules:', error);
   }
@@ -208,6 +221,9 @@ function showMainApp() {
   document.getElementById('main-tab')?.classList.add('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.remove('active');
+  
+  // Lazy load advanced modules when main app is shown
+  lazyLoadAdvancedModules();
 }
 
 // Show settings panel
@@ -563,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       } else {
         // In production mode, register service worker
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('/callcenterhelper/sw.js')
           .then((registration) => {
             console.log('Service Worker registered successfully:', registration.scope);
 

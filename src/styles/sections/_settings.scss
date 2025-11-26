@@ -115,6 +115,14 @@
     grid-template-columns: repeat(2, minmax(240px, 1fr)) !important;
   }
 
+  // Two-column layout for section groups in Visible Sections
+  .section-groups-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: map.get($spacing, 4);
+    margin-top: map.get($spacing, 3);
+  }
+
   // Per-section specifics removed — keep this file focused on global
   // settings layout and general rules only. Per-section visuals should live
   // with component/section styles (e.g., _patterns.scss, _forms.scss).

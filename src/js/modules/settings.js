@@ -30,14 +30,14 @@ export let appSettings = {
   showScripts: false,
   showTasks: false,
   showVoicerecording: false,
-  showCollaboration: false,
-  showWorkflows: false,
-  showMultichannel: false,
-  showFeedback: false,
-  showKnowledgeBase: false,
-  showTimeTracking: false,
-  showAdvancedAnalytics: false,
-  showApiIntegration: false,
+  showCollaboration: true,
+  showWorkflows: true,
+  showMultichannel: true,
+  showFeedback: true,
+  showKnowledgeBase: true,
+  showTimeTracking: true,
+  showAdvancedAnalytics: true,
+  showApiIntegration: true,
   showHoldtimerSettings: true,
   showPerformanceMonitoring: false,
   showCrmIntegration: false,
@@ -787,41 +787,24 @@ export function setupSettingsEventListeners() {
     exportDataBtn.addEventListener('click', exportData);
   }
   const importDataBtn = document.getElementById('import-data-btn');
-  const importDataInput = document.getElementById('import-data-file');
-  const importFileInfo = document.getElementById('import-file-info');
-  if (importDataBtn && importDataInput) {
+  if (importDataBtn) {
     importDataBtn.addEventListener('click', () => {
-      importDataInput.click();
-    });
-    importDataInput.addEventListener('change', importData);
-    importDataInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file && importFileInfo) {
-        importFileInfo.textContent = `Selected: ${file.name}`;
-        importFileInfo.style.display = 'block';
-      } else if (importFileInfo) {
-        importFileInfo.style.display = 'none';
-      }
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = importData;
+      input.click();
     });
   }
 
-  // Restore backup functionality
   const restoreDataBtn = document.getElementById('restore-data-btn');
-  const restoreDataInput = document.getElementById('restore-data-file');
-  const restoreFileInfo = document.getElementById('restore-file-info');
-  if (restoreDataBtn && restoreDataInput) {
+  if (restoreDataBtn) {
     restoreDataBtn.addEventListener('click', () => {
-      restoreDataInput.click();
-    });
-    restoreDataInput.addEventListener('change', restoreData);
-    restoreDataInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file && restoreFileInfo) {
-        restoreFileInfo.textContent = `Selected: ${file.name}`;
-        restoreFileInfo.style.display = 'block';
-      } else if (restoreFileInfo) {
-        restoreFileInfo.style.display = 'none';
-      }
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = restoreData;
+      input.click();
     });
   }
 
