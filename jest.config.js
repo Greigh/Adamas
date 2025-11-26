@@ -5,7 +5,8 @@ module.exports = {
   },
   setupFiles: ['<rootDir>/test/jest.setup.js'],
   moduleFileExtensions: ['js', 'json'],
-  testMatch: ['**/test/**/*.test.js']
+  // include both *.test.js and *.spec.js so E2E specs using render/playwright can run under Jest
+  testMatch: ['**/test/**/*.{test,spec}.js']
 };
 
 

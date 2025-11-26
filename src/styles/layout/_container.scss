@@ -3,7 +3,7 @@
 
 // Main app container
 #app {
-  max-width: 1400px;
+  max-width: var(--app-max-width, 1600px);
   margin: 0 auto;
   padding: map.get($spacing, 6);
   background: var(--white);
@@ -20,16 +20,28 @@
   margin-top: map.get($spacing, 6);
 }
 
+/* Utility: safe grid variants that enforce a reasonable minimum column
+  width so grids can't collapse into many skinny columns. These are used
+  by settings JS so the layout remains readable while still honoring the
+  configured number of columns. */
+.sortable-container.grid-cols-1-safe { grid-template-columns: repeat(1, minmax(320px, 1fr)); }
+.sortable-container.grid-cols-2-safe { grid-template-columns: repeat(2, minmax(320px, 1fr)); }
+.sortable-container.grid-cols-3-safe { grid-template-columns: repeat(3, minmax(320px, 1fr)); }
+.sortable-container.grid-cols-4-safe { grid-template-columns: repeat(4, minmax(320px, 1fr)); }
+
 #stats-view .sortable-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  // ensure columns don't collapse too narrow on large screens — keep two
+  // readable columns and allow collapse to single column via media queries
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: map.get($spacing, 6);
   margin-top: map.get($spacing, 6);
 }
 
 [data-layout="grid"] .sortable-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  // same safe minimum as above for any grid-layout mode
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: map.get($spacing, 6);
   margin-top: map.get($spacing, 6);
 }
@@ -41,6 +53,20 @@
     display: flex;
     flex-direction: column;
   }
+}
+
+// Safety clamp: when a `.sortable-container` is controlling page layout we
+// intentionally keep inner grids to a conservative two-column maximum. Some
+// inner components (timer-stats, metrics dashboards, filter grids, etc.) use
+// `auto-fit` or 3+ columns for dense layouts. That creates a visual 3+ column
+// effect across sortable cards. Clamp common inner grids to two columns here
+// so the sortable layout stays consistent and matches the main app's two-column
+// design.
+.sortable-container :is(.timer-stats, .timers-container, .step-type-selector, .metrics-grid, .metrics-dashboard, .filter-grid, .insights-dashboard) {
+  // Prevent inner grids from collapsing so narrow columns can stack into three.
+  // Use a conservative minimum width so two columns remain readable and a
+  // third column won't fit on typical desktop widths.
+  grid-template-columns: repeat(2, minmax(260px, 1fr)) !important;
 }
 
 .draggable-section {

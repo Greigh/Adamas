@@ -159,6 +159,147 @@
   overflow-y: auto;
 }
 
+// Confirm Modal (accessible replacement for window.confirm)
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: map.get($z-index, modal) + 10; // Higher than other modals
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &.closing {
+    opacity: 0;
+  }
+}
+
+.confirm-modal {
+  background: var(--white);
+  border-radius: map.get($radius, lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 90%;
+  transform: scale(0.95) translateY(-10px);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  opacity: 0;
+
+  .confirm-modal-overlay.active & {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .confirm-modal-overlay.closing & {
+    transform: scale(0.95) translateY(-10px);
+    opacity: 0;
+  }
+}
+
+.modal-title {
+  font-size: map.get($font-sizes, lg);
+  font-weight: map.get($font-weights, semibold);
+  color: var(--gray-900);
+  margin: 0 0 map.get($spacing, 2) 0;
+  padding: map.get($spacing, 5) map.get($spacing, 5) 0;
+}
+
+.modal-message {
+  font-size: map.get($font-sizes, sm);
+  color: var(--gray-700);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0 map.get($spacing, 5) map.get($spacing, 5);
+}
+
+.modal-actions {
+  display: flex;
+  gap: map.get($spacing, 3);
+  padding: 0 map.get($spacing, 5) map.get($spacing, 5);
+  justify-content: flex-end;
+}
+
+.modal-cancel,
+.modal-confirm {
+  padding: map.get($spacing, 2) map.get($spacing, 4);
+  border-radius: map.get($radius, base);
+  font-size: map.get($font-sizes, sm);
+  font-weight: map.get($font-weights, medium);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border: none;
+  
+  &:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+.modal-cancel {
+  background: var(--white);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+
+  &:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+  }
+
+  &:active {
+    background: var(--gray-100);
+  }
+}
+
+.modal-confirm {
+  background: var(--primary);
+  color: var(--white);
+
+  &:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &.danger {
+    background: var(--error);
+
+    &:hover {
+      background: var(--error-dark);
+    }
+  }
+}
+
+// Fade-out animation when closing
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+}
+
+.confirm-modal-overlay.closing .confirm-modal {
+  animation: fadeOut 0.15s ease-out forwards;
+}
+
 // Dark mode
 [data-theme="dark"] {
   .modal {
@@ -211,6 +352,33 @@
     &.close-btn:hover {
       background: var(--error);
       color: var(--white);
+    }
+  }
+
+  // Confirm modal dark mode
+  .confirm-modal {
+    background: var(--dark-surface);
+  }
+
+  .modal-title {
+    color: var(--dark-text);
+  }
+
+  .modal-message {
+    color: var(--dark-text-muted);
+  }
+
+  .modal-cancel {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+
+    &:hover {
+      background: var(--dark-border);
+    }
+
+    &:active {
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 }

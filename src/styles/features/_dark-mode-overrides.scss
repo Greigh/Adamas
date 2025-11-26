@@ -74,3 +74,106 @@
 [data-theme="dark"] .step-text {
   color: var(--dark-text) !important;
 }
+
+/* Performance Metrics Dark Mode */
+[data-theme="dark"] .performance-metrics {
+  background: linear-gradient(135deg, var(--dark-surface), var(--dark-bg)) !important;
+  border-color: var(--dark-border) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+
+  h4 {
+    color: var(--dark-text) !important;
+  }
+
+  .metric-item {
+    background: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+
+    &:hover {
+      border-color: var(--primary-blue-light) !important;
+      box-shadow: 0 4px 16px rgba(25, 118, 210, 0.25) !important;
+    }
+
+    .metric-label {
+      color: var(--dark-text) !important;
+    }
+
+    .metric-value {
+      color: var(--primary-blue-light) !important;
+    }
+
+    .metric-change {
+      &.positive {
+        color: var(--success) !important;
+      }
+
+      &.negative {
+        color: var(--error) !important;
+      }
+    }
+  }
+}
+
+/* Export Options Dark Mode */
+[data-theme="dark"] .export-options {
+  background: linear-gradient(135deg, var(--dark-surface), var(--dark-bg)) !important;
+  border-color: var(--dark-border) !important;
+
+  .export-option {
+    background: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+
+    &:hover {
+      border-color: var(--primary-blue-light) !important;
+      box-shadow: 0 4px 8px rgba(25, 118, 210, 0.25) !important;
+    }
+
+    label {
+      color: var(--dark-text-muted) !important;
+    }
+
+    input[type="checkbox"]:checked + label {
+      color: var(--primary-blue-light) !important;
+    }
+  }
+}
+
+/* CRM Connection Dark Mode */
+[data-theme="dark"] .crm-connection-item {
+  .setting-label {
+    color: var(--primary-blue-light) !important;
+  }
+
+  .setting-description {
+    color: var(--dark-text-muted) !important;
+  }
+
+  .setting-control .button {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light)) !important;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4) !important;
+    }
+  }
+}
+
+/* CRM Config Section Dark Mode */
+[data-theme="dark"] .settings-subsection {
+  background: linear-gradient(135deg, var(--dark-surface), var(--dark-bg)) !important;
+  border-color: var(--dark-border) !important;
+
+  h4 {
+    color: var(--dark-text) !important;
+  }
+}
+
+/* Feature Item Dark Mode */
+[data-theme="dark"] .feature-item {
+  background: var(--dark-surface) !important;
+  border-color: var(--dark-border) !important;
+
+  .feature-text {
+    color: var(--dark-text-muted) !important;
+  }
+}

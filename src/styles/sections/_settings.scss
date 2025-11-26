@@ -1,848 +1,200 @@
 @use '../base/variables' as *;
 @use 'sass:map';
 
-// Settings View
+// Settings SCSS — CLEARED STARTER
+// This file intentionally minimal: we'll rebuild from scratch, section-by-section.
+// Keep the page-level grid small and let components provide visuals; avoid
+// global overrides until we add precise rules required by the layout.
+
+
 #settings-view {
   padding: map.get($spacing, 6);
-  min-height: calc(100vh - 120px); // Use min-height instead
-  overflow-y: visible; // Change from auto to visible
-  position: relative; // For scroll button positioning
-  width: 100%; // Add this to ensure full width
-  max-width: 100%; // Add this to prevent overflow
-  box-sizing: border-box; // Add this to include padding in width calculation
+  min-height: calc(100vh - 120px);
+  box-sizing: border-box;
 
   .settings-header {
-    text-align: center;
-    margin-bottom: map.get($spacing, 8);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: map.get($spacing, 4);
+    padding-bottom: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+    border-bottom: 1px solid var(--gray-100);
 
-    h1 {
-      color: var(--primary-blue);
-      margin-bottom: map.get($spacing, 2);
-    }
-
-    p {
-      color: var(--gray-600);
-      font-size: map.get($font-sizes, lg);
-    }
+    h1 { margin: 0; font-size: map.get($font-sizes, 3xl); font-weight: map.get($font-weights, bold); color: var(--primary-blue); }
+    p  { margin: 0; color: var(--gray-600); max-width: 56ch; opacity: 0.9; }
   }
 
-  .settings-container {
-    max-width: 1200px; // Increase from 1000px for more breathing room
-    margin: 0 auto;
-    width: 100%; // Ensure full width up to max-width
+  .settings-container { max-width: var(--app-max-width, 1600px); width: 100%; margin: 0 auto; }
+
+  // Safety clamp for any inner grids inside the settings view: do not allow
+  // auto-fit or extra columns to produce 3+ narrow columns. Keep a readable
+  // two-column layout only (opt-in internals can still use .section-content--cols)
+  .settings-container :is(.timer-stats, .timers-container, .step-type-selector, .metrics-grid, .metrics-dashboard, .filter-grid, .insights-dashboard, .scripts-grid, .task-board) {
+    grid-template-columns: repeat(2, minmax(320px, 1fr)) !important;
   }
 
   .settings-grid {
     display: grid;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
     gap: map.get($spacing, 6);
-    grid-template-columns: 1fr; // Default to single column
+    align-items: start;
+
+    // keep the 3rd item full-width by default
+    > .settings-section:nth-child(3) { grid-column: 1 / -1; }
   }
 
-  @media (min-width: map.get($breakpoints, lg)) {
-    .settings-grid {
-      grid-template-columns: repeat(2, 1fr); // Two columns on large screens
-    }
+  @media (max-width: map.get($breakpoints, sm)) {
+    .settings-grid { grid-template-columns: 1fr; }
+    .settings-header { flex-direction: column; align-items: flex-start; }
   }
+
+  // Base section visuals — preserve the main-page look and spacing.
+  // Visual surface comes from shared `.card` components; keep these rules
+  // structural only (padding, stacked content default, optional multi-column).
 
   .settings-section {
-    background: var(--white);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 6);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-100);
-    height: fit-content; // Adjust height based on content
-    overflow: visible; // Prevent scroll in each section
-
-    h3 {
-      margin: 0 0 map.get($spacing, 2) 0;
-      color: var(--primary-blue);
-      font-size: map.get($font-sizes, xl);
-      font-weight: map.get($font-weights, semibold);
-    }
-
-    p {
-      color: var(--gray-600);
-      margin-bottom: map.get($spacing, 4);
-    }
-
-    // Add to existing .settings-section styles
-    .layout-actions {
-      margin-top: map.get($spacing, 6);
+    .section-header {
+      padding: map.get($spacing, 4);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       gap: map.get($spacing, 3);
-
-      .button {
-        flex: 1;
-      }
-    }
-  }
-
-  .setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: map.get($spacing, 3) 0;
-    border-bottom: 1px solid var(--gray-100);
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .setting-info {
-    flex: 1;
-    margin-right: map.get($spacing, 4);
-
-    .setting-label {
-      font-weight: map.get($font-weights, semibold);
-      color: var(--gray-800);
-      margin-bottom: map.get($spacing, 1);
-      display: flex;
       align-items: center;
-      gap: map.get($spacing, 2);
-
-      input[type='checkbox'] {
-        margin-right: map.get($spacing, 2);
-      }
     }
 
-    .setting-description {
-      font-size: map.get($font-sizes, sm);
-      color: var(--gray-600);
-      line-height: 1.4;
+    .section-header .title-container { flex: 1; }
+
+    .section-header .section-title {
+      margin: 0;
+      padding: 0;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      color: var(--text);
+      font-size: map.get($font-sizes, lg);
+      font-weight: map.get($font-weights, semibold);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
+    .section-content {
+      padding: map.get($spacing, 6);
+      display: grid;
+      grid-template-columns: 1fr; // single column by default
+      gap: map.get($spacing, 4);
+    }
+
+    // allow an optional section-level heading appearance (rare)
+    > h3 { margin: 0 0 map.get($spacing, 2) 0; padding: map.get($spacing, 4); background: var(--card-bg); border-bottom: 1px solid var(--border-color); color: var(--primary-blue); }
   }
 
-  .setting-control {
-    flex-shrink: 0;
+  // Default: keep known inner-grids single column inside Settings unless explicitly opted in
+  .section-content .toggle-grid,
+  .section-content .export-options,
+  .section-content .appearance-grid,
+  .section-content .pattern-management,
+  .section-content .theme-buttons,
+  .section-content .metrics-grid,
+  .section-content .timer-stats,
+  .section-content .form-row {
+    grid-template-columns: 1fr !important;
+    gap: map.get($spacing, 3) !important;
   }
 
-  // Compact toggle grid for visible sections
-  .section-group {
-    margin-bottom: map.get($spacing, 6);
+  // When a section opts into multi-column internals use the modifier
+  .section-content.section-content--cols .toggle-grid,
+  .section-content.section-content--cols .pattern-management,
+  .section-content.section-content--cols .export-options,
+  .section-content.section-content--cols .appearance-grid,
+  .section-content.section-content--cols .theme-buttons,
+  .section-content.section-content--cols .metrics-grid,
+  .section-content.section-content--cols .timer-stats,
+  .section-content.section-content--cols .form-row {
+    grid-template-columns: repeat(2, minmax(240px, 1fr)) !important;
+  }
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+  // Per-section specifics removed — keep this file focused on global
+  // settings layout and general rules only. Per-section visuals should live
+  // with component/section styles (e.g., _patterns.scss, _forms.scss).
+
+  // Settings subsection styling
+  .settings-subsection {
+    background: linear-gradient(135deg, var(--surface), var(--bg));
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 4);
+    margin: map.get($spacing, 4) 0;
 
     h4 {
       margin: 0 0 map.get($spacing, 3) 0;
-      color: var(--primary-blue);
+      color: var(--text);
       font-size: map.get($font-sizes, lg);
       font-weight: map.get($font-weights, semibold);
-      border-bottom: 2px solid var(--gray-100);
-      padding-bottom: map.get($spacing, 2);
-    }
-
-    .toggle-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: map.get($spacing, 3);
-    }
-
-    .toggle-item {
-      background: var(--gray-50);
-      border-radius: map.get($radius, md);
-      padding: map.get($spacing, 3);
-      transition: background-color 0.2s ease;
-
-      &:hover {
-        background: var(--gray-100);
-      }
-    }
-
-    .toggle-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      margin: 0;
-      width: 100%;
-
-      input[type="checkbox"] {
-        margin: 0 map.get($spacing, 2) 0 0;
-        flex-shrink: 0;
-      }
-
-      .toggle-text {
-        font-weight: map.get($font-weights, medium);
-        color: var(--gray-800);
-        flex: 1;
-      }
     }
   }
 
-  // Appearance section styling
-  .appearance-grid {
-    display: grid;
-    gap: map.get($spacing, 4);
-  }
-
-  .appearance-item {
-    background: var(--gray-50);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 4);
-    border: 1px solid var(--gray-100);
-
-    .appearance-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: map.get($spacing, 3);
-
-      h4 {
-        margin: 0;
-        color: var(--primary-blue);
-        font-size: map.get($font-sizes, lg);
-        font-weight: map.get($font-weights, semibold);
-      }
-    }
-
-    .appearance-content {
-      .theme-indicator {
-        font-weight: map.get($font-weights, medium);
-        color: var(--gray-700);
-        margin-bottom: map.get($spacing, 2);
-
-        .theme-name {
-          color: var(--primary-blue);
-          font-weight: map.get($font-weights, semibold);
-        }
-      }
-
-      .appearance-description {
-        color: var(--gray-600);
-        font-size: map.get($font-sizes, sm);
-        line-height: 1.5;
-        margin: 0;
-      }
-    }
-  }
-
-  // Popup settings
-  .popup-options {
-    margin-top: map.get($spacing, 4);
-    padding: map.get($spacing, 4);
-    background: var(--gray-50);
-    border-radius: map.get($radius, base);
-    border-left: 3px solid var(--primary-blue);
-
-    .setting-item {
-      padding: map.get($spacing, 2) 0;
-    }
-  }
-
-  // Export settings
+  // Special styling for Export Options
   .export-options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: map.get($spacing, 3);
-    margin: map.get($spacing, 4) 0;
-  }
-
-  .export-option {
-    display: flex;
-    align-items: center;
-    gap: map.get($spacing, 2);
-    padding: map.get($spacing, 3);
-    background: var(--gray-50);
-    border-radius: map.get($radius, base);
-    border: 1px solid var(--gray-200);
-    transition: map.get($transitions, base);
-
-    &:hover {
-      background: var(--gray-100);
-      border-color: var(--primary-blue);
-    }
-
-    input[type='checkbox'] {
-      margin: 0;
-    }
-
-    label {
-      margin: 0;
-      font-size: map.get($font-sizes, sm);
-      font-weight: map.get($font-weights, medium);
-      cursor: pointer;
-      color: var(--gray-700);
-    }
-  }
-
-  // Theme preview
-  .theme-buttons {
-    display: flex;
-    gap: map.get($spacing, 2);
-
-    .theme-btn {
-      padding: map.get($spacing, 2) map.get($spacing, 4);
-      border: 2px solid;
-      border-radius: map.get($radius, base);
-      cursor: pointer;
-      font-size: map.get($font-sizes, sm);
-      font-weight: map.get($font-weights, medium);
-      transition: map.get($transitions, base);
-
-      &.light {
-        background: var(--white);
-        color: var(--gray-800);
-        border-color: var(--gray-300);
-
-        &:hover {
-          border-color: var(--primary-blue);
-          transform: translateY(-1px);
-        }
-      }
-
-      &.dark {
-        background: var(--gray-800);
-        color: var(--white);
-        border-color: var(--gray-600);
-
-        &:hover {
-          border-color: #90caf9;
-          transform: translateY(-1px);
-        }
-      }
-    }
-  }
-
-  #current-theme {
-    font-weight: map.get($font-weights, semibold);
-    color: var(--primary-blue);
-    background: rgba(25, 118, 210, 0.1);
-    padding: map.get($spacing, 1) map.get($spacing, 2);
-    border-radius: map.get($radius, base);
-    font-size: map.get($font-sizes, sm);
-  }
-
-  // Data management
-  .data-actions {
-    display: flex;
-    gap: map.get($spacing, 3);
-    margin-top: map.get($spacing, 4);
-    flex-wrap: wrap;
-
-    .button {
-      flex: 1;
-      min-width: 140px;
-    }
-  }
-
-  // Settings footer
-  .settings-footer {
-    margin-top: map.get($spacing, 8);
-    padding-top: map.get($spacing, 6);
-    border-top: 2px solid var(--gray-100);
-    display: flex;
-    gap: map.get($spacing, 3);
-    justify-content: center;
-    flex-wrap: wrap;
-
-    .button {
-      min-width: 150px;
-    }
-  }
-
-  // Auto-save indicator
-  .auto-save-indicator {
-    position: fixed;
-    bottom: map.get($spacing, 4);
-    right: map.get($spacing, 4);
-    background: var(--success);
-    color: white;
-    padding: map.get($spacing, 2) map.get($spacing, 4);
-    border-radius: map.get($radius, full);
-    font-size: map.get($font-sizes, sm);
-    font-weight: map.get($font-weights, medium);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.2s ease;
-    pointer-events: none;
-    z-index: map.get($z-index, toast);
-    box-shadow: var(--shadow-lg);
-
-    &.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  // Instance options
-  .instance-option {
-    padding-left: map.get($spacing, 6);
-    border-left: 2px solid var(--border-color);
-    margin-left: map.get($spacing, 4);
-
-    &:not(:last-child) {
-      margin-bottom: map.get($spacing, 4);
-    }
-
-    .setting-label {
-      font-size: map.get($font-sizes, sm);
-    }
-  }
-
-  // Range control
-  .range-control {
-    input[type='range'] {
-      width: 150px;
-    }
-
-    span {
-      min-width: 30px;
-      text-align: center;
-    }
-  }
-
-  // Timer alert sound dropdown (Safari-friendly)
-  #timer-alert-sound {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background: var(--white)
-      url('data:image/svg+xml;utf8,<svg fill="%23475569" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
-      no-repeat right 0.75rem center/1.25em 1.25em;
-    border: 2px solid var(--gray-200);
-    border-radius: map.get($radius, base);
-    padding: map.get($spacing, 2) map.get($spacing, 6) map.get($spacing, 2)
-      map.get($spacing, 3);
-    font-size: map.get($font-sizes, base);
-    font-family: var(--font-sans);
-    color: var(--gray-900);
-    transition: border-color 0.2s;
-    width: 100%;
-    min-width: 160px;
-    cursor: pointer;
-    margin-bottom: map.get($spacing, 2); // Add spacing below dropdown
-    display: block; // Ensure it takes full width and custom sound is below
-
-    &:focus {
-      border-color: var(--primary-blue);
-      outline: none;
-    }
-    &:hover {
-      border-color: var(--primary-blue-light);
-    }
-    option {
-      color: var(--gray-900);
-      background: var(--white);
-    }
-  }
-
-  [data-theme='dark'] #timer-alert-sound {
-    background: var(--dark-surface)
-      url('data:image/svg+xml;utf8,<svg fill="%2390caf9" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
-      no-repeat right 0.75rem center/1.25em 1.25em;
-    border: 2px solid var(--dark-border);
-    color: var(--dark-text);
-    option {
-      color: var(--dark-text);
-      background: var(--dark-surface);
-    }
-    box-shadow: 0 2px 8px rgba(20, 30, 40, 0.4);
-    &::placeholder {
-      color: var(--dark-text-muted);
-    }
-    &:focus {
-      border-color: var(--primary-blue-light);
-      background: var(--dark-bg);
-    }
-    &:hover {
-      border-color: var(--primary-blue);
-    }
-  }
-
-  // Custom sound URL input styling (always below the dropdown)
-  .custom-sound-option {
-    margin-top: 0; // Remove margin if already added by dropdown
-    margin-bottom: map.get($spacing, 3);
-    width: 100%;
-    display: block;
-
-    label {
-      display: block;
-      font-size: map.get($font-sizes, base);
-      color: var(--gray-800);
-      margin-bottom: map.get($spacing, 1);
-      min-width: 90px;
-    }
-
-    input[type='url'],
-    input[type='text'] {
-      width: 100%;
-      padding: map.get($spacing, 2) map.get($spacing, 3);
-      border: 2px solid var(--gray-200);
-      border-radius: map.get($radius, base);
-      font-size: map.get($font-sizes, base);
-      color: var(--gray-900);
-      background: var(--white);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      box-shadow: none;
-      min-width: 0;
-      margin-top: 0;
-
-      &:focus {
-        border-color: var(--primary-blue);
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.08);
-      }
-      &::placeholder {
-        color: var(--gray-400);
-        opacity: 1;
-      }
-    }
-  }
-
-  [data-theme='dark'] .custom-sound-option {
-    label {
-      color: var(--dark-text);
-    }
-    input[type='url'],
-    input[type='text'] {
-      background: var(--dark-surface);
-      color: var(--dark-text);
-      border-color: var(--dark-border);
-      &::placeholder {
-        color: var(--dark-text-muted);
-      }
-      &:focus {
-        border-color: #90caf9;
-        background: var(--dark-bg);
-      }
-    }
-  }
-
-  // Responsive tweak for custom sound input
-  @media (max-width: map.get($breakpoints, md)) {
-    .custom-sound-option {
-      input[type='url'],
-      input[type='text'] {
-        max-width: 100%;
-      }
-    }
-  }
-}
-
-// Dark mode
-[data-theme='dark'] {
-  #settings-view {
-    .settings-header {
-      h1 {
-        color: #90caf9;
-      }
-
-      p {
-        color: var(--dark-text-muted);
-      }
-    }
-
-    .settings-section {
-      background: var(--dark-surface);
-      border-color: var(--dark-border);
-
-      h3 {
-        color: #90caf9;
-      }
-
-      p {
-        color: var(--dark-text-muted);
-      }
-    }
-
-    .setting-item {
-      border-bottom-color: var(--dark-border);
-    }
-
-    .setting-info {
-      .setting-label {
-        color: var(--dark-text);
-      }
-
-      .setting-description {
-        color: var(--dark-text-muted);
-      }
-    }
-
-    .popup-options {
-      background: var(--dark-bg);
-      border-left-color: #90caf9;
-    }
+    margin-top: map.get($spacing, 2);
 
     .export-option {
-      background: var(--dark-bg);
-      border-color: var(--dark-border);
+      display: flex;
+      align-items: center;
+      padding: map.get($spacing, 2);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: map.get($radius, base);
+      transition: map.get($transitions, base);
 
       &:hover {
-        background: var(--dark-border);
-        border-color: #90caf9;
+        border-color: var(--primary-blue);
+        background: var(--surface);
+      }
+
+      input[type="checkbox"] {
+        margin-right: map.get($spacing, 2);
+        accent-color: var(--primary-blue);
       }
 
       label {
-        color: var(--dark-text);
+        font-size: map.get($font-sizes, sm);
+        color: var(--text);
+        cursor: pointer;
+        margin: 0;
       }
     }
+  }
 
-    #current-theme {
-      color: #90caf9;
-      background: rgba(144, 202, 249, 0.1);
+  // Special styling for CRM Connection
+  .crm-connection-item {
+    .setting-label {
+      color: var(--primary-blue);
+      font-weight: map.get($font-weights, semibold);
     }
 
-    .section-group {
-      h4 {
-        color: #90caf9;
-        border-bottom-color: var(--dark-border);
-      }
+    .setting-description {
+      color: var(--text-muted);
+    }
 
-      .toggle-item {
-        background: var(--dark-bg);
-        border: 1px solid var(--dark-border);
+    .setting-control {
+      .button {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+        color: white;
+        border: none;
+        padding: map.get($spacing, 2) map.get($spacing, 4);
+        border-radius: map.get($radius, base);
+        font-weight: map.get($font-weights, medium);
+        transition: map.get($transitions, base);
 
         &:hover {
-          background: var(--dark-border);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
         }
-
-        .toggle-label .toggle-text {
-          color: var(--dark-text);
-        }
-      }
-    }
-
-    .appearance-item {
-      background: var(--dark-bg);
-      border-color: var(--dark-border);
-
-      .appearance-header h4 {
-        color: #90caf9;
-      }
-
-      .appearance-content {
-        .theme-indicator {
-          color: var(--dark-text);
-
-          .theme-name {
-            color: #90caf9;
-          }
-        }
-
-        .appearance-description {
-          color: var(--dark-text-muted);
-        }
-      }
-    }
-
-    // Layout mode select
-    #layout-mode {
-      background: var(--dark-surface)
-        url('data:image/svg+xml;utf8,<svg fill="%2390caf9" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
-        no-repeat right 0.75rem center/1.25em 1.25em;
-      border: 2px solid var(--dark-border);
-      color: var(--dark-text);
-
-      option {
-        color: var(--dark-text);
-        background: var(--dark-surface);
-      }
-
-      &:focus {
-        border-color: #90caf9;
-        background: var(--dark-bg);
-      }
-
-      &:hover {
-        border-color: #90caf9;
-      }
-    }
-  }
-}
-
-// Responsive
-@media (max-width: map.get($breakpoints, md)) {
-  #settings-view {
-    padding: map.get($spacing, 3);
-
-    .settings-section {
-      padding: map.get($spacing, 3);
-
-      h3 {
-        font-size: map.get($font-sizes, lg);
-      }
-    }
-
-    .setting-item {
-      flex-direction: column;
-      align-items: flex-start;
-
-      .setting-info {
-        margin-right: 0;
-        margin-bottom: map.get($spacing, 2);
-        width: 100%;
-      }
-
-      .setting-control {
-        width: 100%;
-        justify-content: flex-end;
-      }
-    }
-
-    // Other existing media query styles...
-  }
-}
-
-// Add extra small device support
-@media (max-width: 480px) {
-  #settings-view {
-    padding: map.get($spacing, 2);
-
-    .settings-header {
-      margin-bottom: map.get($spacing, 4);
-
-      h1 {
-        font-size: map.get($font-sizes, xl);
-      }
-
-      p {
-        font-size: map.get($font-sizes, base);
-      }
-    }
-
-    .popup-options {
-      padding: map.get($spacing, 2);
-    }
-
-    .theme-buttons {
-      flex-direction: column;
-      width: 100%;
-
-      .theme-btn {
-        width: 100%;
-        text-align: center;
-        margin-bottom: map.get($spacing, 2);
-      }
-    }
-  }
-}
-
-// Add specific media query for larger screens
-@media (min-width: map.get($breakpoints, xl)) {
-  #settings-view {
-    .settings-container {
-      max-width: 1400px; // Even more space on very large screens
-    }
-  }
-}
-
-// Notification styles for data management
-.notification {
-  position: fixed;
-  top: map.get($spacing, 4);
-  right: map.get($spacing, 4);
-  padding: map.get($spacing, 3) map.get($spacing, 4);
-  border-radius: map.get($radius, lg);
-  color: white;
-  font-weight: map.get($font-weights, medium);
-  z-index: 1000;
-  max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  animation: slideInRight 0.3s ease-out;
-
-  &.notification-success {
-    background: var(--success-green);
-  }
-
-  &.notification-error {
-    background: var(--error-red);
-  }
-
-  &.notification-info {
-    background: var(--primary-blue);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-// Performance metrics styles
-.performance-metrics {
-  margin-top: map.get($spacing, 6);
-  padding: map.get($spacing, 4);
-  background: var(--gray-50);
-  border-radius: map.get($radius, lg);
-  border: 1px solid var(--gray-200);
-
-  h4 {
-    margin: 0 0 map.get($spacing, 4) 0;
-    color: var(--gray-800);
-    font-size: map.get($font-sizes, lg);
-    font-weight: map.get($font-weights, semibold);
-  }
-
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: map.get($spacing, 3);
-  }
-
-  .metric-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: map.get($spacing, 3);
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: map.get($radius, md);
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: var(--primary-blue);
-      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
-    }
-
-    .metric-label {
-      font-weight: map.get($font-weights, medium);
-      color: var(--gray-700);
-      font-size: map.get($font-sizes, sm);
-    }
-
-    .metric-value {
-      font-family: $font-family-mono;
-      font-weight: map.get($font-weights, bold);
-      color: var(--primary-blue);
-      font-size: map.get($font-sizes, base);
-    }
-  }
-}
-
-// Dark mode adjustments
-body.dark-mode {
-  .performance-metrics {
-    background: var(--gray-800);
-    border-color: var(--gray-700);
-
-    h4 {
-      color: var(--gray-100);
-    }
-
-    .metric-item {
-      background: var(--gray-700);
-      border-color: var(--gray-600);
-
-      &:hover {
-        border-color: var(--primary-blue);
-      }
-
-      .metric-label {
-        color: var(--gray-300);
-      }
-
-      .metric-value {
-        color: var(--primary-blue);
       }
     }
   }

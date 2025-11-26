@@ -8,20 +8,22 @@
 @use 'base/utilities';
 
 // Sections
+@use 'sections/ai-insights';
+@use 'sections/analytics';
+@use 'sections/call-logging';
 @use 'sections/callflow';
+@use 'sections/crm';
+@use 'sections/dashboards';
 @use 'sections/notes';
 @use 'sections/patterns';
-@use 'sections/settings';
-@use 'sections/timer';
-@use 'sections/call-logging';
-@use 'sections/analytics';
-@use 'sections/qa';
 @use 'sections/performance';
+@use 'sections/qa';
 @use 'sections/reporting';
-@use 'sections/dashboards';
-@use 'sections/crm';
 @use 'sections/scripts';
+@use 'sections/settings';
 @use 'sections/tasks';
+@use 'sections/timer';
+@use 'sections/workflows';
 
 // Layout
 @use 'layout/container';
@@ -36,6 +38,7 @@
 @use 'components/modals';
 @use 'components/tabs';
 @use 'components/instance-controls';
+@use 'components/toasts';
 
 // Features
 @use 'features/draggable';

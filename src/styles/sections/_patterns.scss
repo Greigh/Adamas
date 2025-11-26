@@ -95,6 +95,22 @@
         text-align: center;
       }
     }
+
+    // Special styling for the format cell (actual patterns)
+    .format-cell {
+      font-family: $font-family-mono;
+      font-size: map.get($font-sizes, base);
+      font-weight: map.get($font-weights, medium);
+      color: var(--primary-blue);
+      background: var(--gray-50);
+      padding: map.get($spacing, 3) map.get($spacing, 4);
+      border-radius: map.get($radius, sm);
+      margin: map.get($spacing, 1);
+      display: inline-block;
+      min-width: 120px;
+      text-align: center;
+      letter-spacing: 0.025em;
+    }
   }
 
   .empty-patterns-msg {
@@ -146,6 +162,13 @@
 
       td {
         color: var(--dark-text);
+      }
+
+      // Dark mode styling for format cells
+      .format-cell {
+        color: #90caf9;
+        background: var(--dark-surface);
+        border: 1px solid var(--dark-border);
       }
     }
 

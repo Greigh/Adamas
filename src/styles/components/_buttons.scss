@@ -34,6 +34,26 @@ button:not(.nav-tab):not(.tab-button) {
     transform: none;
   }
 
+  &.loading {
+    position: relative;
+    color: transparent;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
   // Button variants
   &.btn-secondary {
     background: var(--gray-500);
@@ -183,6 +203,112 @@ button:not(.nav-tab):not(.tab-button) {
   }
 }
 
+// File upload button styling
+.file-upload-btn {
+  background: linear-gradient(90deg, #3498db 60%, var(--primary-blue) 100%);
+  color: var(--white);
+  border: none;
+  border-radius: map.get($radius, base);
+  padding: map.get($spacing, 2) map.get($spacing, 4);
+  font-size: map.get($font-sizes, base);
+  font-weight: map.get($font-weights, medium);
+  cursor: pointer;
+  transition: map.get($transitions, base);
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: map.get($spacing, 2);
+  position: relative;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(90deg, var(--primary-blue) 60%, #3498db 100%);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// Pattern management action buttons (compact styling for table actions)
+.move-up-btn,
+.move-down-btn,
+.edit-pattern-btn,
+.delete-pattern-btn,
+.save-edit-btn,
+.cancel-edit-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: map.get($radius, sm);
+  padding: map.get($spacing, 1);
+  font-size: map.get($font-sizes, sm);
+  font-weight: map.get($font-weights, medium);
+  cursor: pointer;
+  transition: map.get($transitions, base);
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0 map.get($spacing, 1);
+
+  &:hover:not(:disabled) {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--primary-blue);
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.delete-pattern-btn {
+  &:hover:not(:disabled) {
+    background: var(--error);
+    color: var(--white);
+    border-color: var(--error);
+  }
+}
+
+.save-edit-btn {
+  background: var(--success);
+  color: var(--white);
+  border-color: var(--success);
+
+  &:hover:not(:disabled) {
+    background: #15803d;
+    border-color: #15803d;
+  }
+}
+
+.cancel-edit-btn {
+  background: var(--gray-500);
+  color: var(--white);
+  border-color: var(--gray-500);
+
+  &:hover:not(:disabled) {
+    background: var(--gray-600);
+    border-color: var(--gray-600);
+  }
+}
+
 // Dark mode
 [data-theme='dark'] {
   .button,
@@ -206,4 +332,57 @@ button:not(.nav-tab):not(.tab-button) {
       background: #42a5f5;
     }
   }
+
+  // Pattern management action buttons dark mode
+  .move-up-btn,
+  .move-down-btn,
+  .edit-pattern-btn,
+  .delete-pattern-btn,
+  .save-edit-btn,
+  .cancel-edit-btn {
+    background: transparent;
+    color: var(--dark-text-muted);
+    border-color: var(--dark-border);
+
+    &:hover:not(:disabled) {
+      background: var(--dark-surface);
+      color: var(--dark-text);
+      border-color: #90caf9;
+    }
+  }
+
+  .delete-pattern-btn {
+    &:hover:not(:disabled) {
+      background: #f87171;
+      color: var(--white);
+      border-color: #f87171;
+    }
+  }
+
+  .save-edit-btn {
+    background: #4ade80;
+    color: var(--white);
+    border-color: #4ade80;
+
+    &:hover:not(:disabled) {
+      background: #22c55e;
+      border-color: #22c55e;
+    }
+  }
+
+  .cancel-edit-btn {
+    background: var(--dark-border);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+
+    &:hover:not(:disabled) {
+      background: #6b7280;
+      border-color: #6b7280;
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

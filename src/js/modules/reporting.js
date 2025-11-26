@@ -6,9 +6,13 @@ export function initializeAdvancedReporting() {
   const startDateInput = document.getElementById('report-start-date');
   const endDateInput = document.getElementById('report-end-date');
   const generateBtn = document.getElementById('generate-report');
+  const clearFiltersBtn = document.getElementById('clear-filters');
+  const exportReportBtn = document.getElementById('export-report');
   const reportOutput = document.getElementById('report-output');
 
   generateBtn.addEventListener('click', generateReport);
+  clearFiltersBtn.addEventListener('click', clearFilters);
+  exportReportBtn.addEventListener('click', exportReport);
 
   // Set default date range (last 30 days)
   const today = new Date();
@@ -130,4 +134,110 @@ function formatDuration(ms) {
   const minutes = Math.floor(ms / 1000 / 60);
   const seconds = Math.floor((ms / 1000) % 60);
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function clearFilters() {
+  const reportTypeSelect = document.getElementById('report-type');
+  const startDateInput = document.getElementById('report-start-date');
+  const endDateInput = document.getElementById('report-end-date');
+  const reportOutput = document.getElementById('report-output');
+
+  // Reset to defaults
+  reportTypeSelect.selectedIndex = 0;
+
+  const today = new Date();
+  const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+  startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+  endDateInput.value = today.toISOString().split('T')[0];
+
+  // Clear report output
+  reportOutput.innerHTML = `
+    <div class="no-reports">
+      <h4>No Reports Generated</h4>
+      <p>Select your report parameters above and click "Generate Report" to view results.</p>
+    </div>
+  `;
+}
+
+function exportReport() {
+  const reportType = document.getElementById('report-type').value;
+  const startDate = document.getElementById('report-start-date').value;
+  const endDate = document.getElementById('report-end-date').value;
+  const reportOutput = document.getElementById('report-output');
+
+  // Get report data
+  const calls = getCallHistory().filter(call => {
+    const callDate = new Date(call.startTime);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return callDate >= start && callDate <= end;
+  });
+
+  let csvContent = '';
+
+  switch (reportType) {
+    case 'calls':
+      csvContent = generateCallCSV(calls);
+      break;
+    case 'performance':
+      csvContent = generatePerformanceCSV(calls);
+      break;
+    case 'qa':
+      csvContent = generateQACSV(calls);
+      break;
+    default:
+      alert('Please generate a report first');
+      return;
+  }
+
+  // Create and download CSV file
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `${reportType}_report_${startDate}_to_${endDate}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function generateCallCSV(calls) {
+  const headers = ['Caller Name', 'Call Type', 'Start Time', 'Duration', 'Status'];
+  const rows = calls.map(call => [
+    call.callerName,
+    call.callType,
+    new Date(call.startTime).toLocaleString(),
+    call.duration ? formatDuration(call.duration) : 'N/A',
+    call.status
+  ]);
+
+  return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+}
+
+function generatePerformanceCSV(calls) {
+  const headers = ['Metric', 'Value'];
+  const metrics = [
+    ['Total Calls', calls.length],
+    ['Average Handle Time', formatDuration(480000)],
+    ['First Call Resolution', '87%'],
+    ['Customer Satisfaction', '92%'],
+    ['Calls per Hour', '12.5']
+  ];
+
+  return [headers, ...metrics].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+}
+
+function generateQACSV(calls) {
+  const headers = ['Metric', 'Value'];
+  const metrics = [
+    ['Average QA Score', '88%'],
+    ['Calls Reviewed', Math.floor(calls.length * 0.3)],
+    ['Compliance Rate', '95%'],
+    ['Greeting Consistency', '98%'],
+    ['Empathy Demonstration', '92%'],
+    ['Issue Resolution', '85%']
+  ];
+
+  return [headers, ...metrics].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
 }

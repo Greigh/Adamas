@@ -162,14 +162,18 @@ export function renderSteps() {
   if (deleteAllBtn) {
     deleteAllBtn.addEventListener('click', () => {
       if (steps.length === 0) return;
-      if (confirm('Are you sure you want to delete all steps?')) {
+      (async () => {
+          const { showConfirmModal } = await import('../utils/modal.js');
+          const confirmed = await showConfirmModal({ title: 'Clear All Steps', message: 'Are you sure you want to delete all steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
+          if (confirmed) {
         steps.length = 0;
         completedSteps.clear();
         storageSteps(steps);
         saveCompletedSteps();
         renderSteps();
         generateFlow();
-      }
+          }
+      })();
     });
   }
 }

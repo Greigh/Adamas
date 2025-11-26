@@ -38,10 +38,17 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('[Service Worker] Caching static files');
-        return cache.addAll(STATIC_FILES);
+        // Use add() for each file individually to handle missing files gracefully
+        const cachePromises = STATIC_FILES.map(url => {
+          return cache.add(url).catch(error => {
+            console.warn(`[Service Worker] Failed to cache ${url}:`, error);
+            return Promise.resolve(); // Don't fail the entire operation
+          });
+        });
+        return Promise.all(cachePromises);
       })
       .catch((error) => {
-        console.error('[Service Worker] Error caching static files:', error);
+        console.error('[Service Worker] Error opening cache:', error);
       })
   );
   self.skipWaiting();

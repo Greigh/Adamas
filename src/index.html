@@ -19,8 +19,8 @@
           </div>
           <nav class="main-nav">
             <button id="main-tab" class="nav-tab active">Main</button>
-            <button id="settings-tab" class="nav-tab">Settings</button>
             <button id="stats-tab" class="nav-tab">Stats</button>
+            <button id="settings-tab" class="nav-tab">Settings</button>
           </nav>
         </div>
       </header>
@@ -43,106 +43,33 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
             <div class="section-content">
-              <div class="tab-container">
-                <div class="tab-header">
-                  <button
-                    class="tab-button active"
-                    data-pattern-tab="format-tab"
-                  >
-                    Format
-                  </button>
-                  <button class="tab-button" data-pattern-tab="patterns-tab">
-                    Patterns
-                  </button>
-                </div>
-
-                <div class="tab-content active" id="format-tab">
-                  <div class="input-group">
-                    <input
-                      type="text"
-                      id="patternNumberInput"
-                      placeholder="Enter number to format..."
-                      aria-label="Number to format"
-                    />
-                    <span class="tooltip-wrapper">
-                      <button id="pastePatternBtn" class="button">Paste</button>
-                      <span
-                        class="tooltip-text"
-                        role="tooltip"
-                        aria-hidden="true"
-                      >
-                        font-size: 0.85rem; " > Uses Clipboard API; falls back
-                        to a paste prompt if blocked.
-                      </span>
-                    </span>
-                    <button id="formatPatternBtn" class="button">Format</button>
-                    <button id="clearPatternBtn" class="button btn-secondary">
-                      Clear
-                    </button>
-                  </div>
-                  <div class="pattern-result" id="patternResult">
-                    Result will appear here
-                  </div>
-                  <button id="copyPatternBtn" class="button" disabled>
-                    Copy
-                  </button>
-                </div>
-
-                <div id="patterns-tab" class="tab-content">
-                  <div class="input-group">
-                    <label>
-                      <span>Starting Digits</span>
-                      <input
-                        type="text"
-                        id="startSequence"
-                        name="startSequence"
-                        placeholder="Optional starting digits..."
-                      />
-                    </label>
-                    <label>
-                      <span>Min Length</span>
-                      <input
-                        type="number"
-                        id="minLength"
-                        name="minLength"
-                        placeholder="Min digits..."
-                        min="1"
-                      />
-                    </label>
-                    <label>
-                      <span>Format (X = digit)</span>
-                      <input
-                        type="text"
-                        id="formatPattern"
-                        name="formatPattern"
-                        placeholder="Ex: @XXX-XXX-XXXX)"
-                      />
-                    </label>
-                    <button id="addPatternBtn" class="button">
-                      Add Pattern
-                    </button>
-                  </div>
-
-                  <table class="pattern-table">
-                    <thead>
-                      <tr>
-                        <th>Start</th>
-                        <th>Min Length</th>
-                        <th>Pattern</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="patternList">
-                      <!-- Patterns will be populated here -->
-                    </tbody>
-                  </table>
-                </div>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="patternNumberInput"
+                  placeholder="Enter number to format..."
+                  aria-label="Number to format"
+                />
+                <span class="tooltip-wrapper">
+                  <button id="pastePatternBtn" class="button">Paste</button>
+                  <span class="tooltip-text" role="tooltip" aria-hidden="true">
+                    font-size: 0.85rem; " > Uses Clipboard API; falls back to a
+                    paste prompt if blocked.
+                  </span>
+                </span>
+                <button id="formatPatternBtn" class="button">Format</button>
+                <button id="clearPatternBtn" class="button btn-secondary">
+                  Clear
+                </button>
               </div>
+              <div class="pattern-result" id="patternResult">
+                Result will appear here
+              </div>
+              <button id="copyPatternBtn" class="button" disabled>Copy</button>
             </div>
           </section>
 
@@ -161,7 +88,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -223,7 +149,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -271,7 +196,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -368,7 +292,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -422,54 +345,6 @@
             </div>
           </section>
 
-          <!-- CRM Integration Section -->
-          <section
-            id="crm-integration"
-            class="card toggleable-section draggable-section"
-            data-section="crm"
-          >
-            <div class="section-header">
-              <div class="drag-handle">⋮⋮</div>
-              <div class="title-container">
-                <h2 class="section-title" data-original="CRM Integration">
-                  CRM Integration
-                </h2>
-                <button class="edit-title-btn" title="Edit Title">✎</button>
-              </div>
-              <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
-                <button class="float-btn" title="Float">⧉</button>
-              </div>
-            </div>
-            <div class="section-content">
-              <div class="crm-config">
-                <div class="form-group">
-                  <label for="crm-provider">CRM Provider:</label>
-                  <select id="crm-provider" name="crm-provider">
-                    <option value="finesse">Cisco Finesse</option>
-                    <option value="five9">Five9</option>
-                  </select>
-                </div>
-              </div>
-              <div class="crm-connection">
-                <button id="connect-crm" class="button">
-                  Connect to Cisco Finesse
-                </button>
-                <div id="crm-status">Status: Disconnected</div>
-              </div>
-              <div class="crm-search">
-                <input
-                  type="text"
-                  id="crm-search"
-                  name="crm-search"
-                  placeholder="Search contacts..."
-                />
-                <button id="search-crm" class="button">Search</button>
-              </div>
-              <div id="crm-results"></div>
-            </div>
-          </section>
-
           <!-- Script Library Section -->
           <section
             id="script-library"
@@ -485,7 +360,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -532,7 +406,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -585,7 +458,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -624,7 +496,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -663,55 +534,103 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
             <div class="section-content">
               <div class="workflow-builder">
-                <div class="workflow-steps" id="workflow-steps"></div>
-                <button id="add-workflow-step" class="button">Add Step</button>
-                <button id="save-workflow" class="button">Save Workflow</button>
+                <div class="workflow-header">
+                  <h3>Workflow Builder</h3>
+                  <p>
+                    Create automated processes to streamline your call center
+                    operations
+                  </p>
+                </div>
+
+                <div class="step-type-selector" id="step-type-selector">
+                  <div class="step-type-option" data-type="call">
+                    <div class="step-icon">📞</div>
+                    <div class="step-label">Make Call</div>
+                    <div class="step-description">Initiate outbound calls</div>
+                  </div>
+                  <div class="step-type-option" data-type="email">
+                    <div class="step-icon">📧</div>
+                    <div class="step-label">Send Email</div>
+                    <div class="step-description">Send automated emails</div>
+                  </div>
+                  <div class="step-type-option" data-type="task">
+                    <div class="step-icon">📋</div>
+                    <div class="step-label">Create Task</div>
+                    <div class="step-description">Assign follow-up tasks</div>
+                  </div>
+                  <div class="step-type-option" data-type="wait">
+                    <div class="step-icon">⏱️</div>
+                    <div class="step-label">Wait/Delay</div>
+                    <div class="step-description">Add time delays</div>
+                  </div>
+                  <div class="step-type-option" data-type="condition">
+                    <div class="step-icon">🔀</div>
+                    <div class="step-label">Condition</div>
+                    <div class="step-description">
+                      Branch based on conditions
+                    </div>
+                  </div>
+                  <div class="step-type-option" data-type="notification">
+                    <div class="step-icon">🔔</div>
+                    <div class="step-label">Notification</div>
+                    <div class="step-description">
+                      Send alerts/notifications
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="step-config-form"
+                  id="step-config-form"
+                  style="display: none"
+                >
+                  <!-- Dynamic form content will be inserted here -->
+                </div>
+
+                <div class="workflow-steps" id="workflow-steps">
+                  <div class="empty-workflow">
+                    <div class="empty-icon">⚙️</div>
+                    <p>
+                      No workflow steps added yet.<br />Select a step type above
+                      to get started.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="builder-actions">
+                  <button id="add-workflow-step" class="button btn-secondary">
+                    <span>+</span> Add Step
+                  </button>
+                  <button
+                    id="save-workflow"
+                    class="button btn-success"
+                    disabled
+                  >
+                    💾 Save Workflow
+                  </button>
+                  <button id="test-workflow" class="button" disabled>
+                    ▶️ Test Workflow
+                  </button>
+                  <button id="clear-workflow" class="button btn-secondary">
+                    🗑️ Clear All
+                  </button>
+                </div>
               </div>
+
               <div class="active-workflows">
                 <h4>Active Workflows</h4>
-                <ul id="active-workflows-list"></ul>
-              </div>
-            </div>
-          </section>
-
-          <!-- AI-Powered Insights -->
-          <section
-            id="ai-insights"
-            class="card toggleable-section draggable-section"
-            data-section="ai"
-          >
-            <div class="section-header">
-              <div class="drag-handle">⋮⋮</div>
-              <div class="title-container">
-                <h2 class="section-title" data-original="AI Insights">
-                  AI Insights
-                </h2>
-                <button class="edit-title-btn" title="Edit Title">✎</button>
-              </div>
-              <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
-                <button class="float-btn" title="Float">⧉</button>
-              </div>
-            </div>
-            <div class="section-content">
-              <div class="insights-dashboard">
-                <div class="insight-card">
-                  <h3>Call Sentiment Analysis</h3>
-                  <div id="sentiment-analysis"></div>
-                </div>
-                <div class="insight-card">
-                  <h3>Trend Predictions</h3>
-                  <div id="trend-predictions"></div>
-                </div>
-                <div class="insight-card">
-                  <h3>Optimization Suggestions</h3>
-                  <div id="optimization-suggestions"></div>
+                <div id="active-workflows-list">
+                  <div class="no-workflows">
+                    <p>
+                      No workflows created yet.<br />Build your first workflow
+                      above.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -732,7 +651,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -761,168 +679,248 @@
               </div>
             </div>
           </section>
-
-          <!-- Phase 4: Mobile App Companion -->
-          <section
-            id="mobile-companion"
-            class="card toggleable-section draggable-section"
-            data-section="mobile"
-          >
-            <div class="section-header">
-              <div class="drag-handle">⋮⋮</div>
-              <div class="title-container">
-                <h2 class="section-title" data-original="Mobile Companion">
-                  Mobile Companion
-                </h2>
-                <button class="edit-title-btn" title="Edit Title">✎</button>
-              </div>
-              <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
-                <button class="float-btn" title="Float">⧉</button>
-              </div>
-            </div>
-            <div class="section-content">
-              <div class="mobile-sync">
-                <button id="sync-mobile" class="button">
-                  Sync with Mobile App
-                </button>
-                <div id="sync-status">Status: Not Synced</div>
-              </div>
-              <div class="mobile-features">
-                <h4>Mobile Features</h4>
-                <ul>
-                  <li>Real-time notifications</li>
-                  <li>Offline call logging</li>
-                  <li>Mobile-optimized scripts</li>
-                  <li>Quick access to CRM</li>
-                </ul>
-              </div>
-            </div>
-          </section>
         </div>
       </div>
 
       <!-- Settings View -->
       <div id="settings-view" class="app-view hidden">
-        <div class="settings-container">
-          <div class="settings-header">
-            <h1>App Settings</h1>
-            <p>Customize the look and feel of the application</p>
-          </div>
-
-          <div class="settings-grid">
+        <div class="container sortable-container">
             <!-- Pattern Formatter Settings -->
-            <div class="settings-section">
-              <h3>Pattern Formatter</h3>
-              <p>Configure number pattern formatting behavior:</p>
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-pattern-formatter">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Pattern Formatter</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>Configure number pattern formatting behavior:</p>
 
               <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Enable Popup Windows</div>
-                  <div class="setting-description">
-                    Allow sections to be opened in separate browser windows.
-                    When disabled, all sections will use floating overlays
-                    instead.
+                <div class="setting-header">
+                  <div class="setting-info">
+                    <div class="setting-label">Auto Copy Pattern Result</div>
                   </div>
                 </div>
-                <div class="setting-control">
-                  <label class="switch" for="enable-popup-windows">
-                    <input
-                      type="checkbox"
-                      id="enable-popup-windows"
-                      aria-label="Enable Popup Windows"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-item popup-options">
-                <div class="setting-info">
-                  <div class="setting-label">Prefer Browser Popups</div>
-                  <div class="setting-description">
-                    When enabled, the popout button will open the section in a
-                    separate browser window. If the browser blocks popups, a new
-                    tab will be opened as a fallback.
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="prefer-popup-windows">
-                    <input
-                      type="checkbox"
-                      id="prefer-popup-windows"
-                      aria-label="Prefer Browser Popups"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-item popup-options">
-                <div class="setting-info">
-                  <div class="setting-label">Popup Window Width</div>
-                  <div class="setting-description">
-                    Default width for popup windows (in pixels).
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <input
-                    type="number"
-                    id="popup-width"
-                    name="popup-width"
-                    min="400"
-                    max="1920"
-                    value="600"
-                    aria-label="Popup Window Width"
-                  />
-                </div>
-              </div>
-
-              <div class="setting-item popup-options">
-                <div class="setting-info">
-                  <div class="setting-label">Popup Window Height</div>
-                  <div class="setting-description">
-                    Default height for popup windows (in pixels).
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <input
-                    type="number"
-                    id="popup-height"
-                    name="popup-height"
-                    min="300"
-                    max="1080"
-                    value="400"
-                    aria-label="Popup Window Height"
-                  />
-                </div>
-              </div>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Auto Copy Pattern Result</div>
+                <div class="setting-content">
                   <div class="setting-description">
                     Automatically copy the formatted number to your clipboard
                     when a valid pattern is matched.
                   </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="auto-copy-toggle">
-                    <input
-                      type="checkbox"
-                      id="auto-copy-toggle"
-                      aria-label="Auto Copy Pattern Result"
-                    />
-                    <span class="slider"></span>
-                  </label>
+                  <div class="setting-control">
+                    <label class="switch" for="auto-copy-toggle">
+                      <input
+                        type="checkbox"
+                        id="auto-copy-toggle"
+                        name="auto-copy-toggle"
+                        aria-label="Auto Copy Pattern Result"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
                 </div>
               </div>
+              
+            <!-- Pattern Management Section (subsection of Pattern Formatter) -->
+            <div class="settings-subsection pattern-management-subsection" id="pattern-management-subsection">
+              <h4 class="subsection-title">Pattern Management</h4>
+              <p class="subsection-description">Configure number formatting patterns:</p>
+
+              <div class="pattern-management card" id="pattern-management">
+                <div class="input-group">
+                  <label>
+                    <span>Starting Digits</span>
+                    <input
+                      type="text"
+                      id="startSequence"
+                      name="startSequence"
+                      placeholder="Optional starting digits..."
+                    />
+                  </label>
+                  <label>
+                    <span>Min Length</span>
+                    <input
+                      type="number"
+                      id="minLength"
+                      name="minLength"
+                      placeholder="Min digits..."
+                      min="1"
+                    />
+                  </label>
+                  <label>
+                    <span>Format (X = digit)</span>
+                    <input
+                      type="text"
+                      id="formatPattern"
+                      name="formatPattern"
+                      placeholder="Ex: @XXX-XXX-XXXX"
+                    />
+                  </label>
+                  <button id="addPatternBtn" class="button btn-sm">Add Pattern</button>
+                </div>
+
+                <table class="pattern-table" aria-live="polite">
+                  <thead>
+                    <tr>
+                      <th class="drag-col" aria-hidden="true"></th>
+                      <th>Start</th>
+                      <th>Min Length</th>
+                      <th>Pattern</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patternList">
+                    <!-- Patterns will be populated here -->
+                  </tbody>
+                </table>
+              </div>
             </div>
+              </section>
 
             <!-- Appearance Section -->
-            <div class="settings-section">
-              <h3>Appearance</h3>
-              <p>Customize the look and feel of the application:</p>
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-appearance">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Appearance</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>Customize the look and feel of the application:</p>
+
+              <div class="popup-settings">
+                <div class="setting-item">
+                  <div class="setting-header">
+                    <div class="setting-info">
+                      <div class="setting-label">Enable Popup Windows</div>
+                    </div>
+                  </div>
+                  <div class="setting-content">
+                    <div class="setting-description">
+                      Allow any section to open in a dedicated browser window.
+                      When disabled, sections rely on in-app floating panels
+                      instead.
+                    </div>
+                    <div class="setting-control">
+                      <label class="switch" for="enable-popup-windows">
+                        <input
+                          type="checkbox"
+                          id="enable-popup-windows"
+                          name="enable-popup-windows"
+                          aria-label="Enable Popup Windows"
+                        />
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item popup-options">
+                  <div class="setting-header">
+                    <div class="setting-info">
+                      <div class="setting-label">Prefer Browser Popups</div>
+                    </div>
+                  </div>
+                  <div class="setting-content" >
+                    <div class="setting-description">
+                      Open sections in separate windows where possible. If
+                      blocked, the app falls back to opening a new tab.
+                    </div>
+                    <div class="setting-control">
+                      <label class="switch" for="prefer-popup-windows">
+                        <input
+                          type="checkbox"
+                          id="prefer-popup-windows"
+                          name="prefer-popup-windows"
+                          aria-label="Prefer Browser Popups"
+                        />
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item popup-options">
+                  <div class="setting-header">
+                    <div class="setting-info">
+                      <div class="setting-label">Always on Top</div>
+                    </div>
+                  </div>
+                  <div class="setting-content" >
+                    <div class="setting-description">
+                      Keep popup windows pinned above other desktop windows for
+                      quick reference.
+                    </div>
+                    <div class="setting-control">
+                      <label class="switch" for="popup-always-on-top">
+                        <input
+                          type="checkbox"
+                          id="popup-always-on-top"
+                          name="popup-always-on-top"
+                          aria-label="Popup Always on Top"
+                        />
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item popup-options">
+                  <div class="setting-header">
+                    <div class="setting-info">
+                      <div class="setting-label">Popup Window Width</div>
+                    </div>
+                  </div>
+                  <div class="setting-content" >
+                    <div class="setting-description">
+                      Default width (in pixels) for standalone windows.
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="number"
+                        id="popup-width"
+                        name="popup-width"
+                        min="400"
+                        max="1920"
+                        value="600"
+                        aria-label="Popup Window Width"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item popup-options">
+                  <div class="setting-header">
+                    <div class="setting-info">
+                      <div class="setting-label">Popup Window Height</div>
+                    </div>
+                  </div>
+                  <div class="setting-content" >
+                    <div class="setting-description">
+                      Default height (in pixels) for standalone windows.
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="number"
+                        id="popup-height"
+                        name="popup-height"
+                        min="300"
+                        max="1080"
+                        value="400"
+                        aria-label="Popup Window Height"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div class="appearance-grid">
                 <!-- Dark Mode Toggle -->
@@ -933,6 +931,7 @@
                       <input
                         type="checkbox"
                         id="dark-mode-toggle"
+                        name="dark-mode-toggle"
                         aria-label="Dark Mode"
                       />
                       <span class="slider"></span>
@@ -973,11 +972,22 @@
                 </div>
               </div>
             </div>
+            </section>
 
             <!-- Visible Sections -->
-            <div class="settings-section">
-              <h3>Visible Sections</h3>
-              <p>Choose which sections to display on the main page:</p>
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-visible-sections">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Visible Sections</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>Choose which sections to display on the main page:</p>
 
               <!-- Core Features -->
               <div class="section-group">
@@ -988,10 +998,15 @@
                       <input
                         type="checkbox"
                         id="toggle-formatter"
+                        name="toggle-formatter"
                         checked
                         aria-label="Show Number Formatter"
                       />
-                      <span class="toggle-text">Number Formatter</span>
+                      <span
+                        class="toggle-text"
+                        title="Format phone numbers using custom patterns and automatically copy results"
+                        >Number Formatter</span
+                      >
                     </label>
                   </div>
 
@@ -1000,10 +1015,15 @@
                       <input
                         type="checkbox"
                         id="toggle-callflow"
+                        name="toggle-callflow"
                         checked
                         aria-label="Show Call Flow Builder"
                       />
-                      <span class="toggle-text">Call Flow Builder</span>
+                      <span
+                        class="toggle-text"
+                        title="Create and manage step-by-step call handling procedures"
+                        >Call Flow Builder</span
+                      >
                     </label>
                   </div>
 
@@ -1012,10 +1032,15 @@
                       <input
                         type="checkbox"
                         id="toggle-notes"
+                        name="toggle-notes"
                         checked
                         aria-label="Show Notes"
                       />
-                      <span class="toggle-text">Notes</span>
+                      <span
+                        class="toggle-text"
+                        title="Take quick notes during calls with timestamp tracking"
+                        >Notes</span
+                      >
                     </label>
                   </div>
 
@@ -1024,10 +1049,15 @@
                       <input
                         type="checkbox"
                         id="toggle-holdtimer"
+                        name="toggle-holdtimer"
                         checked
                         aria-label="Show Hold Timer"
                       />
-                      <span class="toggle-text">Hold Timer</span>
+                      <span
+                        class="toggle-text"
+                        title="Track hold times with statistics, history, and multiple timer support"
+                        >Hold Timer</span
+                      >
                     </label>
                   </div>
                 </div>
@@ -1042,9 +1072,14 @@
                       <input
                         type="checkbox"
                         id="toggle-calllogging"
+                        name="toggle-calllogging"
                         aria-label="Show Call Logging"
                       />
-                      <span class="toggle-text">Call Logging</span>
+                      <span
+                        class="toggle-text"
+                        title="Log call details, track call history, and manage customer interactions"
+                        >Call Logging</span
+                      >
                     </label>
                   </div>
 
@@ -1053,9 +1088,14 @@
                       <input
                         type="checkbox"
                         id="toggle-tasks"
+                        name="toggle-tasks"
                         aria-label="Show Task Management"
                       />
-                      <span class="toggle-text">Task Management</span>
+                      <span
+                        class="toggle-text"
+                        title="Create and track tasks with priority levels and completion status"
+                        >Task Management</span
+                      >
                     </label>
                   </div>
 
@@ -1064,9 +1104,14 @@
                       <input
                         type="checkbox"
                         id="toggle-reporting"
+                        name="toggle-reporting"
                         aria-label="Show Advanced Reporting"
                       />
-                      <span class="toggle-text">Advanced Reporting</span>
+                      <span
+                        class="toggle-text"
+                        title="Generate detailed reports on calls, performance, and quality metrics"
+                        >Advanced Reporting</span
+                      >
                     </label>
                   </div>
                 </div>
@@ -1077,24 +1122,18 @@
                 <h4>Integrations & Tools</h4>
                 <div class="toggle-grid">
                   <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-crm">
-                      <input
-                        type="checkbox"
-                        id="toggle-crm"
-                        aria-label="Show CRM Integration"
-                      />
-                      <span class="toggle-text">CRM Integration</span>
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
                     <label class="toggle-label" for="toggle-scripts">
                       <input
                         type="checkbox"
                         id="toggle-scripts"
+                        name="toggle-scripts"
                         aria-label="Show Script Library"
                       />
-                      <span class="toggle-text">Script Library</span>
+                      <span
+                        class="toggle-text"
+                        title="Access pre-written call scripts organized by category"
+                        >Script Library</span
+                      >
                     </label>
                   </div>
 
@@ -1103,9 +1142,14 @@
                       <input
                         type="checkbox"
                         id="toggle-voicerecording"
+                        name="toggle-voicerecording"
                         aria-label="Show Voice Recording"
                       />
-                      <span class="toggle-text">Voice Recording</span>
+                      <span
+                        class="toggle-text"
+                        title="Record and manage call audio with CUCM integration"
+                        >Voice Recording</span
+                      >
                     </label>
                   </div>
 
@@ -1114,9 +1158,14 @@
                       <input
                         type="checkbox"
                         id="toggle-collaboration"
+                        name="toggle-collaboration"
                         aria-label="Show Team Collaboration"
                       />
-                      <span class="toggle-text">Team Collaboration</span>
+                      <span
+                        class="toggle-text"
+                        title="Real-time messaging and collaboration tools for team members"
+                        >Team Collaboration</span
+                      >
                     </label>
                   </div>
                 </div>
@@ -1131,20 +1180,14 @@
                       <input
                         type="checkbox"
                         id="toggle-workflows"
+                        name="toggle-workflows"
                         aria-label="Show Automated Workflows"
                       />
-                      <span class="toggle-text">Automated Workflows</span>
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-ai">
-                      <input
-                        type="checkbox"
-                        id="toggle-ai"
-                        aria-label="Show AI Insights"
-                      />
-                      <span class="toggle-text">AI Insights</span>
+                      <span
+                        class="toggle-text"
+                        title="Set up automated processes and triggers for common tasks"
+                        >Automated Workflows</span
+                      >
                     </label>
                   </div>
 
@@ -1153,36 +1196,181 @@
                       <input
                         type="checkbox"
                         id="toggle-multichannel"
+                        name="toggle-multichannel"
                         aria-label="Show Multi-Channel Support"
                       />
-                      <span class="toggle-text">Multi-Channel</span>
+                      <span
+                        class="toggle-text"
+                        title="Handle calls across phone, chat, email, and social media channels"
+                        >Multi-Channel</span
+                      >
                     </label>
                   </div>
                 </div>
               </div>
 
-              <!-- Mobile & Custom -->
+              <!-- Enterprise Features -->
               <div class="section-group">
-                <h4>Mobile & Custom</h4>
+                <h4>Enterprise Features</h4>
                 <div class="toggle-grid">
                   <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-mobile">
+                    <label class="toggle-label" for="toggle-feedback">
                       <input
                         type="checkbox"
-                        id="toggle-mobile"
-                        aria-label="Show Mobile Companion"
+                        id="toggle-feedback"
+                        name="toggle-feedback"
+                        aria-label="Show Customer Feedback"
                       />
-                      <span class="toggle-text">Mobile Companion</span>
+                      <span
+                        class="toggle-text"
+                        title="Collect and analyze customer feedback with customizable surveys"
+                        >Customer Feedback</span
+                      >
                     </label>
                   </div>
+
+                  <div class="toggle-item">
+                    <label class="toggle-label" for="toggle-knowledge-base">
+                      <input
+                        type="checkbox"
+                        id="toggle-knowledge-base"
+                        name="toggle-knowledge-base"
+                        aria-label="Show Knowledge Base"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Access knowledge base articles, procedures, and FAQs"
+                        >Knowledge Base</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="toggle-item">
+                    <label class="toggle-label" for="toggle-time-tracking">
+                      <input
+                        type="checkbox"
+                        id="toggle-time-tracking"
+                        name="toggle-time-tracking"
+                        aria-label="Show Time Tracking"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Track billable time, projects, and generate billing reports"
+                        >Time Tracking & Billing</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="toggle-item">
+                    <label class="toggle-label" for="toggle-advanced-analytics">
+                      <input
+                        type="checkbox"
+                        id="toggle-advanced-analytics"
+                        name="toggle-advanced-analytics"
+                        aria-label="Show Advanced Analytics"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Custom dashboards with real-time metrics and advanced reporting"
+                        >Advanced Analytics</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="toggle-item">
+                    <label class="toggle-label" for="toggle-api-integration">
+                      <input
+                        type="checkbox"
+                        id="toggle-api-integration"
+                        name="toggle-api-integration"
+                        aria-label="Show API Integration"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Connect with external APIs, webhooks, and third-party services"
+                        >API Integration</span
+                      >
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Advanced Settings -->
+              <div class="section-group">
+                <h4>Advanced Settings</h4>
+                <div class="toggle-grid">
+                  <div class="toggle-item">
+                    <label class="toggle-label" for="toggle-holdtimer-settings">
+                      <input
+                        type="checkbox"
+                        id="toggle-holdtimer-settings"
+                        name="toggle-holdtimer-settings"
+                        checked
+                        aria-label="Show Hold Timer Settings"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Configure hold timer behavior, alerts, and multiple timer support"
+                        >Hold Timer Settings</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="toggle-item">
+                    <label
+                      class="toggle-label"
+                      for="toggle-performance-monitoring"
+                    >
+                      <input
+                        type="checkbox"
+                        id="toggle-performance-monitoring"
+                        name="toggle-performance-monitoring"
+                        aria-label="Show Performance Monitoring"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Monitor application performance metrics and diagnostics"
+                        >Performance Monitoring</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="toggle-item">
+                    <label class="toggle-label" for="toggle-crm-integration">
+                      <input
+                        type="checkbox"
+                        id="toggle-crm-integration"
+                        name="toggle-crm-integration"
+                        aria-label="Show CRM Integration"
+                      />
+                      <span
+                        class="toggle-text"
+                        title="Configure CRM integration for contact lookup and call logging"
+                        >CRM Integration</span
+                      >
+                    </label>
+                  </div>
+
                 </div>
               </div>
             </div>
+            <!-- Visible Sections remain inside the top grid -->
+            </section>
 
             <!-- Hold Timer Settings -->
-            <div class="settings-section">
-              <h3>Hold Timer</h3>
-              <p>Configure hold timer behavior:</p>
+            <section id="hold-timer-settings" class="card settings-section toggleable-section draggable-section" data-section="settings-hold-timer">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Hold Timer</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>Configure hold timer behavior:</p>
 
               <!-- Timer Settings Switches -->
               <div class="setting-item">
@@ -1197,12 +1385,14 @@
                     <input
                       type="checkbox"
                       id="timer-auto-start"
+                      name="timer-auto-start"
                       aria-label="Auto-start on call"
                     />
                     <span class="slider"></span>
                   </label>
                 </div>
               </div>
+              <!-- end hold timer section content - will close below after items -->
 
               <div class="setting-item">
                 <div class="setting-info">
@@ -1216,6 +1406,7 @@
                     <input
                       type="checkbox"
                       id="timer-sound-alerts"
+                      name="timer-sound-alerts"
                       aria-label="Sound alerts"
                     />
                     <span class="slider"></span>
@@ -1341,104 +1532,187 @@
                 </div>
               </div>
             </div>
-
+            </section>
             <!-- Data Management Section -->
-            <div class="settings-section">
-              <h3>Data Management</h3>
-              <p>Export, import, backup, and restore your application data:</p>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Export Data</div>
-                  <div class="setting-description">
-                    Download all your application data as a JSON file for backup
-                    or transfer to another device.
-                  </div>
+            <section id="data-management-section" class="card settings-section toggleable-section draggable-section" data-section="settings-data-management">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Data Management</h2>
                 </div>
-                <div class="setting-control">
-                  <button id="export-data-btn" class="button btn-sm">
-                    Export Data
-                  </button>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
+              <div class="section-content section-content--cols">
+                <p>Export, import, backup, and restore your application data:</p>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Import Data</div>
-                  <div class="setting-description">
-                    Import data from a previously exported JSON file. This will
-                    merge with existing data.
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Export Options</div>
+                    <div class="setting-description">
+                      Choose which data to include when exporting:
+                    </div>
+                    <div class="export-options">
+                      <div class="export-option">
+                        <input
+                          type="checkbox"
+                          id="export-patterns"
+                          name="export-patterns"
+                          checked
+                        />
+                        <label for="export-patterns">Patterns</label>
+                      </div>
+                      <div class="export-option">
+                        <input
+                          type="checkbox"
+                          id="export-steps"
+                          name="export-steps"
+                          checked
+                        />
+                        <label for="export-steps">Call Flow</label>
+                      </div>
+                      <div class="export-option">
+                        <input
+                          type="checkbox"
+                          id="export-notes"
+                          name="export-notes"
+                          checked
+                        />
+                        <label for="export-notes">Notes</label>
+                      </div>
+                      <div class="export-option">
+                        <input
+                          type="checkbox"
+                          id="export-settings"
+                          name="export-settings"
+                          checked
+                        />
+                        <label for="export-settings">Settings</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div class="setting-control">
-                  <button id="import-data-btn" class="button btn-sm">
-                    Import Data
-                  </button>
-                  <input
-                    type="file"
-                    id="import-data-file"
-                    accept=".json"
-                    aria-label="Import data file"
-                  />
-                </div>
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Create Backup</div>
-                  <div class="setting-description">
-                    Create an automatic backup stored locally. Only the last 5
-                    backups are kept.
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Export Data</div>
+                    <div class="setting-description">
+                      Download all your application data as a JSON file for backup
+                      or transfer to another device.
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <button id="export-data-btn" class="button btn-sm">
+                      Export Data
+                    </button>
                   </div>
                 </div>
-                <div class="setting-control">
-                  <button id="backup-data-btn" class="button btn-sm">
-                    Create Backup
-                  </button>
-                </div>
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Restore from Backup</div>
-                  <div class="setting-description">
-                    Restore data from a backup file. This will overwrite
-                    existing data.
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Import Data</div>
+                    <div class="setting-description">
+                      Import data from a previously exported JSON file. This will
+                      merge with existing data.
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <div class="file-upload-group">
+                      <button
+                        id="import-data-btn"
+                        class="button btn-sm file-upload-btn"
+                      >
+                        📁 Import Data
+                      </button>
+                      <input
+                        type="file"
+                        id="import-data-file"
+                        name="import-data-file"
+                        accept=".json"
+                        aria-label="Import data file"
+                        class="file-input"
+                      />
+                      <div class="file-info" id="import-file-info"></div>
+                    </div>
                   </div>
                 </div>
-                <div class="setting-control">
-                  <button id="restore-data-btn" class="button btn-sm">
-                    Restore Backup
-                  </button>
-                  <input
-                    type="file"
-                    id="restore-data-file"
-                    accept=".json"
-                    aria-label="Restore backup file"
-                  />
-                </div>
-              </div>
 
-              <div class="setting-item danger">
-                <div class="setting-info">
-                  <div class="setting-label">Clear All Data</div>
-                  <div class="setting-description">
-                    Permanently delete ALL application data. This action cannot
-                    be undone.
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Create Backup</div>
+                    <div class="setting-description">
+                      Create an automatic backup stored locally. Only the last 5
+                      backups are kept.
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <button id="backup-data-btn" class="button btn-sm">
+                      Create Backup
+                    </button>
                   </div>
                 </div>
-                <div class="setting-control">
-                  <button id="clear-data-btn" class="button btn-sm btn-danger">
-                    Clear All Data
-                  </button>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Restore from Backup</div>
+                    <div class="setting-description">
+                      Restore data from a backup file. This will overwrite
+                      existing data.
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <div class="file-upload-group">
+                      <button
+                        id="restore-data-btn"
+                        class="button btn-sm file-upload-btn"
+                      >
+                        🔄 Restore Backup
+                      </button>
+                      <input
+                        type="file"
+                        id="restore-data-file"
+                        name="restore-data-file"
+                        accept=".json"
+                        aria-label="Restore backup file"
+                        class="file-input"
+                      />
+                      <div class="file-info" id="restore-file-info"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item danger">
+                  <div class="setting-info">
+                    <div class="setting-label">Clear All Data</div>
+                    <div class="setting-description">
+                      Permanently delete ALL application data. This action cannot
+                      be undone.
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <button id="clear-data-btn" class="button btn-sm btn-danger">
+                      Clear All Data
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </section>
 
             <!-- Performance Monitoring Section -->
-            <div class="settings-section">
-              <h3>Performance Monitoring</h3>
-              <p>Monitor application performance metrics and diagnostics:</p>
+            <section id="performance-monitoring-section" class="card settings-section toggleable-section draggable-section" data-section="settings-performance-monitoring">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">📊 Performance Monitoring</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>Monitor application performance metrics and diagnostics:</p>
 
               <div class="setting-item">
                 <div class="setting-info">
@@ -1491,8 +1765,561 @@
                 </div>
               </div>
             </div>
+            </section>
+
+            <!-- CRM Integration Settings -->
+            <section id="crm-integration-section" class="card settings-section toggleable-section draggable-section" data-section="settings-crm-integration">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">CRM Integration</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>
+                  Configure CRM integration for contact lookup and call logging:
+                </p>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">CRM Provider</div>
+                    <div class="setting-description">
+                      Select your CRM provider for integration
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <select
+                      id="crm-provider"
+                      name="crm-provider"
+                      aria-label="CRM Provider"
+                    >
+                      <option value="finesse">Cisco Finesse</option>
+                      <option value="five9">Five9</option>
+                      <option value="salesforce">Salesforce</option>
+                      <option value="zendesk">Zendesk</option>
+                      <option value="hubspot">HubSpot</option>
+                      <option value="dynamics">Microsoft Dynamics 365</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- CRM Configuration Section -->
+                <div id="crm-config-section" class="settings-subsection crm-config-section">
+                  <h4>CRM Configuration</h4>
+
+                  <!-- Cisco Finesse Configuration -->
+                  <form id="finesse-config-form" class="crm-provider-config">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Finesse Server URL</div>
+                        <div class="setting-description">
+                          Your Cisco Finesse server URL (e.g.,
+                          https://finesse-server:8445)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="url"
+                          id="finesse-url"
+                          name="finesse-url"
+                          placeholder="https://finesse-server:8445"
+                          aria-label="Finesse server URL"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Agent Username</div>
+                        <div class="setting-description">
+                          Your Cisco Finesse agent username
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="finesse-username"
+                          name="finesse-username"
+                          placeholder="agent_username"
+                          aria-label="Finesse agent username"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Agent Password</div>
+                        <div class="setting-description">
+                          Your Cisco Finesse agent password
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="finesse-password"
+                          name="finesse-password"
+                          placeholder="Enter password"
+                          aria-label="Finesse agent password"
+                          autocomplete="current-password"
+                        />
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- Five9 Configuration -->
+                  <form id="five9-config-form" class="crm-provider-config hidden">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Five9 Domain</div>
+                        <div class="setting-description">
+                          Your Five9 domain (e.g., yourcompany.five9.com)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="five9-domain"
+                          name="five9-domain"
+                          placeholder="yourcompany.five9.com"
+                          aria-label="Five9 domain"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">API Username</div>
+                        <div class="setting-description">
+                          Your Five9 API username
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="five9-username"
+                          name="five9-username"
+                          placeholder="api_username"
+                          aria-label="Five9 API username"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">API Password</div>
+                        <div class="setting-description">
+                          Your Five9 API password
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="five9-password"
+                          name="five9-password"
+                          placeholder="Enter password"
+                          aria-label="Five9 API password"
+                          autocomplete="current-password"
+                        />
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- Salesforce Configuration -->
+                  <form id="salesforce-config-form" class="crm-provider-config hidden">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Salesforce Instance URL</div>
+                        <div class="setting-description">
+                          Your Salesforce instance URL (e.g.,
+                          https://yourcompany.my.salesforce.com)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="url"
+                          id="salesforce-url"
+                          name="salesforce-url"
+                          placeholder="https://yourcompany.my.salesforce.com"
+                          aria-label="Salesforce instance URL"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Consumer Key</div>
+                        <div class="setting-description">
+                          Your Salesforce Connected App Consumer Key
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="salesforce-consumer-key"
+                          name="salesforce-consumer-key"
+                          placeholder="Your Consumer Key"
+                          aria-label="Salesforce Consumer Key"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Consumer Secret</div>
+                        <div class="setting-description">
+                          Your Salesforce Connected App Consumer Secret
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="salesforce-consumer-secret"
+                          name="salesforce-consumer-secret"
+                          placeholder="Your Consumer Secret"
+                          aria-label="Salesforce Consumer Secret"
+                          autocomplete="current-password"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Username</div>
+                        <div class="setting-description">
+                          Your Salesforce username
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="email"
+                          id="salesforce-username"
+                          name="salesforce-username"
+                          placeholder="user@company.com"
+                          aria-label="Salesforce username"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Password + Security Token</div>
+                        <div class="setting-description">
+                          Your Salesforce password followed by your security token
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="salesforce-password"
+                          name="salesforce-password"
+                          placeholder="password + security_token"
+                          aria-label="Salesforce password and security token"
+                          autocomplete="current-password"
+                        />
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- Zendesk Configuration -->
+                  <form id="zendesk-config-form" class="crm-provider-config hidden">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Zendesk Subdomain</div>
+                        <div class="setting-description">
+                          Your Zendesk subdomain (e.g., yourcompany.zendesk.com)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="zendesk-subdomain"
+                          name="zendesk-subdomain"
+                          placeholder="yourcompany"
+                          aria-label="Zendesk subdomain"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">API Token</div>
+                        <div class="setting-description">
+                          Your Zendesk API token (generate from Admin > API)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="zendesk-api-token"
+                          name="zendesk-api-token"
+                          placeholder="Your API token"
+                          aria-label="Zendesk API token"
+                          autocomplete="current-password"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Email Address</div>
+                        <div class="setting-description">
+                          The email address associated with your Zendesk account
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="email"
+                          id="zendesk-email"
+                          name="zendesk-email"
+                          placeholder="admin@company.com"
+                          aria-label="Zendesk email"
+                        />
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- HubSpot Configuration -->
+                  <form id="hubspot-config-form" class="crm-provider-config hidden">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">HubSpot API Key</div>
+                        <div class="setting-description">
+                          Your HubSpot API key (found in Settings > Integrations >
+                          API Key)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="hubspot-api-key"
+                          name="hubspot-api-key"
+                          placeholder="Your HubSpot API key"
+                          aria-label="HubSpot API key"
+                          autocomplete="new-password"
+                        />
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- Microsoft Dynamics 365 Configuration -->
+                  <form id="dynamics-config-form" class="crm-provider-config hidden">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Dynamics 365 URL</div>
+                        <div class="setting-description">
+                          Your Dynamics 365 organization URL (e.g.,
+                          https://yourorg.crm.dynamics.com)
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="url"
+                          id="dynamics-url"
+                          name="dynamics-url"
+                          placeholder="https://yourorg.crm.dynamics.com"
+                          aria-label="Dynamics 365 URL"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Client ID</div>
+                        <div class="setting-description">
+                          Your Azure AD application client ID
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="dynamics-client-id"
+                          name="dynamics-client-id"
+                          placeholder="Your Client ID"
+                          aria-label="Dynamics Client ID"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Client Secret</div>
+                        <div class="setting-description">
+                          Your Azure AD application client secret
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="password"
+                          id="dynamics-client-secret"
+                          name="dynamics-client-secret"
+                          placeholder="Your Client Secret"
+                          aria-label="Dynamics Client Secret"
+                          autocomplete="current-password"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <div class="setting-label">Tenant ID</div>
+                        <div class="setting-description">
+                          Your Azure AD tenant ID
+                        </div>
+                      </div>
+                      <div class="setting-control">
+                        <input
+                          type="text"
+                          id="dynamics-tenant-id"
+                          name="dynamics-tenant-id"
+                          placeholder="Your Tenant ID"
+                          aria-label="Dynamics Tenant ID"
+                        />
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="setting-item crm-connection-item">
+                  <div class="setting-info">
+                    <div class="setting-label">CRM Connection</div>
+                    <div class="setting-description">
+                      Connect to your CRM system to enable contact lookup and call
+                      logging
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <button id="connect-crm" class="button btn-sm" aria-label="Connect to CRM system" aria-describedby="crm-status">
+                      Connect to CRM
+                    </button>
+                    <div id="crm-status" class="status-text" role="status" aria-live="polite">
+                      Status: Disconnected
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Customer Feedback Section -->
+            <section
+              id="customer-feedback"
+              class="card toggleable-section draggable-section"
+              data-section="feedback"
+            >
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title" data-original="Customer Feedback">
+                    Customer Feedback
+                  </h2>
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                </div>
+                <div class="section-controls">
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content">
+                <div id="feedback-container"></div>
+              </div>
+            </section>
+
+            <!-- Knowledge Base Section -->
+            <section
+              id="knowledge-base"
+              class="card toggleable-section draggable-section"
+              data-section="knowledgebase"
+            >
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title" data-original="Knowledge Base">
+                    Knowledge Base
+                  </h2>
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                </div>
+                <div class="section-controls">
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content">
+                <div id="knowledge-base-container"></div>
+              </div>
+            </section>
+
+            <!-- Time Tracking & Billing Section -->
+            <section
+              id="time-tracking"
+              class="card toggleable-section draggable-section"
+              data-section="timetracking"
+            >
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title" data-original="Time Tracking & Billing">
+                    Time Tracking & Billing
+                  </h2>
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                </div>
+                <div class="section-controls">
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content">
+                <div id="time-tracking-container"></div>
+              </div>
+            </section>
+
+            <!-- API Integration Section -->
+            <section
+              id="api-integration"
+              class="card toggleable-section draggable-section"
+              data-section="apiintegration"
+            >
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title" data-original="API Integration">
+                    API Integration
+                  </h2>
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                </div>
+                <div class="section-controls">
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content">
+                <div id="api-integration-container"></div>
+              </div>
+            </section>
+
+            <!-- Advanced Analytics Section -->
+            <section
+              id="advanced-analytics"
+              class="card toggleable-section draggable-section"
+              data-section="advancedanalytics"
+            >
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title" data-original="Advanced Analytics">
+                    Advanced Analytics
+                  </h2>
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                </div>
+                <div class="section-controls">
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content">
+                <div id="advanced-analytics-container"></div>
+              </div>
+            </section>
+
+            <!-- Mobile companion removed -->
           </div>
-        </div>
       </div>
 
       <!-- Stats View -->
@@ -1513,11 +2340,10 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
-            <div class="section-content">
+              <div class="section-content section-content--cols">
               <div class="analytics-tabs">
                 <button class="analytics-tab active" data-tab="overview">
                   Overview
@@ -1572,7 +2398,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -1590,6 +2415,8 @@
                     ><input
                       type="checkbox"
                       class="qa-checkbox"
+                      id="qa-greeting"
+                      name="qa-greeting"
                       data-criterion="greeting"
                     />
                     Proper Greeting</label
@@ -1598,6 +2425,8 @@
                     ><input
                       type="checkbox"
                       class="qa-checkbox"
+                      id="qa-empathy"
+                      name="qa-empathy"
                       data-criterion="empathy"
                     />
                     Empathy Shown</label
@@ -1606,6 +2435,8 @@
                     ><input
                       type="checkbox"
                       class="qa-checkbox"
+                      id="qa-resolution"
+                      name="qa-resolution"
                       data-criterion="resolution"
                     />
                     Issue Resolved</label
@@ -1614,6 +2445,8 @@
                     ><input
                       type="checkbox"
                       class="qa-checkbox"
+                      id="qa-courtesy"
+                      name="qa-courtesy"
                       data-criterion="courtesy"
                     />
                     Courtesy Maintained</label
@@ -1648,7 +2481,6 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -1692,42 +2524,191 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="minimize-btn" title="Minimize">−</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
             <div class="section-content">
-              <div class="report-filters">
-                <select
-                  id="report-type"
-                  name="report-type"
-                  aria-label="Report type"
-                >
-                  <option value="calls">Call Reports</option>
-                  <option value="performance">Performance Reports</option>
-                  <option value="qa">QA Reports</option>
-                </select>
-                <label for="report-start-date" class="sr-only"
-                  >Report start date</label
-                >
-                <input
-                  type="date"
-                  id="report-start-date"
-                  name="report-start-date"
-                />
-                <label for="report-end-date" class="sr-only"
-                  >Report end date</label
-                >
-                <input
-                  type="date"
-                  id="report-end-date"
-                  name="report-end-date"
-                />
-                <button id="generate-report" class="button">
-                  Generate Report
-                </button>
+              <!-- Reporting Controls -->
+              <div class="reporting-controls">
+                <div class="controls-header">
+                  <h3>Report Generation</h3>
+                  <p>
+                    Generate detailed reports for calls, performance metrics,
+                    and quality assurance
+                  </p>
+                </div>
+
+                <div class="filter-grid">
+                  <div class="filter-group">
+                    <label class="filter-label" for="report-type"
+                      >Report Type</label
+                    >
+                    <select
+                      id="report-type"
+                      name="report-type"
+                      aria-label="Report type"
+                    >
+                      <option value="calls">📞 Call Reports</option>
+                      <option value="performance">
+                        📊 Performance Reports
+                      </option>
+                      <option value="qa">✅ QA Reports</option>
+                    </select>
+                  </div>
+
+                  <div class="filter-group">
+                    <label class="filter-label" for="report-start-date"
+                      >Start Date</label
+                    >
+                    <input
+                      type="date"
+                      id="report-start-date"
+                      name="report-start-date"
+                      placeholder="Select start date"
+                    />
+                  </div>
+
+                  <div class="filter-group">
+                    <label class="filter-label" for="report-end-date"
+                      >End Date</label
+                    >
+                    <input
+                      type="date"
+                      id="report-end-date"
+                      name="report-end-date"
+                      placeholder="Select end date"
+                    />
+                  </div>
+                </div>
+
+                <div class="control-buttons">
+                  <button id="generate-report" class="btn btn-primary">
+                    🚀 Generate Report
+                  </button>
+                  <button id="clear-filters" class="btn btn-secondary">
+                    🗑️ Clear Filters
+                  </button>
+                  <button id="export-report" class="btn btn-outline">
+                    💾 Export Data
+                  </button>
+                </div>
               </div>
-              <div id="report-output"></div>
+
+              <!-- Reports Output -->
+              <div class="reports-output">
+                <div class="reports-header">
+                  <h4>Report Results</h4>
+                  <div class="export-options">
+                    <button class="btn btn-export">📊 CSV</button>
+                    <button class="btn btn-export">📄 PDF</button>
+                    <button class="btn btn-print">🖨️ Print</button>
+                  </div>
+                </div>
+
+                <div id="report-output">
+                  <!-- Report content will be populated here -->
+                  <div class="no-reports">
+                    <h4>No Reports Generated</h4>
+                    <p>
+                      Select your report parameters above and click "Generate
+                      Report" to view results.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- AI-Powered Insights -->
+          <section
+            id="ai-insights"
+            class="card toggleable-section draggable-section"
+            data-section="ai"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="AI Insights">
+                  AI Insights
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="insights-header">
+                <div class="insights-title">
+                  <h2>AI-Powered Analytics</h2>
+                  <p>Real-time insights powered by machine learning</p>
+                </div>
+                <div class="insights-controls">
+                  <button
+                    class="control-btn active"
+                    title="Auto-refresh"
+                    id="auto-refresh-toggle"
+                  >
+                    🔄
+                  </button>
+                  <button
+                    class="control-btn"
+                    title="Export insights"
+                    id="export-insights"
+                  >
+                    📊
+                  </button>
+                  <button
+                    class="control-btn"
+                    title="Settings"
+                    id="insights-settings"
+                  >
+                    ⚙️
+                  </button>
+                </div>
+              </div>
+
+              <div class="insights-dashboard">
+                <div class="insight-card">
+                  <h3>Sentiment Analysis</h3>
+                  <div id="sentiment-analysis">
+                    <div class="loading-state">
+                      <div class="spinner"></div>
+                      <p>Analyzing call sentiment...</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="insight-card">
+                  <h3>Trend Predictions</h3>
+                  <div id="trend-predictions">
+                    <div class="loading-state">
+                      <div class="spinner"></div>
+                      <p>Predicting trends...</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="insight-card">
+                  <h3>Performance Metrics</h3>
+                  <div id="performance-metrics">
+                    <div class="loading-state">
+                      <div class="spinner"></div>
+                      <p>Calculating metrics...</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="insight-card">
+                  <h3>Optimization Suggestions</h3>
+                  <div id="optimization-suggestions">
+                    <div class="loading-state">
+                      <div class="spinner"></div>
+                      <p>Generating suggestions...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
         </div>

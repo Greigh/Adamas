@@ -6,13 +6,30 @@
   background: linear-gradient(
     135deg,
     var(--primary-blue) 0%,
-    var(--primary-blue-dark) 100%
+    var(--primary-blue-dark) 25%,
+    var(--primary-blue) 50%,
+    var(--primary-blue-dark) 75%,
+    var(--primary-blue) 100%
   );
   color: var(--white);
   padding: 0;
   margin: -24px -24px 24px -24px;
   border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
 }
 
 .header-content {
@@ -35,46 +52,67 @@
 
 .main-nav {
   display: flex;
-  gap: map.get($spacing, 1);
+  gap: map.get($spacing, 2);
+  position: relative;
+  z-index: 1;
 }
 
 .nav-tab {
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.8);
-  border: none;
-  border-radius: map.get($radius, md);
-  padding: map.get($spacing, 2) map.get($spacing, 5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: map.get($radius, lg);
+  padding: map.get($spacing, 2.5) map.get($spacing, 4);
   font-size: map.get($font-sizes, base);
   font-weight: map.get($font-weights, medium);
   cursor: pointer;
-  transition: map.get($transitions, base);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     color: var(--white);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+
+    &::before {
+      left: 100%;
+    }
   }
 
   &.active {
     background: var(--white);
     color: var(--primary-blue);
     font-weight: map.get($font-weights, semibold);
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-xl), 0 0 25px rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
 
     &:hover {
       background: var(--gray-50);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl), 0 0 30px rgba(255, 255, 255, 0.4);
     }
   }
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -84,9 +122,17 @@
     background: linear-gradient(
       135deg,
       var(--dark-surface) 0%,
-      var(--dark-bg) 100%
+      var(--dark-bg) 25%,
+      var(--dark-surface) 50%,
+      var(--dark-bg) 75%,
+      var(--dark-surface) 100%
     );
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-xl), 0 0 0 1px rgba(144, 202, 249, 0.1) inset;
+
+    &::before {
+      background: radial-gradient(circle at 20% 80%, rgba(144, 202, 249, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(144, 202, 249, 0.05) 0%, transparent 50%);
+    }
   }
 
   .app-title h1 {
@@ -96,25 +142,33 @@
   .nav-tab {
     background: rgba(144, 202, 249, 0.1);
     color: rgba(226, 232, 240, 0.8);
-    border-color: rgba(144, 202, 249, 0.1);
+    border-color: rgba(144, 202, 249, 0.15);
+
+    &::before {
+      background: linear-gradient(90deg, transparent, rgba(144, 202, 249, 0.2), transparent);
+    }
 
     &:hover {
       background: rgba(144, 202, 249, 0.2);
       color: var(--dark-text);
+      box-shadow: var(--shadow-lg), 0 0 20px rgba(144, 202, 249, 0.1);
+      border-color: rgba(144, 202, 249, 0.25);
     }
 
     &.active {
       background: #90caf9;
       color: var(--dark-surface);
-      border-color: rgba(144, 202, 249, 0.3);
+      border-color: rgba(144, 202, 249, 0.4);
+      box-shadow: var(--shadow-xl), 0 0 25px rgba(144, 202, 249, 0.3);
 
       &:hover {
         background: #81c1f7;
+        box-shadow: var(--shadow-xl), 0 0 30px rgba(144, 202, 249, 0.4);
       }
     }
 
     &:focus {
-      box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.3);
+      box-shadow: 0 0 0 3px rgba(144, 202, 249, 0.3);
     }
   }
 }
@@ -139,6 +193,7 @@
     .nav-tab {
       flex: 1;
       text-align: center;
+      padding: map.get($spacing, 2.5) map.get($spacing, 3);
     }
   }
 }
@@ -172,7 +227,7 @@
   }
 
   .nav-tab {
-    padding: map.get($spacing, 1) map.get($spacing, 2);
+    padding: map.get($spacing, 2) map.get($spacing, 2);
     font-size: map.get($font-sizes, xs);
   }
 }
@@ -202,6 +257,7 @@
   .nav-tab {
     width: 100%;
     font-size: map.get($font-sizes, sm);
-    padding: map.get($spacing, 2) map.get($spacing, 2);
+    padding: map.get($spacing, 2.5) map.get($spacing, 3);
+    justify-content: center;
   }
 }

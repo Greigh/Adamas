@@ -41,23 +41,45 @@ function formatDuration(ms) {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// For charts, we'd need Chart.js or similar library
-// This is a placeholder for chart initialization
+// For charts, use Chart.js if available
 export function initializeCharts() {
   // Initialize charts when Chart.js is available
   const callsChartCanvas = document.getElementById('calls-chart');
-  if (callsChartCanvas && window.Chart) {
+  if (callsChartCanvas && typeof Chart !== 'undefined') {
     const ctx = callsChartCanvas.getContext('2d');
+    const callHistory = getCallHistory();
+    const last7Days = Array.from({length: 7}, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return date.toLocaleDateString();
+    });
+
+    const callCounts = last7Days.map(dateStr => {
+      return callHistory.filter(call => {
+        const callDate = new Date(call.startTime).toLocaleDateString();
+        return callDate === dateStr;
+      }).length;
+    });
+
     new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: last7Days,
         datasets: [{
-          label: 'Calls',
-          data: [12, 19, 3, 5, 2, 3, 9],
+          label: 'Calls per Day',
+          data: callCounts,
           borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
           tension: 0.1
         }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
       }
     });
   }

@@ -1,5 +1,6 @@
 // Number pattern formatter module
 import { savePatterns, loadPatterns, loadData } from './storage.js';
+import { showConfirmModal } from '../utils/modal.js';
 
 export let patterns = [
   { id: 1, start: '81', minLength: 10, format: '@XXX-XXX-XXXX' },
@@ -8,6 +9,8 @@ export let patterns = [
 ];
 
 export let nextPatternId = 4;
+export let editingPatternId = null;
+export let lastDeletedPattern = null; // { pattern, index, timeoutId }
 
 export function initializePatterns() {
   const savedPatterns = loadPatterns();
@@ -19,36 +22,118 @@ export function initializePatterns() {
 }
 
 export function updatePatternTable() {
-  const tbody = document.getElementById('patternList');
-  if (!tbody) return;
+  // Update all visible pattern lists within the page to support
+  // settings area + any floating clones that include a pattern list.
+  const tbodies = document.querySelectorAll('tbody#patternList');
+  if (!tbodies || tbodies.length === 0) return;
 
-  tbody.innerHTML = '';
-  patterns.forEach((pattern) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${pattern.start || '(none)'}</td>
-      <td>${pattern.minLength}</td>
-      <td>${pattern.format}</td>
-      <td><button class="delete-pattern-btn" data-pattern-id="${
-        pattern.id
-      }">Delete</button></td>
-    `;
-    tbody.appendChild(row);
-  });
+  tbodies.forEach((tbody) => {
+    tbody.innerHTML = '';
+    patterns.forEach((pattern, idx) => {
+      const row = document.createElement('tr');
+      row.setAttribute('draggable', 'true');
+      row.setAttribute('data-pattern-id', pattern.id);
+      row.innerHTML = `
+        <td class="drag-cell" aria-hidden="true">⣿</td>
+        <td class="start-cell">${pattern.start || '(none)'}</td>
+        <td class="minlen-cell">${pattern.minLength}</td>
+        <td class="format-cell">${pattern.format}</td>
+        <td class="row-actions">
+          <button class="move-up-btn" data-pattern-id="${pattern.id}" aria-label="Move pattern up">▲</button>
+          <button class="move-down-btn" data-pattern-id="${pattern.id}" aria-label="Move pattern down">▼</button>
+          <button class="edit-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Edit pattern">✎</button>
+          <button class="delete-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Delete pattern">🗑</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
 
-  // Attach event listeners to all delete buttons
-  tbody.querySelectorAll('.delete-pattern-btn').forEach((btn) => {
-    btn.addEventListener('click', function () {
-      const id = parseInt(this.getAttribute('data-pattern-id'));
-      deletePattern(id);
+    // Attach event listeners for edit/move/delete buttons inside this tbody
+    tbody.querySelectorAll('.edit-pattern-btn').forEach((btn) => {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.addEventListener('click', function () {
+        const id = parseInt(this.getAttribute('data-pattern-id'));
+        startEditPattern(id, this.closest('tbody'));
+      });
+    });
+
+    tbody.querySelectorAll('.delete-pattern-btn').forEach((btn) => {
+      // Remove existing listeners by cloning if necessary to avoid duplicates
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', async function () {
+          const id = parseInt(this.getAttribute('data-pattern-id'));
+          const confirmed = await showConfirmModal({ title: 'Delete Pattern', message: 'Are you sure you want to delete this pattern? This action can be undone for 5 seconds.', confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
+          if (confirmed) {
+            deletePattern(id, { undoable: true });
+            showToast('Pattern removed', { type: 'info' });
+          }
+        });
+    });
+    // Insert placeholder row for empty patterns
+    if (patterns.length === 0) {
+      const row = document.createElement('tr');
+        row.className = 'no-patterns';
+        row.innerHTML = `<td colspan="5" class="text-muted">No patterns configured yet. Add a pattern using the fields above.</td>`;
+      tbody.appendChild(row);
+    }
+    // Move up/down handlers
+    tbody.querySelectorAll('.move-up-btn, .move-down-btn').forEach((btn) => {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.addEventListener('click', function () {
+        const id = parseInt(this.getAttribute('data-pattern-id'));
+        if (!id) return;
+        if (this.classList.contains('move-up-btn')) {
+          reorderPattern(id, -1);
+          showToast('Pattern moved up', 'info');
+        } else {
+          reorderPattern(id, 1);
+          showToast('Pattern moved down', 'info');
+        }
+      });
+    });
+
+    // Drag and drop handlers for reorder
+    tbody.querySelectorAll('tr[draggable="true"]').forEach((row) => {
+      row.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', row.getAttribute('data-pattern-id'));
+        e.dataTransfer.effectAllowed = 'move';
+        row.classList.add('dragging');
+      });
+      row.addEventListener('dragend', () => {
+        row.classList.remove('dragging');
+      });
+      row.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      row.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const srcId = parseInt(e.dataTransfer.getData('text/plain'));
+        const dstId = parseInt(row.getAttribute('data-pattern-id'));
+        if (srcId && dstId && srcId !== dstId) {
+          reorderPatternById(srcId, dstId);
+          showToast('Pattern reordered', 'info');
+        }
+      });
     });
   });
 }
 
-export function addPattern() {
-  const start = document.getElementById('startSequence').value.trim();
-  const minLength = parseInt(document.getElementById('minLength').value);
-  const format = document.getElementById('formatPattern').value.trim();
+export function addPattern(root = document) {
+  const getElement = (r, id) => {
+    if (!r) return null;
+    if (typeof r.getElementById === 'function') {
+      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+    }
+    return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+  };
+
+  const start = (getElement(root, 'startSequence') || { value: '' }).value.trim();
+  const minLength = parseInt((getElement(root, 'minLength') || { value: '' }).value);
+  const format = (getElement(root, 'formatPattern') || { value: '' }).value.trim();
 
   if (isNaN(minLength) || minLength < 1) {
     alert('Please enter a valid minimum length.');
@@ -63,17 +148,144 @@ export function addPattern() {
   });
   savePatterns(patterns);
   updatePatternTable();
+  showToast('Pattern added', 'success');
 
-  // Clear inputs
-  document.getElementById('startSequence').value = '';
-  document.getElementById('minLength').value = '';
-  document.getElementById('formatPattern').value = '';
+  // Clear inputs scoped to the root
+  try { if (getElement(root, 'startSequence')) getElement(root, 'startSequence').value = ''; } catch (e) {}
+  try { if (getElement(root, 'minLength')) getElement(root, 'minLength').value = ''; } catch (e) {}
+  try { if (getElement(root, 'formatPattern')) getElement(root, 'formatPattern').value = ''; } catch (e) {}
 }
 
-export function deletePattern(id) {
-  patterns = patterns.filter((p) => p.id !== id);
+export function reorderPattern(id, delta) {
+  const idx = patterns.findIndex((p) => p.id === id);
+  if (idx < 0) return;
+  const newIndex = Math.max(0, Math.min(patterns.length - 1, idx + delta));
+  if (newIndex === idx) return;
+  const [item] = patterns.splice(idx, 1);
+  patterns.splice(newIndex, 0, item);
   savePatterns(patterns);
   updatePatternTable();
+}
+
+export function reorderPatternById(srcId, dstId) {
+  const srcIdx = patterns.findIndex((p) => p.id === srcId);
+  const dstIdx = patterns.findIndex((p) => p.id === dstId);
+  if (srcIdx < 0 || dstIdx < 0) return;
+  const [item] = patterns.splice(srcIdx, 1);
+  patterns.splice(dstIdx, 0, item);
+  savePatterns(patterns);
+  updatePatternTable();
+}
+
+export function startEditPattern(id, root = document) {
+  // Replace row with input fields (inline edit)
+  editingPatternId = id;
+  let tbody = null;
+  if (root && root.tagName === 'TBODY') tbody = root;
+  else tbody = (root && root.querySelector && (root.querySelector('tbody#patternList'))) || document.querySelector('tbody#patternList');
+  if (!tbody) return;
+  const row = tbody.querySelector(`tr[data-pattern-id="${id}"]`);
+  if (!row) return;
+  const pattern = patterns.find((p) => p.id === id);
+  if (!pattern) return;
+  row.innerHTML = `
+    <td class="drag-cell" aria-hidden="true">⣿</td>
+    <td><input type="text" class="edit-start" value="${pattern.start || ''}" aria-label="Starting Digits"/></td>
+    <td><input type="number" class="edit-minlength" value="${pattern.minLength}" min="1" aria-label="Minimum Length"/></td>
+    <td><input type="text" class="edit-format" value="${pattern.format}" aria-label="Format Pattern"/></td>
+    <td>
+      <button class="save-edit-btn" data-pattern-id="${pattern.id}" aria-label="Save">Save</button>
+      <button class="cancel-edit-btn" data-pattern-id="${pattern.id}" aria-label="Cancel">Cancel</button>
+    </td>
+  `;
+
+  // Attach handlers for save and cancel
+  row.querySelector('.save-edit-btn')?.addEventListener('click', () => saveEditPattern(id, root));
+  row.querySelector('.cancel-edit-btn')?.addEventListener('click', () => cancelEditPattern(root));
+  // Focus first input for better keyboard accessibility
+  try { row.querySelector('.edit-start')?.focus(); row.querySelector('.edit-start')?.select(); } catch (e) {}
+}
+
+export function saveEditPattern(id, root = document) {
+  let tbody = null;
+  if (root && root.tagName === 'TBODY') tbody = root;
+  else tbody = (root && root.querySelector && (root.querySelector('tbody#patternList'))) || document.querySelector('tbody#patternList');
+  if (!tbody) return;
+  const row = tbody.querySelector(`tr[data-pattern-id="${id}"]`);
+  if (!row) return;
+  const start = row.querySelector('.edit-start')?.value || '';
+  const minLength = parseInt(row.querySelector('.edit-minlength')?.value || '0');
+  const format = row.querySelector('.edit-format')?.value || '';
+  if (isNaN(minLength) || minLength < 1) {
+    alert('Please enter a valid minimum length.');
+    return;
+  }
+  const patternIndex = patterns.findIndex((p) => p.id === id);
+  if (patternIndex >= 0) {
+    patterns[patternIndex].start = start;
+    patterns[patternIndex].minLength = minLength;
+    patterns[patternIndex].format = format;
+    savePatterns(patterns);
+    editingPatternId = null;
+    updatePatternTable();
+    showToast('Pattern updated', 'success');
+  }
+}
+
+export function cancelEditPattern(root = document) {
+  editingPatternId = null;
+  updatePatternTable();
+}
+
+export function deletePattern(id, options = { undoable: true }) {
+  const idx = patterns.findIndex((p) => p.id === id);
+  if (idx < 0) return;
+  // If there's an existing pending delete, finalize it first
+  if (lastDeletedPattern && lastDeletedPattern.timeoutId) {
+    window.clearTimeout(lastDeletedPattern.timeoutId);
+    lastDeletedPattern.timeoutId = null;
+    lastDeletedPattern = null;
+  }
+  const pattern = patterns[idx];
+  // Remove immediately from view & storage for UX immediacy
+  patterns.splice(idx, 1);
+  savePatterns(patterns);
+  updatePatternTable();
+
+  if (options && options.undoable) {
+    // Keep pattern in memory until timeout expires
+    let timeoutId = null;
+    lastDeletedPattern = { pattern: { ...pattern }, index: idx, timeoutId: null };
+    // Show toast with Undo action
+    showToast(`Pattern deleted`, {
+      type: 'info',
+      timeout: 5000,
+      actionLabel: 'Undo',
+      actionCallback: () => {
+        // Cancel the timeout
+        try {
+          if (lastDeletedPattern && lastDeletedPattern.timeoutId) window.clearTimeout(lastDeletedPattern.timeoutId);
+        } catch (e) {}
+        // Restore
+        if (lastDeletedPattern) {
+          patterns.splice(lastDeletedPattern.index, 0, lastDeletedPattern.pattern);
+          savePatterns(patterns);
+          updatePatternTable();
+          showToast('Pattern restored', { type: 'success' });
+        }
+        lastDeletedPattern = null;
+      },
+    });
+
+    // After timeout, finalize deletion (clear lastDeletedPattern)
+    timeoutId = window.setTimeout(() => {
+      lastDeletedPattern = null;
+    }, 5000);
+    if (lastDeletedPattern) lastDeletedPattern.timeoutId = timeoutId;
+  } else {
+    // Not undoable, finalize immediately
+    lastDeletedPattern = null;
+  }
 }
 
 export function formatNumber(root = document) {
@@ -216,13 +428,61 @@ export function copyResult(root = document) {
   }
 }
 
-export function clearPattern() {
-  const input = document.getElementById('patternNumberInput');
-  const result = document.getElementById('patternResult');
-  const copyBtn = document.getElementById('copyPatternBtn');
+export function clearPattern(root = document) {
+  const getElement = (r, id) => {
+    if (!r) return null;
+    if (typeof r.getElementById === 'function') {
+      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+    }
+    return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+  };
+
+  const input = getElement(root, 'patternNumberInput');
+  const result = getElement(root, 'patternResult');
+  const copyBtn = getElement(root, 'copyPatternBtn');
   if (input) input.value = '';
   if (result) result.textContent = 'Result will appear here';
   if (copyBtn) copyBtn.disabled = true;
+}
+
+export function showToast(message, opts = {}) {
+  try {
+    let type = opts.type || 'info';
+    let timeout = typeof opts.timeout === 'number' ? opts.timeout : 3000;
+    let actionLabel = opts.actionLabel;
+    let actionCallback = typeof opts.actionCallback === 'function' ? opts.actionCallback : null;
+
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      container.setAttribute('aria-live', 'polite');
+      document.body.appendChild(container);
+    }
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    const text = document.createElement('span');
+    text.className = 'toast-text';
+    text.textContent = message;
+    el.appendChild(text);
+    if (actionLabel && actionCallback) {
+      const actionBtn = document.createElement('button');
+      actionBtn.className = 'toast-action';
+      actionBtn.setAttribute('aria-label', actionLabel);
+      actionBtn.textContent = actionLabel;
+      actionBtn.addEventListener('click', () => {
+        try { actionCallback(); } catch (e) {}
+        try { el.remove(); } catch (e) {}
+      });
+      el.appendChild(actionBtn);
+    }
+    container.appendChild(el);
+    setTimeout(() => {
+      try { el.classList.add('toast-hide'); } catch (e) {}
+      setTimeout(() => { try { el.remove(); } catch (e) {} }, 400);
+    }, timeout);
+  } catch (e) {}
 }
 
 // Exported helper for pasting so tests or other code can call directly
@@ -256,7 +516,6 @@ export async function pasteFromClipboard(providedText, root = document) {
   if (text && numberInputLocal) {
     const normalized = normalizeNumber(text);
     numberInputLocal.value = normalized || text;
-    
     formatNumber(root);
     return normalized || text;
   }
@@ -272,7 +531,13 @@ export function normalizeNumber(text) {
 // Ensure this function is exported for dynamic import
 // Attach listeners scoped to a root element (defaults to document)
 export function attachPatternEventListeners(root = document) {
-  // Tabs within the root
+  // Avoid double-attaching to the same root
+  try {
+    if (root && root.getAttribute && root.getAttribute('data-patterns-attached') === 'true') {
+      return;
+    }
+  } catch (e) {}
+  // Tabs within the root - No longer needed since tabs were removed
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
@@ -280,11 +545,6 @@ export function attachPatternEventListeners(root = document) {
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
-
-  const formatTabBtn = root.querySelector('[data-pattern-tab="format-tab"]');
-  const patternsTabBtn = root.querySelector('[data-pattern-tab="patterns-tab"]');
-  try { if (formatTabBtn) formatTabBtn.addEventListener('click', (event) => openPatternTab('format-tab', event, root)); } catch (e) { }
-  try { if (patternsTabBtn) patternsTabBtn.addEventListener('click', (event) => openPatternTab('patterns-tab', event, root)); } catch (e) { }
 
   // Inputs and buttons scoped to the root
   const numberInput = getElement(root, 'patternNumberInput');
@@ -334,12 +594,13 @@ export function attachPatternEventListeners(root = document) {
 
   const addBtn = getElement(root, 'addPatternBtn');
   if (addBtn) {
-    try { addBtn.addEventListener('click', addPattern); } catch (e) { }
+    try { addBtn.addEventListener('click', () => addPattern(root)); } catch (e) { }
   }
+  // Ensure update pattern table attaches all event handlers and DnD
+  try { updatePatternTable(); } catch (e) {}
   try {
     if (root && root.setAttribute) {
       root.setAttribute('data-patterns-attached', 'true');
-      
     }
   } catch (e) {}
 }
@@ -351,17 +612,14 @@ export function setupPatternEventListeners() {
   initializePatterns();
 }
 
-function openPatternTab(tabId, event, root = document) {
-  // Operate within the provided root so cloned sections behave correctly
-  const base = root || document;
-  const tabButtons = base.querySelectorAll('.tab-button');
-  const tabContents = base.querySelectorAll('.tab-content');
-  // Remove active class from all tabs in this root
-  tabContents.forEach((tab) => tab.classList.remove('active'));
-  tabButtons.forEach((button) => button.classList.remove('active'));
-
-  // Try to find the tab content by exact id, id-suffix, or data attribute
-  let activeTab = base.querySelector(`#${tabId}`) || base.querySelector(`[id$="${tabId}"]`) || base.querySelector(`[data-pattern-tab="${tabId}"]`);
-  if (activeTab) activeTab.classList.add('active');
-  if (event && event.currentTarget) event.currentTarget.classList.add('active');
-}
+// Tab switching function no longer needed - patterns moved to settings page
+// function openPatternTab(tabId, event, root = document) {
+//   const base = root || document;
+//   const tabButtons = base.querySelectorAll('.tab-button');
+//   const tabContents = base.querySelectorAll('.tab-content');
+//   tabContents.forEach((tab) => tab.classList.remove('active'));
+//   tabButtons.forEach((button) => button.classList.remove('active'));
+//   let activeTab = base.querySelector(`#${tabId}`) || base.querySelector(`[id$="${tabId}"]`) || base.querySelector(`[data-pattern-tab="${tabId}"]`);
+//   if (activeTab) activeTab.classList.add('active');
+//   if (event && event.currentTarget) event.currentTarget.classList.add('active');
+// }

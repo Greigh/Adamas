@@ -292,8 +292,16 @@ function setupNotesInstanceListeners(notesId) {
 
   const clearNotesBtn = document.getElementById(`clear-notes-btn-${notesId}`);
   if (clearNotesBtn) {
-    clearNotesBtn.addEventListener('click', () => {
-      if (confirm('Clear all notes? This cannot be undone.')) {
+      clearNotesBtn.addEventListener('click', async () => {
+        const { showConfirmModal } = await import('../utils/modal.js');
+        const confirmed = await showConfirmModal({
+          title: 'Clear All Notes',
+          message: 'Clear all notes? This cannot be undone.',
+          confirmLabel: 'Clear',
+          cancelLabel: 'Cancel',
+          danger: true,
+        });
+        if (confirmed) {
         const notes = notesInstances.get(notesId);
         if (notes) {
           notes.notes = [];

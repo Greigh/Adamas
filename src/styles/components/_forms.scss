@@ -258,25 +258,25 @@ input[type="radio"] {
 
 /* Setting item layout */
 .setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
     border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
 
     .setting-info {
-        flex: 1;
-        padding-right: 20px;
-    }
+        margin-bottom: 8px;
 
-    .setting-label {
-        font-weight: 500;
-        margin-bottom: 4px;
-    }
+        .setting-label {
+            font-size: map.get($font-sizes, base);
+            font-weight: map.get($font-weights, semibold);
+            color: var(--text);
+            margin: 0 0 4px 0;
+        }
 
-    .setting-description {
-        font-size: 0.875rem;
-        color: var(--text-muted);
+        .setting-description {
+            font-size: map.get($font-sizes, sm);
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin: 0;
+        }
     }
 
     .setting-control {

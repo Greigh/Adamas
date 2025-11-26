@@ -39,22 +39,22 @@
 
 // Settings cards
 .settings-section {
-  background: var(--white);
+  background: var(--card-bg);
   border-radius: map.get($radius, lg);
   padding: map.get($spacing, 6);
   margin-bottom: map.get($spacing, 6);
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--gray-100);
+  border: 1px solid var(--border-color);
 
   h3 {
     margin: 0 0 map.get($spacing, 2) 0;
-    color: var(--primary-blue);
+    color: var(--text);
     font-size: map.get($font-sizes, xl);
     font-weight: map.get($font-weights, semibold);
   }
 
   p {
-    color: var(--gray-600);
+    color: var(--text-secondary);
     margin-bottom: map.get($spacing, 4);
   }
 }
@@ -64,7 +64,7 @@
   justify-content: space-between;
   align-items: center;
   padding: map.get($spacing, 3) 0;
-  border-bottom: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--border-color);
 
   &:last-child {
     border-bottom: none;
@@ -73,7 +73,7 @@
 
 .setting-label {
   font-weight: map.get($font-weights, medium);
-  color: var(--gray-800);
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: map.get($spacing, 2);

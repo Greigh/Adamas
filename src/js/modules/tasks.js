@@ -82,8 +82,16 @@ export function initializeTasks() {
     }
   }
 
-  function deleteTask(taskId) {
-    if (confirm('Are you sure you want to delete this task?')) {
+  async function deleteTask(taskId) {
+    const { showConfirmModal } = await import('../utils/modal.js');
+    const confirmed = await showConfirmModal({
+      title: 'Delete Task',
+      message: 'Are you sure you want to delete this task?',
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+      danger: true,
+    });
+    if (confirmed) {
       tasks = tasks.filter(t => t.id !== taskId);
       localStorage.setItem('tasks', JSON.stringify(tasks));
       updateTaskList();

@@ -104,14 +104,26 @@ export function minimizeSection(sectionId) {
     
     const btn = section.querySelector('.minimize-btn');
     
+    // toggle minimized class and collapse content for accessibility
     section.classList.toggle('minimized');
-    
+    const content = section.querySelector('.section-content');
+
     if (section.classList.contains('minimized')) {
         btn.textContent = '+';
         btn.title = 'Restore';
+        if (content) {
+            content.style.display = 'none';
+            content.setAttribute('aria-hidden', 'true');
+        }
+        if (btn) btn.setAttribute('aria-expanded', 'false');
     } else {
         btn.textContent = '−';
         btn.title = 'Minimize';
+        if (content) {
+            content.style.display = '';
+            content.setAttribute('aria-hidden', 'false');
+        }
+        if (btn) btn.setAttribute('aria-expanded', 'true');
     }
 }
 
@@ -147,9 +159,10 @@ export function closeFloatingWindow(sectionId) {
         
         // Reset pop-out button
         const popBtn = section.querySelector('.popup-btn');
-        if (popBtn) {
+            if (popBtn) {
             popBtn.textContent = '⧉';
             popBtn.title = 'Pop Out';
+            popBtn.setAttribute('aria-pressed', 'false');
         }
     removePoppedOutIndicator(sectionId);
     }
@@ -181,12 +194,15 @@ export function minimizeFloatingWindow(sectionId) {
 
 // Update initDragAndDrop function
 export function initDragAndDrop() {
-    const container = document.querySelector('.sortable-container');
-    if (!container) return;
-    
-    const draggableSections = document.querySelectorAll('.draggable-section');
-    
-    draggableSections.forEach(section => {
+    // Initialize drag-and-drop per sortable container so each view (main, settings)
+    // can have independent drag behavior.
+    const containers = Array.from(document.querySelectorAll('.sortable-container'));
+    if (!containers.length) return;
+
+    containers.forEach(container => {
+        const draggableSections = Array.from(container.querySelectorAll('.draggable-section'));
+
+        draggableSections.forEach(section => {
         const dragHandle = section.querySelector('.drag-handle');
         if (!dragHandle) return;
         
@@ -224,7 +240,9 @@ export function initDragAndDrop() {
                     const mouseY = e.clientY - containerRect.top;
                     let nextElement = null;
                     
-                    draggableSections.forEach(child => {
+                    // We only consider draggable children inside this container
+                    const children = Array.from(container.querySelectorAll('.draggable-section'));
+                    children.forEach(child => {
                         if (child !== draggedElement) {
                             const box = child.getBoundingClientRect();
                             const childCenter = box.top + box.height / 2;
@@ -258,6 +276,7 @@ export function initDragAndDrop() {
             document.addEventListener('mouseup', onMouseUp);
             
             e.preventDefault(); // Prevent text selection
+        });
         });
     });
 }
@@ -390,9 +409,10 @@ function openSectionInFloatingWindow(sectionId) {
         
         // Update pop-out button
         const popBtn = section.querySelector('.popup-btn');
-        if (popBtn) {
-            popBtn.textContent = '⧈';
-            popBtn.title = 'Dock';
+            if (popBtn) {
+                popBtn.textContent = '⧈';
+                popBtn.title = 'Dock';
+                popBtn.setAttribute('aria-pressed', 'true');
         }
         // Add popped-out indicator
         section.classList.add('popped-out');
@@ -806,14 +826,18 @@ export function setupFloating(section) {
     const floatBtn = section.querySelector('.float-btn');
     if (!floatBtn) return;
     
+    // ensure accessible pressed state
+    floatBtn.setAttribute('aria-pressed', 'false');
     floatBtn.addEventListener('click', function() {
         const sectionId = section.id;
         
         // Check if we're using the browser popup approach
-        if (window.config && window.config.useBrowserPopup) {
+            if (window.config && window.config.useBrowserPopup) {
             window.openSectionInBrowserPopup(sectionId);
+                floatBtn.setAttribute('aria-pressed', 'true');
         } else {
             window.openSectionInFloatingWindow(sectionId);
+                floatBtn.setAttribute('aria-pressed', 'true');
         }
     });
 }
@@ -825,6 +849,10 @@ export function setupSectionToggle(section) {
     const minBtn = section.querySelector('.minimize-btn');
     if (!minBtn) return;
     
+    // set initial accessibility state
+    if (content) content.setAttribute('aria-hidden', content.style.display === 'none' ? 'true' : 'false');
+    if (minBtn) minBtn.setAttribute('aria-expanded', content && content.style.display !== 'none' ? 'true' : 'false');
+
     minBtn.addEventListener('click', function() {
         const content = section.querySelector('.section-content');
         if (!content) return;
@@ -833,10 +861,14 @@ export function setupSectionToggle(section) {
             content.style.display = '';
             minBtn.textContent = '−';
             minBtn.title = 'Minimize';
+            content.setAttribute('aria-hidden', 'false');
+            minBtn.setAttribute('aria-expanded', 'true');
         } else {
             content.style.display = 'none';
             minBtn.textContent = '+';
             minBtn.title = 'Maximize';
+            content.setAttribute('aria-hidden', 'true');
+            minBtn.setAttribute('aria-expanded', 'false');
         }
     });
 }

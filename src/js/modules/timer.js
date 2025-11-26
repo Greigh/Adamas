@@ -1034,8 +1034,10 @@ function setupTimerInstanceListeners(element, timer) {
   });
 
   // Delete button
-  deleteBtn.addEventListener('click', () => {
-    if (confirm(`Delete timer "${timer.description}"?`)) {
+  deleteBtn.addEventListener('click', async () => {
+    const { showConfirmModal } = await import('../utils/modal.js');
+    const confirmed = await showConfirmModal({ title: 'Delete Timer', message: `Delete timer "${timer.description}"?`, confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
+    if (confirmed) {
       removeTimerInstance(timer.id);
       element.remove();
       saveTimerInstances();

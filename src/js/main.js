@@ -1,7 +1,7 @@
 import '../styles/main.scss';
 
 // Import synchronous dependencies
-import { initializeSettings, appSettings } from './modules/settings.js';
+import { initializeSettings, appSettings, saveSettings } from './modules/settings.js';
 import { initializeTheme, setupThemeToggle } from './modules/themes.js';
 import { setupTimerEventListeners } from './modules/timer.js';
 import * as patternsModule from './modules/patterns.js';
@@ -28,12 +28,87 @@ import { initializeTasks } from './modules/tasks.js';
 import { initializeVoiceRecording } from './modules/voice-recording.js';
 import { initializeQA } from './modules/qa.js';
 import { initializePerformanceMetrics } from './modules/performance-metrics.js';
-import { initializeCollaboration } from './modules/collaboration.js';
-import { initializeAdvancedReporting } from './modules/reporting.js';
-import { initializeWorkflows } from './modules/workflows.js';
-import { initializeAIInsights } from './modules/ai-insights.js';
-import { initializeMultiChannel } from './modules/multichannel.js';
-import { initializeMobileCompanion } from './modules/mobile.js';
+
+// Import error boundary for global error handling
+import { setupGlobalErrorHandling } from './utils/error-boundary.js';
+
+// Lazy load advanced features
+let advancedModulesLoaded = false;
+const lazyLoadAdvancedModules = async () => {
+  if (advancedModulesLoaded) return;
+
+  try {
+    const [
+      { initializeCollaboration },
+      { initializeAdvancedReporting },
+      { initializeWorkflows },
+      { initializeAIInsights },
+      { initializeMultiChannel },
+      { initializeFeedback },
+      { initializeKnowledgeBase },
+      { initializeTimeTracking },
+      { initializeAdvancedAnalytics },
+      { initializeAPIIntegration }
+    ] = await Promise.all([
+      import('./modules/collaboration.js').catch(err => {
+        console.warn('Collaboration module not available:', err);
+        return { initializeCollaboration: () => console.log('Collaboration module not loaded') };
+      }),
+      import('./modules/reporting.js').catch(err => {
+        console.warn('Reporting module not available:', err);
+        return { initializeAdvancedReporting: () => console.log('Reporting module not loaded') };
+      }),
+      import('./modules/workflows.js').catch(err => {
+        console.warn('Workflows module not available:', err);
+        return { initializeWorkflows: () => console.log('Workflows module not loaded') };
+      }),
+      import('./modules/ai-insights.js').catch(err => {
+        console.warn('AI Insights module not available:', err);
+        return { initializeAIInsights: () => console.log('AI Insights module not loaded') };
+      }),
+      import('./modules/multichannel.js').catch(err => {
+        console.warn('Multichannel module not available:', err);
+        return { initializeMultiChannel: () => console.log('Multichannel module not loaded') };
+      }),
+      import('./modules/feedback.js').catch(err => {
+        console.warn('Feedback module not available:', err);
+        return { initializeFeedback: () => console.log('Feedback module not loaded') };
+      }),
+      import('./modules/knowledge-base.js').catch(err => {
+        console.warn('Knowledge Base module not available:', err);
+        return { initializeKnowledgeBase: () => console.log('Knowledge Base module not loaded') };
+      }),
+      import('./modules/time-tracking.js').catch(err => {
+        console.warn('Time Tracking module not available:', err);
+        return { initializeTimeTracking: () => console.log('Time Tracking module not loaded') };
+      }),
+      import('./modules/advanced-analytics.js').catch(err => {
+        console.warn('Advanced Analytics module not available:', err);
+        return { initializeAdvancedAnalytics: () => console.log('Advanced Analytics module not loaded') };
+      }),
+      import('./modules/api-integration.js').catch(err => {
+        console.warn('API Integration module not available:', err);
+        return { initializeAPIIntegration: () => console.log('API Integration module not loaded') };
+      })
+    ]);
+
+    // Initialize lazy-loaded modules with error handling
+    try { initializeCollaboration(); } catch (e) { console.error('Error initializing collaboration:', e); }
+    try { initializeAdvancedReporting(); } catch (e) { console.error('Error initializing reporting:', e); }
+    try { initializeWorkflows(); } catch (e) { console.error('Error initializing workflows:', e); }
+    try { initializeAIInsights(); } catch (e) { console.error('Error initializing AI insights:', e); }
+    try { initializeMultiChannel(); } catch (e) { console.error('Error initializing multichannel:', e); }
+    try { initializeFeedback(); } catch (e) { console.error('Error initializing feedback:', e); }
+    try { initializeKnowledgeBase(); } catch (e) { console.error('Error initializing knowledge base:', e); }
+    try { initializeTimeTracking(); } catch (e) { console.error('Error initializing time tracking:', e); }
+    try { initializeAdvancedAnalytics(); } catch (e) { console.error('Error initializing advanced analytics:', e); }
+    try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
+
+    advancedModulesLoaded = true;
+  } catch (error) {
+    console.error('Failed to load advanced modules:', error);
+  }
+};
 
 // Tab navigation functions
 function openNotesTab() {
@@ -143,6 +218,17 @@ function showSettings() {
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.add('active');
   document.getElementById('stats-tab')?.classList.remove('active');
+  // Ensure the patterns UI in settings has listeners attached when the settings view is shown
+  try {
+    if (window.patternsModule && typeof window.patternsModule.attachPatternEventListeners === 'function') {
+      const settingsPatternRoot = document.querySelector('.pattern-management') || document.querySelector('.pattern-management-subsection');
+      if (settingsPatternRoot) {
+        window.patternsModule.attachPatternEventListeners(settingsPatternRoot);
+      }
+    }
+  } catch (err) {
+    console.warn('Error attaching pattern listeners on settings show:', err);
+  }
 }
 
 // Show stats panel
@@ -154,14 +240,8 @@ function showStats() {
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.add('active');
 
-  // Initialize stats modules if not already done
-  if (!window.statsInitialized) {
-    initializeAnalytics();
-    initializePerformanceMetrics();
-    initializeAdvancedReporting();
-    initializeQA();
-    window.statsInitialized = true;
-  }
+  // Lazy load advanced modules when stats tab is accessed
+  lazyLoadAdvancedModules();
 }
 
 // Show service worker update notification
@@ -268,6 +348,16 @@ function loadSecondaryModules() {
     },
     { once: true }
   );
+
+  // Advanced modules - lazy load when sections become visible
+  lazyLoadOnVisible('team-collaboration', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('automated-workflows', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('multichannel-integration', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('customer-feedback', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('knowledge-base', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('time-tracking', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('advanced-analytics', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('api-integration', lazyLoadAdvancedModules);
 }
 
 // Ensure floating overlay exists for floating windows
@@ -299,8 +389,8 @@ function setupAllEventListeners() {
       if (button.classList.contains('minimize-btn')) {
         minimizeSection(section.id);
       } else if (button.classList.contains('float-btn')) {
-        // Always open in a browser popup when the popout/float button is clicked
-        popOutSection(section.id, true);
+        // Open in a floating window or browser popup depending on preference
+        popOutSection(section.id);
       }
       // Add handling for edit-title-btn if needed
       else if (button.classList.contains('edit-title-btn')) {
@@ -332,6 +422,17 @@ function setupAllEventListeners() {
           titleElem.style.display = '';
           button.style.display = '';
           input.remove();
+          // Persist custom title for section so settings and main page keep it
+          try {
+            const sectionEl = button.closest('.draggable-section') || button.closest('.card');
+            const key = sectionEl?.getAttribute('data-section') || sectionEl?.id || null;
+            if (key) {
+              window.appSettings = window.appSettings || appSettings;
+              window.appSettings.customTitles = window.appSettings.customTitles || {};
+              window.appSettings.customTitles[key] = newTitle;
+              if (typeof saveSettings === 'function') saveSettings(window.appSettings);
+            }
+          } catch (e) { /* non-fatal */ }
         }
         input.addEventListener('blur', saveTitle);
         input.addEventListener('keydown', (e) => {
@@ -353,6 +454,9 @@ function setupAllEventListeners() {
 // Main initialization function
 document.addEventListener('DOMContentLoaded', function () {
   try {
+    // Set up global error handling first
+    setupGlobalErrorHandling();
+
     initializeSettings();
     window.appSettings = appSettings;
     initializeTheme();
@@ -375,6 +479,26 @@ document.addEventListener('DOMContentLoaded', function () {
       if (patternsModule && typeof patternsModule.setupPatternEventListeners === 'function') {
         patternsModule.setupPatternEventListeners();
         window.patternsModule = patternsModule;
+
+        // Attach to the main pattern formatter root explicitly (scoped listeners)
+        try {
+          const mainPatternRoot = document.getElementById('pattern-formatter');
+          if (mainPatternRoot && typeof patternsModule.attachPatternEventListeners === 'function') {
+            patternsModule.attachPatternEventListeners(mainPatternRoot);
+          }
+        } catch (err) {
+          console.warn('Could not attach pattern listeners to main root:', err);
+        }
+
+        // Attach to the settings Pattern Management subsection if present
+        try {
+          const settingsPatternRoot = document.getElementById('pattern-management') || document.getElementById('pattern-management-subsection') || document.querySelector('.pattern-management') || document.querySelector('.pattern-management-subsection');
+          if (settingsPatternRoot && typeof patternsModule.attachPatternEventListeners === 'function') {
+            patternsModule.attachPatternEventListeners(settingsPatternRoot);
+          }
+        } catch (err) {
+          console.warn('Could not attach pattern listeners to settings root:', err);
+        }
       }
     } catch (e) {
       console.error('Error initializing patterns module eagerly:', e);
@@ -410,12 +534,8 @@ document.addEventListener('DOMContentLoaded', function () {
       initializeVoiceRecording();
       initializeQA();
       initializePerformanceMetrics();
-      initializeCollaboration();
-      initializeAdvancedReporting();
-      initializeWorkflows();
-      initializeAIInsights();
-      initializeMultiChannel();
-      initializeMobileCompanion();
+      // Lazy load advanced modules when needed
+      // mobile companion feature removed
     } catch (error) {
       console.error('Error initializing new feature modules:', error);
     }

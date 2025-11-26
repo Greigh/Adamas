@@ -1,0 +1,280 @@
+// AI Insights Section
+@use '../base/variables' as *;
+@use 'sass:map';
+
+#ai-insights {
+  .insights-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: map.get($spacing, 4);
+    margin-top: map.get($spacing, 4);
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: map.get($spacing, 3);
+    }
+  }
+
+  .insight-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    padding: map.get($spacing, 5);
+    transition: map.get($transitions, base);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--accent-green));
+    }
+
+    h3 {
+      margin: 0 0 map.get($spacing, 4) 0;
+      color: var(--text-color);
+      font-size: map.get($font-sizes, lg);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: map.get($spacing, 2);
+
+      &::before {
+        content: '🤖';
+        font-size: map.get($font-sizes, xl);
+      }
+    }
+
+    h4 {
+      margin: 0 0 map.get($spacing, 3) 0;
+      color: var(--text-color);
+      font-size: map.get($font-sizes, base);
+      font-weight: 600;
+    }
+
+    .sentiment-result {
+    .sentiment-positive {
+        color: var(--success, #10b981);
+        font-weight: 600;
+      }
+
+      .sentiment-neutral {
+        color: var(--warning, #f59e0b);
+        font-weight: 600;
+      }
+
+      .sentiment-negative {
+        color: var(--error, #ef4444);
+        font-weight: 600;
+      }
+
+      .sentiment-breakdown {
+        display: flex;
+        gap: map.get($spacing, 4);
+        margin-top: map.get($spacing, 3);
+        font-size: map.get($font-sizes, sm);
+
+        div {
+          flex: 1;
+          text-align: center;
+          padding: map.get($spacing, 2);
+          background: var(--bg-hover);
+          border-radius: map.get($radius, base);
+          border: 1px solid var(--border-color);
+        }
+      }
+    }
+
+    .trend-predictions,
+    .optimization-suggestions {
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: map.get($spacing, 3) 0;
+
+        li {
+          padding: map.get($spacing, 2) 0;
+          border-bottom: 1px solid var(--border-color);
+          display: flex;
+          align-items: flex-start;
+          gap: map.get($spacing, 2);
+
+          &::before {
+            content: '📈';
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background: var(--bg-hover);
+            padding-left: map.get($spacing, 2);
+            margin-left: -#{map.get($spacing, 2)};
+            border-radius: map.get($radius, base);
+          }
+        }
+      }
+
+      .suggestion-actions {
+        margin-top: map.get($spacing, 4);
+        text-align: center;
+
+        .button {
+          background: var(--primary-blue);
+          color: white;
+          border: none;
+          padding: map.get($spacing, 2) map.get($spacing, 4);
+          border-radius: map.get($radius, base);
+          cursor: pointer;
+          font-weight: 500;
+          transition: map.get($transitions, base);
+
+          &:hover {
+            background: var(--primary-blue-dark, #2563eb);
+            transform: translateY(-1px);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+
+    .performance-metrics {
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: map.get($spacing, 2) 0;
+        border-bottom: 1px solid var(--border-color);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .metric-label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        .metric-value {
+          font-weight: 600;
+          color: var(--primary-blue);
+
+          &.positive {
+            color: var(--success);
+          }
+
+          &.negative {
+            color: var(--error);
+          }
+
+          &.neutral {
+            color: var(--warning);
+          }
+        }
+      }
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: map.get($spacing, 6) 0;
+      color: var(--text-muted);
+
+      .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        border-top-color: var(--primary-blue);
+        animation: spin 1s ease-in-out infinite;
+        margin-bottom: map.get($spacing, 2);
+      }
+    }
+
+    .error-state {
+      text-align: center;
+      padding: map.get($spacing, 4) 0;
+      color: var(--error);
+
+      .retry-btn {
+        background: var(--error);
+        color: white;
+        border: none;
+        padding: map.get($spacing, 2) map.get($spacing, 3);
+        border-radius: map.get($radius, base);
+        cursor: pointer;
+        margin-top: map.get($spacing, 2);
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  .insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 4);
+
+    .insights-title {
+      h2 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: map.get($font-sizes, xl);
+      }
+
+      p {
+        margin: map.get($spacing, 1) 0 0 0;
+        color: var(--text-muted);
+        font-size: map.get($font-sizes, sm);
+      }
+    }
+
+    .insights-controls {
+      display: flex;
+      gap: map.get($spacing, 2);
+
+      .control-btn {
+        padding: map.get($spacing, 2);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--card-bg);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: map.get($transitions, base);
+
+        &:hover {
+          background: var(--bg-hover);
+        }
+
+        &.active {
+          background: var(--primary-blue);
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

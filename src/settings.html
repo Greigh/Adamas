@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Call Center Helper</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Update the main app header -->
+      <header class="app-header">
+        <div class="header-content">
+          <div class="app-title">
+            <h1>📞 Call Center Helper</h1>
+          </div>
+        </div>
+      </header>
+
+      <!-- Settings View -->
+      <div id="settings-view" class="app-view">
+        <div class="settings-header container">
+            <h1>App Settings</h1>
+            <p>Customize the look and feel of the application</p>
+          </div>
+        <div class="container settings-container">
+          <div class="sortable-container">
+            <div class="settings-grid">
+            <!-- Pattern Formatter Settings -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-pattern-formatter">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Pattern Formatter</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <p>Configure number pattern formatting behavior:</p>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">Auto Copy Pattern Result</div>
+                  <div class="setting-description">
+                    Automatically copy the formatted number to your clipboard
+                    when a valid pattern is matched.
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <label class="switch" for="auto-copy-toggle">
+                    <input
+                      type="checkbox"
+                      id="auto-copy-toggle"
+                      name="auto-copy-toggle"
+                      aria-label="Auto Copy Pattern Result"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+            <!-- Pattern Management Section (subsection of Pattern Formatter) -->
+            <div class="pattern-management-subsection" id="pattern-management-subsection">
+              <h4 class="subsection-title">Pattern Management</h4>
+              <p class="subsection-description">Configure number formatting patterns:</p>
+              <button class="subsection-toggle" aria-expanded="true" aria-controls="pattern-management">▾</button>
+
+              <div class="pattern-management card" id="pattern-management">
+                <div class="input-group">
+                  <label>
+                    <span>Starting Digits</span>
+                    <input
+                      type="text"
+                      id="startSequence"
+                      name="startSequence"
+                      placeholder="Optional starting digits..."
+                    />
+                  </label>
+                  <label>
+                    <span>Min Length</span>
+                    <input
+                      type="number"
+                      id="minLength"
+                      name="minLength"
+                      placeholder="Min digits..."
+                      min="1"
+                    />
+                  </label>
+                  <label>
+                    <span>Format (X = digit)</span>
+                    <input
+                      type="text"
+                      id="formatPattern"
+                      name="formatPattern"
+                      placeholder="Ex: @XXX-XXX-XXXX"
+                    />
+                  </label>
+                  <button id="addPatternBtn" class="button">Add Pattern</button>
+                </div>
+
+                <table class="pattern-table" aria-live="polite">
+                  <thead>
+                    <tr>
+                      <th class="drag-col" aria-hidden="true"></th>
+                      <th>Start</th>
+                      <th>Min Length</th>
+                      <th>Pattern</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patternList">
+                    <!-- Patterns will be populated here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+              </section>
+
+            <!-- Appearance Section -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-appearance">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Appearance</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Theme</div>
+                    <div class="setting-description">
+                      Choose your preferred color scheme
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <select id="theme-select" name="theme-select" aria-label="Theme">
+                      <option value="light">Light</option>
+                      <option value="dark">Dark</option>
+                      <option value="auto">Auto</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Font Size</div>
+                    <div class="setting-description">
+                      Adjust the base font size for better readability
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <select id="font-size-select" name="font-size-select" aria-label="Font Size">
+                      <option value="small">Small</option>
+                      <option value="medium">Medium</option>
+                      <option value="large">Large</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Compact Mode</div>
+                    <div class="setting-description">
+                      Reduce spacing and padding for more content on screen
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="compact-mode-toggle">
+                      <input
+                        type="checkbox"
+                        id="compact-mode-toggle"
+                        name="compact-mode-toggle"
+                        aria-label="Compact Mode"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Audio Settings -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-audio">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Audio</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Alert Sounds</div>
+                    <div class="setting-description">
+                      Enable audio alerts for call events and notifications
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="alert-sounds-toggle">
+                      <input
+                        type="checkbox"
+                        id="alert-sounds-toggle"
+                        name="alert-sounds-toggle"
+                        aria-label="Alert Sounds"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Volume</div>
+                    <div class="setting-description">
+                      Adjust the volume level for audio alerts
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <input
+                      type="range"
+                      id="volume-slider"
+                      name="volume-slider"
+                      min="0"
+                      max="100"
+                      value="50"
+                      aria-label="Volume"
+                    />
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Test Sound</div>
+                    <div class="setting-description">
+                      Play a test sound to check your audio settings
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <button id="test-sound-btn" class="button btn-sm">
+                      🔊
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- CRM Integration Settings -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-crm">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">CRM Integration</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">CRM Provider</div>
+                    <div class="setting-description">
+                      Select your CRM system for integration
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <select id="crm-provider-select" name="crm-provider-select" aria-label="CRM Provider">
+                      <option value="none">None</option>
+                      <option value="salesforce">Salesforce</option>
+                      <option value="hubspot">HubSpot</option>
+                      <option value="dynamics">Dynamics 365</option>
+                      <option value="zendesk">Zendesk</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="crm-config" id="salesforce-config" style="display: none;">
+                  <h4>Salesforce Configuration</h4>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Instance URL</div>
+                      <div class="setting-description">
+                        Your Salesforce instance URL (e.g., https://yourcompany.my.salesforce.com)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="url"
+                        id="salesforce-url"
+                        name="salesforce-url"
+                        placeholder="https://yourcompany.my.salesforce.com"
+                        aria-label="Salesforce URL"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Username</div>
+                      <div class="setting-description">
+                        Your Salesforce username
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="salesforce-username"
+                        name="salesforce-username"
+                        placeholder="username@company.com"
+                        aria-label="Salesforce Username"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Password</div>
+                      <div class="setting-description">
+                        Your Salesforce password
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="salesforce-password"
+                        name="salesforce-password"
+                        placeholder="Your Password"
+                        aria-label="Salesforce Password"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Security Token</div>
+                      <div class="setting-description">
+                        Your Salesforce security token
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="salesforce-token"
+                        name="salesforce-token"
+                        placeholder="Your Security Token"
+                        aria-label="Salesforce Security Token"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="crm-config" id="hubspot-config" style="display: none;">
+                  <h4>HubSpot Configuration</h4>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">API Key</div>
+                      <div class="setting-description">
+                        Your HubSpot API key
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="hubspot-api-key"
+                        name="hubspot-api-key"
+                        placeholder="Your API Key"
+                        aria-label="HubSpot API Key"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="crm-config" id="dynamics-config" style="display: none;">
+                  <h4>Dynamics 365 Configuration</h4>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Dynamics 365 URL</div>
+                      <div class="setting-description">
+                        Your Dynamics 365 organization URL (e.g.,
+                        https://yourorg.crm.dynamics.com)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="url"
+                        id="dynamics-url"
+                        name="dynamics-url"
+                        placeholder="https://yourorg.crm.dynamics.com"
+                        aria-label="Dynamics 365 URL"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Client ID</div>
+                      <div class="setting-description">
+                        Your Azure AD application client ID
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="dynamics-client-id"
+                        name="dynamics-client-id"
+                        placeholder="Your Client ID"
+                        aria-label="Dynamics Client ID"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Client Secret</div>
+                      <div class="setting-description">
+                        Your Azure AD application client secret
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="dynamics-client-secret"
+                        name="dynamics-client-secret"
+                        placeholder="Your Client Secret"
+                        aria-label="Dynamics Client Secret"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Tenant ID</div>
+                      <div class="setting-description">
+                        Your Azure AD tenant ID
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="dynamics-tenant-id"
+                        name="dynamics-tenant-id"
+                        placeholder="Your Tenant ID"
+                        aria-label="Dynamics Tenant ID"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">CRM Connection</div>
+                    <div class="setting-description">
+                      Connect to your CRM system to enable contact lookup and call
+                      logging
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <button id="connect-crm" class="button btn-sm">
+                      Connect to CRM
+                    </button>
+                    <div id="crm-status" class="status-text">
+                      Status: Disconnected
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Mobile companion removed -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="copyright-footer">
+        <div class="container">
+          <p>
+            &copy; 2025 Daniel Hipskind.
+            <a href="privacy.html">Privacy Policy</a> &bull;
+            <a href="terms.html">Terms of Use</a> &bull;
+            <a href="contact.html">Contact</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+    <script src="js/main.js"></script>
+  </body>
+</html>
