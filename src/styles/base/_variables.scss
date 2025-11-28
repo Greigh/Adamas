@@ -4,12 +4,12 @@
   --primary-blue: #1976d2;
   --primary-blue-dark: #1565c0;
   --primary-blue-light: #42a5f5;
-  
+
   // Secondary colors
   --secondary-green: #2e7d32;
   --secondary-orange: #f57c00;
   --secondary-red: #d32f2f;
-  
+
   // Neutral colors
   --white: #ffffff;
   --gray-50: #f7f9fa;
@@ -22,31 +22,33 @@
   --gray-700: #1e293b;
   --gray-800: #0f172a;
   --gray-900: #020617;
-  
+
   // Dark mode colors
   --dark-bg: #0f172a;
   --dark-surface: #1e293b;
   --dark-border: #334155;
   --dark-text: #e2e8f0;
   --dark-text-muted: #94a3b8;
-  
+
   // Semantic colors
   --success: #16a34a;
   --warning: #d97706;
+  --warning-light: #fbbf24;
+  --warning-text: #ffffff;
   --error: #dc2626;
   --info: var(--primary-blue);
-  
+
   // Shadows
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  
+
   // Font families
   --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  
+
   // Theme specific colors
   --bg-color: #ffffff;
   --text-color: var(--gray-800);

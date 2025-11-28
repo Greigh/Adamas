@@ -248,27 +248,25 @@ export function applySettings() {
     const toggle = document.getElementById(toggleId);
     const sectionEl = document.querySelector(`[data-section="${section}"]`);
     if (toggle && sectionEl) {
-      toggle.checked =
-        appSettings[
-          `show${section.charAt(0).toUpperCase() + section.slice(1)}`
-        ];
-      sectionEl.style.display = toggle.checked ? '' : 'none';
-    }
-  });
-
-  // Apply advanced settings toggles
-  const advancedToggles = {
-    'toggle-holdtimer-settings': 'hold-timer-settings',
-    'toggle-performance-monitoring': 'performance-monitoring-section',
-    'toggle-crm-integration': 'crm-integration-section',
-  };
-
-  Object.entries(advancedToggles).forEach(([toggleId, sectionId]) => {
-    const toggle = document.getElementById(toggleId);
-    const sectionEl = document.getElementById(sectionId);
-    if (toggle && sectionEl) {
-      const settingKey = toggleId.replace('toggle-', '').replace(/-/g, '');
-      toggle.checked = appSettings[`show${settingKey.charAt(0).toUpperCase() + settingKey.slice(1)}`] !== false;
+      // Convert section name to setting key
+      let settingKey;
+      switch (section) {
+        case 'knowledgebase':
+          settingKey = 'showKnowledgeBase';
+          break;
+        case 'timetracking':
+          settingKey = 'showTimeTracking';
+          break;
+        case 'advancedanalytics':
+          settingKey = 'showAdvancedAnalytics';
+          break;
+        case 'apiintegration':
+          settingKey = 'showApiIntegration';
+          break;
+        default:
+          settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+      }
+      toggle.checked = appSettings[settingKey];
       sectionEl.style.display = toggle.checked ? '' : 'none';
     }
   });
@@ -488,27 +486,29 @@ export function setupSettingsEventListeners() {
     'toggle-time-tracking',
     'toggle-advanced-analytics',
     'toggle-api-integration',
-    'toggle-holdtimer-settings',
-    'toggle-performance-monitoring',
-    'toggle-crm-integration',
   ];
   settingsToggles.forEach((toggleId) => {
     const toggle = document.getElementById(toggleId);
     if (toggle) {
       toggle.addEventListener('change', function () {
+        const section = toggleId.replace('toggle-', '');
+        // Convert section name to setting key
         let settingKey;
-        if (toggleId.startsWith('toggle-')) {
-          const section = toggleId.replace('toggle-', '');
-          // Handle advanced settings with different naming
-          if (section === 'holdtimer-settings') {
-            settingKey = 'showHoldtimerSettings';
-          } else if (section === 'performance-monitoring') {
-            settingKey = 'showPerformanceMonitoring';
-          } else if (section === 'crm-integration') {
-            settingKey = 'showCrmIntegration';
-          } else {
-            settingKey = `show${section.charAt(0).toUpperCase() + section.slice(1)}`;
-          }
+        switch (section) {
+          case 'knowledge-base':
+            settingKey = 'showKnowledgeBase';
+            break;
+          case 'time-tracking':
+            settingKey = 'showTimeTracking';
+            break;
+          case 'advanced-analytics':
+            settingKey = 'showAdvancedAnalytics';
+            break;
+          case 'api-integration':
+            settingKey = 'showApiIntegration';
+            break;
+          default:
+            settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
         }
         appSettings[settingKey] = this.checked;
         saveSettings(appSettings);
@@ -516,7 +516,7 @@ export function setupSettingsEventListeners() {
       });
     }
   });
-  
+
   // Add global listener for subsection toggles (collapsible)
   document.querySelectorAll('.subsection-toggle').forEach((btn) => {
     btn.addEventListener('click', function () {

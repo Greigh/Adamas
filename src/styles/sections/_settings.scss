@@ -14,15 +14,39 @@
 
   .settings-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: map.get($spacing, 4);
     padding-bottom: map.get($spacing, 4);
     margin-bottom: map.get($spacing, 6);
     border-bottom: 1px solid var(--gray-100);
 
-    h1 { margin: 0; font-size: map.get($font-sizes, 3xl); font-weight: map.get($font-weights, bold); color: var(--primary-blue); }
-    p  { margin: 0; color: var(--gray-600); max-width: 56ch; opacity: 0.9; }
+    .title-container {
+      display: flex;
+      align-items: center;
+      gap: map.get($spacing, 2);
+
+      h1 {
+        margin: 0;
+        font-size: map.get($font-sizes, 3xl);
+        font-weight: map.get($font-weights, bold);
+        color: var(--primary-blue);
+      }
+
+      .edit-title-btn {
+        background: none;
+        border: none;
+        color: var(--gray-500);
+        cursor: pointer;
+        padding: map.get($spacing, 1);
+        border-radius: map.get($radius, sm);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--gray-100);
+          color: var(--gray-700);
+        }
+      }
+    }
   }
 
   .settings-container { max-width: var(--app-max-width, 1600px); width: 100%; margin: 0 auto; }
@@ -205,5 +229,20 @@
         }
       }
     }
+  }
+
+  // Beta tag styling
+  .beta-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--warning), var(--warning-light));
+    color: var(--warning-text, white);
+    font-size: map.get($font-sizes, xs);
+    font-weight: map.get($font-weights, bold);
+    padding: 2px map.get($spacing, 1);
+    border-radius: map.get($radius, sm);
+    margin-left: map.get($spacing, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 }

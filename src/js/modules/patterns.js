@@ -1,6 +1,7 @@
 // Number pattern formatter module
 import { savePatterns, loadPatterns, loadData, saveData } from './storage.js';
 import { showConfirmModal } from '../utils/modal.js';
+import { showToast } from '../utils/toast.js';
 
 export let patterns = [
   { id: 1, start: '81', minLength: 10, format: '@XXX-XXX-XXXX' },
@@ -329,7 +330,7 @@ export function formatNumber(root = document) {
   const copyButton = getElement(root, 'copyPatternBtn');
   const resultDiv = getElement(root, 'patternResult');
   if (!inputEl || !resultDiv) return;
-  
+
   const originalDigits = (inputEl.value || '').replace(/\D/g, '');
   const result = formatDigits(originalDigits);
 
@@ -356,6 +357,8 @@ export function formatNumber(root = document) {
 }
 
 // History management functions
+
+// History management functions
 function scheduleHistorySave(root, input, result) {
   // Clear any existing timeout for this root
   const rootKey = root === document ? 'document' : root.id || root;
@@ -363,14 +366,14 @@ function scheduleHistorySave(root, input, result) {
   if (existingTimeout) {
     clearTimeout(existingTimeout);
   }
-  
+
   // Set a new timeout to save after 3 seconds
   const timeoutId = setTimeout(() => {
     saveToHistory(input, result);
     displayHistory(root);
     historySaveTimeouts.delete(rootKey);
   }, 3000);
-  
+
   historySaveTimeouts.set(rootKey, timeoutId);
 }
 
@@ -390,16 +393,16 @@ function saveToHistory(input, result) {
     result,
     timestamp: Date.now()
   };
-  
+
   // Remove duplicates (same input and result)
   const filtered = history.filter(item => !(item.input === input && item.result === result));
-  
+
   // Add new entry at the beginning
   filtered.unshift(entry);
-  
+
   // Keep only the last 50 entries
   const trimmed = filtered.slice(0, 50);
-  
+
   saveData('patternHistory', trimmed);
 }
 
@@ -423,17 +426,17 @@ export function displayHistory(root = document) {
   const history = loadHistory();
   const historyContainer = root.querySelector('#patternHistory');
   if (!historyContainer) return;
-  
+
   if (history.length === 0) {
     historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
     return;
   }
-  
+
   // Limit history display if not showing all
   const displayHistory = showAllHistory ? history : history.slice(-10);
   const hasMore = !showAllHistory && history.length > 10;
   const startIndex = showAllHistory ? 0 : Math.max(0, history.length - 10);
-  
+
   const historyList = displayHistory.map((entry, index) => `
     <div class="history-item" data-index="${startIndex + index}">
       <div class="history-input">${entry.input}</div>
@@ -445,7 +448,7 @@ export function displayHistory(root = document) {
       </div>
     </div>
   `).join('');
-  
+
   historyContainer.innerHTML = `
     <div class="history-header">
       <h4>Recent Formats ${hasMore ? `(${displayHistory.length} of ${history.length})` : ''}</h4>
@@ -458,7 +461,7 @@ export function displayHistory(root = document) {
       ${historyList}
     </div>
   `;
-  
+
   // Add event listeners
   historyContainer.querySelectorAll('.history-use-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -489,7 +492,7 @@ export function displayHistory(root = document) {
       }
     });
   });
-  
+
   const clearBtn = historyContainer.querySelector('#clearHistoryBtn');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
@@ -497,7 +500,7 @@ export function displayHistory(root = document) {
       displayHistory(root);
     });
   }
-  
+
   const toggleBtn = historyContainer.querySelector('#toggleHistoryBtn');
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
@@ -631,46 +634,6 @@ export function clearPattern(root = document) {
   if (input) input.value = '';
   if (result) result.textContent = 'Result will appear here';
   if (copyBtn) copyBtn.disabled = true;
-}
-
-export function showToast(message, opts = {}) {
-  try {
-    let type = opts.type || 'info';
-    let timeout = typeof opts.timeout === 'number' ? opts.timeout : 3000;
-    let actionLabel = opts.actionLabel;
-    let actionCallback = typeof opts.actionCallback === 'function' ? opts.actionCallback : null;
-
-    let container = document.getElementById('toast-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'toast-container';
-      container.className = 'toast-container';
-      container.setAttribute('aria-live', 'polite');
-      document.body.appendChild(container);
-    }
-    const el = document.createElement('div');
-    el.className = `toast toast-${type}`;
-    const text = document.createElement('span');
-    text.className = 'toast-text';
-    text.textContent = message;
-    el.appendChild(text);
-    if (actionLabel && actionCallback) {
-      const actionBtn = document.createElement('button');
-      actionBtn.className = 'toast-action';
-      actionBtn.setAttribute('aria-label', actionLabel);
-      actionBtn.textContent = actionLabel;
-      actionBtn.addEventListener('click', () => {
-        try { actionCallback(); } catch (e) {}
-        try { el.remove(); } catch (e) {}
-      });
-      el.appendChild(actionBtn);
-    }
-    container.appendChild(el);
-    setTimeout(() => {
-      try { el.classList.add('toast-hide'); } catch (e) {}
-      setTimeout(() => { try { el.remove(); } catch (e) {} }, 400);
-    }, timeout);
-  } catch (e) {}
 }
 
 // Exported helper for pasting so tests or other code can call directly
