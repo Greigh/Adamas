@@ -13,7 +13,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash].js',
     chunkFilename: 'js/[name].[contenthash].chunk.js',
-    publicPath: '/',
+    publicPath: '/callcenterhelper/',
     clean: true,
   },
   devtool: isProduction ? false : 'source-map',
