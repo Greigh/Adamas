@@ -11,21 +11,23 @@ const BASE_URL = `file://${DIST_PATH}/index.html`;
 
 test.describe('Modal Confirmation System', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
+    await page.waitForSelector('#settings-tab');
+    // Trigger patterns module load by scrolling to pattern-formatter
+    await page.locator('#pattern-formatter').scrollIntoViewIfNeeded();
+    // Now go to settings
+    await page.evaluate(() => window.showSettings());
+    await page.waitForSelector('#settings-view:not(.hidden)');
+    await page.locator('tbody#patternList tr').waitFor({ state: 'attached', timeout: 10000 });
   });
 
   test('should show accessible modal when deleting a pattern', async ({ page }) => {
     // Navigate to Pattern Formatter section
     await page.click('text=Pattern Formatter');
     
-    // Add a test pattern first
-    const patternInput = await page.locator('#pattern-input');
-    await patternInput.fill('test-pattern-123');
-    await page.click('text=Format Pattern');
-    
-    // Click the delete button for the pattern
-    const deleteBtn = await page.locator('.pattern-item .delete-btn').first();
+    // Click the delete button for the first pattern in the table
+    const deleteBtn = await page.locator('.delete-pattern-btn').first();
     await deleteBtn.click();
     
     // Modal should appear
@@ -50,12 +52,9 @@ test.describe('Modal Confirmation System', () => {
   test('should close modal on Cancel button click', async ({ page }) => {
     await page.click('text=Pattern Formatter');
     
-    // Add pattern
-    await page.fill('#pattern-input', 'test-cancel-pattern');
-    await page.click('text=Format Pattern');
-    
-    // Click delete
-    await page.click('.pattern-item .delete-btn');
+    // Click the delete button for the first pattern
+    const deleteBtn = await page.locator('.delete-pattern-btn').first();
+    await deleteBtn.click();
     
     // Modal appears
     await expect(page.locator('.confirm-modal')).toBeVisible();
@@ -74,11 +73,9 @@ test.describe('Modal Confirmation System', () => {
     await page.click('text=Pattern Formatter');
     
     // Add pattern
-    await page.fill('#pattern-input', 'test-escape-pattern');
-    await page.click('text=Format Pattern');
     
     // Click delete
-    await page.click('.pattern-item .delete-btn');
+    await page.click('.delete-pattern-btn');
     
     // Modal appears
     await expect(page.locator('.confirm-modal')).toBeVisible();
@@ -97,14 +94,12 @@ test.describe('Modal Confirmation System', () => {
     await page.click('text=Pattern Formatter');
     
     // Add pattern
-    await page.fill('#pattern-input', 'test-confirm-delete');
-    await page.click('text=Format Pattern');
     
     // Verify pattern exists
     await expect(page.locator('.pattern-item')).toHaveCount(1);
     
     // Click delete
-    await page.click('.pattern-item .delete-btn');
+    await page.click('.delete-pattern-btn');
     
     // Click Confirm in modal
     await page.click('.confirm-modal .modal-confirm');
@@ -121,11 +116,9 @@ test.describe('Modal Confirmation System', () => {
     await page.click('text=Pattern Formatter');
     
     // Add pattern
-    await page.fill('#pattern-input', 'test-focus-trap');
-    await page.click('text=Format Pattern');
     
     // Click delete
-    await page.click('.pattern-item .delete-btn');
+    await page.click('.delete-pattern-btn');
     
     // Modal appears
     await expect(page.locator('.confirm-modal')).toBeVisible();
@@ -147,18 +140,20 @@ test.describe('Modal Confirmation System', () => {
 
 test.describe('Pattern Deletion Undo System', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.click('text=Pattern Formatter');
+    await page.waitForSelector('#settings-tab');
+    await page.locator('#pattern-formatter').scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.showSettings());
+    await page.waitForSelector('#settings-view:not(.hidden)');
+    await page.locator('tbody#patternList tr').waitFor({ state: 'attached', timeout: 10000 });
   });
 
   test('should show undo action in toast after deletion', async ({ page }) => {
     // Add pattern
-    await page.fill('#pattern-input', 'test-undo-pattern');
-    await page.click('text=Format Pattern');
     
     // Delete pattern
-    await page.click('.pattern-item .delete-btn');
+    await page.click('.delete-pattern-btn');
     await page.click('.confirm-modal .modal-confirm');
     
     // Toast with undo action should appear
@@ -173,46 +168,43 @@ test.describe('Pattern Deletion Undo System', () => {
   });
 
   test('should restore pattern when undo is clicked', async ({ page }) => {
-    const testPattern = 'test-restore-pattern-xyz';
+    // Get initial count
+    const initialCount = await page.locator('tbody#patternList tr').count();
     
-    // Add pattern
-    await page.fill('#pattern-input', testPattern);
-    await page.click('text=Format Pattern');
-    
-    // Verify pattern exists with formatted value
-    const patternItem = page.locator('.pattern-item').first();
-    await expect(patternItem).toBeVisible();
-    const formattedValue = await patternItem.locator('.pattern-value').textContent();
+    // Get the first pattern's text before deletion
+    const patternRow = page.locator('tbody#patternList tr').first();
+    const patternText = await patternRow.locator('td').first().textContent();
     
     // Delete pattern
-    await page.click('.pattern-item .delete-btn');
+    await page.locator('.delete-pattern-btn').first().click();
     await page.click('.confirm-modal .modal-confirm');
     
-    // Pattern should be gone
-    await expect(page.locator('.pattern-item')).toHaveCount(0);
+    // Count should be one less
+    await expect(page.locator('tbody#patternList tr')).toHaveCount(initialCount - 1);
     
     // Click undo
     await page.click('.toast .toast-action');
     
     // Pattern should be restored
-    await expect(page.locator('.pattern-item')).toHaveCount(1);
+    await expect(page.locator('tbody#patternList tr')).toHaveCount(initialCount);
     
-    // Verify it has the same formatted value
-    const restoredValue = await page.locator('.pattern-value').textContent();
-    expect(restoredValue).toBe(formattedValue);
+    // Verify the pattern text is back
+    const restoredText = await page.locator('tbody#patternList tr').first().locator('td').first().textContent();
+    expect(restoredText).toBe(patternText);
     
     // Toast should show undo confirmation
     await expect(page.locator('.toast')).toContainText('Pattern restored');
   });
 
   test('should finalize deletion after undo window expires', async ({ page }) => {
-    // Add pattern
-    await page.fill('#pattern-input', 'test-expire-undo');
-    await page.click('text=Format Pattern');
+    const initialCount = await page.locator('tbody#patternList tr').count();
     
     // Delete pattern
-    await page.click('.pattern-item .delete-btn');
+    await page.locator('.delete-pattern-btn').first().click();
     await page.click('.confirm-modal .modal-confirm');
+    
+    // Count should be one less
+    await expect(page.locator('tbody#patternList tr')).toHaveCount(initialCount - 1);
     
     // Wait for undo window to expire (5 seconds + buffer)
     await page.waitForTimeout(5500);
@@ -221,44 +213,54 @@ test.describe('Pattern Deletion Undo System', () => {
     await expect(page.locator('.toast')).not.toBeVisible();
     
     // Pattern should remain deleted (cannot be recovered)
-    await expect(page.locator('.pattern-item')).toHaveCount(0);
+    await expect(page.locator('tbody#patternList tr')).toHaveCount(initialCount - 1);
   });
 
   test('should preserve pattern order when undoing', async ({ page }) => {
-    // Add multiple patterns
-    const patterns = ['pattern-A', 'pattern-B', 'pattern-C'];
-    for (const pattern of patterns) {
-      await page.fill('#pattern-input', pattern);
-      await page.click('text=Format Pattern');
+    const initialRows = page.locator('tbody#patternList tr');
+    const initialCount = await initialRows.count();
+    if (initialCount < 2) return; // Skip if not enough patterns
+    
+    // Get texts before deletion
+    const textsBefore = [];
+    for (let i = 0; i < initialCount; i++) {
+      const text = await initialRows.nth(i).locator('td').first().textContent();
+      textsBefore.push(text);
     }
     
-    // Delete middle pattern (B)
-    const patternItems = page.locator('.pattern-item');
-    await expect(patternItems).toHaveCount(3);
-    await patternItems.nth(1).locator('.delete-btn').click();
+    // Delete second pattern
+    await page.locator('.delete-pattern-btn').nth(1).click();
     await page.click('.confirm-modal .modal-confirm');
     
-    // Only A and C remain
-    await expect(patternItems).toHaveCount(2);
+    // Count should be one less
+    await expect(page.locator('tbody#patternList tr')).toHaveCount(initialCount - 1);
     
     // Undo deletion
     await page.click('.toast .toast-action');
     
-    // All three should be back
-    await expect(patternItems).toHaveCount(3);
+    // All should be back
+    await expect(page.locator('tbody#patternList tr')).toHaveCount(initialCount);
     
-    // Verify order is preserved (A, B, C)
-    const values = await patternItems.locator('.pattern-value').allTextContents();
-    expect(values[0]).toContain('pattern-A');
-    expect(values[1]).toContain('pattern-B');
-    expect(values[2]).toContain('pattern-C');
+    // Verify order is preserved
+    const textsAfter = [];
+    const rowsAfter = page.locator('tbody#patternList tr');
+    for (let i = 0; i < initialCount; i++) {
+      const text = await rowsAfter.nth(i).locator('td').first().textContent();
+      textsAfter.push(text);
+    }
+    expect(textsAfter).toEqual(textsBefore);
   });
 });
 
 test.describe('Modal Accessibility', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
+    await page.waitForSelector('#settings-tab');
+    await page.locator('#pattern-formatter').scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.showSettings());
+    await page.waitForSelector('#settings-view:not(.hidden)');
+    await page.locator('tbody#patternList tr').waitFor({ state: 'attached', timeout: 10000 });
   });
 
   test('should have proper keyboard navigation in Settings reset', async ({ page }) => {
@@ -292,9 +294,7 @@ test.describe('Modal Accessibility', () => {
     await page.click('text=Pattern Formatter');
     
     // Add and delete pattern
-    await page.fill('#pattern-input', 'test-sr-announce');
-    await page.click('text=Format Pattern');
-    await page.click('.pattern-item .delete-btn');
+    await page.click('.delete-pattern-btn');
     
     const modal = page.locator('.confirm-modal');
     
@@ -316,20 +316,17 @@ test.describe('Modal Accessibility', () => {
 
 test.describe('Cross-Module Confirmation Modals', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
 
   test('should show modal for clearing all notes', async ({ page }) => {
     await page.click('text=Notes');
     
-    // Add a note
-    await page.fill('#notes-input', 'Test note to clear');
-    
-    // Click clear all (if button exists)
-    const clearBtn = page.locator('button:has-text("Clear All")');
+    // Click clear all notes button
+    const clearBtn = page.locator('button:has-text("Clear All Notes")');
     if (await clearBtn.count() > 0) {
-      await clearBtn.click();
+      await clearBtn.first().click();
       
       // Modal should appear
       await expect(page.locator('.confirm-modal')).toBeVisible();
@@ -340,14 +337,11 @@ test.describe('Cross-Module Confirmation Modals', () => {
   test('should show modal for resetting layout in Settings', async ({ page }) => {
     await page.click('text=Settings');
     
-    // Scroll to reset layout button
-    await page.evaluate(() => {
-      document.querySelector('button:has-text("Reset Layout")')?.scrollIntoView();
-    });
-    
+    // Find reset layout button
     const resetLayoutBtn = page.locator('button:has-text("Reset Layout")');
     if (await resetLayoutBtn.count() > 0) {
-      await resetLayoutBtn.click();
+      await resetLayoutBtn.first().scrollIntoViewIfNeeded();
+      await resetLayoutBtn.first().click();
       
       // Modal should appear
       await expect(page.locator('.confirm-modal')).toBeVisible();

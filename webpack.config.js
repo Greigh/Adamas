@@ -8,12 +8,12 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
   mode: isProduction ? 'production' : 'development',
-  entry: './src/js/main.js',
+  entry: ['./src/js/main.js', './src/styles/main.scss'],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash].js',
     chunkFilename: 'js/[name].[contenthash].chunk.js',
-    publicPath: '/callcenterhelper/',
+    publicPath: '/',
     clean: true,
   },
   devtool: isProduction ? false : 'source-map',
@@ -90,6 +90,22 @@ module.exports = {
           from: 'src/public',
           to: '.',
         },
+        {
+          from: 'src/privacy.html',
+          to: 'privacy.html',
+        },
+        {
+          from: 'src/terms.html',
+          to: 'terms.html',
+        },
+        {
+          from: 'src/contact.html',
+          to: 'contact.html',
+        },
+        {
+          from: 'src/settings.html',
+          to: 'settings.html',
+        },
       ],
     }),
   ],
@@ -138,5 +154,10 @@ module.exports = {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+  },
+  performance: {
+    hints: false, // Disable performance hints
+    maxAssetSize: 1000000, // 1MB for individual assets
+    maxEntrypointSize: 1000000, // 1MB for entry points
   },
 };

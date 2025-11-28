@@ -301,11 +301,15 @@ function renderLineChart(widget, container) {
     </div>
   `;
 
-  // In a real implementation, use Chart.js or similar
+  // Use Chart.js if available, fallback to simple rendering
   setTimeout(() => {
     const canvas = document.getElementById(`chart-${widget.id}`);
     if (canvas) {
-      renderSimpleChart(canvas, data);
+      if (typeof Chart !== 'undefined') {
+        renderChartJSChart(canvas, data, widget);
+      } else {
+        renderSimpleChart(canvas, data);
+      }
     }
   }, 100);
 }
@@ -455,6 +459,86 @@ function renderSimpleChart(canvas, data) {
   });
 }
 
+function renderChartJSChart(canvas, data, widget) {
+  const ctx = canvas.getContext('2d');
+
+  // Prepare data for Chart.js
+  const labels = data.map(d => {
+    if (d.date) {
+      return new Date(d.date).toLocaleDateString();
+    }
+    return d.label || '';
+  });
+
+  const datasets = [{
+    label: widget.config.title || widget.name,
+    data: data.map(d => d.value || d.count || 0),
+    borderColor: 'rgb(52, 152, 219)',
+    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+    tension: 0.1,
+    fill: true
+  }];
+
+  // Add additional datasets for call types if available
+  if (data.some(d => d.inbound !== undefined)) {
+    datasets.push({
+      label: 'Inbound Calls',
+      data: data.map(d => d.inbound || 0),
+      borderColor: 'rgb(46, 204, 113)',
+      backgroundColor: 'rgba(46, 204, 113, 0.1)',
+      tension: 0.1
+    });
+    datasets.push({
+      label: 'Outbound Calls',
+      data: data.map(d => d.outbound || 0),
+      borderColor: 'rgb(230, 126, 34)',
+      backgroundColor: 'rgba(230, 126, 34, 0.1)',
+      tension: 0.1
+    });
+  }
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: datasets.length > 1
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        },
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    }
+  });
+}
+
 function handleDashboardActions(event) {
   const button = event.target.closest('button[data-action]');
   if (!button) return;
@@ -514,24 +598,111 @@ function exportDashboard() {
   const dashboard = analyticsState.dashboards.find(d => d.id === analyticsState.activeDashboard);
   if (!dashboard) return;
 
-  const exportData = {
-    dashboard,
-    widgets: dashboard.widgets.map(id => analyticsState.widgets.find(w => w.id === id)).filter(Boolean),
-    exportedAt: new Date().toISOString()
-  };
+  // Create export options modal
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-modal-overlay';
+  const modal = document.createElement('div');
+  modal.className = 'confirm-modal';
+  modal.innerHTML = `
+    <h2 class="modal-title">Export Dashboard</h2>
+    <p class="modal-message">Choose export format:</p>
+    <div class="export-options">
+      <button class="export-option" data-format="json">📄 JSON</button>
+      <button class="export-option" data-format="csv">📊 CSV</button>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel">Cancel</button>
+    </div>
+  `;
 
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  overlay.classList.add('active');
+
+  // Handle export option clicks
+  modal.addEventListener('click', (e) => {
+    const option = e.target.closest('.export-option');
+    const cancel = e.target.closest('.modal-cancel');
+
+    if (option) {
+      const format = option.dataset.format;
+      performExport(dashboard, format);
+      overlay.classList.add('closing');
+      overlay.classList.remove('active');
+      setTimeout(() => overlay.remove(), 200);
+    } else if (cancel) {
+      overlay.classList.add('closing');
+      overlay.classList.remove('active');
+      setTimeout(() => overlay.remove(), 200);
+    }
+  });
+}
+
+function performExport(dashboard, format) {
+  if (format === 'json') {
+    const exportData = {
+      dashboard,
+      widgets: dashboard.widgets.map(id => analyticsState.widgets.find(w => w.id === id)).filter(Boolean),
+      exportedAt: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.json`);
+  } else if (format === 'csv') {
+    // Export widget data as CSV
+    const csvData = generateCSVData(dashboard);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    downloadBlob(blob, `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.csv`);
+  }
 
   showToast('Dashboard exported!', 'success');
 }
 
-function handleDataUpdate(event) {
+function generateCSVData(dashboard) {
+  const rows = [];
+
+  // Add header
+  rows.push(['Widget', 'Type', 'Data Source', 'Value', 'Date']);
+
+  // Add data for each widget
+  dashboard.widgets.forEach(widgetId => {
+    const widget = analyticsState.widgets.find(w => w.id === widgetId);
+    if (!widget) return;
+
+    if (widget.type === 'line-chart' && widget.dataSource === 'calls') {
+      const data = getCallVolumeData(widget.config.timeRange || '30d');
+      data.forEach(point => {
+        rows.push([
+          widget.name,
+          'Call Volume',
+          'Calls',
+          point.count,
+          point.date
+        ]);
+      });
+    } else if (widget.type === 'metric' && widget.dataSource === 'feedback') {
+      const score = getCustomerSatisfactionScore();
+      rows.push([
+        widget.name,
+        'CSAT Score',
+        'Feedback',
+        `${score}%`,
+        new Date().toISOString().split('T')[0]
+      ]);
+    }
+  });
+
+  return rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}function handleDataUpdate(event) {
   // Refresh widgets when data updates
   const { dataSource } = event.detail;
   updateWidgetsForDataSource(dataSource);

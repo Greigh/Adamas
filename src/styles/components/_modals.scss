@@ -222,14 +222,42 @@
   padding: 0 map.get($spacing, 5) map.get($spacing, 5);
 }
 
-.modal-actions {
-  display: flex;
-  gap: map.get($spacing, 3);
-  padding: 0 map.get($spacing, 5) map.get($spacing, 5);
-  justify-content: flex-end;
-}
+  .modal-actions {
+    display: flex;
+    gap: map.get($spacing, 3);
+    padding: 0 map.get($spacing, 5) map.get($spacing, 5);
+    justify-content: flex-end;
+  }
 
-.modal-cancel,
+  .export-options {
+    display: flex;
+    gap: map.get($spacing, 3);
+    padding: 0 map.get($spacing, 5) map.get($spacing, 4);
+    justify-content: center;
+  }
+
+  .export-option {
+    padding: map.get($spacing, 3) map.get($spacing, 4);
+    border-radius: map.get($radius, base);
+    font-size: map.get($font-sizes, sm);
+    font-weight: map.get($font-weights, medium);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    color: var(--gray-700);
+
+    &:hover {
+      background: var(--gray-50);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    &:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+  }.modal-cancel,
 .modal-confirm {
   padding: map.get($spacing, 2) map.get($spacing, 4);
   border-radius: map.get($radius, base);

@@ -1,10 +1,10 @@
-import '../styles/main.scss';
-
 // Import synchronous dependencies
+import { auth } from './modules/auth.js';
 import { initializeSettings, appSettings, saveSettings } from './modules/settings.js';
 import { initializeTheme, setupThemeToggle } from './modules/themes.js';
 import { setupTimerEventListeners } from './modules/timer.js';
 import * as patternsModule from './modules/patterns.js';
+window.patternsModule = patternsModule;
 import { setupCallFlowEventListeners } from './modules/callflow.js';
 import { setupNotesEventListeners } from './modules/notes.js';
 import { setupSettingsEventListeners } from './modules/settings.js';
@@ -113,6 +113,8 @@ const lazyLoadAdvancedModules = async () => {
       try { initializeTimeTracking(); } catch (e) { console.error('Error initializing time tracking:', e); }
       try { initializeAdvancedAnalytics(); } catch (e) { console.error('Error initializing advanced analytics:', e); }
       try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
+      try { patternsModule.initializePatterns(); } catch (e) { console.error('Error initializing patterns:', e); }
+      try { patternsModule.setupPatternEventListeners(); } catch (e) { console.error('Error setting up pattern event listeners:', e); }
 
       advancedModulesLoaded = true;
     };
@@ -234,18 +236,30 @@ function showSettings() {
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.add('active');
   document.getElementById('stats-tab')?.classList.remove('active');
-  // Ensure the patterns UI in settings has listeners attached when the settings view is shown
+  // Ensure the patterns are loaded for settings
   try {
-    if (window.patternsModule && typeof window.patternsModule.attachPatternEventListeners === 'function') {
-      const settingsPatternRoot = document.querySelector('.pattern-management') || document.querySelector('.pattern-management-subsection');
-      if (settingsPatternRoot) {
-        window.patternsModule.attachPatternEventListeners(settingsPatternRoot);
-      }
+    if (window.patternsModule) {
+      // Already loaded, just update table
+      window.patternsModule.updatePatternTable();
+    } else {
+      // Load patterns module
+      import('./modules/patterns.js').then(module => {
+        window.patternsModule = module;
+        module.initializePatterns();
+      }).catch(err => {
+        console.warn('Error loading patterns module for settings:', err);
+      });
     }
   } catch (err) {
-    console.warn('Error attaching pattern listeners on settings show:', err);
+    console.warn('Error loading patterns for settings:', err);
   }
 }
+
+window.showSettings = showSettings;
+
+console.log('showSettings assigned:', window.showSettings);
+
+window.test = window.showSettings;
 
 // Show stats panel
 function showStats() {
@@ -258,6 +272,50 @@ function showStats() {
 
   // Lazy load advanced modules when stats tab is accessed
   lazyLoadAdvancedModules();
+}
+
+function showLogin() {
+  // Simple modal for login/register
+  const modal = document.createElement('div');
+  modal.className = 'confirm-modal-overlay';
+  modal.innerHTML = `
+    <div class="confirm-modal">
+      <h3>Login</h3>
+      <input id="login-email" type="email" placeholder="Email" />
+      <input id="login-password" type="password" placeholder="Password" />
+      <button id="login-submit">Login</button>
+      <button id="register-submit">Register</button>
+      <button id="modal-close">Close</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document.getElementById('login-submit').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    try {
+      await auth.login(email, password);
+      showToast('Logged in successfully');
+      modal.remove();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  });
+
+  document.getElementById('register-submit').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const username = prompt('Username:');
+    try {
+      await auth.register(username, email, password);
+      showToast('Registered successfully');
+      modal.remove();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  });
+
+  document.getElementById('modal-close').addEventListener('click', () => modal.remove());
 }
 
 // Show service worker update notification
@@ -309,18 +367,6 @@ function loadSecondaryModules() {
       })
       .catch((err) => {
         console.error('Error loading timer module:', err);
-      });
-  });
-
-  // Patterns functionality
-  lazyLoadOnVisible('pattern-formatter', () => {
-    import('./modules/patterns.js')
-      .then((module) => {
-        module.initializePatterns();
-        module.setupPatternEventListeners();
-      })
-      .catch((err) => {
-        console.error('Error loading patterns module:', err);
       });
   });
 

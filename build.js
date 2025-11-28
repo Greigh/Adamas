@@ -75,6 +75,16 @@ try {
     }
   });
 
+  // 4a. Copy .htaccess to dist
+  const htaccessSrc = path.join(__dirname, 'src', 'public', '.htaccess');
+  const htaccessDest = path.join(distPath, '.htaccess');
+  if (fs.existsSync(htaccessSrc)) {
+    fs.copyFileSync(htaccessSrc, htaccessDest);
+    console.log('✅ Copied .htaccess to dist/');
+  } else {
+    console.warn('⚠️  .htaccess not found in src/public/');
+  }
+
   // 4b. Copy audio files (alert sounds and all other files) to dist/audio
   const audioSrcDir = path.join(__dirname, 'src', 'public', 'audio');
   const audioDistDir = path.join(distPath, 'audio');

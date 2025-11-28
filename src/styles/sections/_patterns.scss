@@ -68,6 +68,11 @@
         font-weight: map.get($font-weights, semibold);
         color: var(--gray-700);
       }
+
+      .history-controls {
+        display: flex;
+        gap: map.get($spacing, 2);
+      }
     }
 
     .history-list {
@@ -112,18 +117,37 @@
         font-weight: map.get($font-weights, bold);
       }
 
-      .history-use-btn {
+      .history-actions {
+        display: flex;
+        gap: map.get($spacing, 1);
+        align-items: center;
+      }
+
+      .history-use-btn,
+      .history-delete-btn {
         padding: map.get($spacing, 1) map.get($spacing, 2);
         font-size: map.get($font-sizes, xs);
-        background: var(--primary);
-        color: white;
         border: none;
         border-radius: map.get($radius, sm);
         cursor: pointer;
         transition: map.get($transitions, fast);
+      }
+
+      .history-use-btn {
+        background: var(--primary);
+        color: white;
 
         &:hover {
           background: var(--primary-dark);
+        }
+      }
+
+      .history-delete-btn {
+        background: var(--danger);
+        color: white;
+
+        &:hover {
+          background: var(--danger-dark);
         }
       }
     }
@@ -261,42 +285,68 @@
     .empty-patterns-msg {
       color: var(--dark-text-muted);
     }
-  }
 
-  // Dark mode for history
-  .pattern-history {
-    border-top-color: var(--dark-border);
+    .pattern-history {
+      border-top-color: var(--dark-border);
 
-    .history-header h4 {
-      color: var(--dark-text);
-    }
-
-    .history-list {
-      border-color: var(--dark-border);
-      background: var(--dark-surface);
-    }
-
-    .history-item {
-      border-bottom-color: var(--dark-border);
-
-      &:hover {
-        background: var(--dark-bg);
-      }
-
-      .history-input,
-      .history-result {
-        background: var(--dark-bg);
-        border-color: var(--dark-border);
+      .history-header h4 {
         color: var(--dark-text);
       }
 
-      .history-arrow {
+      .history-list {
+        border-color: var(--dark-border);
+        background: var(--dark-surface);
+      }
+
+      .history-item {
+        border-bottom-color: var(--dark-border);
+        background: var(--dark-surface);
+
+        &:hover {
+          background: var(--dark-border);
+        }
+
+        .history-input,
+        .history-result {
+          background: var(--dark-border);
+          border-color: var(--dark-border);
+          color: var(--dark-text);
+        }
+
+        .history-arrow {
+          color: var(--dark-text-muted);
+        }
+
+        .history-use-btn {
+          background: var(--primary);
+          color: white;
+
+          &:hover {
+            background: var(--primary-dark);
+          }
+        }
+
+        .history-delete-btn {
+          background: var(--danger);
+          color: white;
+
+          &:hover {
+            background: var(--danger-dark);
+          }
+        }
+
+        .history-use-btn,
+        .history-delete-btn {
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+
+      .no-history {
         color: var(--dark-text-muted);
       }
     }
-
-    .no-history {
-      color: var(--dark-text-muted);
-    }
   }
+
 }

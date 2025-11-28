@@ -8,6 +8,9 @@
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>"
     />
+    <link rel="manifest" href="/manifest.json" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   </head>
   <body>
     <div id="app">
@@ -21,6 +24,7 @@
             <button id="main-tab" class="nav-tab active">Main</button>
             <button id="stats-tab" class="nav-tab">Stats</button>
             <button id="settings-tab" class="nav-tab">Settings</button>
+            <button id="login-btn" class="nav-tab">Login</button>
           </nav>
         </div>
       </header>
@@ -1353,6 +1357,7 @@
                         type="checkbox"
                         id="toggle-crm-integration"
                         name="toggle-crm-integration"
+                        checked
                         aria-label="Show CRM Integration"
                       />
                       <span

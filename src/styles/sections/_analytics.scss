@@ -154,3 +154,271 @@
     }
   }
 }
+
+// Advanced Analytics Dashboard
+.analytics-section {
+  padding: map.get($spacing, 6);
+  background: var(--card-bg);
+  border-radius: map.get($radius, lg);
+  border: 1px solid var(--border-color);
+
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacing, 6);
+    padding-bottom: map.get($spacing, 4);
+    border-bottom: 1px solid var(--border-color);
+
+    .dashboard-selector {
+      h3 {
+        margin: 0 0 map.get($spacing, 2) 0;
+        font-size: map.get($font-sizes, xl);
+        font-weight: map.get($font-weights, semibold);
+        color: var(--text-color);
+      }
+
+      select {
+        padding: map.get($spacing, 2) map.get($spacing, 3);
+        border: 1px solid var(--border-color);
+        border-radius: map.get($radius, base);
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-size: map.get($font-sizes, sm);
+      }
+    }
+
+    .dashboard-actions {
+      display: flex;
+      gap: map.get($spacing, 2);
+
+      .btn-sm {
+        padding: map.get($spacing, 2) map.get($spacing, 4);
+        font-size: map.get($font-sizes, sm);
+        border-radius: map.get($radius, base);
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: map.get($transitions, base);
+
+        &:hover {
+          background: var(--bg-hover);
+        }
+
+        &.btn-secondary {
+          background: var(--gray-100);
+          color: var(--gray-700);
+        }
+
+        &.btn-outline {
+          background: transparent;
+          border-color: var(--primary);
+          color: var(--primary);
+
+          &:hover {
+            background: var(--primary);
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-grid {
+    display: grid;
+    gap: map.get($spacing, 4);
+    margin-bottom: map.get($spacing, 6);
+  }
+
+  .dashboard-widget {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: map.get($radius, lg);
+    overflow: hidden;
+    transition: map.get($transitions, base);
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: map.get($spacing, 4);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+
+      h4 {
+        margin: 0;
+        font-size: map.get($font-sizes, lg);
+        font-weight: map.get($font-weights, medium);
+        color: var(--text-color);
+      }
+
+      .widget-controls {
+        display: flex;
+        gap: map.get($spacing, 1);
+
+        .btn-icon {
+          background: none;
+          border: none;
+          font-size: map.get($font-sizes, lg);
+          cursor: pointer;
+          padding: map.get($spacing, 1);
+          border-radius: map.get($radius, base);
+          color: var(--text-muted);
+          transition: map.get($transitions, base);
+
+          &:hover {
+            background: var(--bg-hover);
+            color: var(--text-color);
+          }
+        }
+      }
+    }
+
+    .widget-content {
+      padding: map.get($spacing, 4);
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .widget-loading {
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      .chart-container {
+        width: 100%;
+        height: 100%;
+
+        canvas {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+
+      .gauge-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .gauge {
+          position: relative;
+          width: 120px;
+          height: 60px;
+          overflow: hidden;
+
+          .gauge-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0deg, var(--warning) 180deg, var(--error) 360deg);
+            transform-origin: center bottom;
+            transition: transform 0.3s ease;
+          }
+
+          .gauge-center {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--bg-color);
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+          }
+        }
+
+        .gauge-value {
+          text-align: center;
+          margin-top: map.get($spacing, 2);
+
+          .value {
+            font-size: map.get($font-sizes, '2xl');
+            font-weight: 700;
+            color: var(--primary);
+          }
+
+          .unit {
+            font-size: map.get($font-sizes, sm);
+            color: var(--text-muted);
+          }
+        }
+
+        .gauge-target {
+          font-size: map.get($font-sizes, xs);
+          color: var(--text-muted);
+          margin-top: map.get($spacing, 1);
+        }
+      }
+
+      .metric-value {
+        font-size: map.get($font-sizes, '4xl');
+        font-weight: 700;
+        color: var(--primary);
+        text-align: center;
+
+        &.good {
+          color: var(--success);
+        }
+
+        &.warning {
+          color: var(--warning);
+        }
+
+        &.danger {
+          color: var(--error);
+        }
+      }
+    }
+  }
+
+  .analytics-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: map.get($spacing, 4);
+    border-top: 1px solid var(--border-color);
+
+    .data-sources {
+      h4 {
+        margin: 0 0 map.get($spacing, 2) 0;
+        font-size: map.get($font-sizes, sm);
+        font-weight: map.get($font-weights, medium);
+        color: var(--text-color);
+      }
+
+      .source-list {
+        display: flex;
+        gap: map.get($spacing, 2);
+        flex-wrap: wrap;
+
+        .source-tag {
+          padding: map.get($spacing, 1) map.get($spacing, 2);
+          background: var(--bg-hover);
+          border-radius: map.get($radius, sm);
+          font-size: map.get($font-sizes, xs);
+          color: var(--text-muted);
+        }
+      }
+    }
+
+    .last-updated {
+      font-size: map.get($font-sizes, xs);
+      color: var(--text-muted);
+    }
+  }
+}

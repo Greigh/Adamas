@@ -211,8 +211,21 @@ function closeModals() {
 }
 
 function undoLastAction() {
-  // Basic undo functionality - could be extended per module
-  console.log('Undo not implemented yet');
+  // Check if there's a pending pattern deletion to undo
+  if (window.patterns && window.patterns.lastDeletedPattern && window.patterns.lastDeletedPattern.timeoutId) {
+    // Cancel the timeout
+    window.clearTimeout(window.patterns.lastDeletedPattern.timeoutId);
+    // Restore the pattern
+    if (window.patterns.lastDeletedPattern.pattern) {
+      window.patterns.patterns.splice(window.patterns.lastDeletedPattern.index, 0, window.patterns.lastDeletedPattern.pattern);
+      window.patterns.savePatterns(window.patterns.patterns);
+      window.patterns.updatePatternTable();
+      window.showToast('Pattern restored', { type: 'success' });
+    }
+    window.patterns.lastDeletedPattern = null;
+  } else {
+    console.log('No action to undo');
+  }
 }
 
 function redoLastAction() {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -113,5 +113,17 @@
         </div>
       </footer>
     </div>
+    <script>
+      // Apply saved theme to static pages
+      (function () {
+        try {
+          const savedTheme = localStorage.getItem('theme') || 'light';
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch (e) {
+          // Fallback to light theme if localStorage is not available
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </body>
 </html>

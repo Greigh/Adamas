@@ -12,6 +12,12 @@ export let nextPatternId = 4;
 export let editingPatternId = null;
 export let lastDeletedPattern = null; // { pattern, index, timeoutId }
 
+// Timeout map for debounced history saving (per root element)
+const historySaveTimeouts = new Map();
+
+// State for history display
+let showAllHistory = false;
+
 export function initializePatterns() {
   const savedPatterns = loadPatterns();
   if (savedPatterns.length > 0) {
@@ -19,6 +25,28 @@ export function initializePatterns() {
     nextPatternId = Math.max(...patterns.map((p) => p.id)) + 1;
   }
   updatePatternTable();
+
+  // Expose module for testing and keyboard shortcuts
+  window.patternsModule = {
+    initializePatterns,
+    updatePatternTable,
+    addPattern,
+    deletePattern,
+    startEditPattern,
+    saveEditPattern,
+    cancelEditPattern,
+    reorderPattern,
+    formatNumber,
+    displayHistory
+  };
+
+  // Expose patterns state for keyboard shortcuts
+  window.patterns = {
+    patterns,
+    lastDeletedPattern,
+    savePatterns,
+    updatePatternTable
+  };
 }
 
 export function updatePatternTable() {
@@ -308,10 +336,8 @@ export function formatNumber(root = document) {
   resultDiv.textContent = result;
   const autoCopy = loadData('autoCopyPattern', true);
   if (result && result !== 'No matching pattern found') {
-    // Save to history
-    saveToHistory(originalDigits, result);
-    // Update history display
-    displayHistory(root);
+    // Debounced save to history (3 seconds delay)
+    scheduleHistorySave(root, originalDigits, result);
     if (copyButton) {
       copyButton.style.display = 'inline-block';
       copyButton.disabled = false;
@@ -319,13 +345,44 @@ export function formatNumber(root = document) {
     if (autoCopy) {
       copyResult(root); // <-- Only auto-copy if enabled
     }
-  } else if (copyButton) {
-    copyButton.style.display = 'none';
-    copyButton.disabled = true;
+  } else {
+    // Clear any pending history save timeout since input is invalid
+    clearHistorySaveTimeout(root);
+    if (copyButton) {
+      copyButton.style.display = 'none';
+      copyButton.disabled = true;
+    }
   }
 }
 
 // History management functions
+function scheduleHistorySave(root, input, result) {
+  // Clear any existing timeout for this root
+  const rootKey = root === document ? 'document' : root.id || root;
+  const existingTimeout = historySaveTimeouts.get(rootKey);
+  if (existingTimeout) {
+    clearTimeout(existingTimeout);
+  }
+  
+  // Set a new timeout to save after 3 seconds
+  const timeoutId = setTimeout(() => {
+    saveToHistory(input, result);
+    displayHistory(root);
+    historySaveTimeouts.delete(rootKey);
+  }, 3000);
+  
+  historySaveTimeouts.set(rootKey, timeoutId);
+}
+
+function clearHistorySaveTimeout(root) {
+  const rootKey = root === document ? 'document' : root.id || root;
+  const existingTimeout = historySaveTimeouts.get(rootKey);
+  if (existingTimeout) {
+    clearTimeout(existingTimeout);
+    historySaveTimeouts.delete(rootKey);
+  }
+}
+
 function saveToHistory(input, result) {
   const history = loadData('patternHistory', []);
   const entry = {
@@ -354,6 +411,14 @@ export function clearHistory() {
   saveData('patternHistory', []);
 }
 
+export function deleteHistoryItem(index) {
+  const history = loadData('patternHistory', []);
+  if (index >= 0 && index < history.length) {
+    history.splice(index, 1);
+    saveData('patternHistory', history);
+  }
+}
+
 export function displayHistory(root = document) {
   const history = loadHistory();
   const historyContainer = root.querySelector('#patternHistory');
@@ -364,19 +429,30 @@ export function displayHistory(root = document) {
     return;
   }
   
-  const historyList = history.map((entry, index) => `
-    <div class="history-item" data-index="${index}">
+  // Limit history display if not showing all
+  const displayHistory = showAllHistory ? history : history.slice(-10);
+  const hasMore = !showAllHistory && history.length > 10;
+  const startIndex = showAllHistory ? 0 : Math.max(0, history.length - 10);
+  
+  const historyList = displayHistory.map((entry, index) => `
+    <div class="history-item" data-index="${startIndex + index}">
       <div class="history-input">${entry.input}</div>
       <div class="history-arrow">→</div>
       <div class="history-result">${entry.result}</div>
-      <button class="history-use-btn" title="Use this result">Use</button>
+      <div class="history-actions">
+        <button class="history-use-btn" title="Use this result">Use</button>
+        <button class="history-delete-btn" title="Delete this entry">🗑</button>
+      </div>
     </div>
   `).join('');
   
   historyContainer.innerHTML = `
     <div class="history-header">
-      <h4>Recent Formats</h4>
-      <button id="clearHistoryBtn" class="button btn-secondary">Clear History</button>
+      <h4>Recent Formats ${hasMore ? `(${displayHistory.length} of ${history.length})` : ''}</h4>
+      <div class="history-controls">
+        ${hasMore ? '<button id="toggleHistoryBtn" class="button btn-secondary">Show All</button>' : showAllHistory ? '<button id="toggleHistoryBtn" class="button btn-secondary">Show Recent</button>' : ''}
+        <button id="clearHistoryBtn" class="button btn-secondary">Clear History</button>
+      </div>
     </div>
     <div class="history-list">
       ${historyList}
@@ -396,11 +472,36 @@ export function displayHistory(root = document) {
       formatNumber(root);
     });
   });
+
+  historyContainer.querySelectorAll('.history-delete-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const index = parseInt(e.target.closest('.history-item').dataset.index);
+      const confirmed = await showConfirmModal({
+        title: 'Delete History Entry',
+        message: 'Are you sure you want to delete this history entry?',
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        danger: true
+      });
+      if (confirmed) {
+        deleteHistoryItem(index);
+        displayHistory(root);
+      }
+    });
+  });
   
   const clearBtn = historyContainer.querySelector('#clearHistoryBtn');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
       clearHistory();
+      displayHistory(root);
+    });
+  }
+  
+  const toggleBtn = historyContainer.querySelector('#toggleHistoryBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      showAllHistory = !showAllHistory;
       displayHistory(root);
     });
   }
@@ -525,6 +626,8 @@ export function clearPattern(root = document) {
   const input = getElement(root, 'patternNumberInput');
   const result = getElement(root, 'patternResult');
   const copyBtn = getElement(root, 'copyPatternBtn');
+  // Clear any pending history save timeout
+  clearHistorySaveTimeout(root);
   if (input) input.value = '';
   if (result) result.textContent = 'Result will appear here';
   if (copyBtn) copyBtn.disabled = true;
@@ -696,7 +799,6 @@ export function attachPatternEventListeners(root = document) {
 export function setupPatternEventListeners() {
   attachPatternEventListeners(document);
   // Initialize patterns on load
-  initializePatterns();
 }
 
 // Tab switching function no longer needed - patterns moved to settings page

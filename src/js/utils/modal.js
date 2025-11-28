@@ -31,6 +31,11 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
     const cancelBtn = modal.querySelector('.modal-cancel');
     const previousActive = document.activeElement;
 
+    // Focus trap setup - collect all focusable elements
+    const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
     function cleanup(animated = true) {
       if (animated) {
         overlay.classList.add('closing');
@@ -43,6 +48,7 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
         try { overlay.remove(); } catch (e) {}
       }
       document.removeEventListener('keydown', onKeyDown);
+      // Restore focus to the previously active element
       if (previousActive && typeof previousActive.focus === 'function') {
         setTimeout(() => previousActive.focus(), animated ? 200 : 0);
       }
@@ -54,17 +60,19 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
         cleanup();
         resolve(false);
       } else if (e.key === 'Tab') {
-        // Focus trap between cancel and confirm buttons
-        const focusable = modal.querySelectorAll('button');
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
+        // Improved focus trapping
+        if (e.shiftKey) {
+          // Shift+Tab: move to previous focusable element
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable.focus();
+          }
+        } else {
+          // Tab: move to next focusable element
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable.focus();
+          }
         }
       }
     }
@@ -78,10 +86,14 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
       resolve(false);
     });
     
-    // Focus confirm button (or cancel if not dangerous)
+    // Focus the first focusable element (usually confirm button for dangerous actions)
     setTimeout(() => {
       try { 
-        confirmBtn.focus();
+        if (firstFocusable) {
+          firstFocusable.focus();
+        } else if (confirmBtn) {
+          confirmBtn.focus();
+        }
       } catch (e) {}
     }, 0);
     

@@ -1,12 +1,27 @@
 // Notes management module
 import { saveNotes, loadNotes, saveNotesData, loadNotesData } from './storage.js';
 import { appSettings } from './settings.js'; // Add this import
+import { auth } from './auth.js';
 
-export function renderNotes() {
+export async function renderNotes() {
   const notesFeed = document.getElementById('notes-feed');
   if (!notesFeed) return;
 
-  const notes = loadNotes();
+  let notes = loadNotes(); // fallback to local
+
+  if (auth.isLoggedIn()) {
+    try {
+      const res = await fetch('/api/notes', {
+        headers: auth.getAuthHeader(),
+      });
+      if (res.ok) {
+        notes = await res.json();
+      }
+    } catch (err) {
+      console.error('Failed to load notes from server', err);
+    }
+  }
+
   notesFeed.innerHTML = '';
 
   if (notes.length === 0) {
@@ -549,5 +564,17 @@ export function initializeNotes() {
     });
     saveNotes(notes);
     renderNotes();
+
+    // Save to server if logged in
+    if (auth.isLoggedIn()) {
+      fetch('/api/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...auth.getAuthHeader(),
+        },
+        body: JSON.stringify({ content: text }),
+      }).catch(err => console.error('Failed to save note to server', err));
+    }
   };
 }

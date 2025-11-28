@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -23,15 +23,45 @@
       </header>
       <main class="container card themed-static-page max-w-600 auto-margin">
         <h2>Privacy Policy</h2>
+        <p><em>Last updated: November 27, 2025</em></p>
+
+        <h3>Information We Collect</h3>
         <p>
-          We do not collect or store any personal user data. All app data stays
-          on your device and is never sent to our servers.
+          Call Center Helper is designed with privacy in mind. We do not
+          collect, store, or transmit any personal user data to our servers. All
+          application data, including notes, patterns, settings, and user
+          preferences, remains stored locally on your device using your
+          browser's local storage.
         </p>
+
+        <h3>Local Storage Usage</h3>
+        <p>The application uses browser local storage to save your:</p>
+        <ul>
+          <li>Call notes and patterns</li>
+          <li>Application settings and preferences</li>
+          <li>Timer configurations</li>
+          <li>Theme selections</li>
+          <li>Other user interface customizations</li>
+        </ul>
         <p>
-          However, our site is protected and served by Cloudflare, which may
-          collect limited technical information (such as IP address,
-          device/browser details, and basic logs) for security, analytics, and
-          performance purposes. This information is handled according to the
+          This data never leaves your device and is not accessible to us or any
+          third parties.
+        </p>
+
+        <h3>Third-Party Services</h3>
+        <p>
+          Our website is protected and served by Cloudflare, which may collect
+          limited technical information for security and performance purposes,
+          including:
+        </p>
+        <ul>
+          <li>IP addresses</li>
+          <li>Device and browser information</li>
+          <li>Basic access logs</li>
+          <li>Security-related data</li>
+        </ul>
+        <p>
+          This information is handled according to the
           <a
             href="https://www.cloudflare.com/privacypolicy/"
             target="_blank"
@@ -39,8 +69,43 @@
             >Cloudflare Privacy Policy</a
           >.
         </p>
+
+        <h3>Cookies and Tracking</h3>
         <p>
-          We do not use cookies, tracking, or ads. Your privacy is respected.
+          We do not use cookies, tracking pixels, analytics services, or any
+          form of user tracking. Your browsing activity is not monitored or
+          recorded by us.
+        </p>
+
+        <h3>Data Security</h3>
+        <p>
+          Since all data is stored locally on your device, security depends on
+          your device's security measures. We recommend:
+        </p>
+        <ul>
+          <li>Using strong device passwords</li>
+          <li>Keeping your browser and operating system updated</li>
+          <li>Using antivirus software</li>
+          <li>Being cautious with shared devices</li>
+        </ul>
+
+        <h3>Children's Privacy</h3>
+        <p>
+          This application is not intended for children under 13 years of age.
+          We do not knowingly collect any information from children under 13.
+        </p>
+
+        <h3>Changes to This Privacy Policy</h3>
+        <p>
+          We may update this Privacy Policy from time to time. Any changes will
+          be reflected on this page with an updated "Last updated" date.
+        </p>
+
+        <h3>Contact Us</h3>
+        <p>
+          If you have any questions about this Privacy Policy, please contact us
+          through our
+          <a href="/callcenterhelper/contact">contact page</a>.
         </p>
       </main>
       <footer class="copyright-footer">
@@ -54,5 +119,17 @@
         </div>
       </footer>
     </div>
+    <script>
+      // Apply saved theme to static pages
+      (function () {
+        try {
+          const savedTheme = localStorage.getItem('theme') || 'light';
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch (e) {
+          // Fallback to light theme if localStorage is not available
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </body>
 </html>
