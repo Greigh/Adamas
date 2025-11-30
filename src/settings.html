@@ -30,6 +30,408 @@
         <div class="container settings-container">
           <div class="sortable-container">
             <div class="settings-grid">
+            <!-- Appearance Section -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-appearance">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Appearance</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Theme</div>
+                    <div class="setting-description">
+                      Choose your preferred color scheme
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <select id="theme-select" name="theme-select" aria-label="Theme">
+                      <option value="light">Light</option>
+                      <option value="dark">Dark</option>
+                      <option value="auto">Auto</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Font Size</div>
+                    <div class="setting-description">
+                      Adjust the base font size for better readability
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <select id="font-size-select" name="font-size-select" aria-label="Font Size">
+                      <option value="small">Small</option>
+                      <option value="medium">Medium</option>
+                      <option value="large">Large</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Compact Mode</div>
+                    <div class="setting-description">
+                      Reduce spacing and padding for more content on screen
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="compact-mode-toggle">
+                      <input
+                        type="checkbox"
+                        id="compact-mode-toggle"
+                        name="compact-mode-toggle"
+                        aria-label="Compact Mode"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Visible Sections -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="settings-visible-sections">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Visible Sections</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Pattern Formatter</div>
+                    <div class="setting-description">
+                      Show the pattern formatter section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-formatter">
+                      <input
+                        type="checkbox"
+                        id="toggle-formatter"
+                        name="toggle-formatter"
+                        aria-label="Pattern Formatter"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Call Flow Builder</div>
+                    <div class="setting-description">
+                      Show the call flow builder section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-callflow">
+                      <input
+                        type="checkbox"
+                        id="toggle-callflow"
+                        name="toggle-callflow"
+                        aria-label="Call Flow Builder"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Notes</div>
+                    <div class="setting-description">
+                      Show the notes section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-notes">
+                      <input
+                        type="checkbox"
+                        id="toggle-notes"
+                        name="toggle-notes"
+                        aria-label="Notes"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Hold Timer</div>
+                    <div class="setting-description">
+                      Show the hold timer section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-holdtimer">
+                      <input
+                        type="checkbox"
+                        id="toggle-holdtimer"
+                        name="toggle-holdtimer"
+                        aria-label="Hold Timer"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Call Logging</div>
+                    <div class="setting-description">
+                      Show the call logging section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-calllogging">
+                      <input
+                        type="checkbox"
+                        id="toggle-calllogging"
+                        name="toggle-calllogging"
+                        aria-label="Call Logging"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Scripts</div>
+                    <div class="setting-description">
+                      Show the scripts section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-scripts">
+                      <input
+                        type="checkbox"
+                        id="toggle-scripts"
+                        name="toggle-scripts"
+                        aria-label="Scripts"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Tasks</div>
+                    <div class="setting-description">
+                      Show the tasks section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-tasks">
+                      <input
+                        type="checkbox"
+                        id="toggle-tasks"
+                        name="toggle-tasks"
+                        aria-label="Tasks"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Voice Recording</div>
+                    <div class="setting-description">
+                      Show the voice recording section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-voicerecording">
+                      <input
+                        type="checkbox"
+                        id="toggle-voicerecording"
+                        name="toggle-voicerecording"
+                        aria-label="Voice Recording"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Collaboration</div>
+                    <div class="setting-description">
+                      Show the collaboration section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-collaboration">
+                      <input
+                        type="checkbox"
+                        id="toggle-collaboration"
+                        name="toggle-collaboration"
+                        aria-label="Collaboration"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Workflows</div>
+                    <div class="setting-description">
+                      Show the workflows section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-workflows">
+                      <input
+                        type="checkbox"
+                        id="toggle-workflows"
+                        name="toggle-workflows"
+                        aria-label="Workflows"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Multichannel</div>
+                    <div class="setting-description">
+                      Show the multichannel section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-multichannel">
+                      <input
+                        type="checkbox"
+                        id="toggle-multichannel"
+                        name="toggle-multichannel"
+                        aria-label="Multichannel"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Feedback</div>
+                    <div class="setting-description">
+                      Show the feedback section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-feedback">
+                      <input
+                        type="checkbox"
+                        id="toggle-feedback"
+                        name="toggle-feedback"
+                        aria-label="Feedback"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Knowledge Base</div>
+                    <div class="setting-description">
+                      Show the knowledge base section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-knowledge-base">
+                      <input
+                        type="checkbox"
+                        id="toggle-knowledge-base"
+                        name="toggle-knowledge-base"
+                        aria-label="Knowledge Base"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Time Tracking</div>
+                    <div class="setting-description">
+                      Show the time tracking section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-time-tracking">
+                      <input
+                        type="checkbox"
+                        id="toggle-time-tracking"
+                        name="toggle-time-tracking"
+                        aria-label="Time Tracking"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Advanced Analytics</div>
+                    <div class="setting-description">
+                      Show the advanced analytics section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-advanced-analytics">
+                      <input
+                        type="checkbox"
+                        id="toggle-advanced-analytics"
+                        name="toggle-advanced-analytics"
+                        aria-label="Advanced Analytics"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">API Integration</div>
+                    <div class="setting-description">
+                      Show the API integration section
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-api-integration">
+                      <input
+                        type="checkbox"
+                        id="toggle-api-integration"
+                        name="toggle-api-integration"
+                        aria-label="API Integration"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             <!-- Pattern Formatter Settings -->
             <section class="card settings-section toggleable-section draggable-section" data-section="settings-pattern-formatter">
               <div class="section-header">
@@ -122,73 +524,6 @@
               </div>
             </div>
               </section>
-
-            <!-- Appearance Section -->
-            <section class="card settings-section toggleable-section draggable-section" data-section="settings-appearance">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title">Appearance</h2>
-                </div>
-                <div class="section-controls">
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                  <button class="float-btn" title="Float">⧉</button>
-                </div>
-              </div>
-              <div class="section-content section-content--cols">
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Theme</div>
-                    <div class="setting-description">
-                      Choose your preferred color scheme
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <select id="theme-select" name="theme-select" aria-label="Theme">
-                      <option value="light">Light</option>
-                      <option value="dark">Dark</option>
-                      <option value="auto">Auto</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Font Size</div>
-                    <div class="setting-description">
-                      Adjust the base font size for better readability
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <select id="font-size-select" name="font-size-select" aria-label="Font Size">
-                      <option value="small">Small</option>
-                      <option value="medium">Medium</option>
-                      <option value="large">Large</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Compact Mode</div>
-                    <div class="setting-description">
-                      Reduce spacing and padding for more content on screen
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <label class="switch" for="compact-mode-toggle">
-                      <input
-                        type="checkbox"
-                        id="compact-mode-toggle"
-                        name="compact-mode-toggle"
-                        aria-label="Compact Mode"
-                      />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </section>
 
             <!-- Audio Settings -->
             <section class="card settings-section toggleable-section draggable-section" data-section="settings-audio">

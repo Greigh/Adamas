@@ -23,6 +23,7 @@
           <nav class="main-nav">
             <button id="main-tab" class="nav-tab active">Main</button>
             <button id="stats-tab" class="nav-tab">Stats</button>
+            <button id="knowledge-base-tab" class="nav-tab">Knowledge Base</button>
             <button id="settings-tab" class="nav-tab">Settings</button>
             <button id="login-btn" class="nav-tab">Login</button>
           </nav>
@@ -1249,7 +1250,6 @@
                         type="checkbox"
                         id="toggle-knowledge-base"
                         name="toggle-knowledge-base"
-                        checked
                         aria-label="Show Knowledge Base"
                       />
                       <span
@@ -2190,29 +2190,6 @@
               </div>
             </section>
 
-            <!-- Knowledge Base Section -->
-            <section
-              id="knowledge-base"
-              class="card toggleable-section draggable-section"
-              data-section="knowledgebase"
-            >
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Knowledge Base">
-                    Knowledge Base
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
-                </div>
-              </div>
-              <div class="section-content">
-                <div id="knowledge-base-container"></div>
-              </div>
-            </section>
-
             <!-- Time Tracking & Billing Section -->
             <section
               id="time-tracking"
@@ -2673,6 +2650,34 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Knowledge Base View -->
+      <div id="knowledge-base-view" class="app-view hidden">
+        <div class="container sortable-container">
+          <!-- Knowledge Base Section -->
+          <section
+            id="knowledge-base-main"
+            class="card toggleable-section draggable-section"
+            data-section="knowledgebase"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Knowledge Base">
+                  Knowledge Base
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div id="knowledge-base-container"></div>
             </div>
           </section>
         </div>

@@ -111,7 +111,13 @@ export function initializeCharts() {
       const chartType = canvas.dataset.chartType;
       const chartData = JSON.parse(canvas.dataset.chartData || '[]');
 
-      new Chart(canvas.getContext('2d'), {
+      // Destroy existing chart if it exists
+      if (canvas.chart) {
+        canvas.chart.destroy();
+        canvas.chart = null;
+      }
+
+      canvas.chart = new Chart(canvas.getContext('2d'), {
         type: chartType,
         data: chartData,
         options: {
@@ -462,6 +468,12 @@ function renderSimpleChart(canvas, data) {
 function renderChartJSChart(canvas, data, widget) {
   const ctx = canvas.getContext('2d');
 
+  // Destroy existing chart if it exists on this canvas
+  if (canvas.chart) {
+    canvas.chart.destroy();
+    canvas.chart = null;
+  }
+
   // Prepare data for Chart.js
   const labels = data.map(d => {
     if (d.date) {
@@ -497,7 +509,7 @@ function renderChartJSChart(canvas, data, widget) {
     });
   }
 
-  new Chart(ctx, {
+  canvas.chart = new Chart(ctx, {
     type: 'line',
     data: {
       labels,

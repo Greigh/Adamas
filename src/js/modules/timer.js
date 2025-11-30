@@ -853,8 +853,20 @@ export function setupTimerEventListeners() {
   }
 
   if (clearHistoryBtn) {
-    clearHistoryBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear all hold history?')) {
+    // Remove any existing event listeners to prevent duplicates
+    const newClearHistoryBtn = clearHistoryBtn.cloneNode(true);
+    clearHistoryBtn.parentNode.replaceChild(newClearHistoryBtn, clearHistoryBtn);
+
+    newClearHistoryBtn.addEventListener('click', async () => {
+      const { showConfirmModal } = await import('../utils/modal.js');
+      const confirmed = await showConfirmModal({
+        title: 'Clear Hold History',
+        message: 'Are you sure you want to clear all hold history? This action cannot be undone.',
+        confirmLabel: 'Clear History',
+        cancelLabel: 'Cancel',
+        danger: true
+      });
+      if (confirmed) {
         clearHoldHistory();
       }
     });

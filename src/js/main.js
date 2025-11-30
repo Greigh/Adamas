@@ -115,7 +115,7 @@ const lazyLoadAdvancedModules = async () => {
       try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
       try { patternsModule.initializePatterns(); } catch (e) { console.error('Error initializing patterns:', e); }
       try { patternsModule.setupPatternEventListeners(); } catch (e) { console.error('Error setting up pattern event listeners:', e); }
-      try { setupTimerEventListeners(); } catch (e) { console.error('Error setting up timer event listeners:', e); }
+      try { setupTimerEventListeners(); window.timerEventListenersSet = true; } catch (e) { console.error('Error setting up timer event listeners:', e); }
 
       advancedModulesLoaded = true;
     };
@@ -221,9 +221,11 @@ function showMainApp() {
   document.getElementById('main-app').classList.remove('hidden');
   document.getElementById('settings-view').classList.add('hidden');
   document.getElementById('stats-view').classList.add('hidden');
+  document.getElementById('knowledge-base-view').classList.add('hidden');
   document.getElementById('main-tab')?.classList.add('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.remove('active');
+  document.getElementById('knowledge-base-tab')?.classList.remove('active');
 
   // Lazy load advanced modules when main app is shown
   lazyLoadAdvancedModules();
@@ -234,9 +236,11 @@ function showSettings() {
   document.getElementById('main-app').classList.add('hidden');
   document.getElementById('settings-view').classList.remove('hidden');
   document.getElementById('stats-view').classList.add('hidden');
+  document.getElementById('knowledge-base-view').classList.add('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.add('active');
   document.getElementById('stats-tab')?.classList.remove('active');
+  document.getElementById('knowledge-base-tab')?.classList.remove('active');
   // Ensure the patterns are loaded for settings
   try {
     if (window.patternsModule) {
@@ -267,12 +271,34 @@ function showStats() {
   document.getElementById('main-app').classList.add('hidden');
   document.getElementById('settings-view').classList.add('hidden');
   document.getElementById('stats-view').classList.remove('hidden');
+  document.getElementById('knowledge-base-view').classList.add('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.add('active');
+  document.getElementById('knowledge-base-tab')?.classList.remove('active');
 
   // Lazy load advanced modules when stats tab is accessed
   lazyLoadAdvancedModules();
+}
+
+// Show knowledge base panel
+function showKnowledgeBase() {
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('settings-view').classList.add('hidden');
+  document.getElementById('stats-view').classList.add('hidden');
+  document.getElementById('knowledge-base-view').classList.remove('hidden');
+  document.getElementById('main-tab')?.classList.remove('active');
+  document.getElementById('settings-tab')?.classList.remove('active');
+  document.getElementById('stats-tab')?.classList.remove('active');
+  document.getElementById('knowledge-base-tab')?.classList.add('active');
+
+  // Initialize knowledge base if not already done
+  if (!window.knowledgeBaseInitialized) {
+    lazyLoadAdvancedModules().then(() => {
+      // The knowledge base should be initialized by the lazy loading
+      window.knowledgeBaseInitialized = true;
+    });
+  }
 }
 
 function showLogin() {
@@ -363,7 +389,11 @@ function loadSecondaryModules() {
     import('./modules/timer.js')
       .then((module) => {
         module.initializeTimer();
-        module.setupTimerEventListeners();
+        // Only setup event listeners if not already done
+        if (!window.timerEventListenersSet) {
+          module.setupTimerEventListeners();
+          window.timerEventListenersSet = true;
+        }
         module.initializeMultipleTimers();
       })
       .catch((err) => {
@@ -417,7 +447,7 @@ function loadSecondaryModules() {
   lazyLoadOnVisible('automated-workflows', lazyLoadAdvancedModules);
   lazyLoadOnVisible('multichannel-integration', lazyLoadAdvancedModules);
   lazyLoadOnVisible('customer-feedback', lazyLoadAdvancedModules);
-  lazyLoadOnVisible('knowledge-base', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('knowledge-base-main', lazyLoadAdvancedModules);
   lazyLoadOnVisible('time-tracking', lazyLoadAdvancedModules);
   lazyLoadOnVisible('advanced-analytics', lazyLoadAdvancedModules);
   lazyLoadOnVisible('api-integration', lazyLoadAdvancedModules);
@@ -438,6 +468,7 @@ function setupAllEventListeners() {
     .getElementById('settings-tab')
     ?.addEventListener('click', showSettings);
   document.getElementById('stats-tab')?.addEventListener('click', showStats);
+  document.getElementById('knowledge-base-tab')?.addEventListener('click', showKnowledgeBase);
 
   // Event delegation for section controls (minimize, float, etc.)
   const container = document.querySelector('.container');

@@ -63,6 +63,15 @@ function validateCRMConfig(provider, el) {
     case 'finesse':
       if (!el.finesseUrl?.value?.trim()) errors.push('Finesse URL is required');
       else if (!isValidUrl(el.finesseUrl.value.trim())) errors.push('Invalid Finesse URL format');
+      else {
+        const url = el.finesseUrl.value.trim();
+        // Enforce HTTPS in production, allow HTTP for localhost/development
+        const isLocalhost = url.includes('localhost') || url.includes('127.0.0.1') || url.includes('0.0.0.0');
+        const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
+        if (!url.startsWith('https://') && !isLocalhost && !isDevelopment) {
+          errors.push('Finesse URL must use HTTPS in production');
+        }
+      }
       if (!el.finesseUsername?.value?.trim()) errors.push('Username is required');
       if (!el.finessePassword?.value?.trim()) errors.push('Password is required');
       break;
@@ -315,7 +324,7 @@ export async function connectToFinesse(doc = document) {
   try {
     const result = await retryWithBackoff(
       () => withTimeout(
-        fetch(`${url}/finesse/api/User/${encodeURIComponent(username)}`, {
+        fetch(`/callcenterhelper/api/finesse/User/${encodeURIComponent(username)}?url=${encodeURIComponent(url)}`, {
           method: 'GET',
           headers: { 'Authorization': `Basic ${authHeader}`, 'Accept': 'application/xml' }
         }),

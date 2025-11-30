@@ -177,6 +177,30 @@ export function setupNotesEventListeners() {
 
   // Load and display existing notes
   loadNotes();
+
+  // Set up clear notes button
+  const clearNotesBtn = document.getElementById('clear-notes-btn');
+  if (clearNotesBtn) {
+    // Remove any existing event listeners to prevent duplicates
+    const newClearNotesBtn = clearNotesBtn.cloneNode(true);
+    clearNotesBtn.parentNode.replaceChild(newClearNotesBtn, clearNotesBtn);
+
+    newClearNotesBtn.addEventListener('click', async () => {
+      const { showConfirmModal } = await import('../utils/modal.js');
+      const confirmed = await showConfirmModal({
+        title: 'Clear All Notes',
+        message: 'Are you sure you want to clear all notes? This action cannot be undone.',
+        confirmLabel: 'Clear All Notes',
+        cancelLabel: 'Cancel',
+        danger: true,
+      });
+      if (confirmed) {
+        // Clear main notes
+        saveNotes([]);
+        renderNotes();
+      }
+    });
+  }
 }
 
 export class NotesInstance {
@@ -307,16 +331,20 @@ function setupNotesInstanceListeners(notesId) {
 
   const clearNotesBtn = document.getElementById(`clear-notes-btn-${notesId}`);
   if (clearNotesBtn) {
-      clearNotesBtn.addEventListener('click', async () => {
-        const { showConfirmModal } = await import('../utils/modal.js');
-        const confirmed = await showConfirmModal({
-          title: 'Clear All Notes',
-          message: 'Clear all notes? This cannot be undone.',
-          confirmLabel: 'Clear',
-          cancelLabel: 'Cancel',
-          danger: true,
-        });
-        if (confirmed) {
+    // Remove any existing event listeners to prevent duplicates
+    const newClearNotesBtn = clearNotesBtn.cloneNode(true);
+    clearNotesBtn.parentNode.replaceChild(newClearNotesBtn, clearNotesBtn);
+
+    newClearNotesBtn.addEventListener('click', async () => {
+      const { showConfirmModal } = await import('../utils/modal.js');
+      const confirmed = await showConfirmModal({
+        title: 'Clear All Notes',
+        message: 'Are you sure you want to clear all notes? This action cannot be undone.',
+        confirmLabel: 'Clear All Notes',
+        cancelLabel: 'Cancel',
+        danger: true,
+      });
+      if (confirmed) {
         const notes = notesInstances.get(notesId);
         if (notes) {
           notes.notes = [];

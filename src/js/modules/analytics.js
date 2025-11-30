@@ -42,10 +42,18 @@ function formatDuration(ms) {
 }
 
 // For charts, use Chart.js if available
+let callsChart = null; // Keep track of the chart instance
+
 export function initializeCharts() {
   // Initialize charts when Chart.js is available
   const callsChartCanvas = document.getElementById('calls-chart');
   if (callsChartCanvas && typeof Chart !== 'undefined') {
+    // Destroy existing chart if it exists
+    if (callsChart) {
+      callsChart.destroy();
+      callsChart = null;
+    }
+
     const ctx = callsChartCanvas.getContext('2d');
     const callHistory = getCallHistory();
     const last7Days = Array.from({length: 7}, (_, i) => {
@@ -61,7 +69,7 @@ export function initializeCharts() {
       }).length;
     });
 
-    new Chart(ctx, {
+    callsChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: last7Days,

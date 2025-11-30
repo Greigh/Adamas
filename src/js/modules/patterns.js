@@ -1,6 +1,5 @@
 // Number pattern formatter module
 import { savePatterns, loadPatterns, loadData, saveData } from './storage.js';
-import { showConfirmModal } from '../utils/modal.js';
 import { showToast } from '../utils/toast.js';
 
 export let patterns = [
@@ -460,26 +459,54 @@ export function displayHistory(root = document) {
 
   historyContainer.querySelectorAll('.history-delete-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
-      const index = parseInt(e.target.closest('.history-item').dataset.index);
-      const confirmed = await showConfirmModal({
-        title: 'Delete History Entry',
-        message: 'Are you sure you want to delete this history entry?',
-        confirmLabel: 'Delete',
-        cancelLabel: 'Cancel',
-        danger: true
-      });
-      if (confirmed) {
-        deleteHistoryItem(index);
-        displayHistory(root);
+      try {
+        const index = parseInt(e.target.closest('.history-item').dataset.index);
+        const { showConfirmModal } = await import('../utils/modal.js');
+        const confirmed = await showConfirmModal({
+          title: 'Delete History Entry',
+          message: 'Are you sure you want to delete this history entry?',
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel',
+          danger: true
+        });
+        if (confirmed) {
+          deleteHistoryItem(index);
+          // Update the display
+          setTimeout(() => displayHistory(), 0);
+        }
+      } catch (error) {
+        console.error('Error deleting history item:', error);
       }
     });
   });
 
   const clearBtn = historyContainer.querySelector('#clearHistoryBtn');
   if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      clearHistory();
-      displayHistory(root);
+    // Remove any existing event listeners by cloning
+    const newClearBtn = clearBtn.cloneNode(true);
+    clearBtn.parentNode.replaceChild(newClearBtn, clearBtn);
+
+    newClearBtn.addEventListener('click', async () => {
+      try {
+        const { showConfirmModal } = await import('../utils/modal.js');
+        const confirmed = await showConfirmModal({
+          title: 'Clear History',
+          message: 'Are you sure you want to clear all formatting history? This action cannot be undone.',
+          confirmLabel: 'Clear History',
+          cancelLabel: 'Cancel',
+          danger: true
+        });
+        if (confirmed) {
+          clearHistory();
+          // Update the display to show empty history
+          const historyContainer = document.querySelector('#patternHistory');
+          if (historyContainer) {
+            historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
+          }
+        }
+      } catch (error) {
+        console.error('Error clearing history:', error);
+      }
     });
   }
 

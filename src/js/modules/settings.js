@@ -30,14 +30,14 @@ export let appSettings = {
   showScripts: false,
   showTasks: false,
   showVoicerecording: false,
-  showCollaboration: true,
-  showWorkflows: true,
-  showMultichannel: true,
-  showFeedback: true,
-  showKnowledgeBase: true,
-  showTimeTracking: true,
-  showAdvancedAnalytics: true,
-  showApiIntegration: true,
+  showCollaboration: false,
+  showWorkflows: false,
+  showMultichannel: false,
+  showFeedback: false,
+  showKnowledgeBase: false,
+  showTimeTracking: false,
+  showAdvancedAnalytics: false,
+  showApiIntegration: false,
   showHoldtimerSettings: true,
   showPerformanceMonitoring: false,
   showCrmIntegration: false,
@@ -270,6 +270,20 @@ export function applySettings() {
       sectionEl.style.display = toggle.checked ? '' : 'none';
     }
   });
+
+  // Handle navigation tab visibility for Knowledge Base
+  const knowledgeBaseTab = document.getElementById('knowledge-base-tab');
+  if (knowledgeBaseTab) {
+    knowledgeBaseTab.style.display = appSettings.showKnowledgeBase ? '' : 'none';
+
+    // If Knowledge Base is being disabled and user is currently on that tab, switch to main
+    if (!appSettings.showKnowledgeBase && knowledgeBaseTab.classList.contains('active')) {
+      // Switch to main tab if available
+      if (typeof window.showMainApp === 'function') {
+        window.showMainApp();
+      }
+    }
+  }
 
   // Apply export settings
   const exportSettings = [
@@ -824,6 +838,26 @@ export function setupSettingsEventListeners() {
           location.reload();
         }
       })();
+    });
+  }
+
+  // Clear all data button
+  const clearDataBtn = document.getElementById('clear-data-btn');
+  if (clearDataBtn) {
+    clearDataBtn.addEventListener('click', async function () {
+      const { showConfirmModal } = await import('../utils/modal.js');
+      const ok = await showConfirmModal({
+        title: 'Clear All Data',
+        message: 'Are you sure you want to permanently delete ALL application data? This action cannot be undone!',
+        confirmLabel: 'Clear All Data',
+        cancelLabel: 'Cancel',
+        danger: true
+      });
+      if (ok) {
+        const { clearAllData } = await import('./storage.js');
+        clearAllData();
+        location.reload();
+      }
     });
   }
 
