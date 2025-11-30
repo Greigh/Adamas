@@ -226,6 +226,25 @@
   }
 }
 
+// Demo mode indicator
+.demo-indicator {
+  display: inline-block;
+  margin-left: map.get($spacing, 2);
+
+  .demo-badge {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: white;
+    padding: map.get($spacing, 1) map.get($spacing, 2);
+    border-radius: map.get($radius, sm);
+    font-size: map.get($font-sizes, xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+    animation: pulse 2s infinite;
+  }
+}
+
 // Dark mode
 [data-theme="dark"] {
   #crm-integration {

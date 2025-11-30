@@ -68,8 +68,6 @@ export function updatePatternTable() {
         <td class="minlen-cell">${pattern.minLength}</td>
         <td class="format-cell">${pattern.format}</td>
         <td class="row-actions">
-          <button class="move-up-btn" data-pattern-id="${pattern.id}" aria-label="Move pattern up">▲</button>
-          <button class="move-down-btn" data-pattern-id="${pattern.id}" aria-label="Move pattern down">▼</button>
           <button class="edit-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Edit pattern">✎</button>
           <button class="delete-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Delete pattern">🗑</button>
         </td>
@@ -104,25 +102,9 @@ export function updatePatternTable() {
     if (patterns.length === 0) {
       const row = document.createElement('tr');
         row.className = 'no-patterns';
-        row.innerHTML = `<td colspan="5" class="text-muted">No patterns configured yet. Add a pattern using the fields above.</td>`;
+        row.innerHTML = `<td colspan="4" class="text-muted">No patterns configured yet. Add a pattern using the fields above.</td>`;
       tbody.appendChild(row);
     }
-    // Move up/down handlers
-    tbody.querySelectorAll('.move-up-btn, .move-down-btn').forEach((btn) => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      newBtn.addEventListener('click', function () {
-        const id = parseInt(this.getAttribute('data-pattern-id'));
-        if (!id) return;
-        if (this.classList.contains('move-up-btn')) {
-          reorderPattern(id, -1);
-          showToast('Pattern moved up', 'info');
-        } else {
-          reorderPattern(id, 1);
-          showToast('Pattern moved down', 'info');
-        }
-      });
-    });
 
     // Drag and drop handlers for reorder
     tbody.querySelectorAll('tr[draggable="true"]').forEach((row) => {

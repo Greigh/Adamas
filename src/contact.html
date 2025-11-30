@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact Us - Call Center Helper</title>
     <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </head>
   <body>
     <div id="app">
@@ -53,62 +54,24 @@
               required
             ></textarea>
           </div>
+          <div class="form-group">
+            <div class="g-recaptcha" data-sitekey="6LdQ0hssAAAAAMWQrEq6044ftIH76l8pLAbHSjFx"></div>
+          </div>
           <button type="submit" class="button" id="contact-submit-btn">
             Send Message
           </button>
           <div id="contact-success" class="success-message"></div>
           <div id="contact-error" class="error-message"></div>
         </form>
-        <script>
-          document
-            .getElementById('contact-form')
-            .addEventListener('submit', async function (e) {
-              e.preventDefault();
-              var name = document.getElementById('contact-name').value.trim();
-              var email = document.getElementById('contact-email').value.trim();
-              var message = document
-                .getElementById('contact-message')
-                .value.trim();
-              var btn = document.getElementById('contact-submit-btn');
-              var successDiv = document.getElementById('contact-success');
-              var errorDiv = document.getElementById('contact-error');
-              successDiv.style.display = 'none';
-              errorDiv.style.display = 'none';
-              btn.disabled = true;
-              try {
-                const res = await fetch('/callcenterhelper/api/contact', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ name, email, message }),
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                  successDiv.textContent =
-                    data.message ||
-                    'Thank you! Your message has been received.';
-                  successDiv.style.display = 'block';
-                  this.reset();
-                } else {
-                  errorDiv.textContent =
-                    data.error || 'There was a problem sending your message.';
-                  errorDiv.style.display = 'block';
-                }
-              } catch (err) {
-                errorDiv.textContent = 'Network error. Please try again later.';
-                errorDiv.style.display = 'block';
-              } finally {
-                btn.disabled = false;
-              }
-            });
-        </script>
+        <script src="js/contact.js"></script>
       </main>
       <footer class="copyright-footer">
         <div class="container">
           <p>
             &copy; 2025 Daniel Hipskind.
-            <a href="/callcenterhelper/privacy">Privacy Policy</a> &bull;
-            <a href="/callcenterhelper/terms">Terms of Use</a> &bull;
-            <a href="/callcenterhelper/contact">Contact Us</a>
+            <a href="privacy">Privacy Policy</a> &bull;
+            <a href="terms">Terms of Use</a> &bull;
+            <a href="contact">Contact Us</a>
           </p>
         </div>
       </footer>

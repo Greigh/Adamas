@@ -103,7 +103,17 @@ try {
     console.warn('⚠️  No audio files found in src/public/audio/');
   }
 
-  // 4c. Copy service worker to dist
+  // 4c. Copy contact.js to dist/js
+  const contactJsSrc = path.join(__dirname, 'src', 'js', 'contact.js');
+  const contactJsDest = path.join(jsOutputPath, 'contact.js');
+  if (fs.existsSync(contactJsSrc)) {
+    fs.copyFileSync(contactJsSrc, contactJsDest);
+    console.log(`✅ Copied contact.js to dist/js/`);
+  } else {
+    console.warn('⚠️  contact.js not found in src/js/');
+  }
+
+  // 4d. Copy service worker to dist
   const swSrc = path.join(__dirname, 'public', 'sw.js');
   const swDest = path.join(distPath, 'sw.js');
   if (fs.existsSync(swSrc)) {
@@ -113,7 +123,7 @@ try {
     console.warn('⚠️  sw.js not found in public/');
   }
 
-  // 4d. Copy download script to dist
+  // 4e. Copy download script to dist
   const downloadScriptSrc = path.join(__dirname, 'src', 'public', 'download-alert-sounds.sh');
   const downloadScriptDest = path.join(distPath, 'download-alert-sounds.sh');
   if (fs.existsSync(downloadScriptSrc)) {

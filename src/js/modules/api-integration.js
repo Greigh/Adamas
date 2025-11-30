@@ -290,11 +290,11 @@ function startAPIServer() {
     // Register service worker for API handling (only in production)
     if ('serviceWorker' in navigator && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
       navigator.serviceWorker.register('/callcenterhelper/sw.js')
-        .then(() => console.log('API Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed:', err));
+        .then(() => {})//console.log('API Service Worker registered'))
+        .catch(err => {});//console.log('Service Worker registration failed:', err));
     }
 
-    console.log(`API server started on port ${apiState.serverPort}`);
+    //console.log(`API server started on port ${apiState.serverPort}`);
   } catch (error) {
     console.error('Failed to start API server:', error);
     apiState.serverRunning = false;
@@ -313,7 +313,7 @@ function initializeWebSocketServer() {
   if (typeof WebSocket !== 'undefined') {
     // For demo purposes, we'll simulate WebSocket connections
     apiState.webSocketRunning = true;
-    console.log('WebSocket server initialized');
+    //console.log('WebSocket server initialized');
   }
 }
 
@@ -506,7 +506,7 @@ function triggerWebhooks(eventType, data) {
 
   relevantWebhooks.forEach(webhook => {
     // Mock webhook delivery - in real implementation, make HTTP request
-    console.log(`Triggering webhook ${webhook.name} for event ${eventType}`, data);
+    //console.log(`Triggering webhook ${webhook.name} for event ${eventType}`, data);
 
     // Simulate webhook delivery
     setTimeout(() => {

@@ -191,11 +191,23 @@ export function updateStatus(doc = document) {
   };
 
   const providerName = providerNames[provider] || provider;
+  const isDemoMode = moduleState.accessToken && moduleState.accessToken.startsWith('demo_');
+
   el.statusDiv.textContent = moduleState.isConnected ? `Connected to ${providerName}` : 'Disconnected';
   el.statusDiv.className = 'status-text';
   el.statusDiv.classList.add(moduleState.isConnected ? 'connected' : 'disconnected');
 
   if (el.connectBtn) el.connectBtn.textContent = moduleState.isConnected ? 'Disconnect' : 'Connect to CRM';
+
+  // Update demo mode indicator
+  const demoIndicator = doc.getElementById('demo-mode-indicator');
+  if (demoIndicator) {
+    if (isDemoMode) {
+      demoIndicator.style.display = 'inline-block';
+    } else {
+      demoIndicator.style.display = 'none';
+    }
+  }
 }
 
 export function saveConfig(doc = document) {
@@ -467,6 +479,16 @@ export async function connectCRM(doc = document) {
       moduleState.isConnected = false;
       moduleState.accessToken = null;
       if (typeof localStorage !== 'undefined') localStorage.removeItem('crmAccessToken');
+
+      // Clear sensitive input fields when disconnecting
+      const sensitiveFields = [
+        el.finessePassword, el.five9Password, el.salesforceConsumerSecret,
+        el.salesforcePassword, el.zendeskApiToken, el.hubspotApiKey, el.dynamicsClientSecret
+      ];
+      sensitiveFields.forEach(field => {
+        if (field) field.value = '';
+      });
+
       updateStatus(doc);
       showToast('Disconnected from CRM', 'info');
       return;

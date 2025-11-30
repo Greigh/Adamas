@@ -52,43 +52,43 @@ const lazyLoadAdvancedModules = async () => {
     ] = await Promise.all([
       import('./modules/collaboration.js').catch(err => {
         console.warn('Collaboration module not available:', err);
-        return { initializeCollaboration: () => console.log('Collaboration module not loaded') };
+        return { initializeCollaboration: () => {} };
       }),
       import('./modules/reporting.js').catch(err => {
         console.warn('Reporting module not available:', err);
-        return { initializeAdvancedReporting: () => console.log('Reporting module not loaded') };
+        return { initializeAdvancedReporting: () => {} };
       }),
       import('./modules/workflows.js').catch(err => {
         console.warn('Workflows module not available:', err);
-        return { initializeWorkflows: () => console.log('Workflows module not loaded') };
+        return { initializeWorkflows: () => {} };
       }),
       import('./modules/ai-insights.js').catch(err => {
         console.warn('AI Insights module not available:', err);
-        return { initializeAIInsights: () => console.log('AI Insights module not loaded') };
+        return { initializeAIInsights: () => {} };
       }),
       import('./modules/multichannel.js').catch(err => {
         console.warn('Multichannel module not available:', err);
-        return { initializeMultiChannel: () => console.log('Multichannel module not loaded') };
+        return { initializeMultiChannel: () => {} };
       }),
       import('./modules/feedback.js').catch(err => {
         console.warn('Feedback module not available:', err);
-        return { initializeFeedback: () => console.log('Feedback module not loaded') };
+        return { initializeFeedback: () => {} };
       }),
       import('./modules/knowledge-base.js').catch(err => {
         console.warn('Knowledge Base module not available:', err);
-        return { initializeKnowledgeBase: () => console.log('Knowledge Base module not loaded') };
+        return { initializeKnowledgeBase: () => {} };
       }),
       import('./modules/time-tracking.js').catch(err => {
         console.warn('Time Tracking module not available:', err);
-        return { initializeTimeTracking: () => console.log('Time Tracking module not loaded') };
+        return { initializeTimeTracking: () => {} };
       }),
       import('./modules/advanced-analytics.js').catch(err => {
         console.warn('Advanced Analytics module not available:', err);
-        return { initializeAdvancedAnalytics: () => console.log('Advanced Analytics module not loaded') };
+        return { initializeAdvancedAnalytics: () => {} };
       }),
       import('./modules/api-integration.js').catch(err => {
         console.warn('API Integration module not available:', err);
-        return { initializeAPIIntegration: () => console.log('API Integration module not loaded') };
+        return { initializeAPIIntegration: () => {} };
       })
     ]);
 
@@ -115,6 +115,7 @@ const lazyLoadAdvancedModules = async () => {
       try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
       try { patternsModule.initializePatterns(); } catch (e) { console.error('Error initializing patterns:', e); }
       try { patternsModule.setupPatternEventListeners(); } catch (e) { console.error('Error setting up pattern event listeners:', e); }
+      try { setupTimerEventListeners(); } catch (e) { console.error('Error setting up timer event listeners:', e); }
 
       advancedModulesLoaded = true;
     };
@@ -223,7 +224,7 @@ function showMainApp() {
   document.getElementById('main-tab')?.classList.add('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.remove('active');
-  
+
   // Lazy load advanced modules when main app is shown
   lazyLoadAdvancedModules();
 }
@@ -257,7 +258,7 @@ function showSettings() {
 
 window.showSettings = showSettings;
 
-console.log('showSettings assigned:', window.showSettings);
+//console.log('showSettings assigned:', window.showSettings);
 
 window.test = window.showSettings;
 
@@ -519,6 +520,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up global error handling first
     setupGlobalErrorHandling();
 
+    // Request persistent storage to prevent browser from clearing data
+    import('./modules/storage.js').then(storage => {
+      if (storage.requestPersistentStorage) {
+        storage.requestPersistentStorage();
+      }
+    }).catch(err => {
+      console.warn('Could not request persistent storage:', err);
+    });
+
     initializeSettings();
     window.appSettings = appSettings;
     initializeTheme();
@@ -532,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize the enhanced floating system
     initFloating();
-    
+
     // Make floating manager globally available
     window.floatingManager = getFloatingManager();
 
@@ -619,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           registrations.forEach((registration) => {
             registration.unregister().then(() => {
-              console.log('Service Worker unregistered in development mode');
+              //console.log('Service Worker unregistered in development mode');
             });
           });
         });
@@ -627,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // In production mode, register service worker
         navigator.serviceWorker.register('/callcenterhelper/sw.js')
           .then((registration) => {
-            console.log('Service Worker registered successfully:', registration.scope);
+            //console.log('Service Worker registered successfully:', registration.scope);
 
             // Check for updates
             registration.addEventListener('updatefound', () => {

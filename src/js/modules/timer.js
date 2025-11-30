@@ -792,25 +792,18 @@ export function updateHoldHistory() {
 // Function to update timer buttons
 function updateTimerButtons() {
   const startBtn = document.getElementById('start-timer');
-  const pauseBtn = document.getElementById('pause-timer');
   const resetBtn = document.getElementById('reset-timer');
   const clearHistoryBtn = document.getElementById('clear-history-btn');
 
-  if (startBtn && pauseBtn && resetBtn && clearHistoryBtn) {
+  if (startBtn && resetBtn && clearHistoryBtn) {
     if (holdTimer.isRunning) {
-      if (holdTimer.isPaused) {
-        startBtn.textContent = 'Resume';
-        startBtn.classList.remove('hidden');
-        pauseBtn.classList.add('hidden');
-      } else {
-        startBtn.classList.add('hidden');
-        pauseBtn.classList.remove('hidden');
-      }
+      // Timer is running - show Stop button, hide Start button
+      startBtn.classList.add('hidden');
       resetBtn.classList.remove('hidden');
     } else {
-      startBtn.textContent = 'Start';
+      // Timer is not running - show Start button, hide Stop button
+      startBtn.textContent = 'Start Hold';
       startBtn.classList.remove('hidden');
-      pauseBtn.classList.add('hidden');
       resetBtn.classList.add('hidden');
     }
 
@@ -822,21 +815,81 @@ function updateTimerButtons() {
 
 // Export the setupTimerEventListeners function
 export function setupTimerEventListeners() {
-  document.getElementById('start-timer')?.addEventListener('click', startHoldTimer);
-  document.getElementById('pause-timer')?.addEventListener('click', pauseTimer);
-  document.getElementById('reset-timer')?.addEventListener('click', resetTimer);
-  document
-    .getElementById('clear-history-btn')
-    ?.addEventListener('click', clearHoldHistory);
-  document
-    .getElementById('add-5-min-btn')
-    ?.addEventListener('click', () => addTime(300));
-  document
-    .getElementById('add-30-sec-btn')
-    ?.addEventListener('click', () => addTime(30));
-  document
-    .getElementById('toggle-mode-btn')
-    ?.addEventListener('click', toggleTimerMode);
+  // Initialize hold timer
+  if (!holdTimer) {
+    initializeTimer();
+  }
+
+  // Set up main timer button event listeners
+  const startBtn = document.getElementById('start-timer');
+  const resetBtn = document.getElementById('reset-timer');
+  const stopSoundBtn = document.getElementById('stop-sound-btn');
+  const toggleModeBtn = document.getElementById('toggle-mode-btn');
+  const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      startHoldTimer();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      resetTimer();
+    });
+  }
+
+  if (stopSoundBtn) {
+    stopSoundBtn.addEventListener('click', () => {
+      stopTimerSound();
+      stopSoundBtn.classList.add('hidden');
+    });
+  }
+
+  if (toggleModeBtn) {
+    toggleModeBtn.addEventListener('click', () => {
+      toggleTimerMode();
+    });
+  }
+
+  if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all hold history?')) {
+        clearHoldHistory();
+      }
+    });
+  }
+
+  // Set up timer display editing
+  const timerTimeDisplay = document.getElementById('timer-time');
+  if (timerTimeDisplay) {
+    timerTimeDisplay.addEventListener('click', function() {
+      if (holdTimer.isCountdown && !holdTimer.isRunning) {
+        this.contentEditable = 'true';
+        this.focus();
+        document.execCommand('selectAll', false, null);
+      }
+    });
+
+    timerTimeDisplay.addEventListener('blur', handleTimeEdit);
+    timerTimeDisplay.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.blur();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        this.textContent = formatTime(holdTimer.countdownSeconds);
+        this.blur();
+      }
+    });
+  }
+
+  // Set up multiple timers functionality
+  initializeMultipleTimers();
+
+  // Update initial display
+  updateTimerDisplay();
+  updateTimerButtons();
 }
 
 // Toggle timer mode
