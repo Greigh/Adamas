@@ -8,6 +8,11 @@ export function initializeQA() {
   const submitQaBtn = document.getElementById('submit-qa');
   const qaReportsList = document.getElementById('qa-reports-list');
 
+  // Check if required elements exist
+  if (!callSelect || qaCheckboxes.length === 0 || !qaNotes || !submitQaBtn || !qaReportsList) {
+    return;
+  }
+
   let qaReports = JSON.parse(localStorage.getItem('qaReports')) || [];
 
   function populateCallSelect() {

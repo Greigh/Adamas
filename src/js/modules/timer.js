@@ -858,16 +858,24 @@ export function setupTimerEventListeners() {
     clearHistoryBtn.parentNode.replaceChild(newClearHistoryBtn, clearHistoryBtn);
 
     newClearHistoryBtn.addEventListener('click', async () => {
-      const { showConfirmModal } = await import('../utils/modal.js');
-      const confirmed = await showConfirmModal({
-        title: 'Clear Hold History',
-        message: 'Are you sure you want to clear all hold history? This action cannot be undone.',
-        confirmLabel: 'Clear History',
-        cancelLabel: 'Cancel',
-        danger: true
-      });
-      if (confirmed) {
-        clearHoldHistory();
+      try {
+        const modalModule = await import('../utils/modal.js');
+        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmed = await confirmFn({
+          title: 'Clear Hold History',
+          message: 'Are you sure you want to clear all hold history? This action cannot be undone.',
+          confirmLabel: 'Clear History',
+          cancelLabel: 'Cancel',
+          danger: true
+        });
+        if (confirmed) {
+          clearHoldHistory();
+        }
+      } catch (err) {
+        console.warn('Clear Hold History: confirm fallback triggered', err);
+        if (window.confirm('Are you sure you want to clear all hold history? This action cannot be undone.')) {
+          clearHoldHistory();
+        }
       }
     });
   }
@@ -1100,12 +1108,22 @@ function setupTimerInstanceListeners(element, timer) {
 
   // Delete button
   deleteBtn.addEventListener('click', async () => {
-    const { showConfirmModal } = await import('../utils/modal.js');
-    const confirmed = await showConfirmModal({ title: 'Delete Timer', message: `Delete timer "${timer.description}"?`, confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
-    if (confirmed) {
-      removeTimerInstance(timer.id);
-      element.remove();
-      saveTimerInstances();
+    try {
+      const modalModule = await import('../utils/modal.js');
+      const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+      const confirmed = await confirmFn({ title: 'Delete Timer', message: `Delete timer "${timer.description}"?`, confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
+      if (confirmed) {
+        removeTimerInstance(timer.id);
+        element.remove();
+        saveTimerInstances();
+      }
+    } catch (err) {
+      console.warn('Delete Timer: confirm fallback triggered', err);
+      if (window.confirm(`Delete timer "${timer.description}"?`)) {
+        removeTimerInstance(timer.id);
+        element.remove();
+        saveTimerInstances();
+      }
     }
   });
 

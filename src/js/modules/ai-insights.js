@@ -88,6 +88,16 @@ function showInsightsSettings() {
 function updateInsights() {
   const calls = getCallHistory();
 
+  // Check if required elements exist
+  const sentimentEl = document.getElementById('sentiment-analysis');
+  const trendsEl = document.getElementById('trend-predictions');
+  const metricsEl = document.getElementById('performance-metrics');
+  const suggestionsEl = document.getElementById('optimization-suggestions');
+
+  if (!sentimentEl || !trendsEl || !metricsEl || !suggestionsEl) {
+    return;
+  }
+
   // Show loading states
   showLoadingStates();
 
@@ -98,10 +108,10 @@ function updateInsights() {
     const metrics = calculateMetrics(calls);
     const suggestions = generateSuggestions(calls);
 
-    document.getElementById('sentiment-analysis').innerHTML = sentiment;
-    document.getElementById('trend-predictions').innerHTML = trends;
-    document.getElementById('performance-metrics').innerHTML = metrics;
-    document.getElementById('optimization-suggestions').innerHTML = suggestions;
+    sentimentEl.innerHTML = sentiment;
+    trendsEl.innerHTML = trends;
+    metricsEl.innerHTML = metrics;
+    suggestionsEl.innerHTML = suggestions;
   }, 1000);
 }
 
@@ -113,10 +123,15 @@ function showLoadingStates() {
     </div>
   `;
 
-  document.getElementById('sentiment-analysis').innerHTML = loadingHTML;
-  document.getElementById('trend-predictions').innerHTML = loadingHTML;
-  document.getElementById('performance-metrics').innerHTML = loadingHTML;
-  document.getElementById('optimization-suggestions').innerHTML = loadingHTML;
+  const sentimentEl = document.getElementById('sentiment-analysis');
+  const trendsEl = document.getElementById('trend-predictions');
+  const metricsEl = document.getElementById('performance-metrics');
+  const suggestionsEl = document.getElementById('optimization-suggestions');
+
+  if (sentimentEl) sentimentEl.innerHTML = loadingHTML;
+  if (trendsEl) trendsEl.innerHTML = loadingHTML;
+  if (metricsEl) metricsEl.innerHTML = loadingHTML;
+  if (suggestionsEl) suggestionsEl.innerHTML = loadingHTML;
 }
 
 function analyzeSentiment(calls) {

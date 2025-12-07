@@ -1,6 +1,6 @@
 // Import synchronous dependencies
 import { auth } from './modules/auth.js';
-import { initializeSettings, appSettings, saveSettings } from './modules/settings.js';
+import { initializeSettings, appSettings, saveSettings, applySettings } from './modules/settings.js';
 import { initializeTheme, setupThemeToggle } from './modules/themes.js';
 import { setupTimerEventListeners } from './modules/timer.js';
 import * as patternsModule from './modules/patterns.js';
@@ -28,6 +28,7 @@ import { initializeTasks } from './modules/tasks.js';
 import { initializeVoiceRecording } from './modules/voice-recording.js';
 import { initializeQA } from './modules/qa.js';
 import { initializePerformanceMetrics } from './modules/performance-metrics.js';
+import { initializeQuickActionsToolbar } from './modules/quick-actions.js';
 
 // Import error boundary for global error handling
 import { setupGlobalErrorHandling } from './utils/error-boundary.js';
@@ -227,9 +228,15 @@ function showMainApp() {
   document.getElementById('stats-tab')?.classList.remove('active');
   document.getElementById('knowledge-base-tab')?.classList.remove('active');
 
+  // Apply visibility settings to sections
+  applySettings();
+
   // Lazy load advanced modules when main app is shown
   lazyLoadAdvancedModules();
 }
+
+// Expose for inline scripts / external callers that expect a global
+window.showMainApp = showMainApp;
 
 // Show settings panel
 function showSettings() {
@@ -241,6 +248,10 @@ function showSettings() {
   document.getElementById('settings-tab')?.classList.add('active');
   document.getElementById('stats-tab')?.classList.remove('active');
   document.getElementById('knowledge-base-tab')?.classList.remove('active');
+
+  // Apply visibility settings to toggles
+  applySettings();
+
   // Ensure the patterns are loaded for settings
   try {
     if (window.patternsModule) {
@@ -277,6 +288,9 @@ function showStats() {
   document.getElementById('stats-tab')?.classList.add('active');
   document.getElementById('knowledge-base-tab')?.classList.remove('active');
 
+  // Apply visibility settings to sections
+  applySettings();
+
   // Lazy load advanced modules when stats tab is accessed
   lazyLoadAdvancedModules();
 }
@@ -291,6 +305,9 @@ function showKnowledgeBase() {
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.remove('active');
   document.getElementById('knowledge-base-tab')?.classList.add('active');
+
+  // Apply visibility settings to sections
+  applySettings();
 
   // Initialize knowledge base if not already done
   if (!window.knowledgeBaseInitialized) {
@@ -469,6 +486,68 @@ function setupAllEventListeners() {
     ?.addEventListener('click', showSettings);
   document.getElementById('stats-tab')?.addEventListener('click', showStats);
   document.getElementById('knowledge-base-tab')?.addEventListener('click', showKnowledgeBase);
+  // Login button - attempt to load a single-page `login.html` once, fall back to modal
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      // Only attempt to fetch once per page load; afterwards use modal fallback
+      if (loginBtn.dataset.attempted === 'true') {
+        showLogin();
+        return;
+      }
+      loginBtn.dataset.attempted = 'true';
+      try {
+        const resp = await fetch('login.html', { cache: 'no-cache' });
+        if (!resp.ok) throw new Error('login.html not found');
+        const html = await resp.text();
+        const container = document.createElement('div');
+        container.id = 'login-view';
+        container.className = 'inpage-login-view';
+        container.innerHTML = html;
+        document.body.appendChild(container);
+
+        // Wire basic login handlers if present in injected markup
+        const submit = container.querySelector('#login-submit');
+        if (submit) {
+          submit.addEventListener('click', async () => {
+            const email = container.querySelector('#login-email')?.value;
+            const password = container.querySelector('#login-password')?.value;
+            try {
+              await auth.login(email, password);
+              showToast('Logged in successfully');
+              container.remove();
+            } catch (err) {
+              showToast(err.message, 'error');
+            }
+          });
+        }
+        // Wire register and close if present
+        const registerBtn = container.querySelector('#register-submit');
+        if (registerBtn) {
+          registerBtn.addEventListener('click', async () => {
+            const email = container.querySelector('#login-email')?.value;
+            const password = container.querySelector('#login-password')?.value;
+            const username = prompt('Username:');
+            try {
+              await auth.register(username, email, password);
+              showToast('Registered successfully');
+              container.remove();
+            } catch (err) {
+              showToast(err.message, 'error');
+            }
+          });
+        }
+        const closeBtn = container.querySelector('#login-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => container.remove());
+        }
+      } catch (err) {
+        console.warn('login.html not available, falling back to modal', err);
+        showLogin();
+      }
+    });
+  }
 
   // Event delegation for section controls (minimize, float, etc.)
   const container = document.querySelector('.container');
@@ -565,6 +644,9 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeTheme();
     setupThemeToggle();
 
+    // Apply settings to initialize section visibility
+    applySettings();
+
     // Set up all event listeners for the application
     setupAllEventListeners();
 
@@ -637,6 +719,7 @@ document.addEventListener('DOMContentLoaded', function () {
       initializeVoiceRecording();
       initializeQA();
       initializePerformanceMetrics();
+      initializeQuickActionsToolbar();
       // Lazy load advanced modules when needed
       // mobile companion feature removed
     } catch (error) {

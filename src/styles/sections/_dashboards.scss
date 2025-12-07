@@ -7,42 +7,42 @@
   .dashboard-builder {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
+    border-radius: 0.5rem;
     padding: map.get($spacing, 5);
-    margin-bottom: map.get($spacing, 6);
+    margin-bottom: 1.5rem;
 
     .builder-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: map.get($spacing, 4);
+      margin-bottom: 1rem;
 
       .builder-title {
         h3 {
           margin: 0;
           color: var(--text-color);
-          font-size: map.get($font-sizes, lg);
+          font-size: 1.125rem;
         }
 
         p {
-          margin: map.get($spacing, 1) 0 0 0;
+          margin: 0.25rem 0 0 0;
           color: var(--text-muted);
-          font-size: map.get($font-sizes, sm);
+          font-size: 0.875rem;
         }
       }
 
       .builder-actions {
         display: flex;
-        gap: map.get($spacing, 2);
+        gap: 0.5rem;
 
         .action-btn {
-          padding: map.get($spacing, 2) map.get($spacing, 3);
+          padding: 0.5rem 0.75rem;
           border: 1px solid var(--border-color);
-          border-radius: map.get($radius, base);
+          border-radius: 0.25rem;
           background: var(--bg-hover);
           color: var(--text-color);
           cursor: pointer;
-          font-size: map.get($font-sizes, sm);
+          font-size: 0.875rem;
           transition: map.get($transitions, base);
 
           &:hover {
@@ -65,28 +65,28 @@
     }
 
     .widget-palette {
-      margin-bottom: map.get($spacing, 4);
+      margin-bottom: 1rem;
 
       .palette-header {
-        margin-bottom: map.get($spacing, 3);
+        margin-bottom: 0.75rem;
 
         h4 {
           margin: 0;
           color: var(--text-color);
-          font-size: map.get($font-sizes, base);
+          font-size: 1rem;
         }
       }
 
       .widget-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: map.get($spacing, 3);
+        gap: 0.75rem;
 
         .widget-item {
           background: var(--bg-color);
           border: 2px dashed var(--border-color);
-          border-radius: map.get($radius, base);
-          padding: map.get($spacing, 3);
+          border-radius: 0.25rem;
+          padding: 0.75rem;
           text-align: center;
           cursor: grab;
           transition: map.get($transitions, base);
@@ -97,13 +97,13 @@
           }
 
           .widget-icon {
-            font-size: map.get($font-sizes, xl);
-            margin-bottom: map.get($spacing, 2);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
             color: var(--text-muted);
           }
 
           .widget-name {
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-color);
             margin: 0;
@@ -112,7 +112,7 @@
           .widget-desc {
             font-size: map.get($font-sizes, 'xs');
             color: var(--text-muted);
-            margin: map.get($spacing, 1) 0 0 0;
+            margin: 0.25rem 0 0 0;
           }
         }
       }
@@ -122,8 +122,8 @@
       min-height: 400px;
       background: var(--bg-color);
       border: 2px dashed var(--border-color);
-      border-radius: map.get($radius, base);
-      padding: map.get($spacing, 4);
+      border-radius: 0.25rem;
+      padding: 1rem;
       position: relative;
 
       .canvas-placeholder {
@@ -136,27 +136,27 @@
 
         .placeholder-icon {
           font-size: map.get($font-sizes, '4xl');
-          margin-bottom: map.get($spacing, 3);
+          margin-bottom: 0.75rem;
           opacity: 0.5;
         }
 
         h4 {
-          margin: 0 0 map.get($spacing, 2) 0;
+          margin: 0 0 0.5rem 0;
           color: var(--text-color);
         }
 
         p {
           margin: 0;
-          font-size: map.get($font-sizes, base);
+          font-size: 1rem;
         }
       }
 
       .dashboard-widget {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
-        padding: map.get($spacing, 4);
-        margin-bottom: map.get($spacing, 4);
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
         position: relative;
         cursor: move;
 
@@ -168,7 +168,7 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: map.get($spacing, 3);
+          margin-bottom: 0.75rem;
 
           .widget-title {
             font-weight: 600;
@@ -178,7 +178,7 @@
 
           .widget-controls {
             display: flex;
-            gap: map.get($spacing, 1);
+            gap: 0.25rem;
 
             .control-btn {
               background: transparent;
@@ -190,7 +190,7 @@
               display: flex;
               align-items: center;
               justify-content: center;
-              font-size: map.get($font-sizes, sm);
+              font-size: 0.875rem;
               transition: map.get($transitions, base);
 
               &:hover {
@@ -213,12 +213,12 @@
           .widget-placeholder {
             height: 100px;
             background: var(--bg-hover);
-            border-radius: map.get($radius, base);
+            border-radius: 0.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-muted);
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
           }
         }
       }
@@ -230,20 +230,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: map.get($spacing, 4);
+      margin-bottom: 1rem;
 
       h3 {
         margin: 0;
         color: var(--text-color);
-        font-size: map.get($font-sizes, lg);
+        font-size: 1.125rem;
       }
 
       .create-new-btn {
         background: var(--primary-blue);
         color: white;
         border: none;
-        padding: map.get($spacing, 3) map.get($spacing, 4);
-        border-radius: map.get($radius, base);
+        padding: 0.75rem 1rem;
+        border-radius: 0.25rem;
         cursor: pointer;
         font-weight: 500;
 
@@ -256,12 +256,12 @@
     .dashboards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: map.get($spacing, 4);
+      gap: 1rem;
 
       .dashboard-card {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, lg);
+        border-radius: 0.5rem;
         overflow: hidden;
         transition: map.get($transitions, base);
 
@@ -277,38 +277,38 @@
           align-items: center;
           justify-content: center;
           color: var(--text-muted);
-          font-size: map.get($font-sizes, sm);
+          font-size: 0.875rem;
         }
 
         .dashboard-info {
-          padding: map.get($spacing, 4);
+          padding: 1rem;
 
           .dashboard-name {
-            font-size: map.get($font-sizes, lg);
+            font-size: 1.125rem;
             font-weight: 600;
             color: var(--text-color);
-            margin: 0 0 map.get($spacing, 2) 0;
+            margin: 0 0 0.5rem 0;
           }
 
           .dashboard-meta {
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
             color: var(--text-muted);
-            margin-bottom: map.get($spacing, 3);
+            margin-bottom: 0.75rem;
           }
 
           .dashboard-actions {
             display: flex;
-            gap: map.get($spacing, 2);
+            gap: 0.5rem;
 
             .action-btn {
               flex: 1;
-              padding: map.get($spacing, 2) map.get($spacing, 3);
+              padding: 0.5rem 0.75rem;
               border: 1px solid var(--border-color);
-              border-radius: map.get($radius, base);
+              border-radius: 0.25rem;
               background: var(--bg-hover);
               color: var(--text-color);
               cursor: pointer;
-              font-size: map.get($font-sizes, sm);
+              font-size: 0.875rem;
               transition: map.get($transitions, base);
 
               &:hover {

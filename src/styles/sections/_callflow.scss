@@ -4,13 +4,13 @@
 // Call Flow Builder Section
 #call-flow-builder {
   .tab-content {
-    padding: map.get($spacing, 6);
+    padding: 1.5rem;
   }
 
   .flow-step-input {
     display: flex;
-    gap: map.get($spacing, 3);
-    margin-bottom: map.get($spacing, 4);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
   }
 
   .flow-steps {
@@ -20,11 +20,11 @@
   .flow-step {
     display: flex;
     align-items: center;
-    gap: map.get($spacing, 3);
-    padding: map.get($spacing, 3);
+    gap: 0.75rem;
+    padding: 0.75rem;
     background: var(--gray-50);
-    border-radius: map.get($radius, base);
-    margin-bottom: map.get($spacing, 2);
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
     border-left: 4px solid var(--primary-blue);
     transition: map.get($transitions, base);
 
@@ -37,14 +37,14 @@
   .step-number {
     background: var(--primary-blue);
     color: var(--white);
-    border-radius: map.get($radius, full);
+    border-radius: 9999px;
     width: 28px;
     height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: map.get($font-weights, semibold);
-    font-size: map.get($font-sizes, sm);
+    font-weight: 600;
+    font-size: 0.875rem;
     flex-shrink: 0;
   }
 
@@ -52,9 +52,9 @@
     flex: 1;
     border: none;
     background: transparent;
-    font-size: map.get($font-sizes, base);
-    padding: map.get($spacing, 1);
-    border-radius: map.get($radius, base);
+    font-size: 1rem;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
 
     &:focus {
       background: var(--white);
@@ -63,15 +63,15 @@
   }
 
   .bulk-add-area {
-    margin-top: map.get($spacing, 6);
-    padding-top: map.get($spacing, 6);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
     border-top: 1px solid var(--gray-200);
   }
 
   .bulk-steps-textarea {
     width: 100%;
     min-height: 120px;
-    margin-bottom: map.get($spacing, 3);
+    margin-bottom: 0.75rem;
     font-family: $font-family-sans;
     resize: vertical;
   }
@@ -80,9 +80,9 @@
     text-align: center;
     color: var(--gray-500);
     font-style: italic;
-    padding: map.get($spacing, 8);
+    padding: 2rem;
     border: 2px dashed var(--gray-200);
-    border-radius: map.get($radius, base);
+    border-radius: 0.25rem;
   }
 
   // Flow steps list styling
@@ -95,7 +95,7 @@
       align-items: center;
       margin-bottom: 0.75rem;
       padding: 0.8rem 1rem;
-      border-radius: map.get($radius, base);
+      border-radius: 0.25rem;
       background: var(--white);
       border: 1px solid var(--gray-200);
       transition: all 0.2s ease;
@@ -192,7 +192,7 @@
     }
 
     .step-text {
-      font-size: map.get($font-sizes, base);
+      font-size: 1rem;
       line-height: 1.5;
     }
 
@@ -203,8 +203,8 @@
       width: 24px;
       height: 24px;
       margin-right: 12px;
-      font-size: map.get($font-sizes, sm);
-      font-weight: map.get($font-weights, bold);
+      font-size: 0.875rem;
+      font-weight: 700;
       background-color: var(--primary-blue);
       border-radius: 50%;
       flex-shrink: 0;
@@ -223,7 +223,7 @@
 
     h3 {
       margin: 0;
-      font-size: map.get($font-sizes, lg);
+      font-size: 1.125rem;
       color: var(--primary-blue);
       position: relative;
       padding-left: 1.5rem;
@@ -240,9 +240,9 @@
 
     #clear-checkmarks {
       padding: 0.4rem 0.75rem;
-      font-size: map.get($font-sizes, sm);
+      font-size: 0.875rem;
       background: linear-gradient(90deg, var(--gray-500) 60%, var(--gray-600) 100%);
-      border-radius: map.get($radius, full);
+      border-radius: 9999px;
       transition: all 0.2s ease;
 
       &:hover {
@@ -257,12 +257,12 @@
     margin-bottom: 1.5rem;
     background: var(--gray-50);
     padding: 1rem;
-    border-radius: map.get($radius, base);
+    border-radius: 0.25rem;
     border: 1px solid var(--gray-200);
 
     .progress-bar {
       height: 8px;
-      border-radius: map.get($radius, full);
+      border-radius: 9999px;
       overflow: hidden;
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     }
@@ -271,14 +271,14 @@
       height: 100%;
       background: linear-gradient(90deg, var(--primary-blue-light) 0%, var(--primary-blue) 100%);
       transition: width 0.3s ease;
-      border-radius: map.get($radius, full);
+      border-radius: 9999px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .progress-text {
       display: flex;
       justify-content: space-between;
-      font-size: map.get($font-sizes, sm);
+      font-size: 0.875rem;
       margin-top: 0.5rem;
     }
   }
@@ -297,6 +297,11 @@
       margin-bottom: 1rem;
     }
   }
+}
+
+/* Hide generated flow placeholder when empty to avoid awkward spacing */
+.generated-flow:empty {
+  display: none;
 }
 
 [data-theme="dark"] .flow-progress {
@@ -379,13 +384,13 @@
 @media (max-width: map.get($breakpoints, sm)) {
   #call-flow-builder {
     .tab-content {
-      padding: map.get($spacing, 3);
+      padding: 0.75rem;
     }
     
     .flow-header {
       flex-direction: column;
       align-items: flex-start;
-      gap: map.get($spacing, 2);
+      gap: 0.5rem;
       
       #clear-checkmarks {
         align-self: flex-end;
@@ -393,15 +398,15 @@
     }
     
     .flow-step-item {
-      padding: map.get($spacing, 2);
+      padding: 0.5rem;
       
       .step-text {
-        font-size: map.get($font-sizes, sm);
+        font-size: 0.875rem;
       }
     }
     
     .flow-progress {
-      padding: map.get($spacing, 2);
+      padding: 0.5rem;
     }
   }
 }

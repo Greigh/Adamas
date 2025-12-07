@@ -321,6 +321,12 @@ export async function connectToFinesse(doc = document) {
 
   const authHeader = btoa(`${username}:${password}`);
 
+  console.log('🔍 Connecting to Finesse:');
+  console.log('  URL:', url);
+  console.log('  Username:', username);
+  console.log('  Has password:', !!password);
+  console.log('  Auth header length:', authHeader.length);
+
   try {
     const result = await retryWithBackoff(
       () => withTimeout(
@@ -334,21 +340,47 @@ export async function connectToFinesse(doc = document) {
       2, // 2 retries
       1000, // 1 second base delay
       (attempt, maxRetries, delay) => {
-        console.log(`Finesse connection attempt ${attempt}/${maxRetries + 1} failed, retrying in ${delay}ms...`);
+        console.log(`🔄 Finesse connection attempt ${attempt}/${maxRetries + 1} failed, retrying in ${delay}ms...`);
       }
     );
 
+    console.log('📡 Finesse response received:');
+    console.log('  Status:', result.status, result.statusText);
+    console.log('  Content-Type:', result.headers.get('content-type'));
+    console.log('  Response OK:', result.ok);
+
+    console.log('✅ Finesse API response received:', {
+      status: result.status,
+      statusText: result.statusText,
+      contentType: result.headers.get('content-type')
+    });
+
     if (!result.ok) {
+      console.log('❌ Finesse auth failed with status:', result.status, result.statusText);
       throw new Error(`Finesse auth failed: ${result.status} ${result.statusText}`);
     }
 
     const xml = await result.text();
+    console.log('📄 Finesse XML response length:', xml.length);
+    console.log('📄 Finesse XML response (first 200 chars):', xml.substring(0, 200));
+
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xml, 'text/xml');
-    if (xmlDoc.querySelector('error')) {
+
+    // Check for parsing errors
+    const parseError = xmlDoc.querySelector('parsererror');
+    if (parseError) {
+      console.error('❌ XML parsing error:', parseError.textContent);
+      throw new Error('Invalid XML response from Finesse server');
+    }
+
+    const errorElement = xmlDoc.querySelector('error');
+    if (errorElement) {
+      console.log('❌ Finesse server returned error:', errorElement.textContent);
       throw new Error('Invalid Finesse credentials');
     }
 
+    console.log('✅ Finesse authentication successful');
     moduleState.isConnected = true;
     moduleState.accessToken = `finesse_${username}_${Date.now()}`;
     if (typeof localStorage !== 'undefined') localStorage.setItem('crmAccessToken', moduleState.accessToken);
@@ -578,6 +610,42 @@ export function initializeCRM(doc = document) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       connectCRM(doc);
+    }
+  });
+
+  // Debug button
+  const debugBtn = doc.getElementById('debug-crm');
+  debugBtn?.addEventListener('click', async () => {
+    console.log('🔍 Starting CRM debug...');
+
+    if (moduleState.currentProvider === 'finesse') {
+      const el = getElements(doc);
+      const url = el.finesseUrl?.value?.trim();
+      const username = el.finesseUsername?.value?.trim();
+      const password = el.finessePassword?.value?.trim();
+
+      if (!url || !username || !password) {
+        console.error('❌ Missing Finesse credentials');
+        showToast('Please fill in all Finesse fields before debugging', 'error');
+        return;
+      }
+
+      try {
+        console.log('🔍 Calling debug endpoint...');
+        const result = await window.debugFinesseConnection(url, username, password);
+        console.log('🔍 Debug result:', result);
+
+        if (result.response?.status === 200) {
+          showToast('Finesse connection successful! Check console for details.', 'success');
+        } else {
+          showToast(`Finesse debug failed. Check console for details.`, 'error');
+        }
+      } catch (error) {
+        console.error('❌ Debug failed:', error);
+        showToast('Debug failed. Check console for details.', 'error');
+      }
+    } else {
+      showToast('Debug only available for Finesse connections', 'info');
     }
   });
 
@@ -1116,4 +1184,43 @@ async function logCallToDynamics(callData) {
 
   const data = await response.json();
   return { success: true, id: data.activityid };
+}
+
+// Debug function - can be called from browser console
+window.debugFinesseConnection = async function(url, username, password) {
+  console.log('🔍 Debugging Finesse connection...');
+  console.log('URL:', url);
+  console.log('Username:', username);
+  console.log('Has password:', !!password);
+
+  try {
+    const debugUrl = `/callcenterhelper/api/finesse/debug?url=${encodeURIComponent(url)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+    console.log('Debug endpoint:', debugUrl);
+
+    const response = await fetch(debugUrl);
+    const result = await response.json();
+
+    console.log('🔍 Debug result:', result);
+
+    if (response.ok) {
+      console.log('✅ Debug request successful');
+      if (result.response.status === 200) {
+        console.log('✅ Finesse server responded successfully');
+      } else {
+        console.log('❌ Finesse server returned error:', result.response.status, result.response.statusText);
+      }
+    } else {
+      console.log('❌ Debug request failed:', result.error);
+    }
+
+    return result;
+  } catch (error) {
+    console.error('❌ Debug request error:', error);
+    return { error: error.message };
+  }
+};
+
+// Make debug function available globally
+if (typeof window !== 'undefined') {
+  window.debugFinesseConnection = window.debugFinesseConnection;
 }

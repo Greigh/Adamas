@@ -3,6 +3,11 @@ export function initializeMultiChannel() {
   const channelTabs = document.querySelectorAll('.channel-tab');
   const channelContents = document.querySelectorAll('.channel-content');
 
+  // Check if required elements exist
+  if (channelTabs.length === 0 || channelContents.length === 0) {
+    return;
+  }
+
   channelTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       channelTabs.forEach(t => t.classList.remove('active'));
@@ -17,12 +22,18 @@ export function initializeMultiChannel() {
   initializePhoneChannel();
   initializeChatChannel();
   initializeEmailChannel();
+  initializeSMSChannel();
   initializeSocialChannel();
 }
 
 function initializePhoneChannel() {
   // Phone channel is already handled by existing call logging
   const phoneChannel = document.getElementById('phone-channel');
+  if (!phoneChannel) {
+    console.warn('Phone channel element not found');
+    return;
+  }
+
   phoneChannel.innerHTML = `
     <div class="phone-interface">
       <div class="active-call">
@@ -43,28 +54,46 @@ function initializePhoneChannel() {
   `;
 
   // Add event listeners for call controls
-  document.getElementById('answer-call').addEventListener('click', () => {
-    document.getElementById('active-call-info').textContent = 'Call answered - Customer on line';
-  });
+  const answerBtn = document.getElementById('answer-call');
+  const holdBtn = document.getElementById('hold-call');
+  const transferBtn = document.getElementById('transfer-call');
+  const endBtn = document.getElementById('end-call');
+  const activeCallInfo = document.getElementById('active-call-info');
 
-  document.getElementById('hold-call').addEventListener('click', () => {
-    document.getElementById('active-call-info').textContent = 'Call on hold';
-  });
+  if (answerBtn && activeCallInfo) {
+    answerBtn.addEventListener('click', () => {
+      activeCallInfo.textContent = 'Call answered - Customer on line';
+    });
+  }
 
-  document.getElementById('transfer-call').addEventListener('click', () => {
-    const extension = prompt('Enter extension to transfer to:');
-    if (extension) {
-      document.getElementById('active-call-info').textContent = `Call transferred to extension ${extension}`;
-    }
-  });
+  if (holdBtn && activeCallInfo) {
+    holdBtn.addEventListener('click', () => {
+      activeCallInfo.textContent = 'Call on hold';
+    });
+  }
 
-  document.getElementById('end-call').addEventListener('click', () => {
-    document.getElementById('active-call-info').textContent = 'Call ended';
-  });
+  if (transferBtn && activeCallInfo) {
+    transferBtn.addEventListener('click', () => {
+      const extension = prompt('Enter extension to transfer to:');
+      if (extension) {
+        activeCallInfo.textContent = `Call transferred to extension ${extension}`;
+      }
+    });
+  }
+
+  if (endBtn && activeCallInfo) {
+    endBtn.addEventListener('click', () => {
+      activeCallInfo.textContent = 'Call ended';
+    });
+  }
 }
 
 function initializeChatChannel() {
   const chatChannel = document.getElementById('chat-channel');
+  if (!chatChannel) {
+    console.warn('Chat channel element not found');
+    return;
+  }
   chatChannel.innerHTML = `
     <div class="chat-interface">
       <div class="chat-queue">
@@ -92,22 +121,32 @@ function initializeChatChannel() {
 
   // Mock chat queue
   const chatQueue = document.getElementById('chat-queue');
-  chatQueue.innerHTML = `
+  if (chatQueue) {
+    chatQueue.innerHTML = `
     <li class="chat-item">Customer A - Waiting 2 min</li>
     <li class="chat-item">Customer B - Waiting 5 min</li>
   `;
+  }
 
-  document.getElementById('send-reply').addEventListener('click', () => {
-    const reply = document.getElementById('chat-reply').value;
-    if (reply.trim()) {
-      addChatMessage('Agent', reply);
-      document.getElementById('chat-reply').value = '';
-    }
-  });
+  const sendReplyBtn = document.getElementById('send-reply');
+  const chatReplyInput = document.getElementById('chat-reply');
+  if (sendReplyBtn && chatReplyInput) {
+    sendReplyBtn.addEventListener('click', () => {
+      const reply = chatReplyInput.value;
+      if (reply && reply.trim()) {
+        addChatMessage('Agent', reply);
+        chatReplyInput.value = '';
+      }
+    });
+  }
 }
 
 function initializeEmailChannel() {
   const emailChannel = document.getElementById('email-channel');
+  if (!emailChannel) {
+    console.warn('Email channel element not found');
+    return;
+  }
   emailChannel.innerHTML = `
     <div class="email-interface">
       <div class="email-inbox">
@@ -135,13 +174,20 @@ function initializeEmailChannel() {
     </div>
   `;
 
-  document.getElementById('send-email').addEventListener('click', () => {
-    alert('Email sent! (Demo)');
-  });
+  const sendEmailBtn = document.getElementById('send-email');
+  if (sendEmailBtn) {
+    sendEmailBtn.addEventListener('click', () => {
+      alert('Email sent! (Demo)');
+    });
+  }
 }
 
 function initializeSocialChannel() {
   const socialChannel = document.getElementById('social-channel');
+  if (!socialChannel) {
+    console.warn('Social channel element not found');
+    return;
+  }
   socialChannel.innerHTML = `
     <div class="social-interface">
       <div class="social-feeds">
@@ -164,8 +210,127 @@ function initializeSocialChannel() {
   `;
 }
 
+function initializeSMSChannel() {
+  const smsChannel = document.getElementById('sms-channel');
+  if (!smsChannel) {
+    
+    return;
+  }
+  smsChannel.innerHTML = `
+    <div class="sms-interface">
+      <div class="sms-composer">
+        <h4>Send SMS</h4>
+        <div class="form-group">
+          <label for="sms-to">To:</label>
+          <input type="tel" id="sms-to" placeholder="+1234567890" />
+        </div>
+        <div class="form-group">
+          <label for="sms-message">Message:</label>
+          <textarea id="sms-message" placeholder="Type your SMS message..." maxlength="160"></textarea>
+          <div class="char-count"><span id="char-count">0</span>/160</div>
+        </div>
+        <button class="button" id="send-sms">Send SMS</button>
+      </div>
+      <div class="sms-history">
+        <h4>SMS History</h4>
+        <div id="sms-history-list" class="sms-list">
+          <div class="sms-item">
+            <div class="sms-meta">
+              <span class="sms-number">+1234567890</span>
+              <span class="sms-time">2 hours ago</span>
+            </div>
+            <div class="sms-content">Thank you for your inquiry. We'll get back to you soon.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Add event listeners
+  const sendSmsBtn = document.getElementById('send-sms');
+  const smsMessage = document.getElementById('sms-message');
+  const charCount = document.getElementById('char-count');
+
+  // Character counter
+  if (smsMessage && charCount) {
+    smsMessage.addEventListener('input', () => {
+      charCount.textContent = smsMessage.value.length;
+    });
+  }
+
+  // Send SMS
+  if (sendSmsBtn) {
+    sendSmsBtn.addEventListener('click', async () => {
+      const toEl = document.getElementById('sms-to');
+      const to = toEl ? toEl.value.trim() : '';
+      const message = smsMessage ? smsMessage.value.trim() : '';
+
+      if (!to || !message) {
+        alert('Please enter both phone number and message');
+        return;
+      }
+
+      if (!to.match(/^\+\d{10,15}$/)) {
+        alert('Please enter a valid phone number in international format (e.g., +1234567890)');
+        return;
+      }
+
+      sendSmsBtn.disabled = true;
+      sendSmsBtn.textContent = 'Sending...';
+
+      try {
+        const response = await fetch('/api/sms', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          },
+          body: JSON.stringify({ to, message })
+        });
+
+        if (response.ok) {
+          alert('SMS sent successfully!');
+          if (smsMessage) smsMessage.value = '';
+          if (charCount) charCount.textContent = '0';
+          addSMSHistory(to, message, 'sent');
+        } else {
+          const error = await response.json();
+          alert(`Failed to send SMS: ${error.error}`);
+        }
+      } catch (error) {
+        console.error('SMS send error:', error);
+        alert('Failed to send SMS. Please try again.');
+      } finally {
+        sendSmsBtn.disabled = false;
+        sendSmsBtn.textContent = 'Send SMS';
+      }
+    });
+  }
+}
+
+function addSMSHistory(number, message, type) {
+  const historyList = document.getElementById('sms-history-list');
+  if (!historyList) return;
+  const smsItem = document.createElement('div');
+  smsItem.className = `sms-item ${type}`;
+
+  const now = new Date();
+  const timeString = now.toLocaleTimeString();
+
+  smsItem.innerHTML = `
+    <div class="sms-meta">
+      <span class="sms-number">${number}</span>
+      <span class="sms-time">${timeString}</span>
+    </div>
+    <div class="sms-content">${message}</div>
+  `;
+
+  historyList.insertBefore(smsItem, historyList.firstChild);
+}
+
 function addChatMessage(sender, message) {
   const chatMessages = document.getElementById('chat-messages');
+  if (!chatMessages) return;
   const messageDiv = document.createElement('div');
   messageDiv.className = 'chat-message';
   messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;

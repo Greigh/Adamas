@@ -18,14 +18,14 @@ body {
 // Theme indicator
 .theme-indicator {
   position: fixed;
-  bottom: map.get($spacing, 4);
-  right: map.get($spacing, 4);
+  bottom: 1rem;
+  right: 1rem;
   background: var(--primary-blue);
   color: var(--white);
-  padding: map.get($spacing, 2) map.get($spacing, 3);
-  border-radius: map.get($radius, full);
-  font-size: map.get($font-sizes, xs);
-  font-weight: map.get($font-weights, semibold);
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0;

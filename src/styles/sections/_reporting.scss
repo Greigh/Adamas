@@ -7,26 +7,26 @@
   // Legacy support for old report-filters class
   .report-filters {
     display: flex;
-    gap: map.get($spacing, 3);
+    gap: 0.75rem;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: map.get($spacing, 4);
+    margin-bottom: 1rem;
 
     select, input[type="date"] {
-      padding: map.get($spacing, 2) map.get($spacing, 3);
+      padding: 0.5rem 0.75rem;
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, base);
+      border-radius: 0.25rem;
       background: var(--bg-color);
       color: var(--text-color);
-      font-size: map.get($font-sizes, base);
+      font-size: 1rem;
     }
 
     .button {
-      padding: map.get($spacing, 2) map.get($spacing, 4);
+      padding: 0.5rem 1rem;
       background: var(--primary-blue);
       color: white;
       border: none;
-      border-radius: map.get($radius, base);
+      border-radius: 0.25rem;
       cursor: pointer;
       font-weight: 600;
       transition: map.get($transitions, base);
@@ -41,9 +41,9 @@
   .reporting-controls {
     background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-hover) 100%);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 6);
-    margin-bottom: map.get($spacing, 6);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -56,7 +56,7 @@
       right: 0;
       height: 4px;
       background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
-      border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
+      border-radius: 0.5rem 0.5rem 0 0;
     }
 
     .controls-header {
@@ -64,9 +64,9 @@
       position: relative;
 
       h3 {
-        margin: 0 0 map.get($spacing, 2) 0;
+        margin: 0 0 0.5rem 0;
         color: var(--text-color);
-        font-size: map.get($font-sizes, xl);
+        font-size: 1.25rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -75,7 +75,7 @@
       p {
         margin: 0;
         color: var(--text-muted);
-        font-size: map.get($font-sizes, base);
+        font-size: 1rem;
         line-height: 1.5;
       }
     }
@@ -83,28 +83,28 @@
     .filter-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: map.get($spacing, 4);
+      gap: 1rem;
       margin-bottom: map.get($spacing, 5);
 
       .filter-group {
         .filter-label {
           display: block;
-          margin-bottom: map.get($spacing, 2);
+          margin-bottom: 0.5rem;
           font-weight: 600;
           color: var(--text-color);
-          font-size: map.get($font-sizes, sm);
+          font-size: 0.875rem;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         select, input[type="date"], input[type="text"] {
           width: 100%;
-          padding: map.get($spacing, 3) map.get($spacing, 4);
+          padding: 0.75rem 1rem;
           border: 2px solid var(--border-color);
-          border-radius: map.get($radius, base);
+          border-radius: 0.25rem;
           background: var(--bg-color);
           color: var(--text-color);
-          font-size: map.get($font-sizes, base);
+          font-size: 1rem;
           transition: map.get($transitions, base);
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 
@@ -124,20 +124,20 @@
 
     .control-buttons {
       display: flex;
-      gap: map.get($spacing, 3);
+      gap: 0.75rem;
       flex-wrap: wrap;
       justify-content: center;
 
       .btn {
-        padding: map.get($spacing, 3) map.get($spacing, 5);
-        border-radius: map.get($radius, base);
+        padding: 0.75rem map.get($spacing, 5);
+        border-radius: 0.25rem;
         font-weight: 600;
         cursor: pointer;
         transition: map.get($transitions, base);
         border: 2px solid transparent;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        font-size: map.get($font-sizes, sm);
+        font-size: 0.875rem;
         position: relative;
         overflow: hidden;
 
@@ -207,13 +207,13 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: map.get($spacing, 5);
-      padding-bottom: map.get($spacing, 3);
+      padding-bottom: 0.75rem;
       border-bottom: 2px solid var(--border-color);
 
       h4 {
         margin: 0;
         color: var(--text-color);
-        font-size: map.get($font-sizes, lg);
+        font-size: 1.125rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -221,12 +221,12 @@
 
       .export-options {
         display: flex;
-        gap: map.get($spacing, 2);
+        gap: 0.5rem;
 
         .btn {
-          padding: map.get($spacing, 2) map.get($spacing, 4);
-          border-radius: map.get($radius, base);
-          font-size: map.get($font-sizes, sm);
+          padding: 0.5rem 1rem;
+          border-radius: 0.25rem;
+          font-size: 0.875rem;
           font-weight: 600;
           cursor: pointer;
           transition: map.get($transitions, base);
@@ -264,9 +264,9 @@
     .report-card {
       background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-hover) 100%);
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, lg);
+      border-radius: 0.5rem;
       padding: map.get($spacing, 5);
-      margin-bottom: map.get($spacing, 4);
+      margin-bottom: 1rem;
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -280,7 +280,7 @@
         right: 0;
         height: 4px;
         background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
-        border-radius: map.get($radius, lg) map.get($radius, lg) 0 0;
+        border-radius: 0.5rem 0.5rem 0 0;
       }
 
       &:hover {
@@ -292,39 +292,39 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: map.get($spacing, 4);
-        padding-bottom: map.get($spacing, 3);
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
         border-bottom: 1px solid var(--border-color);
 
         h5 {
           margin: 0;
           color: var(--text-color);
-          font-size: map.get($font-sizes, lg);
+          font-size: 1.125rem;
           font-weight: 600;
           display: flex;
           align-items: center;
-          gap: map.get($spacing, 2);
+          gap: 0.5rem;
 
           &::before {
             content: '📊';
-            font-size: map.get($font-sizes, xl);
+            font-size: 1.25rem;
           }
         }
 
         .card-meta {
           display: flex;
-          gap: map.get($spacing, 3);
-          font-size: map.get($font-sizes, sm);
+          gap: 0.75rem;
+          font-size: 0.875rem;
           color: var(--text-muted);
 
           .meta-item {
             display: flex;
             align-items: center;
-            gap: map.get($spacing, 1);
+            gap: 0.25rem;
 
             &::before {
               content: '⏰';
-              font-size: map.get($font-sizes, base);
+              font-size: 1rem;
             }
           }
         }
@@ -334,26 +334,26 @@
         .metric-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: map.get($spacing, 4);
-          margin-bottom: map.get($spacing, 4);
+          gap: 1rem;
+          margin-bottom: 1rem;
 
           .metric-item {
             text-align: center;
-            padding: map.get($spacing, 3);
+            padding: 0.75rem;
             background: var(--bg-hover);
-            border-radius: map.get($radius, base);
+            border-radius: 0.25rem;
             border: 1px solid var(--border-color);
 
             .metric-value {
               display: block;
-              font-size: map.get($font-sizes, xl);
+              font-size: 1.25rem;
               font-weight: 700;
               color: var(--primary-blue);
-              margin-bottom: map.get($spacing, 1);
+              margin-bottom: 0.25rem;
             }
 
             .metric-label {
-              font-size: map.get($font-sizes, sm);
+              font-size: 0.875rem;
               color: var(--text-muted);
               text-transform: uppercase;
               letter-spacing: 0.5px;
@@ -365,17 +365,17 @@
         .data-table {
           width: 100%;
           border-collapse: collapse;
-          margin-top: map.get($spacing, 4);
+          margin-top: 1rem;
           background: var(--bg-color);
-          border-radius: map.get($radius, base);
+          border-radius: 0.25rem;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
           th, td {
-            padding: map.get($spacing, 3) map.get($spacing, 4);
+            padding: 0.75rem 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
           }
 
           th {
@@ -417,10 +417,10 @@
 
     .no-reports {
       text-align: center;
-      padding: map.get($spacing, 8) map.get($spacing, 4);
+      padding: 2rem 1rem;
       background: linear-gradient(135deg, var(--bg-hover) 0%, var(--card-bg) 100%);
       border: 2px dashed var(--border-color);
-      border-radius: map.get($radius, lg);
+      border-radius: 0.5rem;
       color: var(--text-muted);
       position: relative;
 
@@ -428,20 +428,20 @@
         content: '📋';
         font-size: 3rem;
         display: block;
-        margin-bottom: map.get($spacing, 3);
+        margin-bottom: 0.75rem;
         opacity: 0.5;
       }
 
       h4 {
-        margin: 0 0 map.get($spacing, 2) 0;
+        margin: 0 0 0.5rem 0;
         color: var(--text-color);
-        font-size: map.get($font-sizes, lg);
+        font-size: 1.125rem;
         font-weight: 600;
       }
 
       p {
         margin: 0;
-        font-size: map.get($font-sizes, base);
+        font-size: 1rem;
         line-height: 1.5;
       }
     }

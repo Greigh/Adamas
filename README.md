@@ -12,6 +12,13 @@ A modern web application designed to streamline call center operations, providin
 - **Floating Windows**: Pop out sections for multitasking on multiple monitors.
 - **Internationalization**: Support for multiple languages (English, Spanish).
 - **Accessibility**: Modal dialogs with proper focus management and screen reader support.
+- **CRM Integration**: Support for Cisco Finesse, Five9, Salesforce, Zendesk, HubSpot, Dynamics with bi-directional sync.
+- **Authentication & Security**: Role-based access control (Admin, Supervisor, Agent), audit logging, GDPR compliance.
+- **API Integrations**: REST API, webhooks, telephony (Twilio, Asterisk), email integration.
+- **Progressive Web App**: Offline capability, push notifications, camera integration.
+- **Training & Onboarding**: Interactive script practice with feedback, certification tracking.
+- **Voice Commands**: Speech recognition for hands-free operation.
+- **Help System**: Contextual tooltips and help documentation.
 - **Testing**: Comprehensive unit and end-to-end tests using Jest and Playwright.
 
 ## Project Structure

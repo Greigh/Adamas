@@ -4,7 +4,7 @@
 // Tab Components
 .tab-container {
   background: var(--white);
-  border-radius: map.get($radius, lg);
+  border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
@@ -19,8 +19,8 @@
   flex: 1;
   background: transparent;
   border: none;
-  padding: map.get($spacing, 4) map.get($spacing, 6);
-  font-weight: map.get($font-weights, medium);
+  padding: 1rem 1.5rem;
+  font-weight: 500;
   color: var(--gray-600);
   cursor: pointer;
   transition: map.get($transitions, base);
@@ -36,7 +36,7 @@
     background: var(--white);
     color: var(--primary-blue);
     border-bottom-color: var(--primary-blue);
-    font-weight: map.get($font-weights, semibold);
+    font-weight: 600;
   }
 
   &:focus {
@@ -47,7 +47,7 @@
 
 .tab-content {
   display: none;
-  padding: map.get($spacing, 6);
+  padding: 1.5rem;
 
   &.active {
     display: block;
@@ -126,11 +126,11 @@
 
 @media (max-width: map.get($breakpoints, sm)) {
   .tab-button {
-    padding: map.get($spacing, 2);
-    font-size: map.get($font-sizes, sm);
+    padding: 0.5rem;
+    font-size: 0.875rem;
   }
 
   .tab-content {
-    padding: map.get($spacing, 3);
+    padding: 0.75rem;
   }
 }

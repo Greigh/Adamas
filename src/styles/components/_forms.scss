@@ -7,9 +7,9 @@ textarea,
 select {
   background: var(--white);
   border: 2px solid var(--gray-200);
-  border-radius: map.get($radius, base);
-  padding: map.get($spacing, 2) map.get($spacing, 3);
-  font-size: map.get($font-sizes, base);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
   font-family: var(--font-sans); // Changed to CSS variable
   color: var(--gray-900);
   transition: map.get($transitions, base);
@@ -41,25 +41,25 @@ textarea {
 
 label {
   display: block;
-  font-weight: map.get($font-weights, medium);
+  font-weight: 500;
   color: var(--gray-700);
-  margin-bottom: map.get($spacing, 1);
+  margin-bottom: 0.25rem;
 }
 
 .form-group {
-  margin-bottom: map.get($spacing, 4);
+  margin-bottom: 1rem;
 }
 
 .input-group {
   display: flex;
-  gap: map.get($spacing, 2);
+  gap: 0.5rem;
   align-items: end;
-  margin-bottom: map.get($spacing, 4);
+  margin-bottom: 1rem;
 
   label {
     display: flex;
     flex-direction: column;
-    gap: map.get($spacing, 1);
+    gap: 0.25rem;
     margin-bottom: 0;
   }
 
@@ -76,7 +76,7 @@ label {
 input[type="checkbox"],
 input[type="radio"] {
   width: auto;
-  margin-right: map.get($spacing, 2);
+  margin-right: 0.5rem;
   accent-color: var(--primary-blue);
 }
 
@@ -141,14 +141,14 @@ input[type="radio"] {
 .range-control {
   display: flex;
   align-items: center;
-  gap: map.get($spacing, 3);
+  gap: 0.75rem;
   width: 100%;
 
   input[type="range"] {
     flex: 1;
     height: 4px;
     background: var(--gray-200);
-    border-radius: map.get($radius, full);
+    border-radius: 9999px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -188,8 +188,8 @@ input[type="radio"] {
     min-width: 60px;
     text-align: right;
     font-family: $font-family-mono;
-    font-size: map.get($font-sizes, sm);
-    font-weight: map.get($font-weights, medium);
+    font-size: 0.875rem;
+    font-weight: 500;
     color: var(--gray-600);
   }
 }
@@ -265,14 +265,14 @@ input[type="radio"] {
         margin-bottom: 8px;
 
         .setting-label {
-            font-size: map.get($font-sizes, base);
-            font-weight: map.get($font-weights, semibold);
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--text);
             margin: 0 0 4px 0;
         }
 
         .setting-description {
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
             color: var(--text-muted);
             line-height: 1.4;
             margin: 0;
@@ -289,13 +289,13 @@ input[type="radio"] {
   input,
   textarea,
   select {
-    padding: map.get($spacing, 1) map.get($spacing, 2);
-    font-size: map.get($font-sizes, sm);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
   }
   
   .input-group {
     flex-direction: column;
-    gap: map.get($spacing, 1);
+    gap: 0.25rem;
     
     label {
       width: 100%;
@@ -303,7 +303,7 @@ input[type="radio"] {
     
     button {
       width: 100%;
-      margin-top: map.get($spacing, 1);
+      margin-top: 0.25rem;
     }
   }
   
@@ -316,8 +316,29 @@ input[type="radio"] {
     }
     
     span {
-      margin-top: map.get($spacing, 1);
+      margin-top: 0.25rem;
       align-self: flex-end;
     }
+  }
+}
+
+// Toggle content layout for main page toggles
+.toggle-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+
+  .toggle-text {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .switch {
+    flex-shrink: 0;
+    margin: 0;
   }
 }

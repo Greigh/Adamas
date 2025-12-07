@@ -6,6 +6,11 @@ export function initializeVoiceRecording() {
   const statusDiv = document.getElementById('recording-status');
   const recordingsList = document.getElementById('recordings-list');
 
+  if (!connectBtn || !startBtn || !stopBtn || !statusDiv || !recordingsList) {
+    console.warn('Voice recording elements not found');
+    return;
+  }
+
   let isConnected = false;
   let isRecording = false;
   let mediaRecorder = null;
@@ -13,90 +18,86 @@ export function initializeVoiceRecording() {
   let recordings = JSON.parse(localStorage.getItem('recordings')) || [];
 
   function updateStatus() {
+    const statusIndicator = statusDiv.querySelector('.status-indicator');
+    const statusText = statusDiv.querySelector('.status-text');
+    const statusDetails = statusDiv.querySelector('.status-details');
+
+    if (!statusIndicator || !statusText || !statusDetails) return;
+
     if (!isConnected) {
-      statusDiv.textContent = 'Status: Not Connected to CUCM';
-      connectBtn.textContent = 'Connect to CUCM';
+      statusIndicator.className = 'status-indicator status-disconnected';
+      statusText.textContent = 'Status: Not Connected';
+      statusDetails.textContent = 'CUCM integration required';
+      connectBtn.textContent = '🔗 Connect to CUCM';
       startBtn.disabled = true;
       stopBtn.disabled = true;
     } else if (isRecording) {
-      statusDiv.textContent = 'Status: Recording...';
+      statusIndicator.className = 'status-indicator status-recording';
+      statusText.textContent = 'Status: Recording...';
+      statusDetails.textContent = 'Recording in progress';
       startBtn.disabled = true;
       stopBtn.disabled = false;
     } else {
-      statusDiv.textContent = 'Status: Connected - Ready to Record';
+      statusIndicator.className = 'status-indicator status-connected';
+      statusText.textContent = 'Status: Connected - Ready to Record';
+      statusDetails.textContent = 'Click Start Recording to begin';
       startBtn.disabled = false;
       stopBtn.disabled = true;
     }
   }
 
-  async function connectCUCM() {
+  function connectCUCM() {
+    isConnected = !isConnected;
+    updateStatus();
     if (isConnected) {
-      // Disconnect
-      isConnected = false;
-      updateStatus();
-      return;
-    }
-
-    try {
-      // In real implementation, authenticate with CUCM API
-      // For demo, simulate connection
-      isConnected = true;
-      updateStatus();
-      alert('Connected to Cisco Unified Communications Manager (Demo Mode)');
-    } catch (error) {
-      console.error('CUCM connection failed:', error);
-      alert('Failed to connect to CUCM');
+      alert('Connected to CUCM (simulated)');
+    } else {
+      alert('Disconnected from CUCM (simulated)');
     }
   }
 
-  async function startRecording() {
-    if (!isConnected) {
-      alert('Please connect to CUCM first');
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-
-      recordedChunks = [];
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          recordedChunks.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'audio/wav' });
-        const url = URL.createObjectURL(blob);
-
-        const recording = {
-          id: Date.now(),
-          timestamp: new Date(),
-          url,
-          blob
+  function startRecording() {
+    if (!isConnected) return;
+    
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
         };
-
-        recordings.push(recording);
-        localStorage.setItem('recordings', JSON.stringify(recordings.map(r => ({ ...r, blob: null }))));
-        updateRecordingsList();
-
-        // Stop all tracks
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.start();
-      isRecording = true;
-      updateStatus();
-    } catch (error) {
-      console.error('Recording failed:', error);
-      alert('Failed to start recording');
-    }
+        
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'audio/wav' });
+          const url = URL.createObjectURL(blob);
+          const recording = {
+            id: Date.now(),
+            url: url,
+            timestamp: new Date(),
+            duration: 0
+          };
+          recordings.push(recording);
+          localStorage.setItem('recordings', JSON.stringify(recordings));
+          updateRecordingsList();
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        updateStatus();
+      })
+      .catch(error => {
+        console.error('Error accessing microphone:', error);
+        alert('Failed to access microphone');
+      });
   }
 
   function stopRecording() {
     if (mediaRecorder && isRecording) {
       mediaRecorder.stop();
+      mediaRecorder.stream.getTracks().forEach(track => track.stop());
       isRecording = false;
       updateStatus();
     }
@@ -104,7 +105,7 @@ export function initializeVoiceRecording() {
 
   function updateRecordingsList() {
     recordingsList.innerHTML = '';
-    recordings.slice(-10).reverse().forEach(recording => {
+    recordings.slice(-5).reverse().forEach(recording => {
       const li = document.createElement('li');
       li.className = 'recording-item';
       li.innerHTML = `
@@ -112,33 +113,17 @@ export function initializeVoiceRecording() {
           <span>${new Date(recording.timestamp).toLocaleString()}</span>
           <audio controls src="${recording.url}"></audio>
         </div>
-        <button class="button btn-sm" onclick="downloadRecording(${recording.id})">Download</button>
       `;
       recordingsList.appendChild(li);
     });
   }
 
-  window.downloadRecording = function(recordingId) {
-    const recording = recordings.find(r => r.id === recordingId);
-    if (recording) {
-      const a = document.createElement('a');
-      a.href = recording.url;
-      a.download = `recording_${recording.timestamp.getTime()}.wav`;
-      a.click();
-    }
-  };
-
+  // Event listeners
   connectBtn.addEventListener('click', connectCUCM);
   startBtn.addEventListener('click', startRecording);
   stopBtn.addEventListener('click', stopRecording);
 
+  // Initialize
   updateStatus();
   updateRecordingsList();
 }
-
-// Configuration for Cisco Unified Communications Manager
-export const cucmConfig = {
-  serverUrl: 'https://your-cucm-server.com',
-  username: 'your_username',
-  password: 'your_password'
-};

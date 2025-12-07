@@ -108,3 +108,32 @@ export function closeModals() {
     setTimeout(() => overlay.remove(), 200);
   });
 }
+
+// Expose as a global for environments that expect a global function
+try {
+  if (typeof window !== 'undefined') {
+    window.showConfirmModal = showConfirmModal;
+    window.closeModals = closeModals;
+  }
+} catch (e) {
+  // Non-browser environment or read-only window
+}
+// If any deferred calls were queued before the module loaded, process them now
+try {
+  if (typeof window !== 'undefined' && Array.isArray(window.__deferredCalls)) {
+    window.__deferredCalls = window.__deferredCalls.filter((item) => {
+      if (item && item.type === 'confirm') {
+        try {
+          showConfirmModal(item.opts).then(item.resolve).catch((e) => { console.error('Deferred confirm failed', e); item.resolve(false); });
+        } catch (e) {
+          console.error('Deferred confirm invocation error', e);
+          try { item.resolve(false); } catch (err) {}
+        }
+        return false; // remove from queue
+      }
+      return true; // keep other items
+    });
+  }
+} catch (e) {
+  console.warn('Error flushing deferred confirm calls', e);
+}

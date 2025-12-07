@@ -163,16 +163,29 @@ export function renderSteps() {
     deleteAllBtn.addEventListener('click', () => {
       if (steps.length === 0) return;
       (async () => {
-          const { showConfirmModal } = await import('../utils/modal.js');
-          const confirmed = await showConfirmModal({ title: 'Clear All Steps', message: 'Are you sure you want to delete all steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
+        try {
+          const modalModule = await import('../utils/modal.js');
+          const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function') ? modalModule.showConfirmModal : (window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?'))));
+          const confirmed = await confirmFn({ title: 'Clear All Steps', message: 'Are you sure you want to delete all steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
           if (confirmed) {
-        steps.length = 0;
-        completedSteps.clear();
-        storageSteps(steps);
-        saveCompletedSteps();
-        renderSteps();
-        generateFlow();
+            steps.length = 0;
+            completedSteps.clear();
+            storageSteps(steps);
+            saveCompletedSteps();
+            renderSteps();
+            generateFlow();
           }
+        } catch (err) {
+          console.warn('Clear all steps confirmation failed, falling back to window.confirm', err);
+          if (window.confirm('Are you sure you want to delete all steps?')) {
+            steps.length = 0;
+            completedSteps.clear();
+            storageSteps(steps);
+            saveCompletedSteps();
+            renderSteps();
+            generateFlow();
+          }
+        }
       })();
     });
   }

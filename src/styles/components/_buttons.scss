@@ -7,16 +7,16 @@ button:not(.nav-tab):not(.tab-button) {
   background: linear-gradient(90deg, #3498db 60%, var(--primary-blue) 100%);
   color: var(--white);
   border: none;
-  border-radius: map.get($radius, base);
-  padding: map.get($spacing, 2) map.get($spacing, 5);
-  font-size: map.get($font-sizes, base);
-  font-weight: map.get($font-weights, medium);
+  border-radius: 0.25rem;
+  padding: 0.5rem map.get($spacing, 5);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   transition: map.get($transitions, base);
   outline: none;
   display: inline-flex;
   align-items: center;
-  gap: map.get($spacing, 2);
+  gap: 0.5rem;
 
   &:hover:not(:disabled) {
     background: linear-gradient(90deg, var(--primary-blue) 60%, #3498db 100%);
@@ -99,13 +99,13 @@ button:not(.nav-tab):not(.tab-button) {
   }
 
   &.btn-sm {
-    padding: map.get($spacing, 1) map.get($spacing, 3);
-    font-size: map.get($font-sizes, sm);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
   }
 
   &.btn-lg {
-    padding: map.get($spacing, 3) map.get($spacing, 6);
-    font-size: map.get($font-sizes, lg);
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
   }
 }
 
@@ -115,16 +115,16 @@ button:not(.nav-tab):not(.tab-button) {
   background: var(--error);
   color: var(--white);
   border: none;
-  border-radius: map.get($radius, base);
-  padding: map.get($spacing, 1) map.get($spacing, 3);
-  font-size: map.get($font-sizes, base);
-  font-weight: map.get($font-weights, semibold);
-  margin-left: map.get($spacing, 2);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
   display: inline-flex;
   align-items: center;
-  gap: map.get($spacing, 1);
+  gap: 0.25rem;
 
   &:hover:not(:disabled),
   &:focus {
@@ -155,29 +155,29 @@ button:not(.nav-tab):not(.tab-button) {
 .edit-note-btn,
 .save-note-btn {
   background: var(--primary-blue);
-  padding: map.get($spacing, 1) map.get($spacing, 2);
-  font-size: map.get($font-sizes, sm);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
 }
 
 .copy-note-btn,
 .cancel-edit-btn {
   background: var(--gray-500);
-  padding: map.get($spacing, 1) map.get($spacing, 2);
-  font-size: map.get($font-sizes, sm);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
 }
 
 // Scroll to top button
 .scroll-top-btn {
   position: fixed;
-  bottom: map.get($spacing, 6);
-  right: map.get($spacing, 6);
+  bottom: 1.5rem;
+  right: 1.5rem;
   width: 40px;
   height: 40px;
   background: var(--primary-blue);
   color: var(--white);
   border: none;
-  border-radius: map.get($radius, full);
-  font-size: map.get($font-sizes, xl);
+  border-radius: 9999px;
+  font-size: 1.25rem;
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
@@ -208,16 +208,16 @@ button:not(.nav-tab):not(.tab-button) {
   background: linear-gradient(90deg, #3498db 60%, var(--primary-blue) 100%);
   color: var(--white);
   border: none;
-  border-radius: map.get($radius, base);
-  padding: map.get($spacing, 2) map.get($spacing, 4);
-  font-size: map.get($font-sizes, base);
-  font-weight: map.get($font-weights, medium);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   transition: map.get($transitions, base);
   outline: none;
   display: inline-flex;
   align-items: center;
-  gap: map.get($spacing, 2);
+  gap: 0.5rem;
   position: relative;
 
   &:hover:not(:disabled) {
@@ -247,10 +247,10 @@ button:not(.nav-tab):not(.tab-button) {
   background: transparent;
   color: var(--text-muted);
   border: 1px solid var(--border-color);
-  border-radius: map.get($radius, sm);
-  padding: map.get($spacing, 1);
-  font-size: map.get($font-sizes, sm);
-  font-weight: map.get($font-weights, medium);
+  border-radius: 0.125rem;
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
   transition: map.get($transitions, base);
   outline: none;
@@ -259,7 +259,7 @@ button:not(.nav-tab):not(.tab-button) {
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin: 0 map.get($spacing, 1);
+  margin: 0 0.25rem;
 
   &:hover:not(:disabled) {
     background: var(--surface);

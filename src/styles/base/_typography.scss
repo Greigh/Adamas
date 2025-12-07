@@ -2,21 +2,21 @@
 @use 'sass:map';
 
 h1, h2, h3, h4, h5, h6 {
-  margin: 0 0 map.get($spacing, 4) 0;
-  font-weight: map.get($font-weights, semibold);
+  margin: 0 0 1rem 0;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--gray-900);
 }
 
-h1 { font-size: map.get($font-sizes, '3xl'); }
-h2 { font-size: map.get($font-sizes, '2xl'); }
+h1 { font-size: 1.875rem; }
+h2 { font-size: 1.5rem; }
 h3 { font-size: map.get($font-sizes, 'xl'); }
 h4 { font-size: map.get($font-sizes, 'lg'); }
 h5 { font-size: map.get($font-sizes, 'base'); }
 h6 { font-size: map.get($font-sizes, 'sm'); }
 
 p {
-  margin: 0 0 map.get($spacing, 4) 0;
+  margin: 0 0 1rem 0;
   line-height: 1.6;
 }
 
@@ -27,17 +27,17 @@ p {
 .font-mono { font-family: $font-family-mono; }
 .font-sans { font-family: $font-family-sans; }
 
-.text-xs { font-size: map.get($font-sizes, xs); }
-.text-sm { font-size: map.get($font-sizes, sm); }
-.text-base { font-size: map.get($font-sizes, base); }
-.text-lg { font-size: map.get($font-sizes, lg); }
-.text-xl { font-size: map.get($font-sizes, xl); }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
 
-.font-light { font-weight: map.get($font-weights, light); }
-.font-normal { font-weight: map.get($font-weights, normal); }
-.font-medium { font-weight: map.get($font-weights, medium); }
-.font-semibold { font-weight: map.get($font-weights, semibold); }
-.font-bold { font-weight: map.get($font-weights, bold); }
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
 
 [data-theme="dark"] {
   h1, h2, h3, h4, h5, h6 {
@@ -50,12 +50,12 @@ p {
     font-size: 15px; // Slightly smaller base font size for mobile
   }
   
-  h1 { font-size: map.get($font-sizes, '2xl'); }
+  h1 { font-size: 1.5rem; }
   h2 { font-size: map.get($font-sizes, 'xl'); }
   h3 { font-size: map.get($font-sizes, 'lg'); }
   
   p {
-    margin-bottom: map.get($spacing, 3);
+    margin-bottom: 0.75rem;
   }
 }
 

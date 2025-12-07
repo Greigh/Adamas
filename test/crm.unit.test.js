@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { JSDOM } from 'jsdom';
 
-const html = fs.readFileSync(path.resolve(__dirname, '../src/index.html'), 'utf8');
+const html = fs.readFileSync(path.resolve(__dirname, '../src/settings.html'), 'utf8');
 
 describe('CRM module helpers (unit)', () => {
   let dom, doc;

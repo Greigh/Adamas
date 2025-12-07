@@ -3,11 +3,11 @@
 
 .instance-controls {
     display: flex;
-    gap: map.get($spacing, 4);
-    padding: map.get($spacing, 6);
-    margin: map.get($spacing, 6) 0;
+    gap: 1rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
     background: linear-gradient(135deg, var(--gray-50), var(--white));
-    border-radius: map.get($radius, lg);
+    border-radius: 0.5rem;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--gray-100);
     position: relative;
@@ -26,14 +26,14 @@
 
     .button {
         flex: 1;
-        padding: map.get($spacing, 3) map.get($spacing, 4);
-        font-weight: map.get($font-weights, semibold);
-        font-size: map.get($font-sizes, base);
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: map.get($spacing, 2);
-        border-radius: map.get($radius, lg);
+        gap: 0.5rem;
+        border-radius: 0.5rem;
         box-shadow: var(--shadow-sm);
         position: relative;
         overflow: hidden;
@@ -41,8 +41,8 @@
 
         // Icon styling
         &::before {
-            font-size: map.get($font-sizes, xl);
-            margin-right: map.get($spacing, 1);
+            font-size: 1.25rem;
+            margin-right: 0.25rem;
         }
 
         &:hover {
@@ -110,6 +110,6 @@
 @media (max-width: map.get($breakpoints, sm)) {
     .instance-controls {
         flex-direction: column;
-        gap: map.get($spacing, 3);
+        gap: 0.75rem;
     }
 }

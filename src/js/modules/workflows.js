@@ -11,6 +11,12 @@ export function initializeWorkflows() {
   const clearWorkflowBtn = document.getElementById('clear-workflow');
   const activeWorkflowsList = document.getElementById('active-workflows-list');
 
+  // Check if required elements exist
+  if (!workflowSteps || !stepTypeSelector || !stepConfigForm || !addStepBtn ||
+      !saveWorkflowBtn || !testWorkflowBtn || !clearWorkflowBtn || !activeWorkflowsList) {
+    return;
+  }
+
   let workflows = loadData('workflows') || [];
   let currentWorkflow = { steps: [] };
   let selectedStepType = null;
@@ -453,13 +459,24 @@ export function initializeWorkflows() {
 
   async function clearWorkflow() {
     if (currentWorkflow.steps.length === 0) return;
-    const { showConfirmModal } = await import('../utils/modal.js');
-    const confirmed = await showConfirmModal({ title: 'Clear Steps', message: 'Are you sure you want to clear all workflow steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
-    if (confirmed) {
-      currentWorkflow = { steps: [] };
-      updateWorkflowSteps();
-      updateButtonsState();
-      hideStepConfigForm();
+    try {
+      const modalModule = await import('../utils/modal.js');
+      const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function') ? modalModule.showConfirmModal : (window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?'))));
+      const confirmed = await confirmFn({ title: 'Clear Steps', message: 'Are you sure you want to clear all workflow steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
+      if (confirmed) {
+        currentWorkflow = { steps: [] };
+        updateWorkflowSteps();
+        updateButtonsState();
+        hideStepConfigForm();
+      }
+    } catch (err) {
+      console.warn('Clear workflow confirmation failed, falling back to window.confirm', err);
+      if (window.confirm('Are you sure you want to clear all workflow steps?')) {
+        currentWorkflow = { steps: [] };
+        updateWorkflowSteps();
+        updateButtonsState();
+        hideStepConfigForm();
+      }
     }
   }
 
@@ -578,18 +595,28 @@ export function initializeWorkflows() {
   }
 
     async function deleteWorkflow(workflowId) {
-      const { showConfirmModal } = await import('../utils/modal.js');
-      const confirmed = await showConfirmModal({
-        title: 'Delete Workflow',
-        message: 'Are you sure you want to delete this workflow? This action cannot be undone.',
-        confirmLabel: 'Delete',
-        cancelLabel: 'Cancel',
-        danger: true,
-      });
-      if (confirmed) {
-        workflows = workflows.filter(w => w.id !== workflowId);
-        saveData('workflows', workflows);
-        updateActiveWorkflows();
+      try {
+        const modalModule = await import('../utils/modal.js');
+        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function') ? modalModule.showConfirmModal : (window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?'))));
+        const confirmed = await confirmFn({
+          title: 'Delete Workflow',
+          message: 'Are you sure you want to delete this workflow? This action cannot be undone.',
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel',
+          danger: true,
+        });
+        if (confirmed) {
+          workflows = workflows.filter(w => w.id !== workflowId);
+          saveData('workflows', workflows);
+          updateActiveWorkflows();
+        }
+      } catch (err) {
+        console.warn('Delete workflow confirmation failed, falling back to window.confirm', err);
+        if (window.confirm('Are you sure you want to delete this workflow? This action cannot be undone.')) {
+          workflows = workflows.filter(w => w.id !== workflowId);
+          saveData('workflows', workflows);
+          updateActiveWorkflows();
+        }
       }
     }
 

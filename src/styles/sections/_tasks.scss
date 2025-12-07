@@ -8,17 +8,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: map.get($spacing, 6);
+    margin-bottom: 1.5rem;
 
     .task-filters {
       display: flex;
-      gap: map.get($spacing, 3);
+      gap: 0.75rem;
       align-items: center;
 
       select {
-        padding: map.get($spacing, 2) map.get($spacing, 3);
+        padding: 0.5rem 0.75rem;
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
+        border-radius: 0.25rem;
         background: var(--bg-color);
         color: var(--text-color);
       }
@@ -28,8 +28,8 @@
       background: var(--primary-blue);
       color: white;
       border: none;
-      padding: map.get($spacing, 3) map.get($spacing, 4);
-      border-radius: map.get($radius, base);
+      padding: 0.75rem 1rem;
+      border-radius: 0.25rem;
       cursor: pointer;
       font-weight: 500;
 
@@ -42,35 +42,35 @@
   .task-board {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: map.get($spacing, 4);
+    gap: 1rem;
 
     .task-column {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, lg);
-      padding: map.get($spacing, 4);
+      border-radius: 0.5rem;
+      padding: 1rem;
 
       .column-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: map.get($spacing, 4);
-        padding-bottom: map.get($spacing, 2);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--border-color);
 
         h3 {
           margin: 0;
           color: var(--text-color);
-          font-size: map.get($font-sizes, lg);
+          font-size: 1.125rem;
 
           .task-count {
             background: var(--primary-blue);
             color: white;
-            padding: 2px map.get($spacing, 2);
-            border-radius: map.get($radius, sm);
-            font-size: map.get($font-sizes, xs);
+            padding: 2px 0.5rem;
+            border-radius: 0.125rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            margin-left: map.get($spacing, 2);
+            margin-left: 0.5rem;
           }
         }
       }
@@ -78,7 +78,7 @@
       .task-list {
         display: flex;
         flex-direction: column;
-        gap: map.get($spacing, 3);
+        gap: 0.75rem;
         min-height: 200px;
       }
     }
@@ -87,8 +87,8 @@
   .task-card {
     background: var(--bg-color);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, base);
-    padding: map.get($spacing, 3);
+    border-radius: 0.25rem;
+    padding: 0.75rem;
     cursor: move;
     transition: box-shadow 0.2s ease;
 
@@ -100,20 +100,20 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: map.get($spacing, 2);
+      margin-bottom: 0.5rem;
 
       .task-title {
         flex: 1;
         font-weight: 500;
         color: var(--text-color);
         margin: 0;
-        font-size: map.get($font-sizes, base);
+        font-size: 1rem;
       }
 
       .task-priority {
-        padding: 2px map.get($spacing, 2);
-        border-radius: map.get($radius, sm);
-        font-size: map.get($font-sizes, xs);
+        padding: 2px 0.5rem;
+        border-radius: 0.125rem;
+        font-size: 0.75rem;
         font-weight: 500;
         text-transform: uppercase;
 
@@ -135,9 +135,9 @@
     }
 
     .task-content {
-      font-size: map.get($font-sizes, sm);
+      font-size: 0.875rem;
       color: var(--text-muted);
-      margin-bottom: map.get($spacing, 2);
+      margin-bottom: 0.5rem;
       line-height: 1.4;
     }
 
@@ -145,7 +145,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: map.get($font-sizes, xs);
+      font-size: 0.75rem;
       color: var(--text-muted);
 
       .task-assignee {
@@ -175,41 +175,41 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: map.get($spacing, 4);
+        margin-bottom: 1rem;
 
         .task-detail-title {
           flex: 1;
           margin: 0;
           color: var(--text-color);
-          font-size: map.get($font-sizes, xl);
+          font-size: 1.25rem;
         }
 
         .task-detail-actions {
           display: flex;
-          gap: map.get($spacing, 2);
+          gap: 0.5rem;
 
           .button {
-            padding: map.get($spacing, 2) map.get($spacing, 3);
-            font-size: map.get($font-sizes, sm);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
           }
         }
       }
 
       .task-detail-content {
         display: grid;
-        gap: map.get($spacing, 4);
+        gap: 1rem;
 
         .detail-section {
           h4 {
-            margin: 0 0 map.get($spacing, 2) 0;
+            margin: 0 0 0.5rem 0;
             color: var(--text-color);
-            font-size: map.get($font-sizes, base);
+            font-size: 1rem;
           }
 
           .form-group {
             display: grid;
             grid-template-columns: 120px 1fr;
-            gap: map.get($spacing, 3);
+            gap: 0.75rem;
             align-items: center;
 
             label {
@@ -218,9 +218,9 @@
             }
 
             input, select, textarea {
-              padding: map.get($spacing, 2) map.get($spacing, 3);
+              padding: 0.5rem 0.75rem;
               border: 1px solid var(--border-color);
-              border-radius: map.get($radius, base);
+              border-radius: 0.25rem;
               background: var(--bg-color);
               color: var(--text-color);
 
@@ -242,7 +242,7 @@
 
   .empty-column {
     text-align: center;
-    padding: map.get($spacing, 4);
+    padding: 1rem;
     color: var(--text-muted);
     font-style: italic;
   }

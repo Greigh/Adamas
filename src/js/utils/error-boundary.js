@@ -78,16 +78,47 @@ export function createModuleErrorBoundary(moduleName) {
 export function setupGlobalErrorHandling() {
   if (typeof window !== 'undefined') {
     window.addEventListener('error', (event) => {
-      console.error('Global error caught:', event.error);
+      try {
+        // Provide richer diagnostics to help debug minified stack traces
+        const info = {
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          error: (event.error && event.error.stack) ? event.error.stack : event.error,
+          showConfirmModalType: typeof window.showConfirmModal,
+          showToastType: typeof window.showToast,
+          toastManagerType: typeof window.toastManager,
+          patternsModuleType: typeof window.patternsModule,
+          userAgent: navigator.userAgent,
+        };
+        console.error('Global error caught:', info);
+      } catch (e) {
+        console.error('Global error handler failure:', e, event);
+      }
       if (typeof showToast === 'function') {
-        showToast('An unexpected error occurred. Please refresh the page.', 'error');
+        try { showToast('An unexpected error occurred. Please refresh the page.', 'error'); } catch (e) { console.warn('showToast failed in error handler', e); }
       }
     });
 
     window.addEventListener('unhandledrejection', (event) => {
-      console.error('Unhandled promise rejection:', event.reason);
+      try {
+        const reason = event && event.reason;
+        const info = {
+          reasonType: reason && typeof reason,
+          reason: reason && (reason.stack || reason.message || reason),
+          showConfirmModalType: typeof window.showConfirmModal,
+          showToastType: typeof window.showToast,
+          toastManagerType: typeof window.toastManager,
+          patternsModuleType: typeof window.patternsModule,
+          userAgent: navigator.userAgent,
+        };
+        console.error('Unhandled promise rejection:', info);
+      } catch (e) {
+        console.error('Unhandled rejection handler failed', e, event);
+      }
       if (typeof showToast === 'function') {
-        showToast('An unexpected error occurred. Please refresh the page.', 'error');
+        try { showToast('An unexpected error occurred. Please refresh the page.', 'error'); } catch (e) { console.warn('showToast failed in unhandledrejection handler', e); }
       }
     });
   }

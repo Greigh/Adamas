@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
 describe('Settings E2E - float & toggle behavior', () => {
   let browser;
   let page;
-  const html = fs.readFileSync(path.resolve(__dirname, '../../src/index.html'), 'utf8');
+  const html = fs.readFileSync(path.resolve(__dirname, '../../src/settings.html'), 'utf8');
 
   beforeAll(async () => {
     browser = await chromium.launch();
@@ -31,8 +31,6 @@ describe('Settings E2E - float & toggle behavior', () => {
 
   test('floating a settings card creates a floating window and toggles the popout state', async () => {
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    // Show settings view
-    await page.click('#settings-tab');
 
     // Wait for a settings card
     await page.waitForSelector('.settings-section');
@@ -97,7 +95,6 @@ describe('Settings E2E - float & toggle behavior', () => {
 
   test('minimize toggles in settings header work', async () => {
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    await page.click('#settings-tab');
     // Click minimize on a settings section header
     await page.waitForSelector('.settings-section .minimize-btn');
     await page.click('.settings-section .minimize-btn');

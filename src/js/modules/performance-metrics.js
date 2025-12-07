@@ -21,11 +21,16 @@ function updateMetrics() {
   const csat = Math.floor(Math.random() * 10) + 85; // 85-95%
   const fcr = Math.floor(Math.random() * 15) + 75; // 75-90%
 
-  // Update DOM
-  document.getElementById('calls-handled').textContent = callsHandled;
-  document.getElementById('aht').textContent = formatDuration(aht);
-  document.getElementById('csat').textContent = csat + '%';
-  document.getElementById('fcr').textContent = fcr + '%';
+  // Update DOM only if elements exist (to prevent errors on pages without these elements)
+  const callsHandledEl = document.getElementById('calls-handled');
+  const ahtEl = document.getElementById('aht');
+  const csatEl = document.getElementById('csat');
+  const fcrEl = document.getElementById('fcr');
+
+  if (callsHandledEl) callsHandledEl.textContent = callsHandled;
+  if (ahtEl) ahtEl.textContent = formatDuration(aht);
+  if (csatEl) csatEl.textContent = csat + '%';
+  if (fcrEl) fcrEl.textContent = fcr + '%';
 
   // Update chart if available
   updatePerformanceChart();

@@ -16,7 +16,7 @@
   position: fixed;
   z-index: 1000;
   background: var(--card-bg);
-  border-radius: map.get($radius, lg);
+  border-radius: 0.5rem;
   box-shadow: var(--shadow-lg);
   min-width: 300px;
   min-height: 200px;
@@ -33,27 +33,27 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: map.get($spacing, 3);
+    padding: 0.75rem;
     border-bottom: 1px solid var(--border-color);
     cursor: move;
 
     h3 {
       margin: 0;
-      font-size: map.get($font-sizes, lg);
+      font-size: 1.125rem;
     }
 
     .floating-controls {
   display: flex;
-  gap: map.get($spacing, 2);
+  gap: 0.5rem;
   align-items: center;
 
       button {
         background: none;
         border: none;
-        font-size: map.get($font-sizes, lg);
+        font-size: 1.125rem;
         cursor: pointer;
-        padding: map.get($spacing, 1);
-        border-radius: map.get($radius, base);
+        padding: 0.25rem;
+        border-radius: 0.25rem;
         transition: map.get($transitions, base);
         color: var(--gray-600);
 
@@ -66,7 +66,7 @@
   }
 
   .floating-content {
-    padding: map.get($spacing, 4);
+    padding: 1rem;
     max-height: 60vh;
     overflow-y: auto;
 
@@ -97,10 +97,10 @@
 .popup-btn {
   background: none;
   border: none;
-  font-size: map.get($font-sizes, lg);
+  font-size: 1.125rem;
   cursor: pointer;
-  padding: map.get($spacing, 1);
-  border-radius: map.get($radius, base);
+  padding: 0.25rem;
+  border-radius: 0.25rem;
   transition: map.get($transitions, base);
   color: var(--gray-600);
   min-width: 28px;
@@ -265,11 +265,11 @@
     min-width: 0;
 
     .floating-header {
-      padding: map.get($spacing, 2);
+      padding: 0.5rem;
     }
 
     .floating-content {
-      padding: map.get($spacing, 2);
+      padding: 0.5rem;
       max-height: calc(80vh - 50px); // Account for header
     }
   }

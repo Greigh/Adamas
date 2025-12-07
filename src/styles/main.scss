@@ -11,19 +11,21 @@
 @use 'sections/ai-insights';
 @use 'sections/analytics';
 @use 'sections/api-integration';
-@use 'sections/call-logging';
 @use 'sections/callflow';
+@use 'sections/camera';
 @use 'sections/crm';
 @use 'sections/dashboards';
+@use 'sections/email';
+@use 'sections/multichannel';
 @use 'sections/notes';
 @use 'sections/patterns';
 @use 'sections/performance';
 @use 'sections/qa';
-@use 'sections/reporting';
-@use 'sections/scripts';
 @use 'sections/settings';
-@use 'sections/tasks';
+@use 'sections/telephony';
 @use 'sections/timer';
+@use 'sections/training';
+@use 'sections/voice-commands';
 @use 'sections/workflows';
 
 // Layout
@@ -40,12 +42,20 @@
 @use 'components/tabs';
 @use 'components/instance-controls';
 @use 'components/toasts';
+@use 'components/quick-actions';
 
 // Features
 @use 'features/draggable';
 @use 'features/floating';
 @use 'features/themes';
+@use 'features/auth';
 @use 'features/dark-mode-overrides';
+@use 'features/scripts';
+@use 'features/voice-recording';
+@use 'features/collaboration';
+@use 'features/call-logging';
+@use 'features/tasks';
+@use 'features/reporting';
 
 // Vendor overrides (last)
 @use 'vendor/third-party';
@@ -71,45 +81,45 @@ body {
 // Themed static page for privacy, terms, contact
 .themed-static-page {
   background: var(--gray-50);
-  border-radius: map.get(variables.$radius, xl);
+  border-radius: 0.75rem;
   box-shadow: var(--shadow-lg);
-  padding: map.get(variables.$spacing, 6);
-  margin-top: map.get(variables.$spacing, 8);
-  margin-bottom: map.get(variables.$spacing, 8);
+  padding: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   color: var(--gray-900);
-  font-size: map.get(variables.$font-sizes, base);
+  font-size: 1rem;
   line-height: 1.7;
   text-align: left;
 
   h2 {
-    margin-bottom: map.get(variables.$spacing, 8);
+    margin-bottom: 2rem;
   }
 
   h3 {
-    margin-top: map.get(variables.$spacing, 8);
-    margin-bottom: map.get(variables.$spacing, 4);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
   }
 
   p {
-    margin-bottom: map.get(variables.$spacing, 6);
+    margin-bottom: 1.5rem;
   }
 
   ul, ol {
-    margin-bottom: map.get(variables.$spacing, 6);
+    margin-bottom: 1.5rem;
   }
 
   li {
-    margin-bottom: map.get(variables.$spacing, 2);
+    margin-bottom: 0.5rem;
   }
 
   ul {
     list-style: disc;
-    padding-left: map.get(variables.$spacing, 6);
+    padding-left: 1.5rem;
   }
 
   ol {
     list-style: decimal;
-    padding-left: map.get(variables.$spacing, 6);
+    padding-left: 1.5rem;
   }
 }
 
@@ -132,35 +142,35 @@ body {
 
 @media (max-width: 600px) {
   .themed-static-page {
-    padding: map.get(variables.$spacing, 2);
-    margin-top: map.get(variables.$spacing, 2);
-    margin-bottom: map.get(variables.$spacing, 2);
-    font-size: map.get(variables.$font-sizes, sm);
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
   }
 }
 
 // Update notification styles
 .update-notification {
   position: fixed;
-  top: map.get(variables.$spacing, 4);
-  right: map.get(variables.$spacing, 4);
+  top: 1rem;
+  right: 1rem;
   z-index: 1000;
   max-width: 400px;
   background: var(--gray-900);
   color: white;
-  border-radius: map.get(variables.$radius, lg);
+  border-radius: 0.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-out;
 
   .update-notification-content {
     display: flex;
     align-items: center;
-    gap: map.get(variables.$spacing, 3);
-    padding: map.get(variables.$spacing, 4);
+    gap: 0.75rem;
+    padding: 1rem;
   }
 
   .update-notification-icon {
-    font-size: map.get(variables.$font-sizes, '2xl');
+    font-size: 1.5rem;
     flex-shrink: 0;
   }
 
@@ -169,28 +179,28 @@ body {
   }
 
   .update-notification-title {
-    font-weight: map.get(variables.$font-weights, semibold);
-    font-size: map.get(variables.$font-sizes, base);
-    margin-bottom: map.get(variables.$spacing, 1);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
   }
 
   .update-notification-message {
-    font-size: map.get(variables.$font-sizes, sm);
+    font-size: 0.875rem;
     color: var(--gray-300);
   }
 
   .update-notification-actions {
     display: flex;
     flex-direction: column;
-    gap: map.get(variables.$spacing, 2);
+    gap: 0.5rem;
   }
 
   .update-btn {
-    padding: map.get(variables.$spacing, 2) map.get(variables.$spacing, 3);
+    padding: 0.5rem 0.75rem;
     border: none;
-    border-radius: map.get(variables.$radius, sm);
-    font-size: map.get(variables.$font-sizes, sm);
-    font-weight: map.get(variables.$font-weights, medium);
+    border-radius: 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
 

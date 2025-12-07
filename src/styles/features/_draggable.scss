@@ -25,11 +25,11 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  padding: map.get($spacing, 2);
-  border-radius: map.get($radius, base);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
   transition: map.get($transitions, base);
   color: var(--gray-500);
-  font-size: map.get($font-sizes, lg);
+  font-size: 1.125rem;
 
   &:hover {
     background: var(--gray-200);
@@ -50,11 +50,11 @@
 .drag-placeholder {
   border: 2px dashed var(--primary-blue);
   background: rgba(25, 118, 210, 0.05);
-  border-radius: map.get($radius, lg);
-  padding: map.get($spacing, 8);
+  border-radius: 0.5rem;
+  padding: 2rem;
   text-align: center;
   color: var(--primary-blue);
-  font-weight: map.get($font-weights, medium);
+  font-weight: 500;
   transition: map.get($transitions, base);
 
   &::after {
@@ -65,7 +65,7 @@
 .drop-zone {
   min-height: 200px;
   border: 2px dashed transparent;
-  border-radius: map.get($radius, lg);
+  border-radius: 0.5rem;
   transition: map.get($transitions, base);
 
   &.drag-over {

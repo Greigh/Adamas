@@ -90,10 +90,26 @@ export function updatePatternTable() {
       btn.parentNode.replaceChild(newBtn, btn);
         newBtn.addEventListener('click', async function () {
           const id = parseInt(this.getAttribute('data-pattern-id'));
-          const confirmed = await showConfirmModal({ title: 'Delete Pattern', message: 'Are you sure you want to delete this pattern? This action can be undone for 5 seconds.', confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
-          if (confirmed) {
-            deletePattern(id, { undoable: true });
-            showToast('Pattern removed', { type: 'info' });
+          try {
+            let confirmed = false;
+            try {
+              const modalModule = await import('../utils/modal.js');
+              if (modalModule && typeof modalModule.showConfirmModal === 'function') {
+                confirmed = await modalModule.showConfirmModal({ title: 'Delete Pattern', message: 'Are you sure you want to delete this pattern? This action can be undone for 5 seconds.', confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
+              } else {
+                confirmed = window.confirm('Are you sure you want to delete this pattern?');
+              }
+            } catch (impErr) {
+              console.warn('Modal import failed, falling back to window.confirm', impErr);
+              confirmed = window.confirm('Are you sure you want to delete this pattern?');
+            }
+
+            if (confirmed) {
+              deletePattern(id, { undoable: true });
+              try { showToast('Pattern removed', 'info'); } catch (e) { console.warn('showToast failed', e); }
+            }
+          } catch (error) {
+            console.error('Error handling delete pattern click:', error);
           }
         });
     });
@@ -271,7 +287,8 @@ export function deletePattern(id, options = { undoable: true }) {
       type: 'info',
       timeout: 5000,
       actionLabel: 'Undo',
-      actionCallback: () => {
+        actionCallback: () => {
+          console.debug('Patterns: undo action callback invoked');
         // Cancel the timeout
         try {
           if (lastDeletedPattern && lastDeletedPattern.timeoutId) window.clearTimeout(lastDeletedPattern.timeoutId);
@@ -396,10 +413,24 @@ export function clearHistory() {
 }
 
 export function deleteHistoryItem(index) {
-  const history = loadData('patternHistory', []);
-  if (index >= 0 && index < history.length) {
-    history.splice(index, 1);
-    saveData('patternHistory', history);
+  try {
+    console.debug('deleteHistoryItem called with index:', index);
+    const history = loadData('patternHistory', []);
+    console.debug('Current history length:', Array.isArray(history) ? history.length : typeof history);
+    if (!Array.isArray(history)) return;
+    if (index >= 0 && index < history.length) {
+      history.splice(index, 1);
+      try {
+        saveData('patternHistory', history);
+        console.debug('History saved after delete, new length:', history.length);
+      } catch (saveErr) {
+        console.error('Failed to save history after delete:', saveErr);
+      }
+    } else {
+      console.debug('deleteHistoryItem: index out of range', index);
+    }
+  } catch (err) {
+    console.error('deleteHistoryItem unexpected error:', err);
   }
 }
 
@@ -414,11 +445,11 @@ export function displayHistory(root = document) {
   }
 
   // Limit history display if not showing all
-  const displayHistory = showAllHistory ? history : history.slice(-10);
+  const displayList = showAllHistory ? history : history.slice(-10);
   const hasMore = !showAllHistory && history.length > 10;
   const startIndex = showAllHistory ? 0 : Math.max(0, history.length - 10);
 
-  const historyList = displayHistory.map((entry, index) => `
+  const historyList = displayList.map((entry, index) => `
     <div class="history-item" data-index="${startIndex + index}">
       <div class="history-input">${entry.input}</div>
       <div class="history-arrow">→</div>
@@ -432,7 +463,7 @@ export function displayHistory(root = document) {
 
   historyContainer.innerHTML = `
     <div class="history-header">
-      <h4>Recent Formats ${hasMore ? `(${displayHistory.length} of ${history.length})` : ''}</h4>
+      <h4>Recent Formats ${hasMore ? `(${displayList.length} of ${history.length})` : ''}</h4>
       <div class="history-controls">
         ${hasMore ? '<button id="toggleHistoryBtn" class="button btn-secondary">Show All</button>' : showAllHistory ? '<button id="toggleHistoryBtn" class="button btn-secondary">Show Recent</button>' : ''}
         <button id="clearHistoryBtn" class="button btn-secondary">Clear History</button>
@@ -460,19 +491,57 @@ export function displayHistory(root = document) {
   historyContainer.querySelectorAll('.history-delete-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       try {
-        const index = parseInt(e.target.closest('.history-item').dataset.index);
-        const { showConfirmModal } = await import('../utils/modal.js');
-        const confirmed = await showConfirmModal({
-          title: 'Delete History Entry',
-          message: 'Are you sure you want to delete this history entry?',
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel',
-          danger: true
-        });
+        console.debug('history-delete-btn clicked, event target:', e.target);
+        const itemEl = e.target.closest && e.target.closest('.history-item');
+        if (!itemEl) {
+          console.warn('history-delete-btn: could not locate .history-item from event target', e.target);
+        }
+        const index = itemEl ? parseInt(itemEl.dataset.index, 10) : NaN;
+        console.debug('history-delete-btn resolved index:', index);
+        if (isNaN(index)) return;
+
+        // Try dynamic import of modal helper, but be defensive if not available
+        let confirmed = false;
+        try {
+          console.debug('Patterns: attempting to import modal for history delete');
+          const modalModule = await import('../utils/modal.js');
+          console.debug('Patterns: modalModule loaded', modalModule);
+          if (modalModule && typeof modalModule.showConfirmModal === 'function') {
+            console.debug('Patterns: calling modalModule.showConfirmModal');
+            confirmed = await modalModule.showConfirmModal({
+              title: 'Delete History Entry',
+              message: 'Are you sure you want to delete this history entry?',
+              confirmLabel: 'Delete',
+              cancelLabel: 'Cancel',
+              danger: true
+            });
+            console.debug('Patterns: modal confirmed result', confirmed);
+          } else {
+            console.debug('Patterns: modalModule.showConfirmModal not a function, falling back to window.confirm', typeof modalModule.showConfirmModal);
+            // Fallback to simple confirm
+            confirmed = window.confirm('Delete this history entry?');
+          }
+        } catch (impErr) {
+          // If import fails for any reason, fallback to window.confirm
+          console.warn('Modal import failed, falling back to window.confirm', impErr);
+          confirmed = window.confirm('Delete this history entry?');
+        }
+
         if (confirmed) {
-          deleteHistoryItem(index);
+          try {
+            console.debug('Confirmed delete for index', index);
+            deleteHistoryItem(index);
+          } catch (delErr) {
+            console.error('Error while deleting history item (sync):', delErr);
+          }
           // Update the display
-          setTimeout(() => displayHistory(), 0);
+          setTimeout(() => {
+            try {
+              displayHistory();
+            } catch (dispErr) {
+              console.error('displayHistory failed after delete:', dispErr);
+            }
+          }, 0);
         }
       } catch (error) {
         console.error('Error deleting history item:', error);
@@ -488,8 +557,9 @@ export function displayHistory(root = document) {
 
     newClearBtn.addEventListener('click', async () => {
       try {
-        const { showConfirmModal } = await import('../utils/modal.js');
-        const confirmed = await showConfirmModal({
+        const modalModule = await import('../utils/modal.js');
+        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmed = await confirmFn({
           title: 'Clear History',
           message: 'Are you sure you want to clear all formatting history? This action cannot be undone.',
           confirmLabel: 'Clear History',
@@ -506,6 +576,15 @@ export function displayHistory(root = document) {
         }
       } catch (error) {
         console.error('Error clearing history:', error);
+        try {
+          if (window.confirm('Are you sure you want to clear all formatting history? This action cannot be undone.')) {
+            clearHistory();
+            const historyContainer = document.querySelector('#patternHistory');
+            if (historyContainer) historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
+          }
+        } catch (e) {
+          console.error('Clear history fallback also failed', e);
+        }
       }
     });
   }

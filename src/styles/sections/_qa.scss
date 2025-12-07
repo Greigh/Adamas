@@ -5,33 +5,33 @@
 // QA Tools Section
 #qa-tools {
   .qa-form {
-    margin-bottom: map.get($spacing, 6);
+    margin-bottom: 1.5rem;
 
     select {
       width: 100%;
-      padding: map.get($spacing, 3);
+      padding: 0.75rem;
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, base);
+      border-radius: 0.25rem;
       background: var(--bg-color);
       color: var(--text-color);
-      margin-bottom: map.get($spacing, 4);
-      font-size: map.get($font-sizes, base);
+      margin-bottom: 1rem;
+      font-size: 1rem;
     }
 
     .qa-criteria {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: map.get($spacing, 3);
-      margin-bottom: map.get($spacing, 4);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
 
       label {
         display: flex;
         align-items: center;
-        gap: map.get($spacing, 2);
-        padding: map.get($spacing, 3);
+        gap: 0.5rem;
+        padding: 0.75rem;
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
+        border-radius: 0.25rem;
         cursor: pointer;
         transition: map.get($transitions, base);
 
@@ -55,22 +55,22 @@
     textarea {
       width: 100%;
       min-height: 120px;
-      padding: map.get($spacing, 3);
+      padding: 0.75rem;
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, base);
+      border-radius: 0.25rem;
       background: var(--bg-color);
       color: var(--text-color);
       font-family: inherit;
       resize: vertical;
-      margin-bottom: map.get($spacing, 4);
+      margin-bottom: 1rem;
     }
 
     .button {
       background: var(--primary-blue);
       color: white;
       border: none;
-      padding: map.get($spacing, 3) map.get($spacing, 5);
-      border-radius: map.get($radius, base);
+      padding: 0.75rem map.get($spacing, 5);
+      border-radius: 0.25rem;
       cursor: pointer;
       font-weight: 500;
       transition: map.get($transitions, base);
@@ -84,9 +84,9 @@
 
   .qa-reports {
     h4 {
-      margin: 0 0 map.get($spacing, 4) 0;
+      margin: 0 0 1rem 0;
       color: var(--text-color);
-      font-size: map.get($font-sizes, lg);
+      font-size: 1.125rem;
     }
 
     ul {
@@ -98,21 +98,21 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: map.get($spacing, 4);
+        padding: 1rem;
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
-        margin-bottom: map.get($spacing, 3);
+        border-radius: 0.25rem;
+        margin-bottom: 0.75rem;
 
         .qa-info {
           h5 {
-            margin: 0 0 map.get($spacing, 1) 0;
+            margin: 0 0 0.25rem 0;
             color: var(--text-color);
-            font-size: map.get($font-sizes, base);
+            font-size: 1rem;
           }
 
           .qa-score {
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
             color: var(--text-muted);
             font-weight: 500;
           }
@@ -120,11 +120,11 @@
 
         .qa-actions {
           display: flex;
-          gap: map.get($spacing, 2);
+          gap: 0.5rem;
 
           .button {
-            padding: map.get($spacing, 2) map.get($spacing, 3);
-            font-size: map.get($font-sizes, sm);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
             background: var(--gray-100);
             color: var(--text-color);
             border: 1px solid var(--border-color);

@@ -18,18 +18,45 @@ class ToastManager {
   }
 
   show(message, type = 'info', duration = 5000) {
+    // Backwards-compatible: if `type` is an options object, extract fields
+    let options = {};
+    if (type && typeof type === 'object' && !Array.isArray(type)) {
+      options = type;
+      type = options.type || 'info';
+      duration = typeof options.timeout === 'number' ? options.timeout : (options.duration || duration);
+    }
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
+
+    const actionHtml = options.actionLabel ? `<button class="toast-action">${options.actionLabel}</button>` : '';
+
     toast.innerHTML = `
       <div class="toast-content">
         <span class="toast-message">${message}</span>
+        ${actionHtml}
         <button class="toast-close" aria-label="Close notification">×</button>
       </div>
     `;
 
     // Add close button functionality
     const closeBtn = toast.querySelector('.toast-close');
-    closeBtn.addEventListener('click', () => this.remove(toast));
+    if (closeBtn) closeBtn.addEventListener('click', () => this.remove(toast));
+
+    // Wire action callback if provided
+    if (options.actionLabel && typeof options.actionCallback === 'function') {
+      const actionBtn = toast.querySelector('.toast-action');
+      if (actionBtn) {
+        actionBtn.addEventListener('click', () => {
+          try {
+            options.actionCallback();
+          } catch (e) {
+            console.error('Toast action callback error:', e);
+          }
+          this.remove(toast);
+        });
+      }
+    }
 
     // Auto remove after duration
     const timeoutId = setTimeout(() => this.remove(toast), duration);
@@ -84,3 +111,30 @@ export function showToast(message, type = 'info', duration = 5000) {
 }
 
 export { toastManager as ToastManager };
+
+// Expose globally for compatibility with inline scripts or optimized loaders
+try {
+  if (typeof window !== 'undefined') {
+    window.showToast = showToast;
+    window.toastManager = toastManager;
+  }
+} catch (e) {}
+// Flush any deferred toast calls queued before toast module loaded
+try {
+  if (typeof window !== 'undefined' && Array.isArray(window.__deferredCalls)) {
+    window.__deferredCalls = window.__deferredCalls.filter((item) => {
+      if (!item) return false;
+      if (item.type === 'toast') {
+        try {
+          showToast(item.message, item.toastType || 'info', item.duration || 5000);
+        } catch (e) {
+          console.warn('Deferred toast failed', e);
+        }
+        return false;
+      }
+      return true;
+    });
+  }
+} catch (e) {
+  console.warn('Error flushing deferred toast calls', e);
+}

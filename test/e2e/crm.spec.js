@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
 describe('CRM E2E - provider UI & persistence', () => {
   let browser;
   let page;
-  const html = fs.readFileSync(path.resolve(__dirname, '../../src/index.html'), 'utf8');
+  const html = fs.readFileSync(path.resolve(__dirname, '../../src/settings.html'), 'utf8');
   const crmSrc = fs.readFileSync(path.resolve(__dirname, '../../src/js/modules/crm.js'), 'utf8');
 
   beforeAll(async () => {
@@ -50,8 +50,6 @@ describe('CRM E2E - provider UI & persistence', () => {
 
   test('selecting a provider reveals the provider panel and saves non-sensitive fields', async () => {
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    // Show settings view (CRM lives under Settings)
-    await page.click('#settings-tab');
     const existsBeforeInit = await page.evaluate(() => ({
       hasSFConfig: !!document.getElementById('salesforce-config'),
       hasSFUrl: !!document.getElementById('salesforce-url')
@@ -114,7 +112,6 @@ describe('CRM E2E - provider UI & persistence', () => {
 
     // Reload the page (localStorage persists) and re-initialize to verify loadSavedConfig
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.click('#settings-tab');
     await injectCRMModule(page);
     // Try to restore fields by explicitly calling the exposed loader (pass document)
     await page.evaluate(() => { if (window.__crm_loadSaved) window.__crm_loadSaved(document); });
@@ -146,7 +143,8 @@ describe('CRM E2E - provider UI & persistence', () => {
       localStorage.setItem('crmAccessToken', 'dummy-token-123');
     });
 
-    await page.click('#settings-tab');
+    // If a settings tab exists (we might be serving index.html), click; otherwise, the page is already settings
+    if (await page.$('#settings-tab')) { await page.click('#settings-tab'); }
     await injectCRMModule(page);
     // Ensure the module updates its status (if it hasn't already) using exposed helpers
     await page.evaluate(() => {

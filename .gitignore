@@ -110,6 +110,7 @@ Thumbs.db
 # Backup files
 *.backup
 *.bak
+*.new
 *~
 
 # Local development
@@ -129,3 +130,6 @@ server.js
 # Configuration that might contain secrets
 nodemon.json
 .parcelrc
+
+# Random
+fix-scss-final.js

@@ -9,6 +9,23 @@
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>"
     />
     <link rel="manifest" href="/callcenterhelper/manifest.json" />
+    <script>
+      // Deferred-call stubs to tolerate script reordering (Rocket Loader / optimizers)
+      window.__deferredCalls = window.__deferredCalls || [];
+      if (!window.showConfirmModal) {
+        window.showConfirmModal = function (opts) {
+          return new Promise((resolve) => {
+            window.__deferredCalls.push({ type: 'confirm', opts, resolve });
+          });
+        };
+      }
+      if (!window.showToast) {
+        window.showToast = function (message, type, duration) {
+          // Queue toast requests until toastManager is available
+          window.__deferredCalls.push({ type: 'toast', message, toastType: type, duration });
+        };
+      }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   </head>
@@ -29,6 +46,27 @@
           </nav>
         </div>
       </header>
+
+      <!-- Quick Actions Toolbar -->
+      <div id="quick-actions-toolbar" class="quick-actions-toolbar">
+        <div class="toolbar-content">
+          <div class="toolbar-group">
+            <button id="quick-new-call" class="quick-action-btn" title="New Call">📞 New Call</button>
+            <button id="quick-timer" class="quick-action-btn" title="Quick Timer">⏱️ Timer</button>
+            <button id="quick-note" class="quick-action-btn" title="Quick Note">📝 Note</button>
+            <button id="quick-search" class="quick-action-btn" title="Customer Search">🔍 Search</button>
+            <button id="quick-template" class="quick-action-btn" title="Templates">📋 Template</button>
+            <button id="quick-department-lookup" class="quick-action-btn" title="Department Lookup">🏢 Dept Lookup</button>
+          </div>
+          <div class="toolbar-group">
+            <button id="quick-export" class="quick-action-btn" title="Export">📊 Export</button>
+            <button id="quick-dashboard" class="quick-action-btn" title="Dashboard">📈 Dashboard</button>
+            <button id="quick-queue" class="quick-action-btn" title="Queue Status">📋 Queue</button>
+            <button id="quick-chat" class="quick-action-btn" title="Team Chat">💬 Chat</button>
+          </div>
+        </div>
+        <button id="toolbar-toggle" class="toolbar-toggle-btn" title="Toggle Toolbar">▼</button>
+      </div>
 
       <!-- Main App View -->
       <div id="main-app" class="app-view">
@@ -301,50 +339,57 @@
             </div>
             <div class="section-content">
               <div class="call-log-form">
-                <div class="input-group">
-                  <input
-                    type="text"
-                    id="caller-name"
-                    name="caller-name"
-                    placeholder="Caller Name"
-                  />
-                  <input
-                    type="tel"
-                    id="caller-phone"
-                    name="caller-phone"
-                    placeholder="Phone Number"
-                  />
-                  <select
-                    id="call-type"
-                    name="call-type"
-                    aria-label="Call type"
-                  >
-                    <option value="inbound">Inbound</option>
-                    <option value="outbound">Outbound</option>
-                  </select>
-                  <button id="start-call-log" class="button">Start Call</button>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="caller-name">Caller Name</label>
+                    <input
+                      type="text"
+                      id="caller-name"
+                      name="caller-name"
+                      placeholder="e.g. Jane Doe"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="caller-phone">Phone Number</label>
+                    <input
+                      type="tel"
+                      id="caller-phone"
+                      name="caller-phone"
+                      placeholder="(555) 555-5555"
+                    />
+                  </div>
                 </div>
-                <textarea
-                  id="call-notes"
-                  name="call-notes"
-                  placeholder="Call notes..."
-                ></textarea>
-                <div class="call-actions">
-                  <button
-                    id="end-call-log"
-                    class="button btn-secondary"
-                    disabled
-                  >
-                    End Call
-                  </button>
-                  <button id="save-call-log" class="button" disabled>
-                    Save Log
-                  </button>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="call-type">Call Type</label>
+                    <select id="call-type" name="call-type" aria-label="Call type">
+                      <option value="inbound">Inbound</option>
+                      <option value="outbound">Outbound</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group" style="align-self:end;">
+                    <button id="start-call-log" class="button btn-sm">Start Call</button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="call-notes">Notes</label>
+                  <textarea id="call-notes" name="call-notes" placeholder="Call notes..."></textarea>
+                </div>
+
+                <div class="call-controls">
+                  <button id="end-call-log" class="button btn-secondary" disabled>End Call</button>
+                  <button id="save-call-log" class="button" disabled>Save Log</button>
                 </div>
               </div>
               <div class="call-history">
                 <h4>Recent Calls</h4>
-                <ul id="call-history-list"></ul>
+                <ul id="call-history-list">
+                  <li class="no-calls">No recent calls</li>
+                </ul>
               </div>
             </div>
           </section>

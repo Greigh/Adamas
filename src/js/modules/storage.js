@@ -4,11 +4,9 @@
 export function requestPersistentStorage() {
     if ('storage' in navigator && 'persist' in navigator.storage) {
         navigator.storage.persist().then(function(persistent) {
-            if (persistent) {
-                console.log('Storage persistence granted - data will be preserved');
-            } else {
+            if (!persistent) {
                 console.log('Storage persistence denied - data may be cleared by browser');
-            }
+            } 
         }).catch(function(error) {
             console.warn('Error requesting persistent storage:', error);
         });

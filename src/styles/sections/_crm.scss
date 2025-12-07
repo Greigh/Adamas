@@ -7,25 +7,25 @@
   .crm-config {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 4);
-    margin-bottom: map.get($spacing, 4);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: map.get($spacing, 2);
+      gap: 0.5rem;
 
       label {
         font-weight: 500;
         color: var(--text-color);
-        font-size: map.get($font-sizes, sm);
+        font-size: 0.875rem;
       }
 
       select {
-        padding: map.get($spacing, 2) map.get($spacing, 3);
+        padding: 0.5rem 0.75rem;
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
+        border-radius: 0.25rem;
         background: var(--bg-color);
         color: var(--text-color);
 
@@ -40,29 +40,29 @@
   .crm-config {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 4);
-    margin-bottom: map.get($spacing, 6);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
 
     .config-section {
-      margin-bottom: map.get($spacing, 4);
+      margin-bottom: 1rem;
 
       &:last-child {
         margin-bottom: 0;
       }
 
       h4 {
-        margin: 0 0 map.get($spacing, 3) 0;
+        margin: 0 0 0.75rem 0;
         color: var(--text-color);
-        font-size: map.get($font-sizes, base);
+        font-size: 1rem;
       }
 
       .form-group {
         display: grid;
         grid-template-columns: 200px 1fr;
-        gap: map.get($spacing, 3);
+        gap: 0.75rem;
         align-items: center;
-        margin-bottom: map.get($spacing, 3);
+        margin-bottom: 0.75rem;
 
         label {
           font-weight: 500;
@@ -70,9 +70,9 @@
         }
 
         input, select {
-          padding: map.get($spacing, 2) map.get($spacing, 3);
+          padding: 0.5rem 0.75rem;
           border: 1px solid var(--border-color);
-          border-radius: map.get($radius, base);
+          border-radius: 0.25rem;
           background: var(--bg-color);
           color: var(--text-color);
 
@@ -89,8 +89,8 @@
 
         .error-message {
           color: var(--error-color);
-          font-size: map.get($font-sizes, xs);
-          margin-top: map.get($spacing, 1);
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
           font-weight: 500;
         }
       }
@@ -100,20 +100,20 @@
   .customer-search {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 4);
-    margin-bottom: map.get($spacing, 6);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
 
     .search-form {
       display: flex;
-      gap: map.get($spacing, 3);
-      margin-bottom: map.get($spacing, 4);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
 
       input {
         flex: 1;
-        padding: map.get($spacing, 3);
+        padding: 0.75rem;
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
+        border-radius: 0.25rem;
         background: var(--bg-color);
         color: var(--text-color);
 
@@ -124,7 +124,7 @@
       }
 
       .button {
-        padding: map.get($spacing, 3) map.get($spacing, 4);
+        padding: 0.75rem 1rem;
         white-space: nowrap;
       }
     }
@@ -134,10 +134,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: map.get($spacing, 3);
+        padding: 0.75rem;
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
-        margin-bottom: map.get($spacing, 2);
+        border-radius: 0.25rem;
+        margin-bottom: 0.5rem;
         background: var(--bg-color);
         cursor: pointer;
 
@@ -147,23 +147,23 @@
 
         .customer-info {
           h4 {
-            margin: 0 0 map.get($spacing, 1) 0;
+            margin: 0 0 0.25rem 0;
             color: var(--text-color);
           }
 
           .customer-details {
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
             color: var(--text-muted);
           }
         }
 
         .customer-actions {
           display: flex;
-          gap: map.get($spacing, 2);
+          gap: 0.5rem;
 
           .button {
-            padding: map.get($spacing, 2) map.get($spacing, 3);
-            font-size: map.get($font-sizes, sm);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
           }
         }
       }
@@ -173,14 +173,14 @@
   .recent-interactions {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
-    padding: map.get($spacing, 4);
+    border-radius: 0.5rem;
+    padding: 1rem;
 
     .interaction-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: map.get($spacing, 3);
+      padding: 0.75rem;
       border-bottom: 1px solid var(--border-color);
 
       &:last-child {
@@ -189,21 +189,21 @@
 
       .interaction-info {
         h5 {
-          margin: 0 0 map.get($spacing, 1) 0;
+          margin: 0 0 0.25rem 0;
           color: var(--text-color);
-          font-size: map.get($font-sizes, base);
+          font-size: 1rem;
         }
 
         .interaction-meta {
-          font-size: map.get($font-sizes, sm);
+          font-size: 0.875rem;
           color: var(--text-muted);
         }
       }
 
       .interaction-status {
-        padding: map.get($spacing, 1) map.get($spacing, 2);
-        border-radius: map.get($radius, sm);
-        font-size: map.get($font-sizes, xs);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.125rem;
+        font-size: 0.75rem;
         font-weight: 500;
         text-transform: uppercase;
 
@@ -229,14 +229,14 @@
 // Demo mode indicator
 .demo-indicator {
   display: inline-block;
-  margin-left: map.get($spacing, 2);
+  margin-left: 0.5rem;
 
   .demo-badge {
     background: linear-gradient(135deg, #ff6b35, #f7931e);
     color: white;
-    padding: map.get($spacing, 1) map.get($spacing, 2);
-    border-radius: map.get($radius, sm);
-    font-size: map.get($font-sizes, xs);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.125rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;

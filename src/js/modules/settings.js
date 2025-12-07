@@ -22,7 +22,7 @@ import { setupDraggable, setupFloating, setupSectionToggle } from './draggable.j
 // Default settings
 export let appSettings = {
   showFormatter: true,
-  showCallflow: true,
+  showCallflow: false,  // Hidden by default to reduce clutter
   showNotes: true,
   showHoldtimer: true,
   showCalllogging: false,
@@ -37,10 +37,19 @@ export let appSettings = {
   showKnowledgeBase: false,
   showTimeTracking: false,
   showAdvancedAnalytics: false,
+  showAnalytics: false,  // Controls the stats/analytics tab visibility
   showApiIntegration: false,
+  showTwilio: false,
   showHoldtimerSettings: true,
   showPerformanceMonitoring: false,
   showCrmIntegration: false,
+  showDataManagement: true,
+  showCamera: false,
+  showVoiceCommands: false,
+  showTelephony: false,
+  showEmail: false,
+  showTraining: false,
+  minimalMode: false,  // New setting to hide all non-essential sections
   exportPatterns: true,
   exportSteps: true,
   exportNotes: true,
@@ -74,7 +83,7 @@ export let appSettings = {
   defaultLayout: {
     columns: 2,
     spacing: 24,
-    sections: ['pattern-formatter', 'call-flow-builder', 'notes', 'hold-timer'],
+    sections: ['formatter', 'call-flow-builder', 'notes', 'hold-timer'],
   },
   multipleTimers: false,
   multipleNotes: true,
@@ -215,6 +224,13 @@ export function initializeSettings() {
   if (Object.keys(saved).length > 0) {
     appSettings = { ...appSettings, ...saved };
   }
+  // Backward compatibility: synchronize legacy keys
+  if (typeof appSettings.showCrmIntegration !== 'undefined' && typeof appSettings.showCrm === 'undefined') {
+    appSettings.showCrm = appSettings.showCrmIntegration;
+  }
+  if (typeof appSettings.showDataManagement === 'undefined' && typeof appSettings.settingsDataManagement !== 'undefined') {
+    appSettings.showDataManagement = appSettings.settingsDataManagement;
+  }
   applySettings();
 
   // Initialize repeat alert sound toggle
@@ -225,9 +241,113 @@ export function initializeSettings() {
 }
 
 export function applySettings() {
+  // Handle minimal mode - override settings to show only essential sections
+  if (appSettings.minimalMode) {
+    appSettings.showFormatter = true;
+    appSettings.showNotes = true;
+    appSettings.showHoldtimer = true;
+    appSettings.showCallflow = false;
+    appSettings.showCalllogging = false;
+    appSettings.showCrm = false;
+    appSettings.showScripts = false;
+    appSettings.showTasks = false;
+    appSettings.showVoicerecording = false;
+    appSettings.showCollaboration = false;
+    appSettings.showWorkflows = false;
+    appSettings.showMultichannel = false;
+    appSettings.showFeedback = false;
+    appSettings.showKnowledgeBase = false;
+    appSettings.showTimeTracking = false;
+    appSettings.showAdvancedAnalytics = false;
+    appSettings.showAnalytics = false;
+    appSettings.showApiIntegration = false;
+    appSettings.showTwilio = false;
+    appSettings.showPerformanceMonitoring = false;
+    appSettings.showCrmIntegration = false;
+    appSettings.showDataManagement = false;
+    appSettings.showCamera = false;
+    appSettings.showVoiceCommands = false;
+    appSettings.showTelephony = false;
+    appSettings.showEmail = false;
+    appSettings.showTraining = false;
+  }
+
+  // Set minimal mode toggle
+  const minimalModeToggle = document.getElementById('toggle-minimal-mode');
+  if (minimalModeToggle) {
+    minimalModeToggle.checked = appSettings.minimalMode;
+  }
+
+  // Helper to update slider visual state
+  function updateSliderVisual(toggle) {
+    if (!toggle) return;
+    try {
+      // Checkbox-based visual: input[type=checkbox] + <span class="toggle-slider"> as visual
+      if (toggle.type === 'checkbox') {
+        const span = toggle.nextElementSibling;
+        const isOn = !!toggle.checked;
+        if (span && span.classList) {
+          span.classList.toggle('slider-on', isOn);
+          span.setAttribute('role', 'switch');
+          span.setAttribute('aria-checked', isOn ? 'true' : 'false');
+        } else {
+          toggle.classList.toggle('slider-on', isOn);
+          toggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+        }
+        return;
+      }
+
+      // Fallback for legacy range-based sliders
+      if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
+        if (String(toggle.value) === '1') {
+          toggle.classList.add('slider-on');
+          toggle.setAttribute('aria-pressed', 'true');
+        } else {
+          toggle.classList.remove('slider-on');
+          toggle.setAttribute('aria-pressed', 'false');
+        }
+      }
+    } catch (e) {
+      // noop - defensive
+    }
+  }
+
+  // Define feature readiness status
+  const featureStatus = {
+    // Production quality - no label, fully enabled
+    'formatter': 'production',
+    'callflow': 'production',
+    'analytics': 'production',
+    'notes': 'production',
+    'holdtimer': 'production',
+    'calllogging': 'production',
+    'scripts': 'production',
+    'tasks': 'production',
+    'voicerecording': 'production',
+    'collaboration': 'coming-soon',
+
+    // Partially production quality - add "Beta" label
+    'workflows': 'beta',
+    'multichannel': 'beta',
+    'feedback': 'beta',
+    'timetracking': 'beta',
+    'voice': 'beta',
+
+    // Not production quality - add "Coming Soon" label and disable
+    'knowledgebase': 'coming-soon',
+    'advancedanalytics': 'coming-soon',
+    'apiintegration': 'coming-soon',
+    'camera': 'coming-soon',
+    'telephony': 'coming-soon',
+    'email': 'coming-soon',
+    'training': 'coming-soon',
+    'twilio': 'production'
+  };
+
   const toggles = {
     'toggle-formatter': 'formatter',
     'toggle-callflow': 'callflow',
+    'toggle-analytics': 'analytics',
     'toggle-notes': 'notes',
     'toggle-holdtimer': 'holdtimer',
     'toggle-calllogging': 'calllogging',
@@ -242,12 +362,49 @@ export function applySettings() {
     'toggle-time-tracking': 'timetracking',
     'toggle-advanced-analytics': 'advancedanalytics',
     'toggle-api-integration': 'apiintegration',
+    'toggle-camera': 'camera',
+    'toggle-crm': 'crm',
+    'toggle-data-management': 'data-management',
+    'toggle-voice-commands': 'voice',
+    'toggle-telephony': 'telephony',
+    'toggle-email': 'email',
+    'toggle-training': 'training',
+    'toggle-twilio': 'twilio',
+    // Main page toggles
+    'main-toggle-formatter': 'formatter',
+    'main-toggle-callflow': 'callflow',
+    'main-toggle-analytics': 'analytics',
+    'main-toggle-notes': 'notes',
+    'main-toggle-holdtimer': 'holdtimer',
+    'main-toggle-calllogging': 'calllogging',
+    'main-toggle-scripts': 'scripts',
+    'main-toggle-tasks': 'tasks',
+    'main-toggle-voicerecording': 'voicerecording',
+    'main-toggle-collaboration': 'collaboration',
+    'main-toggle-workflows': 'workflows',
+    'main-toggle-multichannel': 'multichannel',
+    'main-toggle-feedback': 'feedback',
+    'main-toggle-knowledge-base': 'knowledgebase',
+    'main-toggle-time-tracking': 'timetracking',
+    'main-toggle-advanced-analytics': 'advancedanalytics',
+    'main-toggle-api-integration': 'apiintegration',
+    'main-toggle-camera': 'camera',
+    'main-toggle-crm': 'crm',
+    'main-toggle-data-management': 'data-management',
+    'main-toggle-voice-commands': 'voice',
+    'main-toggle-telephony': 'telephony',
+    'main-toggle-email': 'email',
+    'main-toggle-training': 'training',
+    'main-toggle-twilio': 'twilio',
   };
 
   Object.entries(toggles).forEach(([toggleId, section]) => {
-    const toggle = document.getElementById(toggleId);
-    const sectionEl = document.querySelector(`[data-section="${section}"]`);
-    if (toggle && sectionEl) {
+      const toggle = document.getElementById(toggleId);
+      // Only target sections inside the main app/stats/knowledge/settings views
+      const sectionEls = document.querySelectorAll(
+        `#main-app [data-section="${section}"], #stats-view [data-section="${section}"], #knowledge-base-view [data-section="${section}"], #settings-view [data-section="${section}"]`
+      );
+    if (toggle) {
       // Convert section name to setting key
       let settingKey;
       switch (section) {
@@ -264,10 +421,111 @@ export function applySettings() {
           settingKey = 'showApiIntegration';
           break;
         default:
-          settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+          // Convert hyphenated names like 'data-management' into 'showDataManagement'
+          settingKey = 'show' + section.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
       }
-      toggle.checked = appSettings[settingKey];
-      sectionEl.style.display = toggle.checked ? '' : 'none';
+
+      const status = featureStatus[section];
+
+      // Handle labels and disabling based on status
+      // Check if this is a settings page toggle or main page toggle
+      let labelContainer = null;
+      if (toggleId.startsWith('main-toggle-')) {
+        // Main page toggle structure
+        const toggleItem = toggle.closest('.toggle-item');
+        if (toggleItem) {
+          labelContainer = toggleItem.querySelector('.toggle-label');
+        }
+      } else {
+        // Settings page toggle structure
+        const settingItem = toggle.closest('.setting-item');
+        if (settingItem) {
+          labelContainer = settingItem.querySelector('.setting-label');
+        }
+      }
+
+      if (labelContainer) {
+        // Remove existing status labels
+        const existingLabel = labelContainer.querySelector('.feature-status');
+        if (existingLabel) {
+          existingLabel.remove();
+        }
+
+        // Add appropriate label
+        if (status === 'beta') {
+          const betaLabel = document.createElement('span');
+          betaLabel.className = 'feature-status beta';
+          betaLabel.textContent = 'Beta';
+          betaLabel.title = 'This feature is in beta testing - it may have bugs or incomplete functionality';
+          labelContainer.appendChild(betaLabel);
+        } else if (status === 'coming-soon') {
+          const comingSoonLabel = document.createElement('span');
+          comingSoonLabel.className = 'feature-status coming-soon';
+          comingSoonLabel.textContent = 'Coming Soon';
+          comingSoonLabel.title = 'This feature is under development and will be available in a future update';
+          labelContainer.appendChild(comingSoonLabel);
+        }
+      }
+
+      // Disable toggles for coming-soon features and initialize range sliders
+      if (status === 'coming-soon') {
+        toggle.disabled = true;
+        // for range-based sliders use value '0', otherwise uncheck
+        if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
+          try { toggle.value = '0'; } catch (e) {}
+        } else {
+          try { toggle.checked = false; } catch (e) {}
+        }
+        appSettings[settingKey] = false;
+        if (sectionEls && sectionEls.length) {
+          sectionEls.forEach((el) => (el.style.display = 'none'));
+        }
+      } else {
+        toggle.disabled = false;
+        if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
+          // Set numeric value for slider toggles
+          try { toggle.value = appSettings[settingKey] ? '1' : '0'; } catch (e) {}
+          const isOn = String(toggle.value) === '1';
+          if (sectionEls && sectionEls.length) {
+            sectionEls.forEach((el) => (el.style.display = isOn ? '' : 'none'));
+          }
+        } else {
+          try { toggle.checked = !!appSettings[settingKey]; } catch (e) {}
+          if (sectionEls && sectionEls.length) {
+            sectionEls.forEach((el) => (el.style.display = toggle.checked ? '' : 'none'));
+          }
+        }
+      }
+      // Ensure visual state for slider toggles
+      try { updateSliderVisual(toggle); } catch (e) {}
+    }
+  });
+
+  // Handle section toggles (Visible Sections)
+  document.querySelectorAll('.section-toggle').forEach(toggle => {
+    const section = toggle.dataset.section;
+    const settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+    const sectionEls = document.querySelectorAll(
+      `#main-app [data-section="${section}"], #stats-view [data-section="${section}"], #knowledge-base-view [data-section="${section}"], #settings-view [data-section="${section}"]`
+    );
+    const isOn = appSettings[settingKey] !== false;
+    toggle.checked = isOn;
+    sectionEls.forEach(el => el.style.display = isOn ? '' : 'none');
+  });
+
+  // Handle toolbar buttons visibility based on section settings
+  const toolbarMappings = {
+    'quick-new-call': 'showCalllogging',
+    'quick-timer': 'showHoldtimer',
+    'quick-note': 'showNotes',
+    'quick-template': 'showScripts',
+    'quick-chat': 'showCollaboration'
+  };
+
+  Object.entries(toolbarMappings).forEach(([buttonId, settingKey]) => {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      button.style.display = appSettings[settingKey] !== false ? '' : 'none';
     }
   });
 
@@ -278,6 +536,20 @@ export function applySettings() {
 
     // If Knowledge Base is being disabled and user is currently on that tab, switch to main
     if (!appSettings.showKnowledgeBase && knowledgeBaseTab.classList.contains('active')) {
+      // Switch to main tab if available
+      if (typeof window.showMainApp === 'function') {
+        window.showMainApp();
+      }
+    }
+  }
+
+  // Handle navigation tab visibility for Stats
+  const statsTab = document.getElementById('stats-tab');
+  if (statsTab) {
+    statsTab.style.display = appSettings.showAnalytics ? '' : 'none';
+
+    // If Stats is being disabled and user is currently on that tab, switch to main
+    if (!appSettings.showAnalytics && statsTab.classList.contains('active')) {
       // Switch to main tab if available
       if (typeof window.showMainApp === 'function') {
         window.showMainApp();
@@ -453,21 +725,10 @@ export function applySettings() {
       }
     });
   } catch (e) {}
+  // (defensive restoration removed — previous behavior restored)
 }
 
-export function showMainApp() {
-  document.getElementById('main-app').style.display = '';
-  document.getElementById('settings-view').style.display = 'none';
-  document.getElementById('main-tab').classList.add('active');
-  document.getElementById('settings-tab').classList.remove('active');
-}
 
-export function showSettings() {
-  document.getElementById('main-app').style.display = 'none';
-  document.getElementById('settings-view').style.display = '';
-  document.getElementById('main-tab').classList.remove('active');
-  document.getElementById('settings-tab').classList.add('active');
-}
 
 export function setupSettingsEventListeners() {
   // Initialize audio context
@@ -484,8 +745,10 @@ export function setupSettingsEventListeners() {
 
   // Settings toggles
   const settingsToggles = [
+    'toggle-minimal-mode',
     'toggle-formatter',
     'toggle-callflow',
+    'toggle-analytics',
     'toggle-notes',
     'toggle-holdtimer',
     'toggle-calllogging',
@@ -500,12 +763,64 @@ export function setupSettingsEventListeners() {
     'toggle-time-tracking',
     'toggle-advanced-analytics',
     'toggle-api-integration',
+    'toggle-camera',
+    'toggle-voice-commands',
+    'toggle-telephony',
+    'toggle-email',
+    'toggle-training',
+    'toggle-crm',
+    'toggle-data-management',
+    // Main page toggles
+    'main-toggle-formatter',
+    'main-toggle-callflow',
+    'main-toggle-analytics',
+    'main-toggle-notes',
+    'main-toggle-holdtimer',
+    'main-toggle-calllogging',
+    'main-toggle-scripts',
+    'main-toggle-tasks',
+    'main-toggle-voicerecording',
+    'main-toggle-collaboration',
+    'main-toggle-workflows',
+    'main-toggle-multichannel',
+    'main-toggle-feedback',
+    'main-toggle-knowledge-base',
+    'main-toggle-time-tracking',
+    'main-toggle-advanced-analytics',
+    'main-toggle-api-integration',
+    'main-toggle-camera',
+    'main-toggle-voice-commands',
+    'main-toggle-telephony',
+    'main-toggle-email',
+    'main-toggle-training',
+    'main-toggle-crm',
+    'main-toggle-data-management',
   ];
   settingsToggles.forEach((toggleId) => {
     const toggle = document.getElementById(toggleId);
     if (toggle) {
-      toggle.addEventListener('change', function () {
-        const section = toggleId.replace('toggle-', '');
+      toggle.addEventListener('change', function (event) {
+        // Prevent changes on disabled toggles (coming soon features)
+        if (toggle.disabled) {
+          event.preventDefault();
+          if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) toggle.value = '0';
+          else toggle.checked = false; // Ensure it stays unchecked
+          return;
+        }
+
+        const section = toggleId.replace(/^main-/, '').replace('toggle-', '');
+        
+        // Determine on/off for range sliders vs checkboxes
+        const isOn = (this.type === 'range' || this.classList.contains('slider-toggle')) ? this.value === '1' : this.checked;
+
+        // Special handling for minimal mode
+        if (section === 'minimal-mode') {
+          appSettings.minimalMode = isOn;
+          saveSettings(appSettings);
+          applySettings();
+          return;
+        }
+
         // Convert section name to setting key
         let settingKey;
         switch (section) {
@@ -521,10 +836,25 @@ export function setupSettingsEventListeners() {
           case 'api-integration':
             settingKey = 'showApiIntegration';
             break;
+          case 'camera':
+            settingKey = 'showCamera';
+            break;
+          case 'voice-commands':
+            settingKey = 'showVoiceCommands';
+            break;
+          case 'telephony':
+            settingKey = 'showTelephony';
+            break;
+          case 'email':
+            settingKey = 'showEmail';
+            break;
+          case 'training':
+            settingKey = 'showTraining';
+            break;
           default:
-            settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+            settingKey = 'show' + section.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
         }
-        appSettings[settingKey] = this.checked;
+        appSettings[settingKey] = isOn;
         saveSettings(appSettings);
         applySettings();
       });
@@ -605,6 +935,10 @@ export function setupSettingsEventListeners() {
   exportToggles.forEach((toggleId) => {
     const toggle = document.getElementById(toggleId);
     if (toggle) {
+      // Initialize checked state
+      const settingKey = toggleId.replace(/-/g, '');
+      toggle.checked = appSettings[settingKey] !== false;
+
       toggle.addEventListener('change', function () {
         const settingKey = toggleId.replace(/-/g, '');
         appSettings[settingKey] = this.checked;
@@ -813,14 +1147,11 @@ export function setupSettingsEventListeners() {
 
   const restoreDataBtn = document.getElementById('restore-data-btn');
   if (restoreDataBtn) {
-    restoreDataBtn.addEventListener('click', () => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json';
-      input.onchange = restoreData;
-      input.click();
-    });
+    restoreDataBtn.addEventListener('click', createBackup);
   }
+
+  // Data Management Statistics
+  updateDataStatistics();
 
   // Backup functionality
   const backupDataBtn = document.getElementById('backup-data-btn');
@@ -831,11 +1162,20 @@ export function setupSettingsEventListeners() {
   if (resetAllBtn) {
     resetAllBtn.addEventListener('click', function () {
       (async () => {
-        const { showConfirmModal } = await import('../utils/modal.js');
-        const ok = await showConfirmModal({ title: 'Reset All Data', message: 'Are you sure you want to reset ALL data? This cannot be undone!', confirmLabel: 'Reset All', cancelLabel: 'Cancel', danger: true });
-        if (ok) {
-          localStorage.clear();
-          location.reload();
+        try {
+          const modalModule = await import('../utils/modal.js');
+          const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+          const ok = await confirmFn({ title: 'Reset All Data', message: 'Are you sure you want to reset ALL data? This cannot be undone!', confirmLabel: 'Reset All', cancelLabel: 'Cancel', danger: true });
+          if (ok) {
+            localStorage.clear();
+            location.reload();
+          }
+        } catch (err) {
+          console.warn('Reset All Data: confirm fallback triggered', err);
+          if (window.confirm('Are you sure you want to reset ALL data? This cannot be undone!')) {
+            localStorage.clear();
+            location.reload();
+          }
         }
       })();
     });
@@ -845,18 +1185,38 @@ export function setupSettingsEventListeners() {
   const clearDataBtn = document.getElementById('clear-data-btn');
   if (clearDataBtn) {
     clearDataBtn.addEventListener('click', async function () {
-      const { showConfirmModal } = await import('../utils/modal.js');
-      const ok = await showConfirmModal({
-        title: 'Clear All Data',
-        message: 'Are you sure you want to permanently delete ALL application data? This action cannot be undone!',
-        confirmLabel: 'Clear All Data',
-        cancelLabel: 'Cancel',
-        danger: true
-      });
-      if (ok) {
-        const { clearAllData } = await import('./storage.js');
-        clearAllData();
-        location.reload();
+      try {
+        const modalModule = await import('../utils/modal.js');
+        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const ok = await confirmFn({
+          title: 'Clear All Data',
+          message: 'Are you sure you want to permanently delete ALL application data? This action cannot be undone!',
+          confirmLabel: 'Clear All Data',
+          cancelLabel: 'Cancel',
+          danger: true
+        });
+        if (ok) {
+          try {
+            const storageModule = await import('./storage.js');
+            const clearAllData = (storageModule && typeof storageModule.clearAllData === 'function' && storageModule.clearAllData) || (await import('./storage.js')).clearAllData;
+            if (typeof clearAllData === 'function') clearAllData();
+            location.reload();
+          } catch (e) {
+            console.warn('Failed to import clearAllData, aborting reload', e);
+          }
+        }
+      } catch (err) {
+        console.warn('Clear All Data: confirm fallback triggered', err);
+        if (window.confirm('Are you sure you want to permanently delete ALL application data? This action cannot be undone!')) {
+          try {
+            const storageModule = await import('./storage.js');
+            const clearAllData = (storageModule && typeof storageModule.clearAllData === 'function' && storageModule.clearAllData) || (await import('./storage.js')).clearAllData;
+            if (typeof clearAllData === 'function') clearAllData();
+            location.reload();
+          } catch (e) {
+            console.warn('Failed to import clearAllData in fallback', e);
+          }
+        }
       }
     });
   }
@@ -1133,10 +1493,19 @@ async function restoreData(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  const { showConfirmModal } = await import('../utils/modal.js');
-  if (!(await showConfirmModal({ title: 'Restore Backup', message: 'Are you sure you want to restore from this backup? This will overwrite all existing data.', confirmLabel: 'Restore', cancelLabel: 'Cancel', danger: true }))) {
-    event.target.value = ''; // Reset file input
-    return;
+  try {
+    const modalModule = await import('../utils/modal.js');
+    const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+    if (!(await confirmFn({ title: 'Restore Backup', message: 'Are you sure you want to restore from this backup? This will overwrite all existing data.', confirmLabel: 'Restore', cancelLabel: 'Cancel', danger: true }))) {
+      event.target.value = ''; // Reset file input
+      return;
+    }
+  } catch (err) {
+    console.warn('Restore Backup: confirm fallback triggered', err);
+    if (!window.confirm('Are you sure you want to restore from this backup? This will overwrite all existing data.')) {
+      event.target.value = '';
+      return;
+    }
   }
 
   const reader = new FileReader();
@@ -1204,6 +1573,42 @@ function createBackup() {
   alert('Backup created successfully!');
 }
 
+// Update data statistics display
+function updateDataStatistics() {
+  try {
+    // Update patterns count
+    const patternsCount = document.getElementById('patterns-count');
+    if (patternsCount) {
+      const patterns = loadPatterns();
+      patternsCount.textContent = patterns.length;
+    }
+
+    // Update steps count
+    const stepsCount = document.getElementById('steps-count');
+    if (stepsCount) {
+      const steps = loadSteps();
+      stepsCount.textContent = steps.length;
+    }
+
+    // Update notes count
+    const notesCount = document.getElementById('notes-count');
+    if (notesCount) {
+      const notes = loadNotes();
+      notesCount.textContent = notes.length;
+    }
+
+    // Update settings size (approximate)
+    const settingsSize = document.getElementById('settings-size');
+    if (settingsSize) {
+      const settingsString = JSON.stringify(appSettings);
+      const sizeInKB = (settingsString.length / 1024).toFixed(1);
+      settingsSize.textContent = `${sizeInKB}KB`;
+    }
+  } catch (error) {
+    console.error('Error updating data statistics:', error);
+  }
+}
+
 // Layout functions
 function applyLayout() {
   // Apply layout & ordering to every sortable container (main + settings)
@@ -1268,16 +1673,22 @@ function applyLayout() {
 }
 
 async function resetLayout() {
-  const { showConfirmModal } = await import('../utils/modal.js');
-  const confirmed = await showConfirmModal({
-    title: 'Reset Layout',
-    message: 'Reset layout to default? This will restore the original section order and grid settings.',
-    confirmLabel: 'Reset',
-    cancelLabel: 'Cancel',
-    danger: false,
-  });
+  try {
+    const modalModule = await import('../utils/modal.js');
+    const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+    const confirmed = await confirmFn({
+      title: 'Reset Layout',
+      message: 'Reset layout to default? This will restore the original section order and grid settings.',
+      confirmLabel: 'Reset',
+      cancelLabel: 'Cancel',
+      danger: false,
+    });
 
-  if (!confirmed) return;
+    if (!confirmed) return;
+  } catch (err) {
+    console.warn('Reset Layout: confirm fallback triggered', err);
+    if (!window.confirm('Reset layout to default? This will restore the original section order and grid settings.')) return;
+  }
 
   // Restore to default layout values
   appSettings.layoutMode = 'grid';
@@ -1349,6 +1760,57 @@ function saveCurrentLayout() {
       saveBtn.textContent = originalText;
     }, 2000);
   }
+
+  // Settings group collapse toggles (use .collapse-toggle for expand/collapse)
+  const collapseToggles = document.querySelectorAll('.collapse-toggle');
+  collapseToggles.forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      const groupContent = document.getElementById(this.getAttribute('aria-controls'));
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      // Toggle the expanded state
+      this.setAttribute('aria-expanded', !isExpanded);
+      // Toggle the content visibility
+      if (groupContent) {
+        groupContent.setAttribute('aria-expanded', !isExpanded);
+        groupContent.classList.toggle('collapsed', isExpanded);
+        groupContent.classList.toggle('expanded', !isExpanded);
+      }
+    });
+  });
+
+  // Group-level enable/disable buttons (Enable All / Disable All)
+  const groupEnableBtns = document.querySelectorAll('.group-toggle[data-group]');
+  groupEnableBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      const groupEl = this.closest('.settings-group');
+      if (!groupEl) return;
+      const inputs = Array.from(groupEl.querySelectorAll('input[type="checkbox"], input[type="range"].slider-toggle'));
+      if (!inputs.length) return;
+      const anyOff = inputs.some(inp => inp.disabled ? false : (inp.type === 'range' ? inp.value !== '1' : !inp.checked));
+      const newVal = anyOff ? '1' : '0';
+      inputs.forEach(inp => {
+        if (inp.disabled) return;
+        if (inp.type === 'range') {
+          inp.value = newVal;
+        } else {
+          inp.checked = newVal === '1';
+        }
+        // Trigger change handlers
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        try { updateSliderVisual(inp); } catch (e) {}
+      });
+      this.textContent = anyOff ? 'Disable All' : 'Enable All';
+    });
+  });
+
+  // Initialize group states (expanded by default)
+  groupToggles.forEach(toggle => {
+    toggle.setAttribute('aria-expanded', 'true');
+    const groupContent = document.getElementById(toggle.getAttribute('aria-controls'));
+    if (groupContent) {
+      groupContent.setAttribute('aria-expanded', 'true');
+    }
+  });
 }
 
 /**
@@ -1361,16 +1823,25 @@ export async function lazyLoadDynamicComponent(componentId, moduleType) {
 
   switch (moduleType) {
     case 'timer':
-      const { initializeTimer, setupTimerEventListeners } = await import(
-        './timer.js'
-      );
-      initializeTimer(componentId);
-      setupTimerEventListeners(componentId);
+      try {
+        const timerModule = await import('./timer.js');
+        const initializeTimer = (timerModule && typeof timerModule.initializeTimer === 'function' && timerModule.initializeTimer) || (await import('./timer.js')).initializeTimer;
+        const setupTimerEventListeners = (timerModule && typeof timerModule.setupTimerEventListeners === 'function' && timerModule.setupTimerEventListeners) || (await import('./timer.js')).setupTimerEventListeners;
+        if (typeof initializeTimer === 'function') initializeTimer(componentId);
+        if (typeof setupTimerEventListeners === 'function') setupTimerEventListeners(componentId);
+      } catch (e) {
+        console.warn('lazyLoadDynamicComponent(timer) import failed', e);
+      }
       break;
 
     case 'notes':
-      const { initializeNotes } = await import('./notes.js');
-      initializeNotes(componentId);
+      try {
+        const notesModule = await import('./notes.js');
+        const initializeNotes = (notesModule && typeof notesModule.initializeNotes === 'function' && notesModule.initializeNotes) || (await import('./notes.js')).initializeNotes;
+        if (typeof initializeNotes === 'function') initializeNotes(componentId);
+      } catch (e) {
+        console.warn('lazyLoadDynamicComponent(notes) import failed', e);
+      }
       break;
 
     // Add other component types as needed
@@ -1408,4 +1879,216 @@ document.addEventListener('DOMContentLoaded', () => {
     `
     );
   }
+
+  // Initialize Twilio settings
+  initializeTwilioSettings();
 });
+
+// Twilio Settings Management
+async function initializeTwilioSettings() {
+  const saveButton = document.getElementById('save-twilio-settings');
+  const testButton = document.getElementById('test-twilio');
+  const statusElement = document.getElementById('twilio-status');
+  const saveStatusElement = document.getElementById('twilio-save-status');
+
+  if (!saveButton || !statusElement) return;
+
+  // Load current Twilio settings
+  await loadTwilioSettings();
+
+  // Save settings event listener
+  saveButton.addEventListener('click', async () => {
+    const accountSid = document.getElementById('twilio-account-sid')?.value?.trim();
+    const authToken = document.getElementById('twilio-auth-token')?.value?.trim();
+    const phoneNumber = document.getElementById('twilio-phone-number')?.value?.trim();
+
+    if (!accountSid || !authToken || !phoneNumber) {
+      showTwilioStatus('Please fill in all fields', 'error');
+      return;
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = 'Saving...';
+
+    try {
+      const response = await fetch('/api/user/twilio', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ accountSid, authToken, phoneNumber })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        showTwilioStatus('Twilio settings saved successfully!', 'success');
+        await loadTwilioSettings();
+      } else {
+        showTwilioStatus(result.error || 'Failed to save settings', 'error');
+      }
+    } catch (error) {
+      console.error('Twilio save error:', error);
+      showTwilioStatus('Failed to save settings. Please try again.', 'error');
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = 'Save Twilio Settings';
+    }
+  });
+
+  // Test SMS event listener
+  if (testButton) {
+    testButton.addEventListener('click', async () => {
+      const phoneNumber = document.getElementById('twilio-phone-number')?.value?.trim();
+
+      if (!phoneNumber) {
+        alert('Please enter a phone number first');
+        return;
+      }
+
+      testButton.disabled = true;
+      testButton.textContent = 'Sending Test...';
+
+      try {
+        const response = await fetch('/api/sms', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            to: phoneNumber,
+            message: 'Test SMS from Call Center Helper'
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Test SMS sent successfully!');
+        } else {
+          alert(`Test SMS failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Test SMS error:', error);
+        alert('Failed to send test SMS. Please check your settings.');
+      } finally {
+        testButton.disabled = false;
+        testButton.textContent = 'Test SMS';
+      }
+    });
+  }
+}
+
+async function loadTwilioSettings() {
+  const statusElement = document.getElementById('twilio-status');
+  const testButton = document.getElementById('test-twilio');
+
+  if (!statusElement) return;
+
+  try {
+    const response = await fetch('/api/user/twilio', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (response.ok) {
+      const settings = await response.json();
+
+      // Update status display
+      statusElement.textContent = settings.isConfigured
+        ? 'Status: Configured'
+        : 'Status: Not Configured';
+
+      // Show/hide test button
+      if (testButton) {
+        testButton.style.display = settings.isConfigured ? '' : 'none';
+      }
+
+      // Populate form fields (without auth token for security)
+      if (settings.accountSid) {
+        const accountSidField = document.getElementById('twilio-account-sid');
+        if (accountSidField) accountSidField.value = settings.accountSid;
+      }
+
+      if (settings.phoneNumber) {
+        const phoneField = document.getElementById('twilio-phone-number');
+        if (phoneField) phoneField.value = settings.phoneNumber;
+      }
+    } else {
+      statusElement.textContent = 'Status: Error loading settings';
+    }
+  } catch (error) {
+    console.error('Load Twilio settings error:', error);
+    statusElement.textContent = 'Status: Error loading settings';
+  }
+}
+
+  // Collapsible settings groups
+  const collapseToggle = document.getElementById('toggle-advanced-sections');
+  if (collapseToggle) {
+    collapseToggle.addEventListener('click', function() {
+      const content = document.getElementById('advanced-sections-content');
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      
+      this.setAttribute('aria-expanded', !isExpanded);
+      this.querySelector('.toggle-icon').textContent = isExpanded ? '▼' : '▲';
+      this.querySelector('.toggle-icon').nextSibling.textContent = isExpanded ? 'Show Advanced' : 'Hide Advanced';
+      
+      if (content) {
+        content.style.display = isExpanded ? 'none' : 'block';
+        content.classList.toggle('expanded', !isExpanded);
+        content.classList.toggle('collapsed', isExpanded);
+      }
+    });
+  }
+
+  // Settings group collapse toggles
+  const collapseToggles = document.querySelectorAll('.collapse-toggle');
+  collapseToggles.forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      const groupContent = document.getElementById(this.getAttribute('aria-controls'));
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', !isExpanded);
+      if (groupContent) {
+        groupContent.setAttribute('aria-expanded', !isExpanded);
+        groupContent.classList.toggle('collapsed', isExpanded);
+        groupContent.classList.toggle('expanded', !isExpanded);
+      }
+    });
+  });
+
+  // Initialize collapse toggles as collapsed by default
+  collapseToggles.forEach(toggle => {
+    const groupContent = document.getElementById(toggle.getAttribute('aria-controls'));
+    if (groupContent) {
+      groupContent.setAttribute('aria-expanded', 'false');
+      groupContent.classList.add('collapsed');
+    }
+  });
+
+  // Group enable/disable buttons (Enable All / Disable All)
+  const groupEnableBtns = document.querySelectorAll('.group-toggle[data-group]');
+  groupEnableBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      const groupEl = this.closest('.settings-group');
+      if (!groupEl) return;
+      const inputs = Array.from(groupEl.querySelectorAll('input[type="checkbox"], input[type="range"].slider-toggle'));
+      if (!inputs.length) return;
+      const anyOff = inputs.some(inp => inp.disabled ? false : (inp.type === 'range' ? inp.value !== '1' : !inp.checked));
+      const newVal = anyOff ? '1' : '0';
+      inputs.forEach(inp => {
+        if (inp.disabled) return;
+        if (inp.type === 'range') {
+          inp.value = newVal;
+        } else {
+          inp.checked = newVal === '1';
+        }
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        try { updateSliderVisual(inp); } catch (e) {}
+      });
+      this.textContent = anyOff ? 'Disable All' : 'Enable All';
+    });
+  });

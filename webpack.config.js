@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -20,7 +21,7 @@ module.exports = {
   devServer: {
     static: [
       {
-        directory: path.join(__dirname, 'src/public'),
+        directory: path.join(__dirname, 'dist'),
         publicPath: '/',
       },
     ],
@@ -75,6 +76,27 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
+      inject: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/settings.html',
+      filename: 'settings.html',
+      inject: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/privacy.html',
+      filename: 'privacy.html',
+      inject: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/terms.html',
+      filename: 'terms.html',
+      inject: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/contact.html',
+      filename: 'contact.html',
+      inject: true,
     }),
     new MiniCssExtractPlugin({
       filename: 'styles/[name].[contenthash].css',
@@ -90,23 +112,36 @@ module.exports = {
           from: 'src/public',
           to: '.',
         },
-        {
-          from: 'src/privacy.html',
-          to: 'privacy.html',
-        },
-        {
-          from: 'src/terms.html',
-          to: 'terms.html',
-        },
-        {
-          from: 'src/contact.html',
-          to: 'contact.html',
-        },
-        {
-          from: 'src/settings.html',
-          to: 'settings.html',
-        },
       ],
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        TWILIO_ACCOUNT_SID: JSON.stringify(process.env.TWILIO_ACCOUNT_SID || ''),
+        TWILIO_AUTH_TOKEN: JSON.stringify(process.env.TWILIO_AUTH_TOKEN || ''),
+        TWILIO_PHONE_NUMBER: JSON.stringify(process.env.TWILIO_PHONE_NUMBER || ''),
+        EMAIL_HOST: JSON.stringify(process.env.EMAIL_HOST || 'smtp.gmail.com'),
+        EMAIL_PORT: JSON.stringify(process.env.EMAIL_PORT || '587'),
+        EMAIL_USER: JSON.stringify(process.env.EMAIL_USER || ''),
+        EMAIL_PASS: JSON.stringify(process.env.EMAIL_PASS || ''),
+        TELEPHONY_PROVIDER: JSON.stringify(process.env.TELEPHONY_PROVIDER || 'twilio'),
+        ASTERISK_HOST: JSON.stringify(process.env.ASTERISK_HOST || ''),
+        ASTERISK_PORT: JSON.stringify(process.env.ASTERISK_PORT || '5038'),
+        ASTERISK_USER: JSON.stringify(process.env.ASTERISK_USER || ''),
+        ASTERISK_PASS: JSON.stringify(process.env.ASTERISK_PASS || ''),
+        FINESSE_HOST: JSON.stringify(process.env.FINESSE_HOST || ''),
+        FINESSE_PORT: JSON.stringify(process.env.FINESSE_PORT || '8443'),
+        FINESSE_AGENT_ID: JSON.stringify(process.env.FINESSE_AGENT_ID || ''),
+        FINESSE_AGENT_PASSWORD: JSON.stringify(process.env.FINESSE_AGENT_PASSWORD || ''),
+        FINESSE_AGENT_EXTENSION: JSON.stringify(process.env.FINESSE_AGENT_EXTENSION || ''),
+        FINESSE_SSL: JSON.stringify(process.env.FINESSE_SSL || 'true'),
+        SALESFORCE_CLIENT_ID: JSON.stringify(process.env.SALESFORCE_CLIENT_ID || ''),
+        SALESFORCE_CLIENT_SECRET: JSON.stringify(process.env.SALESFORCE_CLIENT_SECRET || ''),
+        HUBSPOT_API_KEY: JSON.stringify(process.env.HUBSPOT_API_KEY || ''),
+        ZENDESK_API_KEY: JSON.stringify(process.env.ZENDESK_API_KEY || ''),
+        FRESHDESK_API_KEY: JSON.stringify(process.env.FRESHDESK_API_KEY || ''),
+        VAPID_PUBLIC_KEY: JSON.stringify(process.env.VAPID_PUBLIC_KEY || ''),
+        VAPID_PRIVATE_KEY: JSON.stringify(process.env.VAPID_PRIVATE_KEY || ''),
+      },
     }),
   ],
   module: {

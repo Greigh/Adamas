@@ -6,15 +6,15 @@
 #analytics-dashboard {
   .analytics-tabs {
     display: flex;
-    gap: map.get($spacing, 2);
-    margin-bottom: map.get($spacing, 6);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
 
     .analytics-tab {
       background: transparent;
       border: none;
-      padding: map.get($spacing, 3) map.get($spacing, 4);
-      border-radius: map.get($radius, base) map.get($radius, base) 0 0;
+      padding: 0.75rem 1rem;
+      border-radius: 0.25rem 0.25rem 0 0;
       cursor: pointer;
       font-weight: 500;
       color: var(--text-muted);
@@ -44,13 +44,13 @@
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: map.get($spacing, 4);
-    margin-bottom: map.get($spacing, 6);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 
     .metric-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, lg);
+      border-radius: 0.5rem;
       padding: map.get($spacing, 5);
       text-align: center;
       transition: map.get($transitions, base);
@@ -61,17 +61,17 @@
       }
 
       h3 {
-        margin: 0 0 map.get($spacing, 3) 0;
-        font-size: map.get($font-sizes, base);
+        margin: 0 0 0.75rem 0;
+        font-size: 1rem;
         color: var(--text-color);
         font-weight: 600;
       }
 
       .metric-value {
-        font-size: map.get($font-sizes, '3xl');
+        font-size: 1.875rem;
         font-weight: 700;
         color: var(--primary-blue);
-        margin-bottom: map.get($spacing, 2);
+        margin-bottom: 0.5rem;
         display: block;
       }
     }
@@ -79,16 +79,16 @@
 
   .performance-metrics {
     display: grid;
-    gap: map.get($spacing, 4);
+    gap: 1rem;
 
     .metric {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: map.get($spacing, 4);
+      padding: 1rem;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: map.get($radius, base);
+      border-radius: 0.25rem;
 
       span:last-child {
         font-weight: 600;
@@ -102,7 +102,7 @@
     height: 300px;
     background: var(--bg-color);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, base);
+    border-radius: 0.25rem;
   }
 }
 
@@ -131,8 +131,8 @@
 
     .performance-metrics {
       background: var(--dark-bg);
-      padding: map.get($spacing, 4);
-      border-radius: map.get($radius, base);
+      padding: 1rem;
+      border-radius: 0.25rem;
 
       .metric {
         background: var(--dark-surface);
@@ -157,45 +157,45 @@
 
 // Advanced Analytics Dashboard
 .analytics-section {
-  padding: map.get($spacing, 6);
+  padding: 1.5rem;
   background: var(--card-bg);
-  border-radius: map.get($radius, lg);
+  border-radius: 0.5rem;
   border: 1px solid var(--border-color);
 
   .analytics-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: map.get($spacing, 6);
-    padding-bottom: map.get($spacing, 4);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 
     .dashboard-selector {
       h3 {
-        margin: 0 0 map.get($spacing, 2) 0;
-        font-size: map.get($font-sizes, xl);
-        font-weight: map.get($font-weights, semibold);
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
         color: var(--text-color);
       }
 
       select {
-        padding: map.get($spacing, 2) map.get($spacing, 3);
+        padding: 0.5rem 0.75rem;
         border: 1px solid var(--border-color);
-        border-radius: map.get($radius, base);
+        border-radius: 0.25rem;
         background: var(--bg-color);
         color: var(--text-color);
-        font-size: map.get($font-sizes, sm);
+        font-size: 0.875rem;
       }
     }
 
     .dashboard-actions {
       display: flex;
-      gap: map.get($spacing, 2);
+      gap: 0.5rem;
 
       .btn-sm {
-        padding: map.get($spacing, 2) map.get($spacing, 4);
-        font-size: map.get($font-sizes, sm);
-        border-radius: map.get($radius, base);
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 0.25rem;
         border: 1px solid var(--border-color);
         background: var(--bg-color);
         color: var(--text-color);
@@ -227,14 +227,14 @@
 
   .dashboard-grid {
     display: grid;
-    gap: map.get($spacing, 4);
-    margin-bottom: map.get($spacing, 6);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .dashboard-widget {
     background: var(--bg-color);
     border: 1px solid var(--border-color);
-    border-radius: map.get($radius, lg);
+    border-radius: 0.5rem;
     overflow: hidden;
     transition: map.get($transitions, base);
 
@@ -246,28 +246,28 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: map.get($spacing, 4);
+      padding: 1rem;
       background: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
 
       h4 {
         margin: 0;
-        font-size: map.get($font-sizes, lg);
-        font-weight: map.get($font-weights, medium);
+        font-size: 1.125rem;
+        font-weight: 500;
         color: var(--text-color);
       }
 
       .widget-controls {
         display: flex;
-        gap: map.get($spacing, 1);
+        gap: 0.25rem;
 
         .btn-icon {
           background: none;
           border: none;
-          font-size: map.get($font-sizes, lg);
+          font-size: 1.125rem;
           cursor: pointer;
-          padding: map.get($spacing, 1);
-          border-radius: map.get($radius, base);
+          padding: 0.25rem;
+          border-radius: 0.25rem;
           color: var(--text-muted);
           transition: map.get($transitions, base);
 
@@ -280,7 +280,7 @@
     }
 
     .widget-content {
-      padding: map.get($spacing, 4);
+      padding: 1rem;
       height: 200px;
       display: flex;
       align-items: center;
@@ -344,24 +344,24 @@
 
         .gauge-value {
           text-align: center;
-          margin-top: map.get($spacing, 2);
+          margin-top: 0.5rem;
 
           .value {
-            font-size: map.get($font-sizes, '2xl');
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary);
           }
 
           .unit {
-            font-size: map.get($font-sizes, sm);
+            font-size: 0.875rem;
             color: var(--text-muted);
           }
         }
 
         .gauge-target {
-          font-size: map.get($font-sizes, xs);
+          font-size: 0.75rem;
           color: var(--text-muted);
-          margin-top: map.get($spacing, 1);
+          margin-top: 0.25rem;
         }
       }
 
@@ -390,34 +390,34 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: map.get($spacing, 4);
+    padding-top: 1rem;
     border-top: 1px solid var(--border-color);
 
     .data-sources {
       h4 {
-        margin: 0 0 map.get($spacing, 2) 0;
-        font-size: map.get($font-sizes, sm);
-        font-weight: map.get($font-weights, medium);
+        margin: 0 0 0.5rem 0;
+        font-size: 0.875rem;
+        font-weight: 500;
         color: var(--text-color);
       }
 
       .source-list {
         display: flex;
-        gap: map.get($spacing, 2);
+        gap: 0.5rem;
         flex-wrap: wrap;
 
         .source-tag {
-          padding: map.get($spacing, 1) map.get($spacing, 2);
+          padding: 0.25rem 0.5rem;
           background: var(--bg-hover);
-          border-radius: map.get($radius, sm);
-          font-size: map.get($font-sizes, xs);
+          border-radius: 0.125rem;
+          font-size: 0.75rem;
           color: var(--text-muted);
         }
       }
     }
 
     .last-updated {
-      font-size: map.get($font-sizes, xs);
+      font-size: 0.75rem;
       color: var(--text-muted);
     }
   }

@@ -22,32 +22,32 @@
 .justify-end { justify-content: flex-end; }
 
 // Spacing utilities
-.gap-1 { gap: map.get($spacing, 1); }
-.gap-2 { gap: map.get($spacing, 2); }
-.gap-3 { gap: map.get($spacing, 3); }
-.gap-4 { gap: map.get($spacing, 4); }
-.gap-6 { gap: map.get($spacing, 6); }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
 
 // Margin utilities
 .m-0 { margin: 0 !important; }
-.mt-4 { margin-top: map.get($spacing, 4); }
-.mb-4 { margin-bottom: map.get($spacing, 4); }
-.ml-4 { margin-left: map.get($spacing, 4); }
-.mr-4 { margin-right: map.get($spacing, 4); }
+.mt-4 { margin-top: 1rem; }
+.mb-4 { margin-bottom: 1rem; }
+.ml-4 { margin-left: 1rem; }
+.mr-4 { margin-right: 1rem; }
 
 // Padding utilities
 .p-0 { padding: 0 !important; }
-.p-4 { padding: map.get($spacing, 4); }
-.pt-4 { padding-top: map.get($spacing, 4); }
-.pb-4 { padding-bottom: map.get($spacing, 4); }
-.pl-4 { padding-left: map.get($spacing, 4); }
-.pr-4 { padding-right: map.get($spacing, 4); }
+.p-4 { padding: 1rem; }
+.pt-4 { padding-top: 1rem; }
+.pb-4 { padding-bottom: 1rem; }
+.pl-4 { padding-left: 1rem; }
+.pr-4 { padding-right: 1rem; }
 
 // Border radius utilities
-.rounded { border-radius: map.get($radius, base); }
-.rounded-lg { border-radius: map.get($radius, lg); }
-.rounded-xl { border-radius: map.get($radius, xl); }
-.rounded-full { border-radius: map.get($radius, full); }
+.rounded { border-radius: 0.25rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-full { border-radius: 9999px; }
 
 // Width utilities
 .w-full { width: 100%; }
@@ -89,8 +89,8 @@
 }
 
 // Margin utilities extended
-.mb-2 { margin-bottom: map.get($spacing, 2); }
-.mb-1 { margin-bottom: map.get($spacing, 1); }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-1 { margin-bottom: 0.25rem; }
 .mb-10 { margin-bottom: 10px; }
 .mb-8 { margin-bottom: 8px; }
 .mb-4px { margin-bottom: 4px; }

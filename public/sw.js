@@ -270,6 +270,38 @@ async function syncSettingsWithServer(settings) {
   return Promise.resolve();
 }
 
+// Push notifications
+self.addEventListener('push', (event) => {
+  console.log('[Service Worker] Push received:', event);
+
+  let data = { title: 'Call Center Helper', body: 'New notification' };
+  if (event.data) {
+    data = event.data.json();
+  }
+
+  const options = {
+    body: data.body,
+    icon: '/src/public/icons/icon-192.png',
+    badge: '/src/public/icons/icon-192.png',
+    vibrate: [200, 100, 200],
+    data: data.data || {}
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification click
+self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Notification click:', event);
+  event.notification.close();
+
+  event.waitUntil(
+    clients.openWindow('/callcenterhelper/')
+  );
+});
+
 // Message handler for communication with main thread
 self.addEventListener('message', (event) => {
   console.log('[Service Worker] Message received:', event.data);

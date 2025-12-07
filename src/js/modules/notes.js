@@ -186,18 +186,27 @@ export function setupNotesEventListeners() {
     clearNotesBtn.parentNode.replaceChild(newClearNotesBtn, clearNotesBtn);
 
     newClearNotesBtn.addEventListener('click', async () => {
-      const { showConfirmModal } = await import('../utils/modal.js');
-      const confirmed = await showConfirmModal({
-        title: 'Clear All Notes',
-        message: 'Are you sure you want to clear all notes? This action cannot be undone.',
-        confirmLabel: 'Clear All Notes',
-        cancelLabel: 'Cancel',
-        danger: true,
-      });
-      if (confirmed) {
-        // Clear main notes
-        saveNotes([]);
-        renderNotes();
+      try {
+        const modalModule = await import('../utils/modal.js');
+        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmed = await confirmFn({
+          title: 'Clear All Notes',
+          message: 'Are you sure you want to clear all notes? This action cannot be undone.',
+          confirmLabel: 'Clear All Notes',
+          cancelLabel: 'Cancel',
+          danger: true,
+        });
+        if (confirmed) {
+          // Clear main notes
+          saveNotes([]);
+          renderNotes();
+        }
+      } catch (err) {
+        console.warn('Clear All Notes: confirm fallback triggered', err);
+        if (window.confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
+          saveNotes([]);
+          renderNotes();
+        }
       }
     });
   }
@@ -336,21 +345,34 @@ function setupNotesInstanceListeners(notesId) {
     clearNotesBtn.parentNode.replaceChild(newClearNotesBtn, clearNotesBtn);
 
     newClearNotesBtn.addEventListener('click', async () => {
-      const { showConfirmModal } = await import('../utils/modal.js');
-      const confirmed = await showConfirmModal({
-        title: 'Clear All Notes',
-        message: 'Are you sure you want to clear all notes? This action cannot be undone.',
-        confirmLabel: 'Clear All Notes',
-        cancelLabel: 'Cancel',
-        danger: true,
-      });
-      if (confirmed) {
-        const notes = notesInstances.get(notesId);
-        if (notes) {
-          notes.notes = [];
-          // Save the empty notes array
-          saveNotesData(notesId, notes.notes);
-          renderNotesInstance(notesId);
+      try {
+        const modalModule = await import('../utils/modal.js');
+        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmed = await confirmFn({
+          title: 'Clear All Notes',
+          message: 'Are you sure you want to clear all notes? This action cannot be undone.',
+          confirmLabel: 'Clear All Notes',
+          cancelLabel: 'Cancel',
+          danger: true,
+        });
+        if (confirmed) {
+          const notes = notesInstances.get(notesId);
+          if (notes) {
+            notes.notes = [];
+            // Save the empty notes array
+            saveNotesData(notesId, notes.notes);
+            renderNotesInstance(notesId);
+          }
+        }
+      } catch (err) {
+        console.warn('Clear All Notes (instance): confirm fallback triggered', err);
+        if (window.confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
+          const notes = notesInstances.get(notesId);
+          if (notes) {
+            notes.notes = [];
+            saveNotesData(notesId, notes.notes);
+            renderNotesInstance(notesId);
+          }
         }
       }
     });
