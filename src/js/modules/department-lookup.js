@@ -176,9 +176,9 @@ function initializeDefaultData() {
 let departmentData = [];
 
 // Filter configuration
-let filterConfig = [];
+export let filterConfig = [];
 
-function loadFilterConfig() {
+export function loadFilterConfig() {
   // Load filter configuration from localStorage or use defaults
   const stored = localStorage.getItem('departmentFilterConfig');
   if (stored) {
@@ -193,7 +193,7 @@ function loadFilterConfig() {
   }
 }
 
-function initializeDefaultFilters() {
+export function initializeDefaultFilters() {
   filterConfig = [
     { id: 'departments', label: 'Departments', type: 'department', checked: true },
     { id: 'locations', label: 'Locations', type: 'location', checked: true },
@@ -204,7 +204,7 @@ function initializeDefaultFilters() {
   localStorage.setItem('departmentFilterConfig', JSON.stringify(filterConfig));
 }
 
-function saveFilterConfig() {
+export function saveFilterConfig() {
   localStorage.setItem('departmentFilterConfig', JSON.stringify(filterConfig));
 }
 
