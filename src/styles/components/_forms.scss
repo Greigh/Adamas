@@ -83,47 +83,50 @@ input[type="radio"] {
 /* Switch styling */
 .switch {
     position: relative;
-    display: inline-block;
-    width: 46px;
+    display: inline-flex;
+    align-items: center;
+    min-width: 46px;
     height: 24px;
     margin: 2px 0;
+    cursor: pointer;
 
-    input {
+    .hidden-toggle,
+    input[type="checkbox"] {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0 0 0 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
         opacity: 0;
-        width: 0;
-        height: 0;
-        margin: 0;
-        
-        &:checked + .slider {
-            background-color: var(--primary-blue);
-            
-            &:before {
-                transform: translateX(22px);
-            }
-        }
-        
-        &:focus + .slider {
-            box-shadow: 0 0 1px var(--primary-blue);
-        }
     }
 
-    .slider {
+    /* Support both class naming conventions */
+    .slider,
+    .toggle-slider {
         position: absolute;
         cursor: pointer;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
+        width: 48px;
+        height: 24px;
         background-color: var(--gray-300);
         transition: .2s ease;
         border-radius: 24px;
         
-        &:before {
+        &:before,
+        &:after {
             position: absolute;
             content: "";
             height: 18px;
             width: 18px;
             left: 3px;
+            top: 3px; /* Explicit top alignment */
             bottom: 3px;
             background-color: white;
             transition: .2s ease;
@@ -131,9 +134,25 @@ input[type="radio"] {
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        &:hover:before {
+        &:hover:before,
+        &:hover:after {
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
+    }
+
+    input:checked + .slider,
+    input:checked + .toggle-slider {
+        background: linear-gradient(90deg, var(--success-color), var(--primary-blue));
+        
+        &:before,
+        &:after {
+            transform: translateX(24px);
+        }
+    }
+    
+    input:focus + .slider,
+    input:focus + .toggle-slider {
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
     }
 }
 

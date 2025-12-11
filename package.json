@@ -44,7 +44,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.0",
     "@types/nodemailer": "^7.0.4",
     "assert": "^2.1.0",
     "babel-jest": "^30.2.0",
@@ -68,7 +68,7 @@
     "prettier": "^3.7.4",
     "process": "^0.11.10",
     "querystring-es3": "^0.2.1",
-    "sass": "^1.94.2",
+    "sass": "^1.95.1",
     "sass-loader": "^16.0.6",
     "stream-browserify": "^3.0.0",
     "terser-webpack-plugin": "^5.3.15",
@@ -98,6 +98,6 @@
     "openai": "^6.10.0",
     "socket.io": "^4.8.1",
     "twilio": "^5.10.7",
-    "winston": "^3.18.3"
+    "winston": "^3.19.0"
   }
 }

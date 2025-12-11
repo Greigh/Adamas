@@ -11,15 +11,21 @@
   transition: all 0.3s ease;
 
   &.collapsed {
+    background: transparent;
+    border-bottom: none;
+    box-shadow: none;
+    min-height: 0;
+    pointer-events: none;
+
     .toolbar-content {
       display: none;
     }
 
     .toolbar-toggle-btn {
       transform: rotate(180deg);
+      pointer-events: auto;
+      top: 0.5rem;
     }
-
-    min-height: 3rem; // Ensure toggle button is visible when collapsed
   }
 
   .toolbar-content {
@@ -105,7 +111,7 @@
 }
 
 // Dark mode overrides
-[data-theme="dark"] {
+[data-theme='dark'] {
   .quick-actions-toolbar {
     background: var(--bg-primary);
     border-bottom-color: var(--border-color);
@@ -159,7 +165,8 @@
   overflow-y: auto;
 }
 
-.search-placeholder, .no-results {
+.search-placeholder,
+.no-results {
   text-align: center;
   color: var(--text-secondary);
   padding: 2rem;
@@ -310,7 +317,8 @@
   }
 }
 
-.checkbox-group, .format-options {
+.checkbox-group,
+.format-options {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -334,7 +342,7 @@
     gap: 0.25rem;
     font-weight: normal;
 
-    input[type="date"] {
+    input[type='date'] {
       padding: 0.4rem;
       border: 1px solid var(--border-color);
       border-radius: 4px;
@@ -376,7 +384,8 @@
       border-collapse: collapse;
       margin-bottom: 1rem;
 
-      th, td {
+      th,
+      td {
         padding: 0.4rem;
         border: 1px solid var(--border-color);
         text-align: left;
@@ -621,7 +630,7 @@
     gap: 0.5rem;
     padding: 0.4rem 0;
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
       margin: 0;
     }
 

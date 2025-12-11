@@ -35,7 +35,7 @@
       <header class="app-header">
         <div class="header-content">
           <div class="app-title">
-            <h1>📞 Call Center Helper</h1>
+            <h1>📞 Call Center Helper <span class="beta-badge">BETA</span></h1>
           </div>
           <nav class="main-nav">
             <button id="main-tab" class="nav-tab active">Main</button>
@@ -86,6 +86,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -133,6 +134,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -194,6 +196,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -241,6 +244,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -334,6 +338,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -409,33 +414,75 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
             <div class="section-content">
-              <div class="script-categories">
-                <button class="script-category active" data-category="all">
-                  All
-                </button>
-                <button class="script-category" data-category="sales">
-                  Sales
-                </button>
-                <button class="script-category" data-category="support">
-                  Support
-                </button>
-                <button class="script-category" data-category="complaints">
-                  Complaints
-                </button>
+              <div class="script-categories-container">
+                <div class="script-categories">
+                  <button class="script-category active" data-category="all">
+                    All
+                  </button>
+                  <button class="script-category" data-category="sales">
+                    Sales
+                  </button>
+                  <button class="script-category" data-category="support">
+                    Support
+                  </button>
+                  <button class="script-category" data-category="complaints">
+                    Complaints
+                  </button>
+                </div>
+                <button id="manage-categories-btn" class="button btn-sm btn-secondary" title="Manage Categories">⚙️</button>
               </div>
+              
+              <div class="script-controls-bar">
+                <input type="text" id="script-search" placeholder="Search scripts..." class="search-input" />
+                <button id="new-script-btn" class="button btn-primary">+ New Script</button>
+              </div>
+
               <div class="script-list" id="script-list">
                 <!-- Scripts will be loaded here -->
               </div>
-              <div class="script-editor">
-                <textarea
-                  id="script-content"
-                  placeholder="Script content..."
-                ></textarea>
-                <button id="save-script" class="button">Save Script</button>
+
+              <div class="script-editor" id="script-editor-container" style="display: none;">
+                <div class="editor-toolbar">
+                  <div class="format-group">
+                    <button class="editor-btn" data-action="bold" title="Bold"><strong>B</strong></button>
+                    <button class="editor-btn" data-action="italic" title="Italic"><em>I</em></button>
+                    <button class="editor-btn" data-action="underline" title="Underline"><u>U</u></button>
+                  </div>
+                  <div class="variable-group">
+                    <select id="variable-insert" class="variable-select" title="Insert Variable">
+                      <option value="">{ } Insert Variable</option>
+                      <option value="customer_name">Customer Name</option>
+                      <option value="agent_name">Agent Name</option>
+                      <option value="company_name">Company Name</option>
+                      <option value="account_id">Account ID</option>
+                      <option value="date">Current Date</option>
+                      <option value="time">Current Time</option>
+                    </select>
+                  </div>
+                  <div class="view-group">
+                    <button id="toggle-preview-btn" class="editor-btn" title="Toggle Preview">👁️ Preview</button>
+                  </div>
+                </div>
+
+                <div class="editor-workspace">
+                  <textarea
+                    id="script-content"
+                    placeholder="Write your script here... Use {{variable}} for dynamic content."
+                    class="script-textarea"
+                  ></textarea>
+                  <div id="script-preview-pane" class="script-preview-pane" style="display: none;"></div>
+                </div>
+
+                <div class="editor-actions">
+                  <button id="cancel-script" class="button btn-secondary">Cancel</button>
+                  <button id="copy-script-btn" class="button btn-secondary" style="display: none;">📋 Copy</button>
+                  <button id="save-script" class="button btn-primary">Save Script</button>
+                </div>
               </div>
             </div>
           </section>
@@ -455,6 +502,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -507,6 +555,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -545,6 +594,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -583,6 +633,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -700,6 +751,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -745,7 +797,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -843,7 +896,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -1038,7 +1092,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -1049,314 +1104,399 @@
                   <div class="section-group">
                     <h4>Core Features</h4>
                     <div class="toggle-grid">
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-formatter">
-                      <input
-                        type="checkbox"
-                        id="toggle-formatter"
-                        name="toggle-formatter"
-                        checked
-                        aria-label="Show Number Formatter"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Format phone numbers using custom patterns and automatically copy results"
-                        >Number Formatter</span
-                      >
-                    </label>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Format phone numbers using custom patterns and automatically copy results"
+                            >Number Formatter</span
+                          >
+                          <label class="switch" for="toggle-formatter">
+                            <input
+                              type="checkbox"
+                              id="toggle-formatter"
+                              name="toggle-formatter"
+                              class="section-toggle"
+                              data-section="formatter"
+                              checked
+                              aria-label="Show Number Formatter"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Create and manage step-by-step call handling procedures"
+                            >Call Flow Builder</span
+                          >
+                          <label class="switch" for="toggle-callflow">
+                            <input
+                              type="checkbox"
+                              id="toggle-callflow"
+                              name="toggle-callflow"
+                              class="section-toggle"
+                              data-section="callflow"
+                              checked
+                              aria-label="Show Call Flow Builder"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Take quick notes during calls with timestamp tracking"
+                            >Notes</span
+                          >
+                          <label class="switch" for="toggle-notes">
+                            <input
+                              type="checkbox"
+                              id="toggle-notes"
+                              name="toggle-notes"
+                              class="section-toggle"
+                              data-section="notes"
+                              checked
+                              aria-label="Show Notes"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Track hold times with statistics, history, and multiple timer support"
+                            >Hold Timer</span
+                          >
+                          <label class="switch" for="toggle-holdtimer">
+                            <input
+                              type="checkbox"
+                              id="toggle-holdtimer"
+                              name="toggle-holdtimer"
+                              class="section-toggle"
+                              data-section="holdtimer"
+                              checked
+                              aria-label="Show Hold Timer"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-callflow">
-                      <input
-                        type="checkbox"
-                        id="toggle-callflow"
-                        name="toggle-callflow"
-                        checked
-                        aria-label="Show Call Flow Builder"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Create and manage step-by-step call handling procedures"
-                        >Call Flow Builder</span
-                      >
-                    </label>
+                  <!-- Advanced Features -->
+                  <div class="section-group">
+                    <h4>Advanced Features</h4>
+                    <div class="toggle-grid">
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Log call details, track call history, and manage customer interactions"
+                            >Call Logging</span
+                          >
+                          <label class="switch" for="toggle-calllogging">
+                            <input
+                              type="checkbox"
+                              id="toggle-calllogging"
+                              name="toggle-calllogging"
+                              class="section-toggle"
+                              data-section="calllogging"
+                              aria-label="Show Call Logging"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Create and track tasks with priority levels and completion status"
+                            >Task Management</span
+                          >
+                          <label class="switch" for="toggle-tasks">
+                            <input
+                              type="checkbox"
+                              id="toggle-tasks"
+                              name="toggle-tasks"
+                              class="section-toggle"
+                              data-section="tasks"
+                              aria-label="Show Task Management"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Generate detailed reports on calls, performance, and quality metrics"
+                            >Advanced Reporting</span
+                          >
+                          <label class="switch" for="toggle-reporting">
+                            <input
+                              type="checkbox"
+                              id="toggle-reporting"
+                              name="toggle-reporting"
+                              class="section-toggle"
+                              data-section="reporting"
+                              aria-label="Show Advanced Reporting"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-notes">
-                      <input
-                        type="checkbox"
-                        id="toggle-notes"
-                        name="toggle-notes"
-                        checked
-                        aria-label="Show Notes"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Take quick notes during calls with timestamp tracking"
-                        >Notes</span
-                      >
-                    </label>
+                  <!-- Integrations & Tools -->
+                  <div class="section-group">
+                    <h4>Integrations & Tools</h4>
+                    <div class="toggle-grid">
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Access pre-written call scripts organized by category"
+                            >Script Library</span
+                          >
+                          <label class="switch" for="toggle-scripts">
+                            <input
+                              type="checkbox"
+                              id="toggle-scripts"
+                              name="toggle-scripts"
+                              class="section-toggle"
+                              data-section="scripts"
+                              aria-label="Show Script Library"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Record and manage call audio with CUCM integration"
+                            >Voice Recording</span
+                          >
+                          <label class="switch" for="toggle-voicerecording">
+                            <input
+                              type="checkbox"
+                              id="toggle-voicerecording"
+                              name="toggle-voicerecording"
+                              class="section-toggle"
+                              data-section="voicerecording"
+                              aria-label="Show Voice Recording"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Real-time messaging and collaboration tools for team members"
+                            >Team Collaboration</span
+                          >
+                          <label class="switch" for="toggle-collaboration">
+                            <input
+                              type="checkbox"
+                              id="toggle-collaboration"
+                              name="toggle-collaboration"
+                              class="section-toggle"
+                              data-section="collaboration"
+                              checked
+                              aria-label="Show Team Collaboration"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-holdtimer">
-                      <input
-                        type="checkbox"
-                        id="toggle-holdtimer"
-                        name="toggle-holdtimer"
-                        checked
-                        aria-label="Show Hold Timer"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Track hold times with statistics, history, and multiple timer support"
-                        >Hold Timer</span
-                      >
-                    </label>
-                  </div>
-                </div>
-              </div>
+                  <!-- AI & Automation -->
+                  <div class="section-group">
+                    <h4>AI & Automation</h4>
+                    <div class="toggle-grid">
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Set up automated processes and triggers for common tasks"
+                            >Automated Workflows</span
+                          >
+                          <label class="switch" for="toggle-workflows">
+                            <input
+                              type="checkbox"
+                              id="toggle-workflows"
+                              name="toggle-workflows"
+                              class="section-toggle"
+                              data-section="workflows"
+                              checked
+                              aria-label="Show Automated Workflows"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
 
-              <!-- Advanced Features -->
-              <div class="section-group">
-                <h4>Advanced Features</h4>
-                <div class="toggle-grid">
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-calllogging">
-                      <input
-                        type="checkbox"
-                        id="toggle-calllogging"
-                        name="toggle-calllogging"
-                        aria-label="Show Call Logging"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Log call details, track call history, and manage customer interactions"
-                        >Call Logging <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-tasks">
-                      <input
-                        type="checkbox"
-                        id="toggle-tasks"
-                        name="toggle-tasks"
-                        aria-label="Show Task Management"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Create and track tasks with priority levels and completion status"
-                        >Task Management <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Handle calls across phone, chat, email, and social media channels"
+                            >Multi-Channel</span
+                          >
+                          <label class="switch" for="toggle-multichannel">
+                            <input
+                              type="checkbox"
+                              id="toggle-multichannel"
+                              name="toggle-multichannel"
+                              class="section-toggle"
+                              data-section="multichannel"
+                              checked
+                              aria-label="Show Multi-Channel Support"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-reporting">
-                      <input
-                        type="checkbox"
-                        id="toggle-reporting"
-                        name="toggle-reporting"
-                        aria-label="Show Advanced Reporting"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Generate detailed reports on calls, performance, and quality metrics"
-                        >Advanced Reporting <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-                </div>
-              </div>
+                  <!-- Enterprise Features -->
+                  <div class="section-group">
+                    <h4>Enterprise Features</h4>
+                    <div class="toggle-grid">
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Collect and analyze customer feedback with customizable surveys"
+                            >Customer Feedback</span
+                          >
+                          <label class="switch" for="toggle-feedback">
+                            <input
+                              type="checkbox"
+                              id="toggle-feedback"
+                              name="toggle-feedback"
+                              class="section-toggle"
+                              data-section="feedback"
+                              checked
+                              aria-label="Show Customer Feedback"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
 
-              <!-- Integrations & Tools -->
-              <div class="section-group">
-                <h4>Integrations & Tools</h4>
-                <div class="toggle-grid">
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-scripts">
-                      <input
-                        type="checkbox"
-                        id="toggle-scripts"
-                        name="toggle-scripts"
-                        aria-label="Show Script Library"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Access pre-written call scripts organized by category"
-                        >Script Library <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Access knowledge base articles, procedures, and FAQs"
+                            >Knowledge Base</span
+                          >
+                          <label class="switch" for="toggle-knowledge-base">
+                            <input
+                              type="checkbox"
+                              id="toggle-knowledge-base"
+                              name="toggle-knowledge-base"
+                              class="section-toggle"
+                              data-section="knowledgeBase"
+                              aria-label="Show Knowledge Base"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
 
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-voicerecording">
-                      <input
-                        type="checkbox"
-                        id="toggle-voicerecording"
-                        name="toggle-voicerecording"
-                        aria-label="Show Voice Recording"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Record and manage call audio with CUCM integration"
-                        >Voice Recording <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Track billable time, projects, and generate billing reports"
+                            >Time Tracking & Billing</span
+                          >
+                          <label class="switch" for="toggle-time-tracking">
+                            <input
+                              type="checkbox"
+                              id="toggle-time-tracking"
+                              name="toggle-time-tracking"
+                              class="section-toggle"
+                              data-section="timeTracking"
+                              checked
+                              aria-label="Show Time Tracking"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
 
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-collaboration">
-                      <input
-                        type="checkbox"
-                        id="toggle-collaboration"
-                        name="toggle-collaboration"
-                        checked
-                        aria-label="Show Team Collaboration"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Real-time messaging and collaboration tools for team members"
-                        >Team Collaboration <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-                </div>
-              </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Custom dashboards with real-time metrics and advanced reporting"
+                            >Advanced Analytics</span
+                          >
+                          <label class="switch" for="toggle-advanced-analytics">
+                            <input
+                              type="checkbox"
+                              id="toggle-advanced-analytics"
+                              name="toggle-advanced-analytics"
+                              class="section-toggle"
+                              data-section="advancedAnalytics"
+                              checked
+                              aria-label="Show Advanced Analytics"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
 
-              <!-- AI & Automation -->
-              <div class="section-group">
-                <h4>AI & Automation</h4>
-                <div class="toggle-grid">
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-workflows">
-                      <input
-                        type="checkbox"
-                        id="toggle-workflows"
-                        name="toggle-workflows"
-                        checked
-                        aria-label="Show Automated Workflows"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Set up automated processes and triggers for common tasks"
-                        >Automated Workflows <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span
+                            class="toggle-text"
+                            title="Connect with external APIs, webhooks, and third-party services"
+                            >API Integration</span
+                          >
+                          <label class="switch" for="toggle-api-integration">
+                            <input
+                              type="checkbox"
+                              id="toggle-api-integration"
+                              name="toggle-api-integration"
+                              class="section-toggle"
+                              data-section="apiIntegration"
+                              checked
+                              aria-label="Show API Integration"
+                            />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-multichannel">
-                      <input
-                        type="checkbox"
-                        id="toggle-multichannel"
-                        name="toggle-multichannel"
-                        checked
-                        aria-label="Show Multi-Channel Support"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Handle calls across phone, chat, email, and social media channels"
-                        >Multi-Channel <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Enterprise Features -->
-              <div class="section-group">
-                <h4>Enterprise Features</h4>
-                <div class="toggle-grid">
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-feedback">
-                      <input
-                        type="checkbox"
-                        id="toggle-feedback"
-                        name="toggle-feedback"
-                        checked
-                        aria-label="Show Customer Feedback"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Collect and analyze customer feedback with customizable surveys"
-                        >Customer Feedback <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-knowledge-base">
-                      <input
-                        type="checkbox"
-                        id="toggle-knowledge-base"
-                        name="toggle-knowledge-base"
-                        aria-label="Show Knowledge Base"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Access knowledge base articles, procedures, and FAQs"
-                        >Knowledge Base <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-time-tracking">
-                      <input
-                        type="checkbox"
-                        id="toggle-time-tracking"
-                        name="toggle-time-tracking"
-                        checked
-                        aria-label="Show Time Tracking"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Track billable time, projects, and generate billing reports"
-                        >Time Tracking & Billing <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-advanced-analytics">
-                      <input
-                        type="checkbox"
-                        id="toggle-advanced-analytics"
-                        name="toggle-advanced-analytics"
-                        checked
-                        aria-label="Show Advanced Analytics"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Custom dashboards with real-time metrics and advanced reporting"
-                        >Advanced Analytics <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label" for="toggle-api-integration">
-                      <input
-                        type="checkbox"
-                        id="toggle-api-integration"
-                        name="toggle-api-integration"
-                        checked
-                        aria-label="Show API Integration"
-                      />
-                      <span
-                        class="toggle-text"
-                        title="Connect with external APIs, webhooks, and third-party services"
-                        >API Integration <span class="beta-tag">BETA</span></span
-                      >
-                    </label>
-                  </div>
-                </div>
-              </div>
 
                 </div>
               </div>
@@ -1374,7 +1514,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -1552,7 +1693,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -1564,44 +1706,78 @@
                     <div class="setting-description">
                       Choose which data to include when exporting:
                     </div>
-                    <div class="export-options">
-                      <div class="export-option">
-                        <input
-                          type="checkbox"
-                          id="export-patterns"
-                          name="export-patterns"
-                          checked
-                        />
-                        <label for="export-patterns">Patterns</label>
-                      </div>
-                      <div class="export-option">
-                        <input
-                          type="checkbox"
-                          id="export-steps"
-                          name="export-steps"
-                          checked
-                        />
-                        <label for="export-steps">Call Flow</label>
-                      </div>
-                      <div class="export-option">
-                        <input
-                          type="checkbox"
-                          id="export-notes"
-                          name="export-notes"
-                          checked
-                        />
-                        <label for="export-notes">Notes</label>
-                      </div>
-                      <div class="export-option">
-                        <input
-                          type="checkbox"
-                          id="export-settings"
-                          name="export-settings"
-                          checked
-                        />
-                        <label for="export-settings">Settings</label>
-                      </div>
-                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Include Patterns</div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="export-patterns">
+                      <input
+                        type="checkbox"
+                        id="export-patterns"
+                        name="export-patterns"
+                        checked
+                        aria-label="Include Patterns"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Include Call Flow</div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="export-steps">
+                      <input
+                        type="checkbox"
+                        id="export-steps"
+                        name="export-steps"
+                        checked
+                        aria-label="Include Call Flow"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Include Notes</div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="export-notes">
+                      <input
+                        type="checkbox"
+                        id="export-notes"
+                        name="export-notes"
+                        checked
+                        aria-label="Include Notes"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Include Settings</div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="export-settings">
+                      <input
+                        type="checkbox"
+                        id="export-settings"
+                        name="export-settings"
+                        checked
+                        aria-label="Include Settings"
+                      />
+                      <span class="slider"></span>
+                    </label>
                   </div>
                 </div>
 
@@ -1702,7 +1878,8 @@
                   </h2>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -1772,7 +1949,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content section-content--cols">
@@ -2227,7 +2405,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content">
@@ -2250,7 +2429,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content">
@@ -2273,7 +2453,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content">
@@ -2296,7 +2477,8 @@
                   <button class="edit-title-btn" title="Edit Title">✎</button>
                 </div>
                 <div class="section-controls">
-                  <button class="float-btn" title="Float">⧉</button>
+                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
               <div class="section-content">
@@ -2326,6 +2508,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2384,6 +2567,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2467,6 +2651,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2510,6 +2695,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2620,6 +2806,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2718,6 +2905,7 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">⚙️</button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>

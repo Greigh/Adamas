@@ -204,13 +204,71 @@ export function initializeCallLogging() {
   }
 
   function saveCall() {
-    if (currentCall) {
+    if (callNotesTextarea.value.trim() === '' && !currentCall) return;
+
+    if (currentCall && currentCall.id) {
+      // Update existing call/log
+      currentCall.callerName = callerNameInput.value;
+      currentCall.callerPhone = callerPhoneInput.value;
+      currentCall.callType = callTypeSelect.value;
       currentCall.notes = callNotesTextarea.value;
-      callHistory.unshift(currentCall);
+      
+      // Check if this is an active call or a historical one being edited
+      const existingIndex = callHistory.findIndex(c => c.id === currentCall.id);
+      
+      if (existingIndex !== -1) {
+        // Update history
+        callHistory[existingIndex] = currentCall;
+        localStorage.setItem('callHistory', JSON.stringify(callHistory));
+        updateCallHistory();
+        showToast('Call log updated successfully', 'success');
+        
+        // If we were editing a historical call, clear the form
+        if (currentCall.status !== 'active') {
+          clearForm();
+        }
+      } else {
+        // Should not happen for active calls usually unless history was cleared
+        callHistory.unshift(currentCall);
+        localStorage.setItem('callHistory', JSON.stringify(callHistory));
+        updateCallHistory();
+      }
+    } else {
+      // Creating a new log from scratch (manually) layout
+      const newCall = {
+        id: Date.now(),
+        callerName: callerNameInput.value,
+        callerPhone: callerPhoneInput.value,
+        callType: callTypeSelect.value,
+        startTime: new Date(),
+        duration: 0,
+        notes: callNotesTextarea.value,
+        status: 'completed' // Manual logs are completed
+      };
+      
+      callHistory.unshift(newCall);
       localStorage.setItem('callHistory', JSON.stringify(callHistory));
       updateCallHistory();
-      showToast('Call saved successfully', 'success');
+      showToast('Call logged manually', 'success');
+      clearForm();
     }
+  }
+
+  function clearForm() {
+    currentCall = null;
+    callerNameInput.value = '';
+    callerPhoneInput.value = '';
+    callTypeSelect.value = 'inbound';
+    callNotesTextarea.value = '';
+    callTimer.textContent = '00:00';
+    
+    startCallBtn.disabled = false;
+    endCallBtn.disabled = true;
+    saveCallBtn.textContent = 'Save Call Log';
+    
+    // Remove CRM info if present
+    const contactInfo = document.getElementById('contact-info-display');
+    if (contactInfo) contactInfo.remove();
   }
 
   function viewCallDetails(call) {
@@ -266,6 +324,8 @@ export function initializeCallLogging() {
   }
 
   function editCall(call) {
+    currentCall = { ...call }; // Clone to avoid direct mutation issues until save
+    
     callerNameInput.value = call.callerName;
     callerPhoneInput.value = call.callerPhone;
     callTypeSelect.value = call.callType;
@@ -273,6 +333,11 @@ export function initializeCallLogging() {
 
     // Scroll to form
     document.querySelector('.call-log-form').scrollIntoView({ behavior: 'smooth' });
+    
+    // Update UI state
+    saveCallBtn.textContent = 'Update Call Log';
+    startCallBtn.disabled = true; // Cannot start new call while editing
+    
     showToast('Call loaded for editing', 'info');
   }
 

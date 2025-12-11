@@ -624,9 +624,13 @@ function setupAllEventListeners() {
   setupSettingsEventListeners(); // This will handle settings page events
 }
 
+import { initializeSectionSettings } from './modules/section-settings.js';
+
 // Main initialization function
 document.addEventListener('DOMContentLoaded', function () {
   try {
+    // Core services
+    initializeSectionSettings();
     // Set up global error handling first
     setupGlobalErrorHandling();
 
