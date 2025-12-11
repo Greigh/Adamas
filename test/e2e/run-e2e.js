@@ -10,12 +10,18 @@ const path = require('path');
 
   const server = http.createServer((req, res) => {
     try {
-      const urlPath = decodeURIComponent(req.url.split('?')[0]);
+      let urlPath = decodeURIComponent(req.url.split('?')[0]);
+      // Handle the production publicPath '/callcenterhelper/' by stripping it
+      if (urlPath.startsWith('/callcenterhelper/')) {
+        urlPath = urlPath.replace('/callcenterhelper', '');
+      }
+      
       let filePath = path.join(distDir, urlPath === '/' ? '/index.html' : urlPath);
       // Prevent directory traversal
       if (!filePath.startsWith(distDir)) filePath = path.join(distDir, 'index.html');
 
       if (!fs.existsSync(filePath)) {
+        console.log(`❌ 404 Not Found: ${req.url} -> ${filePath}`);
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Not found');
         return;
