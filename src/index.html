@@ -3,12 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Call Center Helper</title>
+    <title>Adamas</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>"
     />
-    <link rel="manifest" href="/callcenterhelper/manifest.json" />
+    <link rel="manifest" href="<%= htmlWebpackPlugin.files.publicPath %>manifest.json" />
+    
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Adamas - The ultimate call center assistant. Enhance agent productivity with tools for notes, call summarization, CRM integration, and analytics." />
+    <meta name="keywords" content="call center, agent tools, crm, productivity, adamas, analytics, softphone" />
+    <meta name="author" content="Daniel Hipskind" />
+    
+    <!-- Open Graph (Facebook/LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://danielhipskind.com/adamas/" />
+    <meta property="og:title" content="Adamas | Intelligent Call Center Assistant" />
+    <meta property="og:description" content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics." />
+    <meta property="og:image" content="https://danielhipskind.com/adamas/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://danielhipskind.com/adamas/" />
+    <meta property="twitter:title" content="Adamas | Intelligent Call Center Assistant" />
+    <meta property="twitter:description" content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics." />
+    <meta property="twitter:title" content="Adamas | Intelligent Call Center Assistant" />
+    <meta property="twitter:description" content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics." />
+    <meta property="twitter:image" content="https://danielhipskind.com/adamas/og-image.png" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://danielhipskind.com/adamas/" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Adamas",
+        "url": "https://danielhipskind.com/adamas/",
+        "author": {
+          "@type": "Person",
+          "name": "Daniel Hipskind"
+        },
+        "description": "Adamas is an intelligent call center assistant that enhances agent productivity with real-time tools, call summarization, CRM integration, and analytics.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+
     <script>
       // Deferred-call stubs to tolerate script reordering (Rocket Loader / optimizers)
       window.__deferredCalls = window.__deferredCalls || [];
@@ -26,8 +73,7 @@
         };
       }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
   </head>
   <body>
     <div id="app">
@@ -35,14 +81,14 @@
       <header class="app-header">
         <div class="header-content">
           <div class="app-title">
-            <h1>📞 Call Center Helper <span class="beta-badge">BETA</span></h1>
+            <h1>💎 Adamas <span class="beta-badge">BETA</span></h1>
           </div>
           <nav class="main-nav">
             <button id="main-tab" class="nav-tab active">Main</button>
             <button id="stats-tab" class="nav-tab">Stats</button>
             <button id="knowledge-base-tab" class="nav-tab">Knowledge Base</button>
             <button id="settings-tab" class="nav-tab">Settings</button>
-            <button id="login-btn" class="nav-tab">Login</button>
+
           </nav>
         </div>
       </header>
@@ -786,104 +832,7 @@
       <!-- Settings View -->
       <div id="settings-view" class="app-view hidden">
         <div class="container sortable-container">
-            <!-- Pattern Formatter Settings -->
-            <section class="card settings-section toggleable-section draggable-section" data-section="settings-pattern-formatter">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Pattern Formatter">
-                    Pattern Formatter
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
-                <button class="float-btn" title="Float">⧉</button>
-                </div>
-              </div>
-              <div class="section-content section-content--cols">
-                <p>Configure number pattern formatting behavior:</p>
 
-              <div class="setting-item">
-                <div class="setting-header">
-                  <div class="setting-info">
-                    <div class="setting-label">Auto Copy Result</div>
-                  </div>
-                </div>
-                <div class="setting-content">
-                  <div class="setting-description">
-                    Automatically copy the formatted number to your clipboard
-                    when a valid pattern is matched.
-                  </div>
-                  <div class="setting-control">
-                    <label class="switch" for="auto-copy-toggle">
-                      <input
-                        type="checkbox"
-                        id="auto-copy-toggle"
-                        name="auto-copy-toggle"
-                        aria-label="Auto Copy Result"
-                      />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-            <!-- Pattern Management Section (subsection of Pattern Formatter) -->
-            <div class="settings-subsection pattern-management-subsection" id="pattern-management-subsection">
-              <h4 class="subsection-title">Pattern Management</h4>
-              <p class="subsection-description">Configure number formatting patterns:</p>
-
-              <div class="pattern-management card" id="pattern-management">
-                <div class="input-group">
-                  <label>
-                    <span>Starting Digits</span>
-                    <input
-                      type="text"
-                      id="startSequence"
-                      name="startSequence"
-                      placeholder="Optional starting digits..."
-                    />
-                  </label>
-                  <label>
-                    <span>Min Length</span>
-                    <input
-                      type="number"
-                      id="minLength"
-                      name="minLength"
-                      placeholder="Min digits..."
-                      min="1"
-                    />
-                  </label>
-                  <label>
-                    <span>Format (X = digit)</span>
-                    <input
-                      type="text"
-                      id="formatPattern"
-                      name="formatPattern"
-                      placeholder="Ex: @XXX-XXX-XXXX"
-                    />
-                  </label>
-                  <button id="addPatternBtn" class="button btn-sm">Add Pattern</button>
-                </div>
-
-                <table class="pattern-table" aria-live="polite">
-                  <thead>
-                    <tr>
-                      <th class="drag-col" aria-hidden="true"></th>
-                      <th>Start</th>
-                      <th>Min Length</th>
-                      <th>Pattern</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="patternList">
-                    <!-- Patterns will be populated here -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-              </section>
 
             <!-- Appearance Section -->
             <section class="card settings-section toggleable-section draggable-section" data-section="settings-appearance">
@@ -1077,6 +1026,29 @@
                     </p>
                   </div>
                 </div>
+
+                <!-- Quick Actions Bar Toggle -->
+                <div class="appearance-item">
+                  <div class="appearance-header">
+                    <h4>Quick Actions Bar</h4>
+                    <label class="switch" for="toggle-quick-actions">
+                      <input
+                        type="checkbox"
+                        id="toggle-quick-actions"
+                        name="toggle-quick-actions"
+                        checked
+                        aria-label="Show Quick Actions Bar"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="appearance-content">
+                    <p class="appearance-description">
+                      Show or hide the sticky toolbar at the top of the screen for
+                      fast access to common actions.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
             </section>
@@ -1100,232 +1072,51 @@
                 <p>Choose which sections to display on the main page:</p>
 
                 <div class="section-groups-grid">
-                  <!-- Core Features -->
+                  <!-- Group 1: Call Handling Tools -->
                   <div class="section-group">
-                    <h4>Core Features</h4>
+                    <h4>Call Handling Tools</h4>
                     <div class="toggle-grid">
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Format phone numbers using custom patterns and automatically copy results"
-                            >Number Formatter</span
-                          >
+                          <span class="toggle-text" title="Format phone numbers">Number Formatter</span>
                           <label class="switch" for="toggle-formatter">
-                            <input
-                              type="checkbox"
-                              id="toggle-formatter"
-                              name="toggle-formatter"
-                              class="section-toggle"
-                              data-section="formatter"
-                              checked
-                              aria-label="Show Number Formatter"
-                            />
+                            <input type="checkbox" id="toggle-formatter" name="toggle-formatter" class="section-toggle" data-section="formatter" checked aria-label="Show Number Formatter" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Create and manage step-by-step call handling procedures"
-                            >Call Flow Builder</span
-                          >
+                          <span class="toggle-text" title="Step-by-step procedures">Call Flow Builder</span>
                           <label class="switch" for="toggle-callflow">
-                            <input
-                              type="checkbox"
-                              id="toggle-callflow"
-                              name="toggle-callflow"
-                              class="section-toggle"
-                              data-section="callflow"
-                              checked
-                              aria-label="Show Call Flow Builder"
-                            />
+                            <input type="checkbox" id="toggle-callflow" name="toggle-callflow" class="section-toggle" data-section="callflow" checked aria-label="Show Call Flow Builder" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Take quick notes during calls with timestamp tracking"
-                            >Notes</span
-                          >
+                          <span class="toggle-text" title="Quick notes with timestamps">Notes</span>
                           <label class="switch" for="toggle-notes">
-                            <input
-                              type="checkbox"
-                              id="toggle-notes"
-                              name="toggle-notes"
-                              class="section-toggle"
-                              data-section="notes"
-                              checked
-                              aria-label="Show Notes"
-                            />
+                            <input type="checkbox" id="toggle-notes" name="toggle-notes" class="section-toggle" data-section="notes" checked aria-label="Show Notes" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Track hold times with statistics, history, and multiple timer support"
-                            >Hold Timer</span
-                          >
+                          <span class="toggle-text" title="Track hold times">Hold Timer</span>
                           <label class="switch" for="toggle-holdtimer">
-                            <input
-                              type="checkbox"
-                              id="toggle-holdtimer"
-                              name="toggle-holdtimer"
-                              class="section-toggle"
-                              data-section="holdtimer"
-                              checked
-                              aria-label="Show Hold Timer"
-                            />
+                            <input type="checkbox" id="toggle-holdtimer" name="toggle-holdtimer" class="section-toggle" data-section="holdtimer" checked aria-label="Show Hold Timer" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <!-- Advanced Features -->
-                  <div class="section-group">
-                    <h4>Advanced Features</h4>
-                    <div class="toggle-grid">
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Log call details, track call history, and manage customer interactions"
-                            >Call Logging</span
-                          >
-                          <label class="switch" for="toggle-calllogging">
-                            <input
-                              type="checkbox"
-                              id="toggle-calllogging"
-                              name="toggle-calllogging"
-                              class="section-toggle"
-                              data-section="calllogging"
-                              aria-label="Show Call Logging"
-                            />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Create and track tasks with priority levels and completion status"
-                            >Task Management</span
-                          >
-                          <label class="switch" for="toggle-tasks">
-                            <input
-                              type="checkbox"
-                              id="toggle-tasks"
-                              name="toggle-tasks"
-                              class="section-toggle"
-                              data-section="tasks"
-                              aria-label="Show Task Management"
-                            />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Generate detailed reports on calls, performance, and quality metrics"
-                            >Advanced Reporting</span
-                          >
-                          <label class="switch" for="toggle-reporting">
-                            <input
-                              type="checkbox"
-                              id="toggle-reporting"
-                              name="toggle-reporting"
-                              class="section-toggle"
-                              data-section="reporting"
-                              aria-label="Show Advanced Reporting"
-                            />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Integrations & Tools -->
-                  <div class="section-group">
-                    <h4>Integrations & Tools</h4>
-                    <div class="toggle-grid">
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Access pre-written call scripts organized by category"
-                            >Script Library</span
-                          >
+                          <span class="toggle-text" title="Access scripts">Script Library</span>
                           <label class="switch" for="toggle-scripts">
-                            <input
-                              type="checkbox"
-                              id="toggle-scripts"
-                              name="toggle-scripts"
-                              class="section-toggle"
-                              data-section="scripts"
-                              aria-label="Show Script Library"
-                            />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Record and manage call audio with CUCM integration"
-                            >Voice Recording</span
-                          >
-                          <label class="switch" for="toggle-voicerecording">
-                            <input
-                              type="checkbox"
-                              id="toggle-voicerecording"
-                              name="toggle-voicerecording"
-                              class="section-toggle"
-                              data-section="voicerecording"
-                              aria-label="Show Voice Recording"
-                            />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Real-time messaging and collaboration tools for team members"
-                            >Team Collaboration</span
-                          >
-                          <label class="switch" for="toggle-collaboration">
-                            <input
-                              type="checkbox"
-                              id="toggle-collaboration"
-                              name="toggle-collaboration"
-                              class="section-toggle"
-                              data-section="collaboration"
-                              checked
-                              aria-label="Show Team Collaboration"
-                            />
+                            <input type="checkbox" id="toggle-scripts" name="toggle-scripts" class="section-toggle" data-section="scripts" aria-label="Show Script Library" />
                             <span class="slider"></span>
                           </label>
                         </div>
@@ -1333,49 +1124,42 @@
                     </div>
                   </div>
 
-                  <!-- AI & Automation -->
+                  <!-- Group 2: Communication & Collaboration -->
                   <div class="section-group">
-                    <h4>AI & Automation</h4>
+                    <h4>Communication & Collaboration</h4>
                     <div class="toggle-grid">
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Set up automated processes and triggers for common tasks"
-                            >Automated Workflows</span
-                          >
-                          <label class="switch" for="toggle-workflows">
-                            <input
-                              type="checkbox"
-                              id="toggle-workflows"
-                              name="toggle-workflows"
-                              class="section-toggle"
-                              data-section="workflows"
-                              checked
-                              aria-label="Show Automated Workflows"
-                            />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Handle calls across phone, chat, email, and social media channels"
-                            >Multi-Channel</span
-                          >
+                          <span class="toggle-text" title="Multi-channel handling">Multi-Channel Support</span>
                           <label class="switch" for="toggle-multichannel">
-                            <input
-                              type="checkbox"
-                              id="toggle-multichannel"
-                              name="toggle-multichannel"
-                              class="section-toggle"
-                              data-section="multichannel"
-                              checked
-                              aria-label="Show Multi-Channel Support"
-                            />
+                            <input type="checkbox" id="toggle-multichannel" name="toggle-multichannel" class="section-toggle" data-section="multichannel" checked aria-label="Show Multi-Channel Support" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="Team chat and status">Team Collaboration</span>
+                          <label class="switch" for="toggle-collaboration">
+                            <input type="checkbox" id="toggle-collaboration" name="toggle-collaboration" class="section-toggle" data-section="collaboration" checked aria-label="Show Team Collaboration" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="Call recording">Voice Recording</span>
+                          <label class="switch" for="toggle-voicerecording">
+                            <input type="checkbox" id="toggle-voicerecording" name="toggle-voicerecording" class="section-toggle" data-section="voicerecording" aria-label="Show Voice Recording" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                       <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="Customer surveys">Customer Feedback</span>
+                          <label class="switch" for="toggle-feedback">
+                            <input type="checkbox" id="toggle-feedback" name="toggle-feedback" class="section-toggle" data-section="feedback" checked aria-label="Show Customer Feedback" />
                             <span class="slider"></span>
                           </label>
                         </div>
@@ -1383,114 +1167,101 @@
                     </div>
                   </div>
 
-                  <!-- Enterprise Features -->
+                  <!-- Group 3: Management & Logging -->
                   <div class="section-group">
-                    <h4>Enterprise Features</h4>
+                    <h4>Management & Logging</h4>
                     <div class="toggle-grid">
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Collect and analyze customer feedback with customizable surveys"
-                            >Customer Feedback</span
-                          >
-                          <label class="switch" for="toggle-feedback">
-                            <input
-                              type="checkbox"
-                              id="toggle-feedback"
-                              name="toggle-feedback"
-                              class="section-toggle"
-                              data-section="feedback"
-                              checked
-                              aria-label="Show Customer Feedback"
-                            />
+                          <span class="toggle-text" title="Log call details">Call Logging</span>
+                          <label class="switch" for="toggle-calllogging">
+                            <input type="checkbox" id="toggle-calllogging" name="toggle-calllogging" class="section-toggle" data-section="calllogging" aria-label="Show Call Logging" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Access knowledge base articles, procedures, and FAQs"
-                            >Knowledge Base</span
-                          >
-                          <label class="switch" for="toggle-knowledge-base">
-                            <input
-                              type="checkbox"
-                              id="toggle-knowledge-base"
-                              name="toggle-knowledge-base"
-                              class="section-toggle"
-                              data-section="knowledgeBase"
-                              aria-label="Show Knowledge Base"
-                            />
+                          <span class="toggle-text" title="Manage tasks">Task Management</span>
+                          <label class="switch" for="toggle-tasks">
+                            <input type="checkbox" id="toggle-tasks" name="toggle-tasks" class="section-toggle" data-section="tasks" aria-label="Show Task Management" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Track billable time, projects, and generate billing reports"
-                            >Time Tracking & Billing</span
-                          >
+                          <span class="toggle-text" title="Track time and billing">Time Tracking</span>
                           <label class="switch" for="toggle-time-tracking">
-                            <input
-                              type="checkbox"
-                              id="toggle-time-tracking"
-                              name="toggle-time-tracking"
-                              class="section-toggle"
-                              data-section="timeTracking"
-                              checked
-                              aria-label="Show Time Tracking"
-                            />
+                            <input type="checkbox" id="toggle-time-tracking" name="toggle-time-tracking" class="section-toggle" data-section="timeTracking" checked aria-label="Show Time Tracking" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
-
-                      <div class="toggle-item">
+                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Custom dashboards with real-time metrics and advanced reporting"
-                            >Advanced Analytics</span
-                          >
-                          <label class="switch" for="toggle-advanced-analytics">
-                            <input
-                              type="checkbox"
-                              id="toggle-advanced-analytics"
-                              name="toggle-advanced-analytics"
-                              class="section-toggle"
-                              data-section="advancedAnalytics"
-                              checked
-                              aria-label="Show Advanced Analytics"
-                            />
+                          <span class="toggle-text" title="Knowledge base articles">Knowledge Base</span>
+                          <label class="switch" for="toggle-knowledge-base">
+                            <input type="checkbox" id="toggle-knowledge-base" name="toggle-knowledge-base" class="section-toggle" data-section="knowledgeBase" aria-label="Show Knowledge Base" />
                             <span class="slider"></span>
                           </label>
                         </div>
                       </div>
+                    </div>
+                  </div>
 
+                  <!-- Group 4: Automation & Intelligence -->
+                  <div class="section-group">
+                    <h4>Automation & Intelligence</h4>
+                    <div class="toggle-grid">
                       <div class="toggle-item">
                         <div class="toggle-content">
-                          <span
-                            class="toggle-text"
-                            title="Connect with external APIs, webhooks, and third-party services"
-                            >API Integration</span
-                          >
+                          <span class="toggle-text" title="Automated workflows">Automated Workflows</span>
+                          <label class="switch" for="toggle-workflows">
+                            <input type="checkbox" id="toggle-workflows" name="toggle-workflows" class="section-toggle" data-section="workflows" checked aria-label="Show Automated Workflows" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="External integrations">API Integration</span>
                           <label class="switch" for="toggle-api-integration">
-                            <input
-                              type="checkbox"
-                              id="toggle-api-integration"
-                              name="toggle-api-integration"
-                              class="section-toggle"
-                              data-section="apiIntegration"
-                              checked
-                              aria-label="Show API Integration"
-                            />
+                            <input type="checkbox" id="toggle-api-integration" name="toggle-api-integration" class="section-toggle" data-section="apiIntegration" checked aria-label="Show API Integration" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Group 5: Analytics -->
+                  <div class="section-group">
+                    <h4>Analytics</h4>
+                    <div class="toggle-grid">
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="Detailed reports">Advanced Reporting</span>
+                          <label class="switch" for="toggle-reporting">
+                            <input type="checkbox" id="toggle-reporting" name="toggle-reporting" class="section-toggle" data-section="reporting" aria-label="Show Advanced Reporting" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                        <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="Custom dashboards">Advanced Analytics</span>
+                          <label class="switch" for="toggle-advanced-analytics">
+                            <input type="checkbox" id="toggle-advanced-analytics" name="toggle-advanced-analytics" class="section-toggle" data-section="advancedAnalytics" checked aria-label="Show Advanced Analytics" />
+                            <span class="slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="toggle-item">
+                        <div class="toggle-content">
+                          <span class="toggle-text" title="Performance metrics">Performance Monitoring</span>
+                          <label class="switch" for="toggle-performance-monitoring">
+                            <input type="checkbox" id="toggle-performance-monitoring" name="toggle-performance-monitoring" class="section-toggle" data-section="performanceMonitoring" aria-label="Show Performance Monitoring" />
                             <span class="slider"></span>
                           </label>
                         </div>
@@ -1503,185 +1274,7 @@
             <!-- Visible Sections remain inside the top grid -->
             </section>
 
-            <!-- Hold Timer Settings -->
-            <section id="hold-timer-settings" class="card settings-section toggleable-section draggable-section" data-section="settings-hold-timer">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Hold Timer">
-                    Hold Timer
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
-                <button class="float-btn" title="Float">⧉</button>
-                </div>
-              </div>
-              <div class="section-content section-content--cols">
-                <p>Configure hold timer behavior:</p>
 
-              <!-- Timer Settings Switches -->
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Auto-start on call</div>
-                  <div class="setting-description">
-                    Automatically start timer when indicated
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="timer-auto-start">
-                    <input
-                      type="checkbox"
-                      id="timer-auto-start"
-                      name="timer-auto-start"
-                      aria-label="Auto-start on call"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-              <!-- end hold timer section content - will close below after items -->
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Sound alerts</div>
-                  <div class="setting-description">
-                    Play sound when timer reaches warning time
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="timer-sound-alerts">
-                    <input
-                      type="checkbox"
-                      id="timer-sound-alerts"
-                      name="timer-sound-alerts"
-                      aria-label="Sound alerts"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Repeat Alert Sound Toggle -->
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Repeat Alert Sound</div>
-                  <div class="setting-description">
-                    Repeat the alert sound until stopped (recommended for missed
-                    timer alerts)
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="repeat-alert-sound-toggle">
-                    <input
-                      type="checkbox"
-                      id="repeat-alert-sound-toggle"
-                      aria-label="Repeat Alert Sound"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <h4>Enable Hold History Deletion</h4>
-                  <p>Allow users to delete individual hold history entries</p>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="timer-allow-history-deletion">
-                    <input
-                      type="checkbox"
-                      id="timer-allow-history-deletion"
-                      name="timer-allow-history-deletion"
-                      aria-label="Enable Hold History Deletion"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Add Sound Selection Option -->
-              <div class="setting-item sound-setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Alert Sound</div>
-                  <div class="setting-description">
-                    Sound to play when timer expires
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label for="timer-alert-sound" class="sr-only"
-                    >Alert Sound</label
-                  >
-                  <select
-                    id="timer-alert-sound"
-                    aria-label="Alert Sound"
-                    class="sound-select block-w-full-mb-8"
-                  >
-                    <option value="endgame">Endgame</option>
-                    <option value="bell">Bell</option>
-                    <option value="towerbell">Tower Bell</option>
-                    <option value="custom">Custom URL</option>
-                  </select>
-                  <div class="custom-sound-option">
-                    <label for="custom-sound-url" class="block-mb-4px"
-                      >Custom Sound URL:</label
-                    >
-                    <input
-                      type="text"
-                      id="custom-sound-url"
-                      placeholder="Paste direct .mp3 URL here"
-                      class="w-full"
-                      aria-label="Custom sound URL"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Multiple Timers Setting -->
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Enable Multiple Timers</div>
-                  <div class="setting-description">
-                    Allow creating and managing multiple independent timers
-                    simultaneously
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="enable-multiple-timers">
-                    <input
-                      type="checkbox"
-                      id="enable-multiple-timers"
-                      aria-label="Enable Multiple Timers"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Max Timers Setting -->
-              <div class="setting-item instance-option">
-                <div class="setting-info">
-                  <div class="setting-label">Maximum Timers</div>
-                  <div class="setting-description">
-                    Maximum number of timers that can be created
-                    <span id="max-timers-value">3</span>
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <input
-                    type="range"
-                    id="max-timers"
-                    min="1"
-                    max="10"
-                    value="3"
-                    aria-label="Maximum Timers"
-                  />
-                </div>
-              </div>
-            </div>
-            </section>
             <!-- Data Management Section -->
             <section id="data-management-section" class="card settings-section toggleable-section draggable-section" data-section="settings-data-management">
               <div class="section-header">
@@ -1697,171 +1290,55 @@
                 <button class="float-btn" title="Float">⧉</button>
                 </div>
               </div>
-              <div class="section-content section-content--cols">
-                <p>Export, import, backup, and restore your application data:</p>
+              <div class="section-content">
+                <p>Manage your application data:</p>
 
-                <div class="setting-item">
+                <!-- Scope Selection -->
+                <div class="setting-group" style="margin-bottom: 1rem;">
+                  <h4 style="margin-bottom: 0.75rem; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Export Scope</h4>
+                  
+                  <div class="scope-selector" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                    <button type="button" class="button btn-sm scope-btn active" data-scope="all" style="flex: 1;">All Data</button>
+                    <button type="button" class="button btn-sm scope-btn" data-scope="settings" style="flex: 1;">Settings Only</button>
+                    <button type="button" class="button btn-sm scope-btn" data-scope="custom" style="flex: 1;">Custom...</button>
+                  </div>
+                </div>
+
+                <!-- Action Buttons Grid -->
+                <div class="data-actions-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem;">
+                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                       <button id="export-data-btn" class="button btn-sm full-width" style="width: 100%;">⬇️ Export JSON</button>
+                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Download file</small>
+                   </div>
+                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div class="file-upload-group">
+                           <button id="import-data-btn" class="button btn-sm full-width" style="width: 100%;">📁 Import JSON</button>
+                        </div>
+                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Merge with current</small>
+                   </div>
+                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                       <button id="backup-data-btn" class="button btn-sm full-width" style="width: 100%;">💾 Local Backup</button>
+                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Save to browser</small>
+                   </div>
+                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                       <div class="file-upload-group">
+                           <button id="restore-data-btn" class="button btn-sm full-width" style="width: 100%;">🔄 Restore Backup</button>
+                       </div>
+                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Overwrite current</small>
+                   </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="setting-item danger" style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
                   <div class="setting-info">
-                    <div class="setting-label">Export Options</div>
+                    <div class="setting-label" style="color: var(--danger-color);">Clear All Data</div>
                     <div class="setting-description">
-                      Choose which data to include when exporting:
-                    </div>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Include Patterns</div>
-                  </div>
-                  <div class="setting-control">
-                    <label class="switch" for="export-patterns">
-                      <input
-                        type="checkbox"
-                        id="export-patterns"
-                        name="export-patterns"
-                        checked
-                        aria-label="Include Patterns"
-                      />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Include Call Flow</div>
-                  </div>
-                  <div class="setting-control">
-                    <label class="switch" for="export-steps">
-                      <input
-                        type="checkbox"
-                        id="export-steps"
-                        name="export-steps"
-                        checked
-                        aria-label="Include Call Flow"
-                      />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Include Notes</div>
-                  </div>
-                  <div class="setting-control">
-                    <label class="switch" for="export-notes">
-                      <input
-                        type="checkbox"
-                        id="export-notes"
-                        name="export-notes"
-                        checked
-                        aria-label="Include Notes"
-                      />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Include Settings</div>
-                  </div>
-                  <div class="setting-control">
-                    <label class="switch" for="export-settings">
-                      <input
-                        type="checkbox"
-                        id="export-settings"
-                        name="export-settings"
-                        checked
-                        aria-label="Include Settings"
-                      />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Export Data</div>
-                    <div class="setting-description">
-                      Download all your application data as a JSON file for backup
-                      or transfer to another device.
+                      Permanently delete ALL application data.
                     </div>
                   </div>
                   <div class="setting-control">
-                    <button id="export-data-btn" class="button btn-sm">
-                      Export Data
-                    </button>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Import Data</div>
-                    <div class="setting-description">
-                      Import data from a previously exported JSON file. This will
-                      merge with existing data.
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <div class="file-upload-group">
-                      <button
-                        id="import-data-btn"
-                        class="button btn-sm"
-                      >
-                        📁 Import Data
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Create Backup</div>
-                    <div class="setting-description">
-                      Create an automatic backup stored locally. Only the last 5
-                      backups are kept.
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <button id="backup-data-btn" class="button btn-sm">
-                      Create Backup
-                    </button>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">Restore from Backup</div>
-                    <div class="setting-description">
-                      Restore data from a backup file. This will overwrite
-                      existing data.
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <div class="file-upload-group">
-                      <button
-                        id="restore-data-btn"
-                        class="button btn-sm"
-                      >
-                        🔄 Restore Backup
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="setting-item danger">
-                  <div class="setting-info">
-                    <div class="setting-label">Clear All Data</div>
-                    <div class="setting-description">
-                      Permanently delete ALL application data. This action cannot
-                      be undone.
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <button id="clear-data-btn" class="button btn-sm btn-danger">
-                      Clear All Data
+                    <button id="clear-data-btn" class="button btn-danger">
+                      Start Over
                     </button>
                   </div>
                 </div>
@@ -1869,7 +1346,7 @@
             </section>
 
             <!-- Performance Monitoring Section -->
-            <section id="performance-monitoring-section" class="card settings-section toggleable-section draggable-section" data-section="settings-performance-monitoring">
+            <section id="performance-monitoring-section" class="card settings-section toggleable-section draggable-section" data-section="performanceMonitoring">
               <div class="section-header">
                 <div class="drag-handle">⋮⋮</div>
                 <div class="title-container">
@@ -2913,6 +2390,249 @@
               <div id="knowledge-base-container"></div>
             </div>
           </section>
+        </div>
+      </div>
+
+      <!-- Export Selection Modal -->
+      <div id="export-selection-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 400px; width: 100%;">
+          <div class="modal-header">
+            <h3>Select Data to Export</h3>
+            <button class="close-modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="checkbox-list">
+              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                <span class="label">Number Patterns</span>
+                <label class="switch">
+                  <input type="checkbox" id="export-patterns" name="export-patterns" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                <span class="label">Call Flow Steps</span>
+                <label class="switch">
+                  <input type="checkbox" id="export-steps" name="export-steps" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                <span class="label">Notes</span>
+                <label class="switch">
+                  <input type="checkbox" id="export-notes" name="export-notes" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0;">
+                <span class="label">Application Settings</span>
+                <label class="switch">
+                  <input type="checkbox" id="export-settings" name="export-settings" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="save-export-selection" class="button btn-primary full-width">Done</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Welcome Overlay -->
+      <div id="welcome-overlay" class="welcome-overlay">
+        <div class="welcome-content wizard-container">
+          
+          <!-- Step 1: Role Selection -->
+          <div class="wizard-step active" data-step="1">
+            <div class="welcome-header">
+              <h1>Welcome to Adamas</h1>
+              <p>Your ultimate call center companion. Let's set up your workspace.</p>
+            </div>
+            <div class="welcome-body">
+              <div class="role-grid">
+                <!-- Agent Role -->
+                <div class="role-card selected" data-role="agent">
+                  <div class="check-icon">✓</div>
+                  <span class="role-icon">🎧</span>
+                  <h3>Agent</h3>
+                  <p>Focused on call handling and efficiency.</p>
+                  <ul class="role-features">
+                    <li>Number Formatter</li>
+                    <li>Script Library</li>
+                    <li>Call Logging</li>
+                    <li>Hold Timer</li>
+                  </ul>
+                </div>
+                <!-- Manager Role -->
+                <div class="role-card" data-role="manager">
+                  <div class="check-icon">✓</div>
+                  <span class="role-icon">📊</span>
+                  <h3>Manager</h3>
+                  <p>Overview of performance and team tools.</p>
+                  <ul class="role-features">
+                    <li>Analytics & Reports</li>
+                    <li>Performance Monitor</li>
+                    <li>Team Collaboration</li>
+                    <li>Task Management</li>
+                  </ul>
+                </div>
+                <!-- Minimal Role -->
+                <div class="role-card" data-role="minimal">
+                  <div class="check-icon">✓</div>
+                  <span class="role-icon">⚡</span>
+                  <h3>Minimalist</h3>
+                  <p>Just the essentials for distraction-free work.</p>
+                  <ul class="role-features">
+                    <li>Hold Timer</li>
+                    <li>Number Formatter</li>
+                    <li>Quick Actions Bar</li>
+                  </ul>
+                </div>
+                <!-- Custom Role -->
+                <div class="role-card" data-role="custom">
+                  <div class="check-icon">✓</div>
+                  <span class="role-icon">⚙️</span>
+                  <h3>Custom</h3>
+                  <p>Build your own perfect workspace.</p>
+                  <ul class="role-features">
+                    <li>Select specific modules</li>
+                    <li>Tailor to your needs</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Custom Modules (Conditional) -->
+          <div class="wizard-step" data-step="2">
+            <div class="welcome-header">
+              <h1>Select Features</h1>
+              <p>Choose the tools you need for your daily work.</p>
+            </div>
+            <div class="welcome-body">
+              <div class="module-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; max-width: 800px; margin: 0 auto; text-align: left;">
+                <!-- Call Logging -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showCalllogging" checked>
+                  <span class="module-icon">📞</span>
+                  <span class="module-name">Call Logging</span>
+                </label>
+                 <!-- Formatter -->
+                 <label class="module-card">
+                  <input type="checkbox" name="modules" value="showFormatter" checked>
+                  <span class="module-icon">🔢</span>
+                  <span class="module-name">Formatter</span>
+                </label>
+                <!-- Scripts -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showScripts" checked>
+                  <span class="module-icon">📜</span>
+                  <span class="module-name">Scripts</span>
+                </label>
+                <!-- Timer -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showHoldtimer" checked>
+                  <span class="module-icon">⏱️</span>
+                  <span class="module-name">Hold Timer</span>
+                </label>
+                <!-- Notes -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showNotes" checked>
+                  <span class="module-icon">📝</span>
+                  <span class="module-name">Notes</span>
+                </label>
+                <!-- Analytics -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showAnalytics">
+                  <span class="module-icon">📊</span>
+                  <span class="module-name">Analytics</span>
+                </label>
+                <!-- CRM -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showCrm">
+                  <span class="module-icon">👥</span>
+                  <span class="module-name">CRM</span>
+                </label>
+                <!-- Tasks -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showTasks">
+                  <span class="module-icon">✅</span>
+                  <span class="module-name">Tasks</span>
+                </label>
+                <!-- Collaboration -->
+                <label class="module-card">
+                  <input type="checkbox" name="modules" value="showCollaboration">
+                  <span class="module-icon">🤝</span>
+                  <span class="module-name">Collaboration</span>
+                </label>
+                 <!-- Quick Actions -->
+                 <label class="module-card">
+                  <input type="checkbox" name="modules" value="showQuickActions" checked>
+                  <span class="module-icon">⚡</span>
+                  <span class="module-name">Quick Bar</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Theme Selection -->
+          <div class="wizard-step" data-step="3">
+            <div class="welcome-header">
+              <h1>Choose Your Look</h1>
+              <p>Select the theme that fits your vibe.</p>
+            </div>
+            <div class="welcome-body">
+              <div class="theme-grid" style="display: flex; justify-content: center; gap: 2rem;">
+                <div class="theme-card" data-theme="light">
+                  <div class="theme-preview light"></div>
+                  <h3>Light Mode</h3>
+                </div>
+                <div class="theme-card" data-theme="dark">
+                  <div class="theme-preview dark"></div>
+                  <h3>Dark Mode</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Profile -->
+          <div class="wizard-step" data-step="4">
+            <div class="welcome-header">
+              <h1>Who are you?</h1>
+              <p>Personalize your experience.</p>
+            </div>
+            <div class="welcome-body" style="max-width: 400px; margin: 0 auto;">
+              <div class="input-group" style="margin-bottom: 1.5rem; text-align: left;">
+                <label for="welcome-name" style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem;">Your Name</label>
+                <input type="text" id="welcome-name" placeholder="Agent Smith" style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Finish -->
+          <div class="wizard-step" data-step="5">
+            <div class="welcome-header">
+              <h1>All Set!</h1>
+              <p>Your workspace is ready. Enjoy using Adamas.</p>
+            </div>
+            <div class="welcome-body">
+              <div style="font-size: 4rem; margin-bottom: 1rem;">🚀</div>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <div class="welcome-footer wizard-nav" style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+            <button id="wizard-back" class="button btn-ghost" style="visibility: hidden;">Back</button>
+            <div class="wizard-dots">
+              <span class="dot active"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <button id="wizard-next" class="button btn-primary get-started-btn">Next</button>
+          </div>
+
         </div>
       </div>
 

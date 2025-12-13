@@ -1,7 +1,7 @@
-// Service Worker for Call Center Helper
-const CACHE_NAME = 'call-center-helper-v1.0.0';
-const STATIC_CACHE = 'call-center-helper-static-v1.0.0';
-const DYNAMIC_CACHE = 'call-center-helper-dynamic-v1.0.0';
+// Service Worker for Adamas
+const CACHE_NAME = 'adamas-v1.0.0';
+const STATIC_CACHE = 'adamas-static-v1.0.0';
+const DYNAMIC_CACHE = 'adamas-dynamic-v1.0.0';
 
 // Files to cache immediately
 const STATIC_FILES = [

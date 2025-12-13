@@ -3,22 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact Us - Call Center Helper</title>
+    <title>Contact Us - Adamas</title>
     <link rel="stylesheet" href="styles/main.css" />
+    
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Contact Adamas support. We are here to help you with any questions or issues." />
+    <meta name="keywords" content="contact, support, help, adamas, call center help" />
+    <meta name="author" content="Daniel Hipskind" />
+    
+    <!-- Open Graph (Facebook/LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://danielhipskind.com/adamas/contact" />
+    <meta property="og:title" content="Contact Us | Adamas" />
+    <meta property="og:description" content="Get in touch with the Adamas team for support and inquiries." />
+    <meta property="og:image" content="https://danielhipskind.com/adamas/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://danielhipskind.com/adamas/contact" />
+    <meta property="twitter:title" content="Contact Us | Adamas" />
+    <meta property="twitter:description" content="Get in touch with the Adamas team for support and inquiries." />
+    <meta property="twitter:image" content="https://danielhipskind.com/adamas/og-image.png" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://danielhipskind.com/adamas/contact" />
+
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </head>
   <body>
     <div id="app">
       <header class="app-header">
         <div class="header-content">
-          <div class="app-title"><h1>📞 Call Center Helper</h1></div>
+          <div class="app-title"><h1>💎 Adamas</h1></div>
           <nav class="main-nav">
-            <a href="/callcenterhelper/" class="nav-tab">Main</a>
-            <a href="/callcenterhelper/privacy" class="nav-tab"
+            <a href="<%= htmlWebpackPlugin.files.publicPath %>" class="nav-tab">Main</a>
+            <a href="<%= htmlWebpackPlugin.files.publicPath %>privacy" class="nav-tab"
               >Privacy Policy</a
             >
-            <a href="/callcenterhelper/terms" class="nav-tab">Terms of Use</a>
-            <a href="/callcenterhelper/contact" class="nav-tab">Contact Us</a>
+            <a href="<%= htmlWebpackPlugin.files.publicPath %>terms" class="nav-tab">Terms of Use</a>
+            <a href="<%= htmlWebpackPlugin.files.publicPath %>contact" class="nav-tab">Contact Us</a>
           </nav>
         </div>
       </header>

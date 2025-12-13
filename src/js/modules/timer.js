@@ -4,6 +4,8 @@ import AppGlobals from '../utils/app-globals.js';
 import { saveData, loadData } from './storage.js';
 import { playTimerExpiredSound, stopTimerSound } from '../utils/audio.js';
 import { formatTime } from '../utils/helpers.js';
+// Import to resolve circular dependency if needed or just rely on window.appSettings
+// import { startHoldTimer } from './timer.js'; // self-import? no.
 
 // Timer instances management
 export const timerInstances = new Map();
@@ -120,24 +122,64 @@ function checkTimerAlerts(timer) {
   if (!appSettings) return;
 
   const warningTime = appSettings.timerWarningTime || 300;
-  const remaining = warningTime - timer.seconds;
+  
+  if (timer.isCountdown) {
+      // Countdown Logic
+      const currentTime = timer.countdownSeconds - Math.floor((Date.now() - timer.countdownStartTime - timer.totalPausedTime) / 1000);
+      const remaining = Math.max(0, currentTime); // Should use the same calc as updateTimerDisplay or pass it in
+      
+      // Warning Sound
+      if (remaining === warningTime && appSettings.timerPlayWarningSound && !timer.warningSoundPlayed) {
+           playTimerExpiredSound('beep'); // Use a distinct warning sound or 'beep'
+           timer.warningSoundPlayed = true;
+      }
+      
+      // Expired Sound
+      if (remaining === 0 && !timer.soundPlaying && appSettings.timerSoundAlerts) {
+        const soundType = appSettings.timerAlertSound || 'endgame';
+        const customUrl = appSettings.timerCustomSoundUrl || null;
+        
+        // Pass repeat flag if supported by utils/audio.js, otherwise implement loop here
+        // Assuming playTimerExpiredSound handles basic playback. 
+        // If we need repeat, we might need a more robust audio handler or just set loop=true on the audio element if exposed.
+        // For now, let's assume playTimerExpiredSound plays once. We can loop it if needed.
+        
+        playTimerExpiredSound(soundType, customUrl);
+        timer.soundPlaying = true;
+        
+        if (appSettings.timerRepeatAlert) {
+             timer.soundInterval = setInterval(() => {
+                 playTimerExpiredSound(soundType, customUrl);
+             }, 3000); // Repeat every 3 seconds
+        }
+      }
+  } else {
+      // Stopwatch Logic (existing)
+       const currentTime = Math.floor((Date.now() - timer.startTime - timer.totalPausedTime) / 1000);
+       const remaining = warningTime - currentTime;
 
-  if (remaining === 60 && appSettings.timerShowNotifications) {
-    showNotification('Timer Warning', '1 minute remaining');
-  }
-
-  if (remaining === 0) {
-    playAlertSound();
-    if (appSettings.timerShowNotifications) {
-      showNotification('Timer Alert', 'Time is up!');
-    }
+      if (remaining === 60 && appSettings.timerShowNotifications) {
+        showNotification('Timer Warning', '1 minute remaining');
+      }
+    
+      if (remaining === 0) {
+        playAlertSound();
+        if (appSettings.timerShowNotifications) {
+          showNotification('Timer Alert', 'Time is up!');
+        }
+      }
   }
 }
 
 // Play alert sound
 function playAlertSound() {
   // Use the audio utility if available
-  if (window.playAlertSound) {
+  const { appSettings } = window;
+  const soundType = appSettings?.timerAlertSound || 'endgame';
+  
+  if (window.playTimerExpiredSound) {
+    window.playTimerExpiredSound(soundType);
+  } else if (window.playAlertSound) {
     window.playAlertSound();
   }
 }
@@ -398,6 +440,10 @@ function parseTimeInput(input) {
 // Modify the startTimer function to ensure proper countdown startup
 export function startHoldTimer() {
   stopTimerSound(); // Stop any playing sounds when starting/resuming
+  if (holdTimer.soundInterval) {
+      clearInterval(holdTimer.soundInterval);
+      holdTimer.soundInterval = null;
+  }
 
   if (!holdTimer.isRunning) {
     // Starting fresh
@@ -408,6 +454,7 @@ export function startHoldTimer() {
     holdTimer.isPaused = false;
     holdTimer.pauseStartTime = null;
     holdTimer.soundPlaying = false;
+    holdTimer.warningSoundPlayed = false;
 
     if (holdTimer.isCountdown) {
       // Countdown mode - set from current countdownSeconds
@@ -445,10 +492,13 @@ export function pauseHoldTimer() {
   }
 }
 
-// Modify the resetTimer function to restore the last countdown value
 export function resetTimer() {
   // Stop any playing sounds
   stopTimerSound();
+  if (holdTimer.soundInterval) {
+      clearInterval(holdTimer.soundInterval);
+      holdTimer.soundInterval = null;
+  }
 
   // Save the hold time if we were running or paused
   if (holdTimer.isRunning || holdTimer.isPaused) {
@@ -484,6 +534,7 @@ export function resetTimer() {
   holdTimer.currentHoldStart = null;
   holdTimer.warningShown = false;
   holdTimer.soundPlaying = false;
+  holdTimer.warningSoundPlayed = false;
   holdTimer.countdownStartTime = null;
 
   // Check if we need to update countdown mode from settings
@@ -646,6 +697,8 @@ export function initializeTimer() {
     lastSetCountdown: window.appSettings?.timerCountdownDuration || 300,
     countdownStartTime: null,
     soundPlaying: false,
+    warningSoundPlayed: false,
+    soundInterval: null
   };
 
   // Make it globally accessible
@@ -701,6 +754,29 @@ export function updateCountdownDuration(seconds) {
 
   // Always update the display to reflect the change
   updateTimerDisplay();
+}
+
+export function applyTimerSettings(newSettings) {
+  const { countdownMode, countdownDuration, warningTime, soundAlerts, allowDelete } = newSettings;
+  
+  // Logic to apply changes safely
+  if (holdTimer.isCountdown !== countdownMode) {
+      // Mode change - reset to be safe
+      // update internal state so reset picks it up (via appSettings which should be already saved by caller)
+      // Actually resetTimer pulls from appSettings, so we rely on caller having saved them.
+      resetTimer(); 
+  } else {
+      // Just update values if not running
+      if (!holdTimer.isRunning && countdownMode) {
+           holdTimer.countdownSeconds = countdownDuration;
+           holdTimer.lastSetCountdown = countdownDuration;
+      }
+  }
+
+  // Force UI updates
+  updateTimerDisplay();
+  updateTimerModeDisplay();
+  updateHoldHistory();
 }
 
 // Update setupCountdownControls to focus on editable time display functionality

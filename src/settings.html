@@ -3,12 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Settings - Call Center Helper</title>
+    <title>Settings - Adamas</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E📞%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>"
     />
-    <link rel="stylesheet" href="/callcenterhelper/styles/main.css" />
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.publicPath %>styles/main.css" />
+
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Configure your Adamas workspace. Manage roles, integrations, and preferences." />
+    <meta name="keywords" content="settings, configuration, preferences, adamas, customization" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://danielhipskind.com/adamas/settings" />
+    <meta property="og:title" content="Settings | Adamas" />
+    <meta property="og:description" content="Customize your Adamas experience to fit your workflow." />
+    <meta property="og:image" content="https://danielhipskind.com/adamas/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Settings | Adamas" />
+    <meta property="twitter:description" content="Customize your Adamas experience to fit your workflow." />
+    <meta property="twitter:image" content="https://danielhipskind.com/adamas/og-image.png" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://danielhipskind.com/adamas/settings" />
+
   </head>
   <body>
     <div id="app">
@@ -152,29 +173,6 @@
                   </div>
                   <div class="settings-group-content">
 
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-icon">🔢</div>
-                        <div class="setting-content">
-                          <div class="setting-label">Pattern Formatter</div>
-                          <div class="setting-description">
-                            Format phone numbers and data using custom patterns with automatic copying
-                          </div>
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                          <label class="switch" for="toggle-formatter">
-                            <input
-                              type="checkbox"
-                              id="toggle-formatter"
-                              name="toggle-formatter"
-                              class="hidden-toggle"
-                              aria-label="Pattern Formatter"
-                            />
-                            <span class="toggle-slider" aria-hidden="true"></span>
-                          </label>
-                      </div>
-                    </div>
 
                     <div class="setting-item">
                       <div class="setting-info">
@@ -884,114 +882,7 @@
               </div>
             </section>
 
-            <!-- Pattern Formatter Settings -->
-            <section class="card settings-section toggleable-section draggable-section" data-section="formatter">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title">Pattern Formatter</h2>
-                </div>
-                <div class="section-controls">
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                  <button class="float-btn" title="Float">⧉</button>
-                </div>
-              </div>
-              <div class="section-content section-content--cols">
-                <p>Configure number pattern formatting behavior:</p>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <div class="setting-label">Auto Copy Pattern Result</div>
-                  <div class="setting-description">
-                    Automatically copy the formatted number to your clipboard
-                    when a valid pattern is matched.
-                  </div>
-                </div>
-                <div class="setting-control">
-                  <label class="switch" for="auto-copy-toggle">
-                    <input
-                      type="checkbox"
-                      id="auto-copy-toggle"
-                      name="auto-copy-toggle"
-                      aria-label="Auto Copy Pattern Result"
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Quick formatter input for one-off formatting/pastes (Settings view) -->
-              <div class="pattern-quick card" id="pattern-quick">
-                <div class="input-group">
-                  <label aria-label="Number input">
-                    <span>Number</span>
-                    <input type="text" id="patternNumberInput" name="patternNumberInput" placeholder="Enter or paste a phone number" />
-                  </label>
-                  <button id="pastePatternBtn" class="button btn-sm">Paste</button>
-                  <button id="formatPatternBtn" class="button btn-sm">Format</button>
-                  <button id="clearPatternBtn" class="button btn-sm">Clear</button>
-                  <button id="copyPatternBtn" class="button btn-sm">Copy</button>
-                </div>
-                <div id="patternResult" class="pattern-result">Result will appear here</div>
-                <div id="patternHistory" class="pattern-history"></div>
-              </div>
-
-            <!-- Pattern Management Section (subsection of Pattern Formatter) -->
-            <div class="pattern-management-subsection" id="pattern-management-subsection">
-              <h4 class="subsection-title">Pattern Management</h4>
-              <p class="subsection-description">Configure number formatting patterns:</p>
-              <button class="subsection-toggle" aria-expanded="true" aria-controls="pattern-management">▾</button>
-
-              <div class="pattern-management card" id="pattern-management">
-                <div class="input-group">
-                  <label>
-                    <span>Starting Digits</span>
-                    <input
-                      type="text"
-                      id="startSequence"
-                      name="startSequence"
-                      placeholder="Optional starting digits..."
-                    />
-                  </label>
-                  <label>
-                    <span>Min Length</span>
-                    <input
-                      type="number"
-                      id="minLength"
-                      name="minLength"
-                      placeholder="Min digits..."
-                      min="1"
-                    />
-                  </label>
-                  <label>
-                    <span>Format (X = digit)</span>
-                    <input
-                      type="text"
-                      id="formatPattern"
-                      name="formatPattern"
-                      placeholder="Ex: @XXX-XXX-XXXX"
-                    />
-                  </label>
-                  <button id="addPatternBtn" class="button">Add Pattern</button>
-                </div>
-
-                <table class="pattern-table" aria-live="polite">
-                  <thead>
-                    <tr>
-                      <th class="drag-col" aria-hidden="true"></th>
-                      <th>Start</th>
-                      <th>Min Length</th>
-                      <th>Pattern</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="patternList">
-                    <!-- Patterns will be populated here -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-              </section>
 
             <!-- Audio Settings -->
             <section class="card settings-section toggleable-section draggable-section" data-section="audio">
@@ -1026,117 +917,7 @@
                   </div>
                 </div>
 
-                <!-- Full Hold Timer Settings Card -->
-                <section class="card settings-section toggleable-section draggable-section" data-section="holdtimer">
-                  <div class="section-header">
-                    <div class="drag-handle">⋮⋮</div>
-                    <div class="title-container">
-                      <h2 class="section-title">Hold Timer</h2>
-                    </div>
-                    <div class="section-controls">
-                      <button class="edit-title-btn" title="Edit Title">✎</button>
-                      <button class="float-btn" title="Float">⧉</button>
-                    </div>
-                  </div>
-                  <div class="section-content section-content--cols">
-                    <p>Configure hold timer behavior:</p>
 
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Auto-start on call</div>
-                        <div class="setting-description">Automatically start timer when indicated</div>
-                      </div>
-                      <div class="setting-control">
-                        <label class="switch" for="timer-auto-start">
-                          <input type="checkbox" id="timer-auto-start" name="timer-auto-start" aria-label="Auto-start on call" />
-                          <span class="slider"></span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Sound alerts</div>
-                        <div class="setting-description">Play sound when timer reaches warning time</div>
-                      </div>
-                      <div class="setting-control">
-                        <label class="switch" for="timer-sound-alerts">
-                          <input type="checkbox" id="timer-sound-alerts" name="timer-sound-alerts" aria-label="Sound alerts" />
-                          <span class="slider"></span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Repeat Alert Sound</div>
-                        <div class="setting-description">Repeat the alert sound until stopped (recommended for missed timer alerts)</div>
-                      </div>
-                      <div class="setting-control">
-                        <label class="switch" for="repeat-alert-sound-toggle">
-                          <input type="checkbox" id="repeat-alert-sound-toggle" aria-label="Repeat Alert Sound" />
-                          <span class="slider"></span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <h4>Enable Hold History Deletion</h4>
-                        <p>Allow users to delete individual hold history entries</p>
-                      </div>
-                      <div class="setting-control">
-                        <label class="switch" for="timer-allow-history-deletion">
-                          <input type="checkbox" id="timer-allow-history-deletion" name="timer-allow-history-deletion" aria-label="Enable Hold History Deletion" />
-                          <span class="slider"></span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="setting-item sound-setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Alert Sound</div>
-                        <div class="setting-description">Sound to play when timer expires</div>
-                      </div>
-                      <div class="setting-control">
-                        <label for="timer-alert-sound" class="sr-only">Alert Sound</label>
-                        <select id="timer-alert-sound" aria-label="Alert Sound" class="sound-select block-w-full-mb-8">
-                          <option value="endgame">Endgame</option>
-                          <option value="bell">Bell</option>
-                          <option value="towerbell">Tower Bell</option>
-                          <option value="custom">Custom URL</option>
-                        </select>
-                        <div class="custom-sound-option">
-                          <label for="custom-sound-url" class="block-mb-4px">Custom Sound URL:</label>
-                          <input type="text" id="custom-sound-url" placeholder="Paste direct .mp3 URL here" class="w-full" aria-label="Custom sound URL" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Enable Multiple Timers</div>
-                        <div class="setting-description">Allow creating and managing multiple independent timers simultaneously</div>
-                      </div>
-                      <div class="setting-control">
-                        <label class="switch" for="enable-multiple-timers">
-                          <input type="checkbox" id="enable-multiple-timers" aria-label="Enable Multiple Timers" />
-                          <span class="slider"></span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="setting-item instance-option">
-                      <div class="setting-info">
-                        <div class="setting-label">Maximum Timers</div>
-                        <div class="setting-description">Maximum number of timers that can be created <span id="max-timers-value">3</span></div>
-                      </div>
-                      <div class="setting-control">
-                        <input type="range" id="max-timers" min="1" max="10" value="3" aria-label="Maximum Timers" />
-                      </div>
-                    </div>
-                  </div>
-                </section>
 
                 <div class="setting-item">
                   <div class="setting-info">

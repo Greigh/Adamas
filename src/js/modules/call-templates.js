@@ -412,12 +412,12 @@ export function showCallLoggingSettings() {
                             <input type="text" id="edit-field-placeholder" class="form-control">
                         </div>
 
-                        <div class="form-group checkbox-group">
-                            <label class="switch" style="cursor: pointer;">
+                        <div class="form-group checkbox-group" style="display: flex; align-items: center; gap: 12px;">
+                            <label class="switch" style="cursor: pointer; margin: 0;">
                                 <input type="checkbox" id="edit-field-visible" class="hidden-toggle">
                                 <span class="toggle-slider"></span>
-                                <span style="margin-left: 10px;">Visible on Form</span>
                             </label>
+                            <label for="edit-field-visible" style="margin: 0; cursor: pointer;">Visible on Form</label>
                         </div>
 
                         <div class="form-actions" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">

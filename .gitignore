@@ -78,6 +78,8 @@ dist
 # Gatsby files
 .cache/
 public
+!src/public/
+
 
 # Storybook build outputs
 .out
@@ -125,11 +127,14 @@ main.css.map
 
 # Deployment scripts (contain sensitive info)
 upload.sh
-server.js
 
 # Configuration that might contain secrets
-nodemon.json
 .parcelrc
 
 # Random
 fix-scss-final.js
+playwright.config.js
+playwright.config.ts
+
+# User uploads
+uploads/

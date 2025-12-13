@@ -43,6 +43,7 @@
 @use 'components/instance-controls';
 @use 'components/toasts';
 @use 'components/quick-actions';
+@use 'components/welcome';
 
 // Features
 @use 'features/draggable';
@@ -294,3 +295,4 @@ body.dark-mode {
     }
   }
 }
+

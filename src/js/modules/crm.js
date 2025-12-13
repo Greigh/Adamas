@@ -330,7 +330,7 @@ export async function connectToFinesse(doc = document) {
   try {
     const result = await retryWithBackoff(
       () => withTimeout(
-        fetch(`/callcenterhelper/api/finesse/User/${encodeURIComponent(username)}?url=${encodeURIComponent(url)}`, {
+        fetch(`/adamas/api/finesse/User/${encodeURIComponent(username)}?url=${encodeURIComponent(url)}`, {
           method: 'GET',
           headers: { 'Authorization': `Basic ${authHeader}`, 'Accept': 'application/xml' }
         }),
@@ -1194,7 +1194,7 @@ window.debugFinesseConnection = async function(url, username, password) {
   console.log('Has password:', !!password);
 
   try {
-    const debugUrl = `/callcenterhelper/api/finesse/debug?url=${encodeURIComponent(url)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+    const debugUrl = `/adamas/api/finesse/debug?url=${encodeURIComponent(url)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
     console.log('Debug endpoint:', debugUrl);
 
     const response = await fetch(debugUrl);

@@ -14,7 +14,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash].js',
     chunkFilename: 'js/[name].[contenthash].chunk.js',
-    publicPath: '/callcenterhelper/',
+    publicPath: isProduction ? '/adamas/' : '/',
     clean: true,
   },
   devtool: isProduction ? false : 'source-map',
@@ -25,9 +25,25 @@ module.exports = {
         publicPath: '/',
       },
     ],
+    proxy: [
+      {
+        context: ['/adamas/api', '/api', '/socket.io'],
+        target: 'http://localhost:8080',
+        secure: false,
+        changeOrigin: true,
+        ws: true,
+      },
+    ],
     port: 3000,
     hot: true,
-    historyApiFallback: false,
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/contact$/, to: '/contact.html' },
+        { from: /^\/privacy$/, to: '/privacy.html' },
+        { from: /^\/terms$/, to: '/terms.html' },
+        { from: /^\/settings$/, to: '/settings.html' },
+      ],
+    },
     headers: {
       'X-Content-Type-Options': 'nosniff',
     },

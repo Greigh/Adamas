@@ -1,4 +1,11 @@
 // Import synchronous dependencies
+import { io } from "socket.io-client";
+import Chart from "chart.js/auto";
+
+// Expose libraries globally for legacy code compatibility
+window.io = io;
+window.Chart = Chart;
+
 import { auth } from './modules/auth.js';
 import { initializeSettings, appSettings, saveSettings, applySettings } from './modules/settings.js';
 import { initializeTheme, setupThemeToggle } from './modules/themes.js';
@@ -753,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       } else {
         // In production mode, register service worker
-        navigator.serviceWorker.register('/callcenterhelper/sw.js')
+        navigator.serviceWorker.register('/adamas/sw.js')
           .then((registration) => {
             //console.log('Service Worker registered successfully:', registration.scope);
 

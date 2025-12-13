@@ -19,59 +19,61 @@ import {
 // Draggable helpers for per-section controls (allow settings to be draggable/floating like the main page)
 import { setupDraggable, setupFloating, setupSectionToggle } from './draggable.js';
 
-// Default settings
+// Settings object for most of the app functionality
 export let appSettings = {
-  showFormatter: true,
+  hasSeenWelcome: false, // New user flag
+  showFormatter: true, // Show formatter on the main page by default
   showCallflow: false,  // Hidden by default to reduce clutter
-  showNotes: true,
-  showHoldtimer: true,
-  showCalllogging: false,
-  showCrm: false,
-  showScripts: false,
-  showTasks: false,
-  showVoicerecording: false,
-  showCollaboration: false,
-  showWorkflows: false,
-  showMultichannel: false,
-  showFeedback: false,
-  showKnowledgeBase: false,
-  showTimeTracking: false,
-  showAdvancedAnalytics: false,
+  showNotes: false, // Notes section (default hidden)
+  showHoldtimer: true, // Show hold timer on the main page by default
+  showCalllogging: true, // Show call logging tool on the main page by default
+  showCrm: false, // CRM (default hidden)
+  showScripts: true,  // Show scripts library (default visible)
+  showTasks: false, // Tasks (default hidden)
+  showVoicerecording: false, // Voice recording (default hidden)
+  showCollaboration: false, // Collaboration (default hidden)
+  showWorkflows: false, // Workflows (default hidden)
+  showMultichannel: false, // Multichannel (default hidden)
+  showFeedback: false, // Feedback (default hidden)
+  showKnowledgeBase: false, // Knowledge Base (default hidden)
+  showTimeTracking: false, // Time Tracking (default hidden)
+  showAdvancedAnalytics: false, // Advanced Analytics (default hidden)
   showAnalytics: false,  // Controls the stats/analytics tab visibility
-  showApiIntegration: false,
-  showTwilio: false,
-  showHoldtimerSettings: true,
-  showPerformanceMonitoring: false,
-  showCrmIntegration: false,
-  showDataManagement: true,
-  showCamera: false,
-  showVoiceCommands: false,
-  showTelephony: false,
-  showEmail: false,
-  showTraining: false,
-  minimalMode: false,  // New setting to hide all non-essential sections
-  exportPatterns: true,
-  exportSteps: true,
-  exportNotes: true,
-  exportSettings: true,
-  enablePopupWindows: false,
-  popupAlwaysOnTop: true,
-  popupWidth: 600,
-  popupHeight: 400,
-  preferPopupWindows: false,
-  timerAutoStart: true,
-  timerSoundAlerts: true,
-  timerWarningTime: 300,
-  timerShowNotifications: false,
-  timerLogHolds: true,
-  timerCountdownMode: false,
-  timerCountdownDuration: 300, // 5 minutes in seconds
-  timerAllowHistoryDeletion: true, // New setting for hold history deletion
+  showApiIntegration: false, // API Integration (default hidden)
+  showTwilio: false, // Twilio integration (default hidden)
+  showHoldtimerSettings: true, // Show hold timer settings on the main page by default
+  showPerformanceMonitoring: false, // Performance monitoring (default hidden)
+  showCrmIntegration: false, // CRM integration (default hidden here but hardcoded into the UI)
+  showDataManagement: false, // Data Management (default hidden)
+  showCamera: false, // Camera settings for CRM (default hidden) [Not implemented]
+  showVoiceCommands: false, // Voice commands (default hidden) [Not implemented]
+  showTelephony: false, // Telephony (default hidden) [Not implemented]
+  showEmail: false, // Email (default hidden) [Not implemented]
+  showTraining: false, // Training (default hidden) [Not implemented]
+  showQuickActions: true, // Quick Actions Bar (default visible)
+  minimalMode: false,  // Hide all non-essential sections
+  exportPatterns: true, // Export patterns (default enabled)
+  exportSteps: true, // Export steps (default enabled)
+  exportNotes: true, // Export notes (default enabled)
+  exportSettings: true, // Export settings (default enabled)
+  enablePopupWindows: false, // Enable popup windows (default disabled)
+  popupAlwaysOnTop: true, // Popup windows always on top (default enabled)
+  popupWidth: 600, // Popup window width (default 600px)
+  popupHeight: 400, // Popup window height (default 400px)
+  preferPopupWindows: false, // Prefer popup windows (default disabled)
+  timerAutoStart: true, // Timer auto-start (default enabled)
+  timerSoundAlerts: true, // Timer sound alerts (default enabled)
+  timerWarningTime: 300, // Timer warning time (default 300 seconds)
+  timerShowNotifications: false, // Timer show notifications (default disabled)
+  timerLogHolds: true, // Timer log holds (default enabled)
+  timerCountdownMode: false, // Timer countdown mode (default disabled)
+  timerCountdownDuration: 300, // 5 minutes in seconds, default countdown duration
+  timerAllowHistoryDeletion: true, // Setting for hold history deletion
   timerAlertSound: 'endgame', // default, can be 'endgame', 'bell', 'towerbell', 'custom'
-  timerCustomSoundUrl: '',
-  repeatAlertSound: true, // New setting for repeat alert sound
-  customTitles: {},
-  patternManagementExpanded: true,
+  timerCustomSoundUrl: '', // Custom sound URL for timer alert
+  repeatAlertSound: true, // Setting for repeat alert sound
+  customTitles: {}, // Custom titles for sections and settings
+
   // collapsed setting-items stored as map: { '<sectionKey>::<labelKey>': true }
   collapsedSettingItems: {},
   layoutMode: 'grid', // Layout mode: 'vertical' or 'grid'
@@ -85,10 +87,10 @@ export let appSettings = {
     spacing: 24,
     sections: ['formatter', 'call-flow-builder', 'notes', 'hold-timer'],
   },
-  multipleTimers: false,
-  multipleNotes: true,
-  maxTimers: 3,
-  maxNotes: 3,
+  multipleTimers: false, // Setting for multiple timers
+  multipleNotes: true, // Setting for multiple notes
+  maxTimers: 3, // Maximum number of timers
+  maxNotes: 3, // Maximum number of notes shown in the UI
   finesse: {
     enabled: false,
     url: '',
@@ -119,7 +121,7 @@ export function addSettingCollapsibles() {
       const hasExport = !!item.querySelector('.export-options');
       const isDanger = item.classList.contains('danger');
 
-      // heuristics: if the item has a multi-line description long enough, or a file upload/export control
+      // Heuristics: if the item has a multi-line description long enough, or a file upload/export control
       // or contains multiple controls - make it collapsible.
       const textLength = desc?.textContent?.trim().length || 0;
       const controlCount = ctrl ? ctrl.querySelectorAll('input, button, select, textarea').length : 0;
@@ -127,37 +129,38 @@ export function addSettingCollapsibles() {
 
       if (!shouldCollapse) return;
 
-      // build a unique key for persistence
+      // Build a unique key for persistence
       const label = item.querySelector('.setting-label')?.textContent?.trim() || `${sectionKey}-${idx}`;
       const labelKey = label.toLowerCase().replace(/\s+/g, '-');
       const stateKey = `${sectionKey}::${labelKey}`;
 
-      // create button
+      // Create button
       const btn = document.createElement('button');
       btn.className = 'setting-toggle';
       btn.setAttribute('aria-expanded', 'true');
       btn.setAttribute('title', 'Collapse');
       btn.innerHTML = '▾';
 
-      // insert toggle in the setting header
+      // Insert toggle in the setting header
       const settingInfo = item.querySelector('.setting-info');
       if (settingInfo) {
         settingInfo.appendChild(btn);
       }
 
-      // set initial collapsed state from saved settings
+      // Set initial collapsed state from saved settings
       if (appSettings.collapsedSettingItems && appSettings.collapsedSettingItems[stateKey]) {
         item.classList.add('collapsed');
         btn.setAttribute('aria-expanded', 'false');
         btn.innerHTML = '▸';
       }
 
+      // Add click handler
       btn.addEventListener('click', (ev) => {
         ev.preventDefault();
         const isCollapsed = item.classList.toggle('collapsed');
         btn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
         btn.innerHTML = isCollapsed ? '▸' : '▾';
-        // save state
+        // Save state
         appSettings.collapsedSettingItems = appSettings.collapsedSettingItems || {};
         appSettings.collapsedSettingItems[stateKey] = isCollapsed;
         saveSettings(appSettings);
@@ -173,11 +176,11 @@ export function toggleCollapseAll(collapse) {
   const buttons = Array.from(document.querySelectorAll('#settings-view .settings-section .setting-item .setting-toggle'));
   if (!buttons.length) return;
 
-  // compute current: if any item is not collapsed, we should collapse all
+  // Compute current: if any item is not collapsed, we should collapse all
   const anyExpanded = buttons.some(btn => { const item = btn.closest('.setting-item'); return item && !item.classList.contains('collapsed'); });
   const targetCollapse = (typeof collapse === 'boolean') ? collapse : anyExpanded;
 
-  // helper to build state key like addSettingCollapsibles
+  // Helper to build state key like addSettingCollapsibles
   function stateKeyForItem(item) {
     const section = item.closest('.settings-section');
     const sectionKey = section?.id || (section?.querySelector('h3')?.textContent?.trim().toLowerCase().replace(/\s+/g, '-') || 'settings');
@@ -238,6 +241,9 @@ export function initializeSettings() {
     repeatAlertSoundToggle.checked =
       appSettings.timerRepeatAlertSound !== false;
   }
+
+  // Check for welcome screen
+  checkWelcomeStatus();
 }
 
 export function applySettings() {
@@ -341,7 +347,11 @@ export function applySettings() {
     'telephony': 'coming-soon',
     'email': 'coming-soon',
     'training': 'coming-soon',
-    'twilio': 'production'
+    'twilio': 'production',
+    'quick-actions': 'production',
+    'twilio': 'production',
+    'quick-actions': 'production',
+    'performanceMonitoring': 'production'
   };
 
   const toggles = {
@@ -370,6 +380,8 @@ export function applySettings() {
     'toggle-email': 'email',
     'toggle-training': 'training',
     'toggle-twilio': 'twilio',
+    'toggle-twilio': 'twilio',
+    'toggle-performance-monitoring': 'performanceMonitoring',
     // Main page toggles
     'main-toggle-formatter': 'formatter',
     'main-toggle-callflow': 'callflow',
@@ -396,6 +408,9 @@ export function applySettings() {
     'main-toggle-email': 'email',
     'main-toggle-training': 'training',
     'main-toggle-twilio': 'twilio',
+    'main-toggle-twilio': 'twilio',
+    'main-toggle-performance-monitoring': 'performanceMonitoring',
+    'toggle-quick-actions': 'quick-actions'
   };
 
   Object.entries(toggles).forEach(([toggleId, section]) => {
@@ -600,6 +615,17 @@ export function applySettings() {
   if (repeatAlertSoundToggle)
     repeatAlertSoundToggle.checked = appSettings.repeatAlertSound;
 
+  // Apply Quick Actions Bar setting
+  const quickActionsToolbar = document.getElementById('quick-actions-toolbar');
+  const quickActionsToggle = document.getElementById('toggle-quick-actions');
+  if (quickActionsToolbar) {
+    quickActionsToolbar.style.display = appSettings.showQuickActions !== false ? '' : 'none';
+    // If we're hiding the toolbar, also ensure the body padding is adjusted if needed (though stickiness usually handles overlap, removing it might require layout validation)
+  }
+  if (quickActionsToggle) {
+    quickActionsToggle.checked = appSettings.showQuickActions !== false;
+  }
+
   // Add the new setting
   const timerAllowHistoryDeletion = document.getElementById(
     'timer-allow-history-deletion'
@@ -653,20 +679,7 @@ export function applySettings() {
   updateMultipleTimersVisibility(appSettings.multipleTimers);
 
   // Apply repeat alert sound mode
-    // Apply pattern management subsection expand/collapse
-    try {
-      const patternSubsection = document.getElementById('pattern-management-subsection');
-      const toggle = patternSubsection?.querySelector('.subsection-toggle');
-      if (patternSubsection) {
-        if (!appSettings.patternManagementExpanded) {
-          patternSubsection.classList.add('collapsed');
-          if (toggle) toggle.setAttribute('aria-expanded', 'false');
-        } else {
-          patternSubsection.classList.remove('collapsed');
-          if (toggle) toggle.setAttribute('aria-expanded', 'true');
-        }
-      }
-    } catch (e) {}
+
   if (repeatAlertSoundToggle) {
     repeatAlertSoundToggle.checked =
       appSettings.timerRepeatAlertSound !== false;
@@ -770,6 +783,8 @@ export function setupSettingsEventListeners() {
     'toggle-training',
     'toggle-crm',
     'toggle-data-management',
+    'toggle-performance-monitoring',
+    'toggle-quick-actions',
     // Main page toggles
     'main-toggle-formatter',
     'main-toggle-callflow',
@@ -795,6 +810,7 @@ export function setupSettingsEventListeners() {
     'main-toggle-training',
     'main-toggle-crm',
     'main-toggle-data-management',
+    'main-toggle-performance-monitoring',
   ];
   settingsToggles.forEach((toggleId) => {
     const toggle = document.getElementById(toggleId);
@@ -847,6 +863,13 @@ export function setupSettingsEventListeners() {
             break;
           case 'email':
             settingKey = 'showEmail';
+            break;
+          case 'quick-actions':
+            settingKey = 'showQuickActions';
+            break;
+          case 'performanceMonitoring':
+            settingKey = 'showPerformanceMonitoring';
+            break;
             break;
           case 'training':
             settingKey = 'showTraining';
@@ -1334,10 +1357,10 @@ export function setupSettingsEventListeners() {
   if (alertSound && customSoundOption && customSoundUrl) {
     function updateCustomUrlVisibility() {
       if (alertSound.value === 'custom') {
-        customSoundOption.style.display = '';
+        customSoundOption.classList.add('active'); // Use class for visibility/flex
         customSoundUrl.focus();
       } else {
-        customSoundOption.style.display = 'none';
+        customSoundOption.classList.remove('active');
         customSoundUrl.blur();
       }
     }
@@ -2092,3 +2115,175 @@ async function loadTwilioSettings() {
       this.textContent = anyOff ? 'Disable All' : 'Enable All';
     });
   });
+
+// Welcome Screen Logic
+// Welcome Screen Logic
+function checkWelcomeStatus() {
+  if (!appSettings.hasSeenWelcome) {
+    const overlay = document.getElementById('welcome-overlay');
+    const nextBtn = document.getElementById('wizard-next');
+    const backBtn = document.getElementById('wizard-back');
+    const steps = document.querySelectorAll('.wizard-step');
+    const dots = document.querySelectorAll('.wizard-dots .dot');
+    
+    // State
+    let currentStep = 1;
+    let selectedRole = 'agent';
+    let selectedTheme = 'dark';
+    let userName = '';
+    let customModules = {};
+
+    if (overlay && nextBtn) {
+      setTimeout(() => overlay.classList.add('active'), 500);
+
+      // --- Helpers ---
+      function updateStep(step) {
+        steps.forEach(s => {
+            s.classList.remove('active');
+            if (parseInt(s.dataset.step) === step) s.classList.add('active');
+        });
+        
+        dots.forEach((d, i) => {
+            // Logic for dots needs to match visible steps vs actual steps?
+            // Simple approach: just light them up.
+            if (i < step) d.classList.add('active');
+            else d.classList.remove('active');
+        });
+
+        backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+        
+        if (step === 5) {
+            nextBtn.textContent = 'Finish';
+        } else {
+            nextBtn.textContent = 'Next';
+        }
+      }
+
+      // --- Interaction Handlers ---
+      
+      // Step 1: Role Selection
+      const roleCards = document.querySelectorAll('.role-card');
+      roleCards.forEach(card => {
+        card.addEventListener('click', () => {
+          roleCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedRole = card.dataset.role;
+        });
+      });
+
+      // Step 2 handled by checkboxes naturally
+
+      // Step 3: Theme Selection
+      const themeCards = document.querySelectorAll('.theme-card');
+      themeCards.forEach(card => {
+        card.addEventListener('click', () => {
+          themeCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedTheme = card.dataset.theme;
+        });
+      });
+
+      // --- Navigation ---
+      nextBtn.addEventListener('click', () => {
+        // Logic for moving forward
+        let nextStep = currentStep + 1;
+
+        // Skip Step 2 if not custom
+        if (currentStep === 1 && selectedRole !== 'custom') {
+            nextStep = 3;
+        }
+
+        if (currentStep === 3) {
+            if (window.setTheme) window.setTheme(selectedTheme);
+        }
+
+        if (currentStep < 5) {
+            currentStep = nextStep;
+            updateStep(currentStep);
+        } else {
+            // FINISH (Step 5)
+            const nameInput = document.getElementById('welcome-name');
+            if (nameInput) userName = nameInput.value;
+            
+            // Collect modules if custom
+            if (selectedRole === 'custom') {
+                document.querySelectorAll('input[name="modules"]').forEach(cb => {
+                    customModules[cb.value] = cb.checked;
+                });
+            }
+
+            applyRolePreset(selectedRole, customModules);
+            
+            appSettings.theme = selectedTheme;
+            if (userName) appSettings.userName = userName;
+            
+            appSettings.hasSeenWelcome = true;
+            saveSettings(appSettings);
+            
+            overlay.classList.remove('active');
+            applySettings();
+        }
+      });
+
+      backBtn.addEventListener('click', () => {
+        let prevStep = currentStep - 1;
+        
+        // Skip Step 2 going back if not custom
+        if (currentStep === 3 && selectedRole !== 'custom') {
+            prevStep = 1;
+        }
+
+        if (prevStep >= 1) {
+            currentStep = prevStep;
+            updateStep(currentStep);
+        }
+      });
+    }
+  }
+}
+
+function applyRolePreset(role, customModules = {}) {
+  // Defaults set to false for clarity before enabling
+  const allModules = ['showFormatter', 'showCalllogging', 'showScripts', 'showHoldtimer', 'showNotes', 'showAnalytics', 'showCrm', 'showTasks', 'showCollaboration', 'showPerformanceMonitoring'];
+  
+  // Helper to reset
+  const resetAll = () => {
+      allModules.forEach(m => appSettings[m] = false);
+  };
+
+  if (role === 'custom') {
+      // Apply exact check states
+      Object.keys(customModules).forEach(key => {
+          appSettings[key] = customModules[key];
+      });
+      // Ensure Quick actions is on by default for custom?
+      appSettings.showQuickActions = appSettings.showQuickActions ?? true;
+  } 
+  else {
+      resetAll(); // Clear first for presets
+      
+      if (role === 'agent') {
+        appSettings.showFormatter = true;
+        appSettings.showCalllogging = true;
+        appSettings.showScripts = true;
+        appSettings.showHoldtimer = true;
+        appSettings.showNotes = true;
+        appSettings.showQuickActions = true;
+      } else if (role === 'manager') {
+        appSettings.showAnalytics = true;
+        appSettings.showPerformanceMonitoring = true; // Often paired with analytics
+        appSettings.showCollaboration = true;
+        appSettings.showTasks = true;
+        appSettings.showCrm = true;
+        appSettings.showFormatter = true;       // Useful for everyone
+        appSettings.showCalllogging = true;     // Reviewing calls
+        appSettings.showQuickActions = true;
+      } else if (role === 'minimal') {
+        appSettings.showFormatter = true;
+        appSettings.showHoldtimer = true;
+        appSettings.showQuickActions = true;
+      }
+  }
+
+  saveSettings(appSettings);
+}

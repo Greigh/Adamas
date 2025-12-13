@@ -1,4 +1,6 @@
-# Call Center Helper / Adamas
+# Adamas (Call Center Helper) [BETA]
+
+**Current Status**: 🚧 Public Beta
 
 A modern web application designed to streamline call center operations, providing tools for workflow management, note-taking, number formatting, and more. Built with HTML, JavaScript (ES Modules), SCSS, and featuring modular architecture, persistent storage, and a responsive UI.
 
@@ -23,7 +25,7 @@ A modern web application designed to streamline call center operations, providin
 
 ## Project Structure
 
-```
+```text
 Call Center Help/client/
 ├── src/
 │   ├── index.html
@@ -34,56 +36,18 @@ Call Center Help/client/
 │   ├── js/
 │   │   ├── main.js
 │   │   ├── modules/
-│   │   │   ├── callflow.js
-│   │   │   ├── notes.js
-│   │   │   ├── patterns.js
-│   │   │   ├── settings.js
-│   │   │   ├── storage.js
-│   │   │   ├── themes.js
-│   │   │   ├── timer.js
-│   │   │   ├── floating.js
-│   │   │   └── draggable.js
 │   │   └── utils/
-│   │       ├── app-globals.js
-│   │       ├── app-state.js
-│   │       ├── audio.js
-│   │       ├── form-fixer.js
-│   │       └── helpers.js
 │   ├── styles/
-│   │   ├── main.scss
-│   │   ├── main.css
-│   │   ├── base/
-│   │   ├── components/
-│   │   ├── features/
-│   │   ├── layout/
-│   │   ├── sections/
-│   │   └── vendor/
 │   └── locales/
-│       ├── en.json
-│       └── es.json
 ├── public/
-│   └── sw.js
 ├── test/
-│   ├── crm.unit.test.js
-│   ├── crm.unit2.test.js
-│   ├── jest.setup.js
-│   ├── patterns.paste.test.js
-│   ├── settings.collapse.test.js
-│   ├── settings.ui.test.js
-│   └── e2e/
-├── tmp/
-├── uploads/
 ├── dist/ (generated)
-├── dist_clean/ (generated)
 ├── package.json
 ├── webpack.config.js
 ├── jest.config.js
 ├── playwright.config.js
 ├── nodemon.json
 ├── server.js
-├── build.js
-├── clean-build.js
-├── upload.sh
 └── README.md
 ```
 
@@ -95,25 +59,30 @@ Call Center Help/client/
 ## Installation
 
 1. Clone the repository:
+
    ```sh
    git clone <repository-url>
    cd "Call Center Help/client"
    ```
 
 2. Install dependencies:
+
    ```sh
    npm install
    ```
 
 ## Development
 
-Start the development server with hot reload:
+Start the full development environment (Frontend + Backend):
+
 ```sh
-npm run dev
+npm run dev:local
 ```
+
 The application will be available at `http://localhost:8080`.
 
 For a simple local server (static files):
+
 ```sh
 npm start
 ```
@@ -121,12 +90,15 @@ npm start
 ## Building
 
 Create a production build:
+
 ```sh
 npm run build
 ```
+
 This generates optimized files in the `dist/` directory.
 
 Clean build (removes old files):
+
 ```sh
 npm run clean
 npm run build
@@ -135,11 +107,13 @@ npm run build
 ## Testing
 
 Run unit tests:
+
 ```sh
 npm test
 ```
 
 Run end-to-end tests:
+
 ```sh
 npm run test:e2e
 ```
@@ -147,9 +121,11 @@ npm run test:e2e
 ## Deployment
 
 1. Build the application:
+
    ```sh
    npm run upload
    ```
+
    This script builds, cleans, and uploads to the server.
 
 For manual deployment, use `upload.sh` after building.

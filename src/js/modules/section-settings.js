@@ -1,6 +1,8 @@
 
 import { showToast } from '../utils/toast.js';
 import { showCallLoggingSettings } from './call-templates.js';
+import { showHoldTimerSettings } from './timer-settings.js';
+import { showFormatterSettings } from './formatter-settings.js';
 
 export function initializeSectionSettings() {
     document.addEventListener('click', (e) => {
@@ -18,8 +20,11 @@ export function initializeSectionSettings() {
 function openSectionSettings(sectionId) {
     if (sectionId === 'call-logging') {
         // For now, Call Logging settings = Template Manager
-        // In the future, this could be a menu with "Manage Templates", "Customize Fields", etc.
         showCallLoggingSettings();
+    } else if (sectionId === 'hold-timer') {
+        showHoldTimerSettings();
+    } else if (sectionId === 'settings-pattern-formatter' || sectionId === 'formatter' || sectionId === 'pattern-formatter') {
+        showFormatterSettings();
     } else {
         showToast(`Settings for ${sectionId} coming soon!`, 'info');
     }

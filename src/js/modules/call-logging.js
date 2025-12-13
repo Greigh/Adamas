@@ -1,5 +1,6 @@
 // Call Logging Module
 import { lookupContact, logCallToCRM, moduleState as crmState } from './crm.js';
+import { startHoldTimer } from './timer.js';
 import { initializeCallTemplates } from './call-templates.js';
 
 export function initializeCallLogging() {
@@ -143,6 +144,11 @@ export function initializeCallLogging() {
     // Start timer
     updateCallTimer();
     callTimerInterval = setInterval(updateCallTimer, 1000);
+
+    // Auto-start hold timer if enabled
+    if (window.appSettings && window.appSettings.timerAutoStart) {
+        startHoldTimer();
+    }
 
     // Auto-save notes
     setInterval(() => {
