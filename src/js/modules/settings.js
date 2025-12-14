@@ -491,7 +491,8 @@ export function applySettings() {
         } else {
           try { toggle.checked = false; } catch (e) {}
         }
-        appSettings[settingKey] = false;
+        // appSettings[settingKey] = false; // Removed to allow advanced features to stay enabled if set
+
         if (sectionEls && sectionEls.length) {
           sectionEls.forEach((el) => (el.style.display = 'none'));
         }
