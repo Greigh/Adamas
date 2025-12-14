@@ -421,23 +421,75 @@
                     </select>
                   </div>
 
-                  <div class="form-group" style="align-self:end;">
+                  <div class="form-group timer-group">
+                    <div id="call-timer" class="call-timer">00:00</div>
+                    <div id="active-call-hold-badge" class="hold-timer-badge" style="display: none;">Hold: 00:00</div>
                     <button id="start-call-log" class="button btn-sm">Start Call</button>
                   </div>
                 </div>
 
+                <!-- Verification Section (Hidden by default) -->
+                <div id="call-verification-section" class="form-section" style="display: none;">
+                  <h5 class="section-label">Verification</h5>
+                  <div id="verification-fields-container" class="checkbox-group">
+                    <!-- Dynamic Fields -->
+                  </div>
+                </div>
+
+                <!-- Sensitive Data Section (Hidden by default) -->
+                <div id="call-sensitive-section" class="form-section" style="display: none;">
+                  <h5 class="section-label">Caller Data</h5>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="caller-account">Account #</label>
+                      <input type="text" id="caller-account" name="caller-account" placeholder="Account Number">
+                    </div>
+                    <div class="form-group">
+                      <label for="caller-ssn">SSN</label>
+                      <input type="password" id="caller-ssn" name="caller-ssn" placeholder="XXX-XX-XXXX" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+
                 <div class="form-group">
-                  <label for="call-notes">Notes</label>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <label for="call-notes" style="margin-bottom: 0;">Notes</label>
+                    <div id="call-templates-container" style="display: none;">
+                      <select id="note-template-select" class="btn-sm" style="padding: 2px 5px; height: auto;">
+                        <option value="">Insert Template...</option>
+                        <!-- Dynamic Options -->
+                      </select>
+                    </div>
+                  </div>
                   <textarea id="call-notes" name="call-notes" placeholder="Call notes..."></textarea>
                 </div>
 
                 <div class="call-controls">
-                  <button id="end-call-log" class="button btn-secondary" disabled>End Call</button>
+                  <button id="end-call-log" class="btn btn-primary" disabled style="background-color: var(--danger); border-color: var(--danger); color: white;">
+                    End Call
+                  </button>
+                  <button id="hold-call-btn" class="btn btn-secondary" disabled title="Hold Call">
+                    ⏸️ Hold
+                  </button>
                   <button id="save-call-log" class="button" disabled>Save Log</button>
                 </div>
               </div>
-              <div class="call-history">
-                <h4>Recent Calls</h4>
+              <div class="timer-group">
+                <div class="call-history-header">
+                  <h4>Recent Calls</h4>
+                  <div class="history-actions">
+                    <button id="show-analytics" class="button btn-sm btn-icon" title="Analytics">📊</button>
+                    <button id="export-calls" class="button btn-sm btn-icon" title="Export">⬇️</button>
+                  </div>
+                </div>
+                <div class="history-filters">
+                  <input type="text" id="call-search" placeholder="Search...">
+                  <select id="call-filter">
+                    <option value="all">All</option>
+                    <option value="inbound">Inbound</option>
+                    <option value="outbound">Outbound</option>
+                  </select>
+                </div>
                 <ul id="call-history-list">
                   <li class="no-calls">No recent calls</li>
                 </ul>
@@ -1239,15 +1291,7 @@
                   <div class="section-group">
                     <h4>Analytics</h4>
                     <div class="toggle-grid">
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Detailed reports">Advanced Reporting</span>
-                          <label class="switch" for="toggle-reporting">
-                            <input type="checkbox" id="toggle-reporting" name="toggle-reporting" class="section-toggle" data-section="reporting" aria-label="Show Advanced Reporting" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
+
                         <div class="toggle-item">
                         <div class="toggle-content">
                           <span class="toggle-text" title="Custom dashboards">Advanced Analytics</span>
@@ -1939,29 +1983,7 @@
               </div>
             </section>
 
-            <!-- Advanced Analytics Section -->
-            <section
-              id="advanced-analytics"
-              class="card toggleable-section draggable-section"
-              data-section="advancedanalytics"
-            >
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Advanced Analytics">
-                    Advanced Analytics
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
-                <button class="float-btn" title="Float">⧉</button>
-                </div>
-              </div>
-              <div class="section-content">
-                <div id="advanced-analytics-container"></div>
-              </div>
-            </section>
+
 
             <!-- Mobile companion removed -->
           </div>
@@ -2158,10 +2180,11 @@
           </section>
 
           <!-- Phase 3: Advanced Reporting -->
+            <!-- Advanced Analytics Section (Consolidated) -->
           <section
-            id="advanced-reporting"
+            id="advanced-analytics"
             class="card toggleable-section draggable-section"
-            data-section="reporting"
+            data-section="advancedAnalytics"
           >
             <div class="section-header">
               <div class="drag-handle">⋮⋮</div>
@@ -2651,5 +2674,6 @@
         </div>
       </footer>
     </div>
+
   </body>
 </html>

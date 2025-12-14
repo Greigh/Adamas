@@ -657,6 +657,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Apply settings to initialize section visibility
     applySettings();
+    window.applySettings = applySettings;
+    window.saveSettings = saveSettings;
 
     // Set up all event listeners for the application
     setupAllEventListeners();

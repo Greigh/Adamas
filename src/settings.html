@@ -111,6 +111,87 @@
               </div>
             </section>
 
+            <!-- Call Logging Configuration -->
+            <section class="card settings-section toggleable-section draggable-section" data-section="call-logging-config">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="title-container">
+                  <h2 class="section-title">Call Logging</h2>
+                </div>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Verification Fields</div>
+                    <div class="setting-description">
+                      Show checkboxes for verifying caller details (Name, DOB, Address, SSN)
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-call-logging-verification">
+                      <input
+                        type="checkbox"
+                        id="toggle-call-logging-verification"
+                        name="toggle-call-logging-verification"
+                        aria-label="Verification Fields"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Sensitive Data</div>
+                    <div class="setting-description">
+                      Enable fields for Account Number and SSN (masked)
+                    </div>
+                  </div>
+                  <div class="setting-control">
+                    <label class="switch" for="toggle-call-logging-sensitive">
+                      <input
+                        type="checkbox"
+                        id="toggle-call-logging-sensitive"
+                        name="toggle-call-logging-sensitive"
+                        aria-label="Sensitive Data"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                  <div class="setting-item">
+                     <div class="setting-info">
+                       <div class="setting-label">Note Templates</div>
+                       <div class="setting-description">Enable quick-insert note templates</div>
+                     </div>
+                    <div class="setting-control">
+                      <label class="switch" for="toggle-call-logging-templates">
+                        <input type="checkbox" id="toggle-call-logging-templates" name="toggle-call-logging-templates" aria-label="Note Templates">
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Advanced Configuration Trigger -->
+                  <div class="setting-item" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <div class="setting-info">
+                      <div class="setting-label">Advanced Configuration</div>
+                      <div class="setting-description">Manage templates and custom form fields</div>
+                    </div>
+                    <div class="setting-control">
+                      <button id="open-call-settings-btn" class="button btn-secondary">Configure...</button>
+                    </div>
+                  </div>
+              </div>
+            </section>
+
+   <!-- Modal moved to index.html -->
+
             <!-- Visible Sections -->
             <section class="card settings-section toggleable-section draggable-section" data-section="visible-sections">
               <div class="section-header">

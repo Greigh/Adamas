@@ -207,8 +207,8 @@ module.exports = {
     },
   },
   performance: {
-    hints: false, // Disable performance hints
-    maxAssetSize: 1000000, // 1MB for individual assets
-    maxEntrypointSize: 1000000, // 1MB for entry points
+    hints: 'warning', // Enable performance hints
+    maxAssetSize: 10000000, // 10MB for individual assets
+    maxEntrypointSize: 10000000, // 10MB for entry points
   },
 };

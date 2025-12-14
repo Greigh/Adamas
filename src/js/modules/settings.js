@@ -1,4 +1,5 @@
 // Settings management module
+
 import {
   saveData,
   loadData,
@@ -96,13 +97,29 @@ export let appSettings = {
     url: '',
     autoConnect: false,
     autoStartTimer: true,
+    autoStartTimer: true,
     autoStopTimer: true,
   },
+  callLoggingVerification: true,
+  callLoggingSensitiveFields: true,
+  callLoggingTemplates: true,
+  // Customizable Lists
+  verificationOptions: ['Name', 'DOB', 'Address', 'Last 4 SSN'],
+  noteTemplates: [
+    { label: 'Issue/Resolution', text: 'Issue: \\nResolution: ' },
+    { label: 'General Inquiry', text: 'Customer verified. Caller asked about: \\nAdvised: ' },
+    { label: 'Payment Taken', text: 'Payment of $ taken via card ending in . Confirmed email: ' },
+    { label: 'Callback', text: 'Callback scheduled for: \\nReason: ' }
+  ]
 };
 
 // Export the saveSettings function
-export function saveSettings(settings) {
-  return saveData('appSettings', settings);
+export function saveSettings() {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('appSettings', JSON.stringify(appSettings));
+  }
+  // Notify other modules
+  window.dispatchEvent(new CustomEvent('appSettingsChanged', { detail: appSettings }));
 }
 
 // Exportable helper so tests can call this directly
@@ -410,7 +427,11 @@ export function applySettings() {
     'main-toggle-twilio': 'twilio',
     'main-toggle-twilio': 'twilio',
     'main-toggle-performance-monitoring': 'performanceMonitoring',
-    'toggle-quick-actions': 'quick-actions'
+    'toggle-quick-actions': 'quick-actions',
+    // Call Logging Settings
+    'toggle-call-logging-verification': 'callLoggingVerification',
+    'toggle-call-logging-sensitive': 'callLoggingSensitiveFields',
+    'toggle-call-logging-templates': 'callLoggingTemplates'
   };
 
   Object.entries(toggles).forEach(([toggleId, section]) => {
@@ -434,6 +455,11 @@ export function applySettings() {
           break;
         case 'apiintegration':
           settingKey = 'showApiIntegration';
+          break;
+        case 'callLoggingVerification':
+        case 'callLoggingSensitiveFields':
+        case 'callLoggingTemplates':
+          settingKey = section;
           break;
         default:
           // Convert hyphenated names like 'data-management' into 'showDataManagement'
@@ -482,8 +508,8 @@ export function applySettings() {
         }
       }
 
-      // Disable toggles for coming-soon features and initialize range sliders
-      if (status === 'coming-soon') {
+      // Disable toggles for coming-soon features ONLY if they are not already enabled
+      if (status === 'coming-soon' && !appSettings[settingKey]) {
         toggle.disabled = true;
         // for range-based sliders use value '0', otherwise uncheck
         if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
@@ -520,7 +546,16 @@ export function applySettings() {
   // Handle section toggles (Visible Sections)
   document.querySelectorAll('.section-toggle').forEach(toggle => {
     const section = toggle.dataset.section;
-    const settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+    let settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+
+    // Fix for compound words where simple capitalization isn't enough
+    if (section === 'advancedanalytics') settingKey = 'showAdvancedAnalytics';
+    if (section === 'apiintegration') settingKey = 'showApiIntegration';
+    if (section === 'datamanagement') settingKey = 'showDataManagement';
+    if (section === 'voice-commands') settingKey = 'showVoiceCommands';
+    if (section === 'knowledge-base') settingKey = 'showKnowledgeBase';
+    if (section === 'time-tracking') settingKey = 'showTimeTracking';
+    
     const sectionEls = document.querySelectorAll(
       `#main-app [data-section="${section}"], #stats-view [data-section="${section}"], #knowledge-base-view [data-section="${section}"], #settings-view [data-section="${section}"]`
     );
@@ -875,6 +910,7 @@ export function setupSettingsEventListeners() {
           case 'training':
             settingKey = 'showTraining';
             break;
+      
           default:
             settingKey = 'show' + section.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
         }
@@ -1028,7 +1064,25 @@ export function setupSettingsEventListeners() {
       });
     }
   });
+  
+  // Initialize Customization UIs
+  initializeCustomizationUI();
+  
+  // Setup additional listeners from the bottom of the file
+  setupAdditionalSettingsListeners();
+  
+  applySettings();
+}
 
+
+function initializeCustomizationUI() {
+    // Legacy migration or empty init
+    if (!appSettings.formFields) appSettings.formFields = [];
+    if (!appSettings.noteTemplates) appSettings.noteTemplates = [];
+}
+
+
+function setupAdditionalSettingsListeners() {
   // Repeat alert sound toggle
   if (repeatAlertSoundToggle) {
     repeatAlertSoundToggle.addEventListener('change', function () {

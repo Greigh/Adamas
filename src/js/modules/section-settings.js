@@ -1,4 +1,3 @@
-
 import { showToast } from '../utils/toast.js';
 import { showCallLoggingSettings } from './call-templates.js';
 import { showHoldTimerSettings } from './timer-settings.js';
@@ -19,7 +18,6 @@ export function initializeSectionSettings() {
 
 function openSectionSettings(sectionId) {
     if (sectionId === 'call-logging') {
-        // For now, Call Logging settings = Template Manager
         showCallLoggingSettings();
     } else if (sectionId === 'hold-timer') {
         showHoldTimerSettings();
