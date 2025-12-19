@@ -1,4 +1,6 @@
 // Voice Recording Integration Module - Cisco Unified Communications Manager
+import { showToast } from '../utils/toast.js';
+
 export function initializeVoiceRecording() {
   const connectBtn = document.getElementById('connect-cucm');
   const startBtn = document.getElementById('start-recording');
@@ -6,70 +8,40 @@ export function initializeVoiceRecording() {
   const statusDiv = document.getElementById('recording-status');
   const recordingsList = document.getElementById('recordings-list');
 
+  // If we are on a page without these elements, just return
   if (!connectBtn || !startBtn || !stopBtn || !statusDiv || !recordingsList) {
-    console.warn('Voice recording elements not found');
+    // console.warn('Voice recording elements not found'); // Suppress warning for pages that don't have it
     return;
   }
-
-  let isConnected = false;
-  let isRecording = false;
-  let mediaRecorder = null;
-  let recordedChunks = [];
-  let recordings = JSON.parse(localStorage.getItem('recordings')) || [];
-
-  function updateStatus() {
-    const statusIndicator = statusDiv.querySelector('.status-indicator');
-    const statusText = statusDiv.querySelector('.status-text');
-    const statusDetails = statusDiv.querySelector('.status-details');
-
-    if (!statusIndicator || !statusText || !statusDetails) return;
-
-    if (!isConnected) {
-      statusIndicator.className = 'status-indicator status-disconnected';
-      statusText.textContent = 'Status: Not Connected';
-      statusDetails.textContent = 'CUCM integration required';
-      connectBtn.textContent = '🔗 Connect to CUCM';
-      startBtn.disabled = true;
-      stopBtn.disabled = true;
-    } else if (isRecording) {
-      statusIndicator.className = 'status-indicator status-recording';
-      statusText.textContent = 'Status: Recording...';
-      statusDetails.textContent = 'Recording in progress';
-      startBtn.disabled = true;
-      stopBtn.disabled = false;
-    } else {
-      statusIndicator.className = 'status-indicator status-connected';
-      statusText.textContent = 'Status: Connected - Ready to Record';
-      statusDetails.textContent = 'Click Start Recording to begin';
-      startBtn.disabled = false;
-      stopBtn.disabled = true;
-    }
-  }
-
+  //... rest of logic ...
   function connectCUCM() {
     isConnected = !isConnected;
     updateStatus();
     if (isConnected) {
-      alert('Connected to CUCM (simulated)');
+      showToast('Connected to CUCM (simulated)', 'success');
     } else {
-      alert('Disconnected from CUCM (simulated)');
+      showToast('Disconnected from CUCM (simulated)', 'info');
     }
   }
 
   function startRecording() {
-    if (!isConnected) return;
-    
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => {
+    if (!isConnected) {
+      showToast('Please connect to CUCM first', 'warning');
+      return;
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
         mediaRecorder = new MediaRecorder(stream);
         recordedChunks = [];
-        
+
         mediaRecorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
             recordedChunks.push(event.data);
           }
         };
-        
+
         mediaRecorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: 'audio/wav' });
           const url = URL.createObjectURL(blob);
@@ -77,27 +49,29 @@ export function initializeVoiceRecording() {
             id: Date.now(),
             url: url,
             timestamp: new Date(),
-            duration: 0
+            duration: 0,
           };
           recordings.push(recording);
           localStorage.setItem('recordings', JSON.stringify(recordings));
           updateRecordingsList();
+          showToast('Recording saved', 'success');
         };
-        
+
         mediaRecorder.start();
         isRecording = true;
         updateStatus();
+        showToast('Recording started', 'info');
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error accessing microphone:', error);
-        alert('Failed to access microphone');
+        showToast('Failed to access microphone: ' + error.message, 'error');
       });
   }
 
   function stopRecording() {
     if (mediaRecorder && isRecording) {
       mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      mediaRecorder.stream.getTracks().forEach((track) => track.stop());
       isRecording = false;
       updateStatus();
     }
@@ -105,7 +79,13 @@ export function initializeVoiceRecording() {
 
   function updateRecordingsList() {
     recordingsList.innerHTML = '';
-    recordings.slice(-5).reverse().forEach(recording => {
+    const recent = recordings.slice(-5).reverse();
+    if (recent.length === 0) {
+      recordingsList.innerHTML =
+        '<li class="recording-item">No recordings yet</li>';
+      return;
+    }
+    recent.forEach((recording) => {
       const li = document.createElement('li');
       li.className = 'recording-item';
       li.innerHTML = `

@@ -1,3 +1,6 @@
+// Import toast for notifications
+import { showToast } from '../utils/toast.js';
+
 // External API Integration Module
 // Provides REST/WebSocket APIs for third-party integrations
 
@@ -9,7 +12,7 @@ export const apiState = {
   requestLog: [],
   rateLimits: new Map(),
   serverRunning: false,
-  webSocketRunning: false
+  webSocketRunning: false,
 };
 
 // Default API endpoints
@@ -21,7 +24,7 @@ const defaultEndpoints = [
     description: 'Retrieve call logs',
     authentication: 'api-key',
     rateLimit: 100,
-    enabled: true
+    enabled: true,
   },
   {
     id: 'agents',
@@ -30,7 +33,7 @@ const defaultEndpoints = [
     description: 'Get agent information',
     authentication: 'api-key',
     rateLimit: 50,
-    enabled: true
+    enabled: true,
   },
   {
     id: 'feedback',
@@ -39,7 +42,7 @@ const defaultEndpoints = [
     description: 'Submit customer feedback',
     authentication: 'api-key',
     rateLimit: 20,
-    enabled: true
+    enabled: true,
   },
   {
     id: 'webhook-events',
@@ -48,8 +51,8 @@ const defaultEndpoints = [
     description: 'Register webhook for events',
     authentication: 'api-key',
     rateLimit: 10,
-    enabled: true
-  }
+    enabled: true,
+  },
 ];
 
 export function initializeAPIIntegration(doc = document) {
@@ -88,7 +91,7 @@ function saveAPIData() {
       endpoints: apiState.endpoints,
       webhooks: apiState.webhooks,
       apiKeys: apiState.apiKeys,
-      requestLog: apiState.requestLog.slice(-100) // Keep last 100 requests
+      requestLog: apiState.requestLog.slice(-100), // Keep last 100 requests
     };
     localStorage.setItem('api-integration-data', JSON.stringify(data));
   } catch (error) {
@@ -172,7 +175,9 @@ function renderEndpointsList(doc) {
   const container = doc.getElementById('api-endpoints-list');
   if (!container) return;
 
-  container.innerHTML = apiState.endpoints.map(endpoint => `
+  container.innerHTML = apiState.endpoints
+    .map(
+      (endpoint) => `
     <div class="endpoint-card">
       <div class="endpoint-info">
         <div class="endpoint-method ${endpoint.method.toLowerCase()}">${endpoint.method}</div>
@@ -193,7 +198,9 @@ function renderEndpointsList(doc) {
         <button class="btn-icon" onclick="testEndpoint('${endpoint.id}')" title="Test">🔍</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderAPIKeysList(doc) {
@@ -201,11 +208,14 @@ function renderAPIKeysList(doc) {
   if (!container) return;
 
   if (apiState.apiKeys.length === 0) {
-    container.innerHTML = '<div class="empty-state">No API keys generated</div>';
+    container.innerHTML =
+      '<div class="empty-state">No API keys generated</div>';
     return;
   }
 
-  container.innerHTML = apiState.apiKeys.map(key => `
+  container.innerHTML = apiState.apiKeys
+    .map(
+      (key) => `
     <div class="api-key-card">
       <div class="key-info">
         <div class="key-name">${key.name}</div>
@@ -217,7 +227,9 @@ function renderAPIKeysList(doc) {
         <button class="btn-icon danger" onclick="revokeAPIKey('${key.id}')" title="Revoke">🗑️</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderWebhooksList(doc) {
@@ -225,11 +237,14 @@ function renderWebhooksList(doc) {
   if (!container) return;
 
   if (apiState.webhooks.length === 0) {
-    container.innerHTML = '<div class="empty-state">No webhooks configured</div>';
+    container.innerHTML =
+      '<div class="empty-state">No webhooks configured</div>';
     return;
   }
 
-  container.innerHTML = apiState.webhooks.map(webhook => `
+  container.innerHTML = apiState.webhooks
+    .map(
+      (webhook) => `
     <div class="webhook-card">
       <div class="webhook-info">
         <h5>${webhook.name}</h5>
@@ -241,7 +256,9 @@ function renderWebhooksList(doc) {
         <button class="btn-icon danger" onclick="deleteWebhook('${webhook.id}')" title="Delete">🗑️</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderLogsList(doc) {
@@ -250,14 +267,18 @@ function renderLogsList(doc) {
 
   const recentLogs = apiState.requestLog.slice(-20).reverse();
 
-  container.innerHTML = recentLogs.map(log => `
+  container.innerHTML = recentLogs
+    .map(
+      (log) => `
     <div class="log-entry ${log.status >= 400 ? 'error' : 'success'}">
       <div class="log-method ${log.method.toLowerCase()}">${log.method}</div>
       <div class="log-path">${log.path}</div>
       <div class="log-status">${log.status}</div>
       <div class="log-time">${new Date(log.timestamp).toLocaleTimeString()}</div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function startAPIServer() {
@@ -283,15 +304,20 @@ function startAPIServer() {
         running: apiState.serverRunning,
         port: apiState.serverPort,
         endpoints: apiState.endpoints.length,
-        keys: apiState.apiKeys.length
-      })
+        keys: apiState.apiKeys.length,
+      }),
     };
 
     // Register service worker for API handling (only in production)
-    if ('serviceWorker' in navigator && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      navigator.serviceWorker.register('/adamas/sw.js')
-        .then(() => {})//console.log('API Service Worker registered'))
-        .catch(err => {});//console.log('Service Worker registration failed:', err));
+    if (
+      'serviceWorker' in navigator &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1'
+    ) {
+      navigator.serviceWorker
+        .register('/adamas/sw.js')
+        .then(() => {}) //console.log('API Service Worker registered'))
+        .catch((err) => {}); //console.log('Service Worker registration failed:', err));
     }
 
     //console.log(`API server started on port ${apiState.serverPort}`);
@@ -318,8 +344,12 @@ function initializeWebSocketServer() {
 }
 
 function handleAPIRequest(method, path, data, apiKey) {
-  // Validate API key
-  if (!validateAPIKey(apiKey)) {
+  // Validate API key (skip for public auth endpoints)
+  const isPublic = ['login', 'register'].includes(
+    apiState.endpoints.find((e) => e.path === path && e.method === method)?.id
+  );
+
+  if (!isPublic && !validateAPIKey(apiKey)) {
     logRequest(method, path, 401, apiKey);
     return { status: 401, error: 'Invalid API key' };
   }
@@ -331,7 +361,9 @@ function handleAPIRequest(method, path, data, apiKey) {
   }
 
   // Route to appropriate handler
-  const endpoint = apiState.endpoints.find(e => e.path === path && e.method === method && e.enabled);
+  const endpoint = apiState.endpoints.find(
+    (e) => e.path === path && e.method === method && e.enabled
+  );
   if (!endpoint) {
     logRequest(method, path, 404, apiKey);
     return { status: 404, error: 'Endpoint not found' };
@@ -351,6 +383,12 @@ function handleAPIRequest(method, path, data, apiKey) {
     case 'webhook-events':
       result = handleWebhooksAPI(data);
       break;
+    case 'login':
+      result = handleLoginAPI(data);
+      break;
+    case 'register':
+      result = handleRegisterAPI(data);
+      break;
     default:
       result = { status: 404, error: 'Handler not implemented' };
   }
@@ -360,20 +398,23 @@ function handleAPIRequest(method, path, data, apiKey) {
 }
 
 function handleCallsAPI(data) {
-  // Mock call data - in real implementation, get from call logging module
-  const mockCalls = [
-    { id: 1, customer: 'John Doe', duration: 300, status: 'completed' },
-    { id: 2, customer: 'Jane Smith', duration: 450, status: 'completed' }
-  ];
-
-  return { status: 200, data: mockCalls };
+  // Get call data from local storage
+  try {
+    const savedCalls = localStorage.getItem('call_history');
+    const calls = savedCalls ? JSON.parse(savedCalls) : [];
+    // Return last 50 calls
+    return { status: 200, data: calls.slice(0, 50) };
+  } catch (err) {
+    console.error('Error reading call history:', err);
+    return { status: 500, error: 'Internal Server Error' };
+  }
 }
 
 function handleAgentsAPI(data) {
   // Mock agent data
   const mockAgents = [
     { id: 1, name: 'Alice Johnson', status: 'available', calls: 45 },
-    { id: 2, name: 'Bob Smith', status: 'busy', calls: 38 }
+    { id: 2, name: 'Bob Smith', status: 'busy', calls: 38 },
   ];
 
   return { status: 200, data: mockAgents };
@@ -386,9 +427,11 @@ function handleFeedbackAPI(data) {
   }
 
   // Trigger feedback submission event
-  document.dispatchEvent(new CustomEvent('feedback:external-submitted', {
-    detail: data
-  }));
+  document.dispatchEvent(
+    new CustomEvent('feedback:external-submitted', {
+      detail: data,
+    })
+  );
 
   return { status: 201, message: 'Feedback submitted successfully' };
 }
@@ -403,7 +446,7 @@ function handleWebhooksAPI(data) {
     name: data.name || 'External Webhook',
     url: data.url,
     events: Array.isArray(data.events) ? data.events : [data.events],
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   apiState.webhooks.push(webhook);
@@ -412,20 +455,81 @@ function handleWebhooksAPI(data) {
   return { status: 201, data: webhook };
 }
 
+function handleLoginAPI(data) {
+  if (!data || !data.email || !data.password) {
+    return { status: 400, error: 'Email and password required' };
+  }
+
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const user = users.find(
+    (u) => u.email === data.email && u.password === data.password
+  );
+
+  if (user) {
+    // Generate a mock token
+    const token = `mock-jwt-token-${Date.now()}`;
+    const { password, ...userWithoutPassword } = user;
+    return { status: 200, data: { token, user: userWithoutPassword } };
+  } else {
+    // Demo backdoor for testing if no users exist or generic "admin/admin" check
+    if (data.email === 'admin@example.com' && data.password === 'admin') {
+      const token = `mock-admin-token-${Date.now()}`;
+      return {
+        status: 200,
+        data: {
+          token,
+          user: {
+            id: 0,
+            email: 'admin@example.com',
+            role: 'admin',
+            username: 'Admin',
+          },
+        },
+      };
+    }
+    return { status: 401, error: 'Invalid credentials' };
+  }
+}
+
+function handleRegisterAPI(data) {
+  if (!data || !data.email || !data.password || !data.username) {
+    return { status: 400, error: 'Username, email and password required' };
+  }
+
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  if (users.find((u) => u.email === data.email)) {
+    return { status: 409, error: 'Email already exists' };
+  }
+
+  const newUser = {
+    id: Date.now(),
+    username: data.username,
+    email: data.email,
+    password: data.password, // In a real app, hash this!
+    role: data.role || 'agent',
+    createdAt: new Date().toISOString(),
+  };
+
+  users.push(newUser);
+  localStorage.setItem('users', JSON.stringify(users));
+
+  return { status: 201, message: 'User registered successfully' };
+}
+
 function validateAPIKey(apiKey) {
-  return apiState.apiKeys.some(key => key.value === apiKey && !key.revoked);
+  return apiState.apiKeys.some((key) => key.value === apiKey && !key.revoked);
 }
 
 function checkRateLimit(apiKey) {
   const now = Date.now();
-  const windowStart = now - (60 * 60 * 1000); // 1 hour window
+  const windowStart = now - 60 * 60 * 1000; // 1 hour window
 
   if (!apiState.rateLimits.has(apiKey)) {
     apiState.rateLimits.set(apiKey, []);
   }
 
   const requests = apiState.rateLimits.get(apiKey);
-  const recentRequests = requests.filter(time => time > windowStart);
+  const recentRequests = requests.filter((time) => time > windowStart);
 
   // Allow up to 100 requests per hour per key
   if (recentRequests.length >= 100) {
@@ -445,7 +549,7 @@ function logRequest(method, path, status, apiKey) {
     path,
     status,
     apiKey: maskAPIKey(apiKey),
-    ip: '127.0.0.1' // Mock IP
+    ip: '127.0.0.1', // Mock IP
   };
 
   apiState.requestLog.push(logEntry);
@@ -458,7 +562,7 @@ function generateAPIKey() {
     name: `API Key ${apiState.apiKeys.length + 1}`,
     value: generateSecureKey(),
     createdAt: new Date().toISOString(),
-    revoked: false
+    revoked: false,
   };
 
   apiState.apiKeys.push(key);
@@ -468,7 +572,8 @@ function generateAPIKey() {
 }
 
 function generateSecureKey() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < 32; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -482,8 +587,10 @@ function maskAPIKey(key) {
 }
 
 function getRequestsLast24h() {
-  const yesterday = Date.now() - (24 * 60 * 60 * 1000);
-  return apiState.requestLog.filter(log => new Date(log.timestamp) > yesterday).length;
+  const yesterday = Date.now() - 24 * 60 * 60 * 1000;
+  return apiState.requestLog.filter(
+    (log) => new Date(log.timestamp) > yesterday
+  ).length;
 }
 
 function handleCallCompleted(event) {
@@ -502,9 +609,11 @@ function handleAgentStatusChanged(event) {
 }
 
 function triggerWebhooks(eventType, data) {
-  const relevantWebhooks = apiState.webhooks.filter(wh => wh.events.includes(eventType));
+  const relevantWebhooks = apiState.webhooks.filter((wh) =>
+    wh.events.includes(eventType)
+  );
 
-  relevantWebhooks.forEach(webhook => {
+  relevantWebhooks.forEach((webhook) => {
     // Mock webhook delivery - in real implementation, make HTTP request
     //console.log(`Triggering webhook ${webhook.name} for event ${eventType}`, data);
 
@@ -514,14 +623,14 @@ function triggerWebhooks(eventType, data) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Webhook-Event': eventType
+          'X-Webhook-Event': eventType,
         },
         body: JSON.stringify({
           event: eventType,
           timestamp: new Date().toISOString(),
-          data
-        })
-      }).catch(error => {
+          data,
+        }),
+      }).catch((error) => {
         console.error('Webhook delivery failed:', error);
       });
     }, 100);
@@ -536,7 +645,7 @@ window.copyAPIKey = (key) => {
   });
 };
 window.revokeAPIKey = (keyId) => {
-  const key = apiState.apiKeys.find(k => k.id === keyId);
+  const key = apiState.apiKeys.find((k) => k.id === keyId);
   if (key) {
     key.revoked = true;
     saveAPIData();
@@ -545,7 +654,7 @@ window.revokeAPIKey = (keyId) => {
   }
 };
 window.toggleEndpoint = (endpointId, enabled) => {
-  const endpoint = apiState.endpoints.find(e => e.id === endpointId);
+  const endpoint = apiState.endpoints.find((e) => e.id === endpointId);
   if (endpoint) {
     endpoint.enabled = enabled;
     saveAPIData();
@@ -553,25 +662,47 @@ window.toggleEndpoint = (endpointId, enabled) => {
   }
 };
 window.testEndpoint = (endpointId) => {
-  const endpoint = apiState.endpoints.find(e => e.id === endpointId);
+  const endpoint = apiState.endpoints.find((e) => e.id === endpointId);
   if (endpoint) {
-    // Mock test
-    showToast(`Testing ${endpoint.path}...`, 'info');
-    setTimeout(() => {
-      showToast('Endpoint test successful!', 'success');
-    }, 1000);
+    if (window.apiServer) {
+      // Find a valid key for testing or generate a temp one
+      const apiKey =
+        apiState.apiKeys.length > 0 ? apiState.apiKeys[0].value : 'test-key';
+
+      // Actually call the handler
+      const result = window.apiServer.handleRequest(
+        endpoint.method,
+        endpoint.path,
+        {},
+        apiKey
+      );
+
+      if (result.status === 200) {
+        showToast(
+          `Test successful: ${result.data ? (Array.isArray(result.data) ? result.data.length + ' items' : 'OK') : 'OK'}`,
+          'success'
+        );
+      } else {
+        showToast(`Test failed: ${result.error || result.status}`, 'error');
+      }
+    } else {
+      showToast(`Server not running`, 'error');
+    }
   }
 };
 window.addWebhook = () => {
   const url = prompt('Webhook URL:');
-  const events = prompt('Events (comma-separated):', 'call.completed,feedback.submitted');
+  const events = prompt(
+    'Events (comma-separated):',
+    'call.completed,feedback.submitted'
+  );
   if (url && events) {
     const webhook = {
       id: `webhook-${Date.now()}`,
       name: 'New Webhook',
       url,
-      events: events.split(',').map(e => e.trim()),
-      createdAt: new Date().toISOString()
+      events: events.split(',').map((e) => e.trim()),
+      createdAt: new Date().toISOString(),
     };
     apiState.webhooks.push(webhook);
     saveAPIData();
@@ -580,7 +711,7 @@ window.addWebhook = () => {
   }
 };
 window.deleteWebhook = (webhookId) => {
-  const index = apiState.webhooks.findIndex(wh => wh.id === webhookId);
+  const index = apiState.webhooks.findIndex((wh) => wh.id === webhookId);
   if (index > -1) {
     apiState.webhooks.splice(index, 1);
     saveAPIData();
@@ -589,12 +720,9 @@ window.deleteWebhook = (webhookId) => {
   }
 };
 window.testWebhook = (webhookId) => {
-  const webhook = apiState.webhooks.find(wh => wh.id === webhookId);
+  const webhook = apiState.webhooks.find((wh) => wh.id === webhookId);
   if (webhook) {
     triggerWebhooks('test', { message: 'Test webhook delivery' });
     showToast('Test webhook sent!', 'info');
   }
 };
-
-// Import toast for notifications
-import { showToast } from '../utils/toast.js';

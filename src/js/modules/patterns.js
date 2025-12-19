@@ -37,7 +37,7 @@ export function initializePatterns() {
     cancelEditPattern,
     reorderPattern,
     formatNumber,
-    displayHistory
+    displayHistory,
   };
 
   // Expose patterns state for keyboard shortcuts
@@ -45,7 +45,7 @@ export function initializePatterns() {
     patterns,
     lastDeletedPattern,
     savePatterns,
-    updatePatternTable
+    updatePatternTable,
   };
 }
 
@@ -68,7 +68,7 @@ export function updatePatternTable() {
         <td class="format-cell">${pattern.format}</td>
         <td class="row-actions">
           <button class="edit-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Edit pattern">✎</button>
-          <button class="delete-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Delete pattern">🗑</button>
+          <button class="delete-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Delete pattern">🗑\uFE0E</button>
         </td>
       `;
       tbody.appendChild(row);
@@ -88,43 +88,67 @@ export function updatePatternTable() {
       // Remove existing listeners by cloning if necessary to avoid duplicates
       const newBtn = btn.cloneNode(true);
       btn.parentNode.replaceChild(newBtn, btn);
-        newBtn.addEventListener('click', async function () {
-          const id = parseInt(this.getAttribute('data-pattern-id'));
+      newBtn.addEventListener('click', async function () {
+        const id = parseInt(this.getAttribute('data-pattern-id'));
+        try {
+          let confirmed = false;
           try {
-            let confirmed = false;
-            try {
-              const modalModule = await import('../utils/modal.js');
-              if (modalModule && typeof modalModule.showConfirmModal === 'function') {
-                confirmed = await modalModule.showConfirmModal({ title: 'Delete Pattern', message: 'Are you sure you want to delete this pattern? This action can be undone for 5 seconds.', confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
-              } else {
-                confirmed = window.confirm('Are you sure you want to delete this pattern?');
-              }
-            } catch (impErr) {
-              console.warn('Modal import failed, falling back to window.confirm', impErr);
-              confirmed = window.confirm('Are you sure you want to delete this pattern?');
+            const modalModule = await import('../utils/modal.js');
+            if (
+              modalModule &&
+              typeof modalModule.showConfirmModal === 'function'
+            ) {
+              confirmed = await modalModule.showConfirmModal({
+                title: 'Delete Pattern',
+                message:
+                  'Are you sure you want to delete this pattern? This action can be undone for 5 seconds.',
+                confirmLabel: 'Delete',
+                cancelLabel: 'Cancel',
+                danger: true,
+              });
+            } else {
+              confirmed = window.confirm(
+                'Are you sure you want to delete this pattern?'
+              );
             }
-
-            if (confirmed) {
-              deletePattern(id, { undoable: true });
-              try { showToast('Pattern removed', 'info'); } catch (e) { console.warn('showToast failed', e); }
-            }
-          } catch (error) {
-            console.error('Error handling delete pattern click:', error);
+          } catch (impErr) {
+            console.warn(
+              'Modal import failed, falling back to window.confirm',
+              impErr
+            );
+            confirmed = window.confirm(
+              'Are you sure you want to delete this pattern?'
+            );
           }
-        });
+
+          if (confirmed) {
+            deletePattern(id, { undoable: true });
+            try {
+              showToast('Pattern removed', 'info');
+            } catch (e) {
+              console.warn('showToast failed', e);
+            }
+          }
+        } catch (error) {
+          console.error('Error handling delete pattern click:', error);
+        }
+      });
     });
     // Insert placeholder row for empty patterns
     if (patterns.length === 0) {
       const row = document.createElement('tr');
-        row.className = 'no-patterns';
-        row.innerHTML = `<td colspan="4" class="text-muted">No patterns configured yet. Add a pattern using the fields above.</td>`;
+      row.className = 'no-patterns';
+      row.innerHTML = `<td colspan="4" class="text-muted">No patterns configured yet. Add a pattern using the fields above.</td>`;
       tbody.appendChild(row);
     }
 
     // Drag and drop handlers for reorder
     tbody.querySelectorAll('tr[draggable="true"]').forEach((row) => {
       row.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', row.getAttribute('data-pattern-id'));
+        e.dataTransfer.setData(
+          'text/plain',
+          row.getAttribute('data-pattern-id')
+        );
         e.dataTransfer.effectAllowed = 'move';
         row.classList.add('dragging');
       });
@@ -152,14 +176,24 @@ export function addPattern(root = document) {
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
-      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+      return (
+        r.getElementById(id) ||
+        r.querySelector(`#${id}`) ||
+        r.querySelector(`[id$="${id}"]`)
+      );
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
 
-  const start = (getElement(root, 'startSequence') || { value: '' }).value.trim();
-  const minLength = parseInt((getElement(root, 'minLength') || { value: '' }).value);
-  const format = (getElement(root, 'formatPattern') || { value: '' }).value.trim();
+  const start = (
+    getElement(root, 'startSequence') || { value: '' }
+  ).value.trim();
+  const minLength = parseInt(
+    (getElement(root, 'minLength') || { value: '' }).value
+  );
+  const format = (
+    getElement(root, 'formatPattern') || { value: '' }
+  ).value.trim();
 
   if (isNaN(minLength) || minLength < 1) {
     alert('Please enter a valid minimum length.');
@@ -177,9 +211,17 @@ export function addPattern(root = document) {
   showToast('Pattern added', 'success');
 
   // Clear inputs scoped to the root
-  try { if (getElement(root, 'startSequence')) getElement(root, 'startSequence').value = ''; } catch (e) {}
-  try { if (getElement(root, 'minLength')) getElement(root, 'minLength').value = ''; } catch (e) {}
-  try { if (getElement(root, 'formatPattern')) getElement(root, 'formatPattern').value = ''; } catch (e) {}
+  try {
+    if (getElement(root, 'startSequence'))
+      getElement(root, 'startSequence').value = '';
+  } catch (e) {}
+  try {
+    if (getElement(root, 'minLength')) getElement(root, 'minLength').value = '';
+  } catch (e) {}
+  try {
+    if (getElement(root, 'formatPattern'))
+      getElement(root, 'formatPattern').value = '';
+  } catch (e) {}
 }
 
 export function reorderPattern(id, delta) {
@@ -208,7 +250,10 @@ export function startEditPattern(id, root = document) {
   editingPatternId = id;
   let tbody = null;
   if (root && root.tagName === 'TBODY') tbody = root;
-  else tbody = (root && root.querySelector && (root.querySelector('tbody#patternList'))) || document.querySelector('tbody#patternList');
+  else
+    tbody =
+      (root && root.querySelector && root.querySelector('tbody#patternList')) ||
+      document.querySelector('tbody#patternList');
   if (!tbody) return;
   const row = tbody.querySelector(`tr[data-pattern-id="${id}"]`);
   if (!row) return;
@@ -226,21 +271,33 @@ export function startEditPattern(id, root = document) {
   `;
 
   // Attach handlers for save and cancel
-  row.querySelector('.save-edit-btn')?.addEventListener('click', () => saveEditPattern(id, root));
-  row.querySelector('.cancel-edit-btn')?.addEventListener('click', () => cancelEditPattern(root));
+  row
+    .querySelector('.save-edit-btn')
+    ?.addEventListener('click', () => saveEditPattern(id, root));
+  row
+    .querySelector('.cancel-edit-btn')
+    ?.addEventListener('click', () => cancelEditPattern(root));
   // Focus first input for better keyboard accessibility
-  try { row.querySelector('.edit-start')?.focus(); row.querySelector('.edit-start')?.select(); } catch (e) {}
+  try {
+    row.querySelector('.edit-start')?.focus();
+    row.querySelector('.edit-start')?.select();
+  } catch (e) {}
 }
 
 export function saveEditPattern(id, root = document) {
   let tbody = null;
   if (root && root.tagName === 'TBODY') tbody = root;
-  else tbody = (root && root.querySelector && (root.querySelector('tbody#patternList'))) || document.querySelector('tbody#patternList');
+  else
+    tbody =
+      (root && root.querySelector && root.querySelector('tbody#patternList')) ||
+      document.querySelector('tbody#patternList');
   if (!tbody) return;
   const row = tbody.querySelector(`tr[data-pattern-id="${id}"]`);
   if (!row) return;
   const start = row.querySelector('.edit-start')?.value || '';
-  const minLength = parseInt(row.querySelector('.edit-minlength')?.value || '0');
+  const minLength = parseInt(
+    row.querySelector('.edit-minlength')?.value || '0'
+  );
   const format = row.querySelector('.edit-format')?.value || '';
   if (isNaN(minLength) || minLength < 1) {
     alert('Please enter a valid minimum length.');
@@ -281,21 +338,30 @@ export function deletePattern(id, options = { undoable: true }) {
   if (options && options.undoable) {
     // Keep pattern in memory until timeout expires
     let timeoutId = null;
-    lastDeletedPattern = { pattern: { ...pattern }, index: idx, timeoutId: null };
+    lastDeletedPattern = {
+      pattern: { ...pattern },
+      index: idx,
+      timeoutId: null,
+    };
     // Show toast with Undo action
     showToast(`Pattern deleted`, {
       type: 'info',
       timeout: 5000,
       actionLabel: 'Undo',
-        actionCallback: () => {
-          console.debug('Patterns: undo action callback invoked');
+      actionCallback: () => {
+        console.debug('Patterns: undo action callback invoked');
         // Cancel the timeout
         try {
-          if (lastDeletedPattern && lastDeletedPattern.timeoutId) window.clearTimeout(lastDeletedPattern.timeoutId);
+          if (lastDeletedPattern && lastDeletedPattern.timeoutId)
+            window.clearTimeout(lastDeletedPattern.timeoutId);
         } catch (e) {}
         // Restore
         if (lastDeletedPattern) {
-          patterns.splice(lastDeletedPattern.index, 0, lastDeletedPattern.pattern);
+          patterns.splice(
+            lastDeletedPattern.index,
+            0,
+            lastDeletedPattern.pattern
+          );
           savePatterns(patterns);
           updatePatternTable();
           showToast('Pattern restored', { type: 'success' });
@@ -319,7 +385,11 @@ export function formatNumber(root = document) {
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
-      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+      return (
+        r.getElementById(id) ||
+        r.querySelector(`#${id}`) ||
+        r.querySelector(`[id$="${id}"]`)
+      );
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
@@ -389,11 +459,13 @@ function saveToHistory(input, result) {
   const entry = {
     input,
     result,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
 
   // Remove duplicates (same input and result)
-  const filtered = history.filter(item => !(item.input === input && item.result === result));
+  const filtered = history.filter(
+    (item) => !(item.input === input && item.result === result)
+  );
 
   // Add new entry at the beginning
   filtered.unshift(entry);
@@ -416,13 +488,19 @@ export function deleteHistoryItem(index) {
   try {
     console.debug('deleteHistoryItem called with index:', index);
     const history = loadData('patternHistory', []);
-    console.debug('Current history length:', Array.isArray(history) ? history.length : typeof history);
+    console.debug(
+      'Current history length:',
+      Array.isArray(history) ? history.length : typeof history
+    );
     if (!Array.isArray(history)) return;
     if (index >= 0 && index < history.length) {
       history.splice(index, 1);
       try {
         saveData('patternHistory', history);
-        console.debug('History saved after delete, new length:', history.length);
+        console.debug(
+          'History saved after delete, new length:',
+          history.length
+        );
       } catch (saveErr) {
         console.error('Failed to save history after delete:', saveErr);
       }
@@ -440,7 +518,8 @@ export function displayHistory(root = document) {
   if (!historyContainer) return;
 
   if (history.length === 0) {
-    historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
+    historyContainer.innerHTML =
+      '<p class="no-history">No formatting history yet</p>';
     return;
   }
 
@@ -449,17 +528,21 @@ export function displayHistory(root = document) {
   const hasMore = !showAllHistory && history.length > 10;
   const startIndex = showAllHistory ? 0 : Math.max(0, history.length - 10);
 
-  const historyList = displayList.map((entry, index) => `
+  const historyList = displayList
+    .map(
+      (entry, index) => `
     <div class="history-item" data-index="${startIndex + index}">
       <div class="history-input">${entry.input}</div>
       <div class="history-arrow">→</div>
       <div class="history-result">${entry.result}</div>
       <div class="history-actions">
         <button class="history-use-btn" title="Use this result">Use</button>
-        <button class="history-delete-btn" title="Delete this entry">🗑</button>
+        <button class="history-delete-btn" title="Delete this entry">🗑\uFE0E</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
   historyContainer.innerHTML = `
     <div class="history-header">
@@ -475,7 +558,7 @@ export function displayHistory(root = document) {
   `;
 
   // Add event listeners
-  historyContainer.querySelectorAll('.history-use-btn').forEach(btn => {
+  historyContainer.querySelectorAll('.history-use-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const index = parseInt(e.target.closest('.history-item').dataset.index);
       const entry = history[index];
@@ -488,13 +571,16 @@ export function displayHistory(root = document) {
     });
   });
 
-  historyContainer.querySelectorAll('.history-delete-btn').forEach(btn => {
+  historyContainer.querySelectorAll('.history-delete-btn').forEach((btn) => {
     btn.addEventListener('click', async (e) => {
       try {
         console.debug('history-delete-btn clicked, event target:', e.target);
         const itemEl = e.target.closest && e.target.closest('.history-item');
         if (!itemEl) {
-          console.warn('history-delete-btn: could not locate .history-item from event target', e.target);
+          console.warn(
+            'history-delete-btn: could not locate .history-item from event target',
+            e.target
+          );
         }
         const index = itemEl ? parseInt(itemEl.dataset.index, 10) : NaN;
         console.debug('history-delete-btn resolved index:', index);
@@ -503,27 +589,38 @@ export function displayHistory(root = document) {
         // Try dynamic import of modal helper, but be defensive if not available
         let confirmed = false;
         try {
-          console.debug('Patterns: attempting to import modal for history delete');
+          console.debug(
+            'Patterns: attempting to import modal for history delete'
+          );
           const modalModule = await import('../utils/modal.js');
           console.debug('Patterns: modalModule loaded', modalModule);
-          if (modalModule && typeof modalModule.showConfirmModal === 'function') {
+          if (
+            modalModule &&
+            typeof modalModule.showConfirmModal === 'function'
+          ) {
             console.debug('Patterns: calling modalModule.showConfirmModal');
             confirmed = await modalModule.showConfirmModal({
               title: 'Delete History Entry',
               message: 'Are you sure you want to delete this history entry?',
               confirmLabel: 'Delete',
               cancelLabel: 'Cancel',
-              danger: true
+              danger: true,
             });
             console.debug('Patterns: modal confirmed result', confirmed);
           } else {
-            console.debug('Patterns: modalModule.showConfirmModal not a function, falling back to window.confirm', typeof modalModule.showConfirmModal);
+            console.debug(
+              'Patterns: modalModule.showConfirmModal not a function, falling back to window.confirm',
+              typeof modalModule.showConfirmModal
+            );
             // Fallback to simple confirm
             confirmed = window.confirm('Delete this history entry?');
           }
         } catch (impErr) {
           // If import fails for any reason, fallback to window.confirm
-          console.warn('Modal import failed, falling back to window.confirm', impErr);
+          console.warn(
+            'Modal import failed, falling back to window.confirm',
+            impErr
+          );
           confirmed = window.confirm('Delete this history entry?');
         }
 
@@ -558,29 +655,47 @@ export function displayHistory(root = document) {
     newClearBtn.addEventListener('click', async () => {
       try {
         const modalModule = await import('../utils/modal.js');
-        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmFn =
+          (modalModule &&
+            typeof modalModule.showConfirmModal === 'function' &&
+            modalModule.showConfirmModal) ||
+          window.showConfirmModal ||
+          ((opts) =>
+            Promise.resolve(
+              window.confirm(
+                opts && opts.message ? opts.message : 'Are you sure?'
+              )
+            ));
         const confirmed = await confirmFn({
           title: 'Clear History',
-          message: 'Are you sure you want to clear all formatting history? This action cannot be undone.',
+          message:
+            'Are you sure you want to clear all formatting history? This action cannot be undone.',
           confirmLabel: 'Clear History',
           cancelLabel: 'Cancel',
-          danger: true
+          danger: true,
         });
         if (confirmed) {
           clearHistory();
           // Update the display to show empty history
           const historyContainer = document.querySelector('#patternHistory');
           if (historyContainer) {
-            historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
+            historyContainer.innerHTML =
+              '<p class="no-history">No formatting history yet</p>';
           }
         }
       } catch (error) {
         console.error('Error clearing history:', error);
         try {
-          if (window.confirm('Are you sure you want to clear all formatting history? This action cannot be undone.')) {
+          if (
+            window.confirm(
+              'Are you sure you want to clear all formatting history? This action cannot be undone.'
+            )
+          ) {
             clearHistory();
             const historyContainer = document.querySelector('#patternHistory');
-            if (historyContainer) historyContainer.innerHTML = '<p class="no-history">No formatting history yet</p>';
+            if (historyContainer)
+              historyContainer.innerHTML =
+                '<p class="no-history">No formatting history yet</p>';
           }
         } catch (e) {
           console.error('Clear history fallback also failed', e);
@@ -645,7 +760,11 @@ export function copyResult(root = document) {
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
-      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+      return (
+        r.getElementById(id) ||
+        r.querySelector(`#${id}`) ||
+        r.querySelector(`[id$="${id}"]`)
+      );
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
@@ -692,7 +811,9 @@ export function copyResult(root = document) {
       copiedMsg.style.marginLeft = '10px';
       copiedMsg.style.color = '#16a34a';
       copiedMsg.style.fontWeight = 'bold';
-      const copyBtn = getElement(root, 'copyPatternBtn') || document.getElementById('copyPatternBtn');
+      const copyBtn =
+        getElement(root, 'copyPatternBtn') ||
+        document.getElementById('copyPatternBtn');
       if (copyBtn && copyBtn.parentNode) {
         copyBtn.parentNode.insertBefore(copiedMsg, copyBtn.nextSibling);
       }
@@ -709,7 +830,11 @@ export function clearPattern(root = document) {
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
-      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+      return (
+        r.getElementById(id) ||
+        r.querySelector(`#${id}`) ||
+        r.querySelector(`[id$="${id}"]`)
+      );
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
@@ -729,7 +854,11 @@ export async function pasteFromClipboard(providedText, root = document) {
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
-      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+      return (
+        r.getElementById(id) ||
+        r.querySelector(`#${id}`) ||
+        r.querySelector(`[id$="${id}"]`)
+      );
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
@@ -772,7 +901,11 @@ export function normalizeNumber(text) {
 export function attachPatternEventListeners(root = document) {
   // Avoid double-attaching to the same root
   try {
-    if (root && root.getAttribute && root.getAttribute('data-patterns-attached') === 'true') {
+    if (
+      root &&
+      root.getAttribute &&
+      root.getAttribute('data-patterns-attached') === 'true'
+    ) {
       return;
     }
   } catch (e) {}
@@ -780,7 +913,11 @@ export function attachPatternEventListeners(root = document) {
   const getElement = (r, id) => {
     if (!r) return null;
     if (typeof r.getElementById === 'function') {
-      return r.getElementById(id) || r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
+      return (
+        r.getElementById(id) ||
+        r.querySelector(`#${id}`) ||
+        r.querySelector(`[id$="${id}"]`)
+      );
     }
     return r.querySelector(`#${id}`) || r.querySelector(`[id$="${id}"]`);
   };
@@ -790,17 +927,27 @@ export function attachPatternEventListeners(root = document) {
   const copyBtn = getElement(root, 'copyPatternBtn');
 
   if (numberInput) {
-    try { numberInput.addEventListener('input', () => formatNumber(root)); } catch (e) { }
+    try {
+      numberInput.addEventListener('input', () => formatNumber(root));
+    } catch (e) {}
   }
   if (copyBtn) {
-    try { copyBtn.addEventListener('click', () => copyResult(root)); } catch (e) { }
+    try {
+      copyBtn.addEventListener('click', () => copyResult(root));
+    } catch (e) {}
   }
 
   const pasteBtn = getElement(root, 'pastePatternBtn');
   if (pasteBtn) {
-    try { pasteBtn.addEventListener('click', () => { pasteFromClipboard(undefined, root); }); } catch (e) { }
+    try {
+      pasteBtn.addEventListener('click', () => {
+        pasteFromClipboard(undefined, root);
+      });
+    } catch (e) {}
     // Tooltip show/hide for accessibility
-    const tooltip = pasteBtn.closest('.tooltip-wrapper')?.querySelector('.tooltip-text');
+    const tooltip = pasteBtn
+      .closest('.tooltip-wrapper')
+      ?.querySelector('.tooltip-text');
     if (tooltip) {
       pasteBtn.addEventListener('mouseenter', () => {
         tooltip.style.visibility = 'visible';
@@ -823,7 +970,9 @@ export function attachPatternEventListeners(root = document) {
 
   const formatBtn = getElement(root, 'formatPatternBtn');
   if (formatBtn) {
-    try { formatBtn.addEventListener('click', () => formatNumber(root)); } catch (e) { }
+    try {
+      formatBtn.addEventListener('click', () => formatNumber(root));
+    } catch (e) {}
   }
 
   const clearBtn = getElement(root, 'clearPatternBtn');
@@ -833,12 +982,18 @@ export function attachPatternEventListeners(root = document) {
 
   const addBtn = getElement(root, 'addPatternBtn');
   if (addBtn) {
-    try { addBtn.addEventListener('click', () => addPattern(root)); } catch (e) { }
+    try {
+      addBtn.addEventListener('click', () => addPattern(root));
+    } catch (e) {}
   }
   // Ensure update pattern table attaches all event handlers and DnD
-  try { updatePatternTable(); } catch (e) {}
+  try {
+    updatePatternTable();
+  } catch (e) {}
   // Display history
-  try { displayHistory(root); } catch (e) {}
+  try {
+    displayHistory(root);
+  } catch (e) {}
   try {
     if (root && root.setAttribute) {
       root.setAttribute('data-patterns-attached', 'true');

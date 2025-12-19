@@ -18,18 +18,22 @@ import {
 } from '../utils/audio.js';
 
 // Draggable helpers for per-section controls (allow settings to be draggable/floating like the main page)
-import { setupDraggable, setupFloating, setupSectionToggle } from './draggable.js';
+import {
+  setupDraggable,
+  setupFloating,
+  setupSectionToggle,
+} from './draggable.js';
 
 // Settings object for most of the app functionality
 export let appSettings = {
   hasSeenWelcome: false, // New user flag
   showFormatter: true, // Show formatter on the main page by default
-  showCallflow: false,  // Hidden by default to reduce clutter
+  showCallflow: false, // Hidden by default to reduce clutter
   showNotes: false, // Notes section (default hidden)
   showHoldtimer: true, // Show hold timer on the main page by default
   showCalllogging: true, // Show call logging tool on the main page by default
   showCrm: false, // CRM (default hidden)
-  showScripts: true,  // Show scripts library (default visible)
+  showScripts: true, // Show scripts library (default visible)
   showTasks: false, // Tasks (default hidden)
   showVoicerecording: false, // Voice recording (default hidden)
   showCollaboration: false, // Collaboration (default hidden)
@@ -39,7 +43,7 @@ export let appSettings = {
   showKnowledgeBase: false, // Knowledge Base (default hidden)
   showTimeTracking: false, // Time Tracking (default hidden)
   showAdvancedAnalytics: false, // Advanced Analytics (default hidden)
-  showAnalytics: false,  // Controls the stats/analytics tab visibility
+  showAnalytics: false, // Controls the stats/analytics tab visibility
   showApiIntegration: false, // API Integration (default hidden)
   showTwilio: false, // Twilio integration (default hidden)
   showHoldtimerSettings: true, // Show hold timer settings on the main page by default
@@ -52,7 +56,7 @@ export let appSettings = {
   showEmail: false, // Email (default hidden) [Not implemented]
   showTraining: false, // Training (default hidden) [Not implemented]
   showQuickActions: true, // Quick Actions Bar (default visible)
-  minimalMode: false,  // Hide all non-essential sections
+  minimalMode: false, // Hide all non-essential sections
   exportPatterns: true, // Export patterns (default enabled)
   exportSteps: true, // Export steps (default enabled)
   exportNotes: true, // Export notes (default enabled)
@@ -107,10 +111,16 @@ export let appSettings = {
   verificationOptions: ['Name', 'DOB', 'Address', 'Last 4 SSN'],
   noteTemplates: [
     { label: 'Issue/Resolution', text: 'Issue: \\nResolution: ' },
-    { label: 'General Inquiry', text: 'Customer verified. Caller asked about: \\nAdvised: ' },
-    { label: 'Payment Taken', text: 'Payment of $ taken via card ending in . Confirmed email: ' },
-    { label: 'Callback', text: 'Callback scheduled for: \\nReason: ' }
-  ]
+    {
+      label: 'General Inquiry',
+      text: 'Customer verified. Caller asked about: \\nAdvised: ',
+    },
+    {
+      label: 'Payment Taken',
+      text: 'Payment of $ taken via card ending in . Confirmed email: ',
+    },
+    { label: 'Callback', text: 'Callback scheduled for: \\nReason: ' },
+  ],
 };
 
 // Export the saveSettings function
@@ -119,89 +129,129 @@ export function saveSettings() {
     localStorage.setItem('appSettings', JSON.stringify(appSettings));
   }
   // Notify other modules
-  window.dispatchEvent(new CustomEvent('appSettingsChanged', { detail: appSettings }));
+  window.dispatchEvent(
+    new CustomEvent('appSettingsChanged', { detail: appSettings })
+  );
 }
 
 // Exportable helper so tests can call this directly
 export function addSettingCollapsibles() {
-  const svgChevron = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.5 5.5L15.5 12L8.5 18.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  document.querySelectorAll('#settings-view .settings-section').forEach((section) => {
-    const sectionKey = section.id || (section.querySelector('h3')?.textContent?.trim().toLowerCase().replace(/\s+/g, '-') || 'settings');
-    const items = Array.from(section.querySelectorAll('.setting-item'));
-    items.forEach((item, idx) => {
-      // skip if already has a toggle
-      if (item.querySelector('.setting-toggle')) return;
+  const svgChevron =
+    '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.5 5.5L15.5 12L8.5 18.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document
+    .querySelectorAll('#settings-view .settings-section')
+    .forEach((section) => {
+      const sectionKey =
+        section.id ||
+        section
+          .querySelector('h3')
+          ?.textContent?.trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-') ||
+        'settings';
+      const items = Array.from(section.querySelectorAll('.setting-item'));
+      items.forEach((item, idx) => {
+        // skip if already has a toggle
+        if (item.querySelector('.setting-toggle')) return;
 
-      const desc = item.querySelector('.setting-description');
-      const ctrl = item.querySelector('.setting-control');
-      const hasFile = !!item.querySelector('.file-upload-group');
-      const hasExport = !!item.querySelector('.export-options');
-      const isDanger = item.classList.contains('danger');
+        const desc = item.querySelector('.setting-description');
+        const ctrl = item.querySelector('.setting-control');
+        const hasFile = !!item.querySelector('.file-upload-group');
+        const hasExport = !!item.querySelector('.export-options');
+        const isDanger = item.classList.contains('danger');
 
-      // Heuristics: if the item has a multi-line description long enough, or a file upload/export control
-      // or contains multiple controls - make it collapsible.
-      const textLength = desc?.textContent?.trim().length || 0;
-      const controlCount = ctrl ? ctrl.querySelectorAll('input, button, select, textarea').length : 0;
-      const shouldCollapse = textLength > 80 || hasFile || hasExport || controlCount > 1 || isDanger;
+        // Heuristics: if the item has a multi-line description long enough, or a file upload/export control
+        // or contains multiple controls - make it collapsible.
+        const textLength = desc?.textContent?.trim().length || 0;
+        const controlCount = ctrl
+          ? ctrl.querySelectorAll('input, button, select, textarea').length
+          : 0;
+        const shouldCollapse =
+          textLength > 80 ||
+          hasFile ||
+          hasExport ||
+          controlCount > 1 ||
+          isDanger;
 
-      if (!shouldCollapse) return;
+        if (!shouldCollapse) return;
 
-      // Build a unique key for persistence
-      const label = item.querySelector('.setting-label')?.textContent?.trim() || `${sectionKey}-${idx}`;
-      const labelKey = label.toLowerCase().replace(/\s+/g, '-');
-      const stateKey = `${sectionKey}::${labelKey}`;
+        // Build a unique key for persistence
+        const label =
+          item.querySelector('.setting-label')?.textContent?.trim() ||
+          `${sectionKey}-${idx}`;
+        const labelKey = label.toLowerCase().replace(/\s+/g, '-');
+        const stateKey = `${sectionKey}::${labelKey}`;
 
-      // Create button
-      const btn = document.createElement('button');
-      btn.className = 'setting-toggle';
-      btn.setAttribute('aria-expanded', 'true');
-      btn.setAttribute('title', 'Collapse');
-      btn.innerHTML = '▾';
+        // Create button
+        const btn = document.createElement('button');
+        btn.className = 'setting-toggle';
+        btn.setAttribute('aria-expanded', 'true');
+        btn.setAttribute('title', 'Collapse');
+        btn.innerHTML = '▾';
 
-      // Insert toggle in the setting header
-      const settingInfo = item.querySelector('.setting-info');
-      if (settingInfo) {
-        settingInfo.appendChild(btn);
-      }
+        // Insert toggle in the setting header
+        const settingInfo = item.querySelector('.setting-info');
+        if (settingInfo) {
+          settingInfo.appendChild(btn);
+        }
 
-      // Set initial collapsed state from saved settings
-      if (appSettings.collapsedSettingItems && appSettings.collapsedSettingItems[stateKey]) {
-        item.classList.add('collapsed');
-        btn.setAttribute('aria-expanded', 'false');
-        btn.innerHTML = '▸';
-      }
+        // Set initial collapsed state from saved settings
+        if (
+          appSettings.collapsedSettingItems &&
+          appSettings.collapsedSettingItems[stateKey]
+        ) {
+          item.classList.add('collapsed');
+          btn.setAttribute('aria-expanded', 'false');
+          btn.innerHTML = '▸';
+        }
 
-      // Add click handler
-      btn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        const isCollapsed = item.classList.toggle('collapsed');
-        btn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-        btn.innerHTML = isCollapsed ? '▸' : '▾';
-        // Save state
-        appSettings.collapsedSettingItems = appSettings.collapsedSettingItems || {};
-        appSettings.collapsedSettingItems[stateKey] = isCollapsed;
-        saveSettings(appSettings);
+        // Add click handler
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          const isCollapsed = item.classList.toggle('collapsed');
+          btn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+          btn.innerHTML = isCollapsed ? '▸' : '▾';
+          // Save state
+          appSettings.collapsedSettingItems =
+            appSettings.collapsedSettingItems || {};
+          appSettings.collapsedSettingItems[stateKey] = isCollapsed;
+          saveSettings(appSettings);
+        });
       });
     });
-  });
 }
 
 // Toggle collapse state for all collapsible setting-items. If `collapse` is
 // true, force collapse, if false, force expand, otherwise toggle based on
 // current mixed state (if any item expanded -> collapse all, else expand all).
 export function toggleCollapseAll(collapse) {
-  const buttons = Array.from(document.querySelectorAll('#settings-view .settings-section .setting-item .setting-toggle'));
+  const buttons = Array.from(
+    document.querySelectorAll(
+      '#settings-view .settings-section .setting-item .setting-toggle'
+    )
+  );
   if (!buttons.length) return;
 
   // Compute current: if any item is not collapsed, we should collapse all
-  const anyExpanded = buttons.some(btn => { const item = btn.closest('.setting-item'); return item && !item.classList.contains('collapsed'); });
-  const targetCollapse = (typeof collapse === 'boolean') ? collapse : anyExpanded;
+  const anyExpanded = buttons.some((btn) => {
+    const item = btn.closest('.setting-item');
+    return item && !item.classList.contains('collapsed');
+  });
+  const targetCollapse = typeof collapse === 'boolean' ? collapse : anyExpanded;
 
   // Helper to build state key like addSettingCollapsibles
   function stateKeyForItem(item) {
     const section = item.closest('.settings-section');
-    const sectionKey = section?.id || (section?.querySelector('h3')?.textContent?.trim().toLowerCase().replace(/\s+/g, '-') || 'settings');
-    const label = item.querySelector('.setting-label')?.textContent?.trim() || '';
+    const sectionKey =
+      section?.id ||
+      section
+        ?.querySelector('h3')
+        ?.textContent?.trim()
+        .toLowerCase()
+        .replace(/\s+/g, '-') ||
+      'settings';
+    const label =
+      item.querySelector('.setting-label')?.textContent?.trim() || '';
     const labelKey = label.toLowerCase().replace(/\s+/g, '-');
     return `${sectionKey}::${labelKey}`;
   }
@@ -213,13 +263,15 @@ export function toggleCollapseAll(collapse) {
     if (targetCollapse) {
       item.classList.add('collapsed');
       btn.setAttribute('aria-expanded', 'false');
-      appSettings.collapsedSettingItems = appSettings.collapsedSettingItems || {};
+      appSettings.collapsedSettingItems =
+        appSettings.collapsedSettingItems || {};
       // compact state update
       appSettings.collapsedSettingItems[key] = true;
     } else {
       item.classList.remove('collapsed');
       btn.setAttribute('aria-expanded', 'true');
-      appSettings.collapsedSettingItems = appSettings.collapsedSettingItems || {};
+      appSettings.collapsedSettingItems =
+        appSettings.collapsedSettingItems || {};
       // compact state update
       appSettings.collapsedSettingItems[key] = false;
     }
@@ -227,7 +279,9 @@ export function toggleCollapseAll(collapse) {
 
   saveSettings(appSettings);
   // update header button text
-  const headerBtn = document.querySelector('#settings-view .settings-header .header-actions .collapse-all');
+  const headerBtn = document.querySelector(
+    '#settings-view .settings-header .header-actions .collapse-all'
+  );
   if (headerBtn) {
     headerBtn.textContent = targetCollapse ? 'Expand all' : 'Collapse all';
     headerBtn.setAttribute('aria-pressed', targetCollapse ? 'false' : 'true');
@@ -245,10 +299,16 @@ export function initializeSettings() {
     appSettings = { ...appSettings, ...saved };
   }
   // Backward compatibility: synchronize legacy keys
-  if (typeof appSettings.showCrmIntegration !== 'undefined' && typeof appSettings.showCrm === 'undefined') {
+  if (
+    typeof appSettings.showCrmIntegration !== 'undefined' &&
+    typeof appSettings.showCrm === 'undefined'
+  ) {
     appSettings.showCrm = appSettings.showCrmIntegration;
   }
-  if (typeof appSettings.showDataManagement === 'undefined' && typeof appSettings.settingsDataManagement !== 'undefined') {
+  if (
+    typeof appSettings.showDataManagement === 'undefined' &&
+    typeof appSettings.settingsDataManagement !== 'undefined'
+  ) {
     appSettings.showDataManagement = appSettings.settingsDataManagement;
   }
   applySettings();
@@ -321,7 +381,10 @@ export function applySettings() {
       }
 
       // Fallback for legacy range-based sliders
-      if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
+      if (
+        toggle.type === 'range' ||
+        toggle.classList.contains('slider-toggle')
+      ) {
         if (String(toggle.value) === '1') {
           toggle.classList.add('slider-on');
           toggle.setAttribute('aria-pressed', 'true');
@@ -338,37 +401,37 @@ export function applySettings() {
   // Define feature readiness status
   const featureStatus = {
     // Production quality - no label, fully enabled
-    'formatter': 'production',
-    'callflow': 'production',
-    'analytics': 'production',
-    'notes': 'production',
-    'holdtimer': 'production',
-    'calllogging': 'production',
-    'scripts': 'production',
-    'tasks': 'production',
-    'voicerecording': 'production',
-    'collaboration': 'coming-soon',
+    formatter: 'production',
+    callflow: 'production',
+    analytics: 'production',
+    notes: 'production',
+    holdtimer: 'production',
+    calllogging: 'production',
+    scripts: 'production',
+    tasks: 'production',
+    voicerecording: 'production',
+    collaboration: 'beta',
 
     // Partially production quality - add "Beta" label
-    'workflows': 'beta',
-    'multichannel': 'beta',
-    'feedback': 'beta',
-    'timetracking': 'beta',
-    'voice': 'beta',
+    workflows: 'beta',
+    multichannel: 'beta',
+    feedback: 'beta',
+    timetracking: 'beta',
+    voice: 'beta',
+    camera: 'beta',
+    telephony: 'production',
 
     // Not production quality - add "Coming Soon" label and disable
-    'knowledgebase': 'coming-soon',
-    'advancedanalytics': 'coming-soon',
-    'apiintegration': 'coming-soon',
-    'camera': 'coming-soon',
-    'telephony': 'coming-soon',
-    'email': 'coming-soon',
-    'training': 'coming-soon',
-    'twilio': 'production',
+    knowledgebase: 'coming-soon',
+    advancedanalytics: 'coming-soon',
+    apiintegration: 'production', // Ready for Auth
+    email: 'coming-soon',
+    training: 'coming-soon',
+    twilio: 'production',
     'quick-actions': 'production',
-    'twilio': 'production',
+    twilio: 'production',
     'quick-actions': 'production',
-    'performanceMonitoring': 'production'
+    performanceMonitoring: 'production',
   };
 
   const toggles = {
@@ -431,15 +494,15 @@ export function applySettings() {
     // Call Logging Settings
     'toggle-call-logging-verification': 'callLoggingVerification',
     'toggle-call-logging-sensitive': 'callLoggingSensitiveFields',
-    'toggle-call-logging-templates': 'callLoggingTemplates'
+    'toggle-call-logging-templates': 'callLoggingTemplates',
   };
 
   Object.entries(toggles).forEach(([toggleId, section]) => {
-      const toggle = document.getElementById(toggleId);
-      // Only target sections inside the main app/stats/knowledge/settings views
-      const sectionEls = document.querySelectorAll(
-        `#main-app [data-section="${section}"], #stats-view [data-section="${section}"], #knowledge-base-view [data-section="${section}"], #settings-view [data-section="${section}"]`
-      );
+    const toggle = document.getElementById(toggleId);
+    // Only target sections inside the main app/stats/knowledge/settings views
+    const sectionEls = document.querySelectorAll(
+      `#main-app [data-section="${section}"], #stats-view [data-section="${section}"], #knowledge-base-view [data-section="${section}"], #settings-view [data-section="${section}"]`
+    );
     if (toggle) {
       // Convert section name to setting key
       let settingKey;
@@ -463,7 +526,12 @@ export function applySettings() {
           break;
         default:
           // Convert hyphenated names like 'data-management' into 'showDataManagement'
-          settingKey = 'show' + section.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
+          settingKey =
+            'show' +
+            section
+              .split('-')
+              .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+              .join('');
       }
 
       const status = featureStatus[section];
@@ -497,13 +565,15 @@ export function applySettings() {
           const betaLabel = document.createElement('span');
           betaLabel.className = 'feature-status beta';
           betaLabel.textContent = 'Beta';
-          betaLabel.title = 'This feature is in beta testing - it may have bugs or incomplete functionality';
+          betaLabel.title =
+            'This feature is in beta testing - it may have bugs or incomplete functionality';
           labelContainer.appendChild(betaLabel);
         } else if (status === 'coming-soon') {
           const comingSoonLabel = document.createElement('span');
           comingSoonLabel.className = 'feature-status coming-soon';
           comingSoonLabel.textContent = 'Coming Soon';
-          comingSoonLabel.title = 'This feature is under development and will be available in a future update';
+          comingSoonLabel.title =
+            'This feature is under development and will be available in a future update';
           labelContainer.appendChild(comingSoonLabel);
         }
       }
@@ -512,10 +582,17 @@ export function applySettings() {
       if (status === 'coming-soon' && !appSettings[settingKey]) {
         toggle.disabled = true;
         // for range-based sliders use value '0', otherwise uncheck
-        if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
-          try { toggle.value = '0'; } catch (e) {}
+        if (
+          toggle.type === 'range' ||
+          toggle.classList.contains('slider-toggle')
+        ) {
+          try {
+            toggle.value = '0';
+          } catch (e) {}
         } else {
-          try { toggle.checked = false; } catch (e) {}
+          try {
+            toggle.checked = false;
+          } catch (e) {}
         }
         // appSettings[settingKey] = false; // Removed to allow advanced features to stay enabled if set
 
@@ -524,29 +601,41 @@ export function applySettings() {
         }
       } else {
         toggle.disabled = false;
-        if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
+        if (
+          toggle.type === 'range' ||
+          toggle.classList.contains('slider-toggle')
+        ) {
           // Set numeric value for slider toggles
-          try { toggle.value = appSettings[settingKey] ? '1' : '0'; } catch (e) {}
+          try {
+            toggle.value = appSettings[settingKey] ? '1' : '0';
+          } catch (e) {}
           const isOn = String(toggle.value) === '1';
           if (sectionEls && sectionEls.length) {
             sectionEls.forEach((el) => (el.style.display = isOn ? '' : 'none'));
           }
         } else {
-          try { toggle.checked = !!appSettings[settingKey]; } catch (e) {}
+          try {
+            toggle.checked = !!appSettings[settingKey];
+          } catch (e) {}
           if (sectionEls && sectionEls.length) {
-            sectionEls.forEach((el) => (el.style.display = toggle.checked ? '' : 'none'));
+            sectionEls.forEach(
+              (el) => (el.style.display = toggle.checked ? '' : 'none')
+            );
           }
         }
       }
       // Ensure visual state for slider toggles
-      try { updateSliderVisual(toggle); } catch (e) {}
+      try {
+        updateSliderVisual(toggle);
+      } catch (e) {}
     }
   });
 
   // Handle section toggles (Visible Sections)
-  document.querySelectorAll('.section-toggle').forEach(toggle => {
+  document.querySelectorAll('.section-toggle').forEach((toggle) => {
     const section = toggle.dataset.section;
-    let settingKey = 'show' + section.charAt(0).toUpperCase() + section.slice(1);
+    let settingKey =
+      'show' + section.charAt(0).toUpperCase() + section.slice(1);
 
     // Fix for compound words where simple capitalization isn't enough
     if (section === 'advancedanalytics') settingKey = 'showAdvancedAnalytics';
@@ -555,13 +644,13 @@ export function applySettings() {
     if (section === 'voice-commands') settingKey = 'showVoiceCommands';
     if (section === 'knowledge-base') settingKey = 'showKnowledgeBase';
     if (section === 'time-tracking') settingKey = 'showTimeTracking';
-    
+
     const sectionEls = document.querySelectorAll(
       `#main-app [data-section="${section}"], #stats-view [data-section="${section}"], #knowledge-base-view [data-section="${section}"], #settings-view [data-section="${section}"]`
     );
     const isOn = appSettings[settingKey] !== false;
     toggle.checked = isOn;
-    sectionEls.forEach(el => el.style.display = isOn ? '' : 'none');
+    sectionEls.forEach((el) => (el.style.display = isOn ? '' : 'none'));
   });
 
   // Handle toolbar buttons visibility based on section settings
@@ -570,7 +659,7 @@ export function applySettings() {
     'quick-timer': 'showHoldtimer',
     'quick-note': 'showNotes',
     'quick-template': 'showScripts',
-    'quick-chat': 'showCollaboration'
+    'quick-chat': 'showCollaboration',
   };
 
   Object.entries(toolbarMappings).forEach(([buttonId, settingKey]) => {
@@ -583,10 +672,15 @@ export function applySettings() {
   // Handle navigation tab visibility for Knowledge Base
   const knowledgeBaseTab = document.getElementById('knowledge-base-tab');
   if (knowledgeBaseTab) {
-    knowledgeBaseTab.style.display = appSettings.showKnowledgeBase ? '' : 'none';
+    knowledgeBaseTab.style.display = appSettings.showKnowledgeBase
+      ? ''
+      : 'none';
 
     // If Knowledge Base is being disabled and user is currently on that tab, switch to main
-    if (!appSettings.showKnowledgeBase && knowledgeBaseTab.classList.contains('active')) {
+    if (
+      !appSettings.showKnowledgeBase &&
+      knowledgeBaseTab.classList.contains('active')
+    ) {
       // Switch to main tab if available
       if (typeof window.showMainApp === 'function') {
         window.showMainApp();
@@ -655,7 +749,8 @@ export function applySettings() {
   const quickActionsToolbar = document.getElementById('quick-actions-toolbar');
   const quickActionsToggle = document.getElementById('toggle-quick-actions');
   if (quickActionsToolbar) {
-    quickActionsToolbar.style.display = appSettings.showQuickActions !== false ? '' : 'none';
+    quickActionsToolbar.style.display =
+      appSettings.showQuickActions !== false ? '' : 'none';
     // If we're hiding the toolbar, also ensure the body padding is adjusted if needed (though stickiness usually handles overlap, removing it might require layout validation)
   }
   if (quickActionsToggle) {
@@ -728,20 +823,28 @@ export function applySettings() {
     Object.keys(map).forEach((k) => {
       try {
         const [sectionKey, labelKey] = k.split('::');
-        const sectionEl = sectionKey ? document.getElementById(sectionKey) : null;
+        const sectionEl = sectionKey
+          ? document.getElementById(sectionKey)
+          : null;
         // fallback: attempt to find by header text
         let target = null;
         if (sectionEl) {
-          target = Array.from(sectionEl.querySelectorAll('.setting-item')).find(si => {
-            const label = si.querySelector('.setting-label')?.textContent?.trim() || '';
-            return label.toLowerCase().replace(/\s+/g,'-') === labelKey;
-          });
+          target = Array.from(sectionEl.querySelectorAll('.setting-item')).find(
+            (si) => {
+              const label =
+                si.querySelector('.setting-label')?.textContent?.trim() || '';
+              return label.toLowerCase().replace(/\s+/g, '-') === labelKey;
+            }
+          );
         } else {
           // search globally
-          target = Array.from(document.querySelectorAll('.setting-item')).find(si => {
-            const label = si.querySelector('.setting-label')?.textContent?.trim() || '';
-            return label.toLowerCase().replace(/\s+/g,'-') === labelKey;
-          });
+          target = Array.from(document.querySelectorAll('.setting-item')).find(
+            (si) => {
+              const label =
+                si.querySelector('.setting-label')?.textContent?.trim() || '';
+              return label.toLowerCase().replace(/\s+/g, '-') === labelKey;
+            }
+          );
         }
         if (target && map[k]) target.classList.add('collapsed');
       } catch (e) {}
@@ -750,9 +853,15 @@ export function applySettings() {
 
   // Update collapse-all button initial state (if present)
   try {
-    const headerBtn = document.querySelector('#settings-view .settings-header .header-actions .collapse-all');
+    const headerBtn = document.querySelector(
+      '#settings-view .settings-header .header-actions .collapse-all'
+    );
     if (headerBtn) {
-      const anyExpanded = Array.from(document.querySelectorAll('#settings-view .settings-section .setting-item')).some(si => !si.classList.contains('collapsed'));
+      const anyExpanded = Array.from(
+        document.querySelectorAll(
+          '#settings-view .settings-section .setting-item'
+        )
+      ).some((si) => !si.classList.contains('collapsed'));
       headerBtn.textContent = anyExpanded ? 'Collapse all' : 'Expand all';
       headerBtn.setAttribute('aria-pressed', anyExpanded ? 'false' : 'true');
     }
@@ -765,19 +874,19 @@ export function applySettings() {
       if (!val) return;
       // find by data-section or id
       // apply to settings view and main app if present
-      const el = document.querySelector(`#settings-view [data-section="${key}"]`) ||
-                 document.querySelector(`[data-section="${key}"]`) ||
-                 document.getElementById(key);
+      const el =
+        document.querySelector(`#settings-view [data-section="${key}"]`) ||
+        document.querySelector(`[data-section="${key}"]`) ||
+        document.getElementById(key);
       if (el) {
-        const titleElem = el.querySelector('.section-title') || el.querySelector('h2, h3');
+        const titleElem =
+          el.querySelector('.section-title') || el.querySelector('h2, h3');
         if (titleElem) titleElem.textContent = val;
       }
     });
   } catch (e) {}
   // (defensive restoration removed — previous behavior restored)
 }
-
-
 
 export function setupSettingsEventListeners() {
   // Initialize audio context
@@ -855,15 +964,22 @@ export function setupSettingsEventListeners() {
         // Prevent changes on disabled toggles (coming soon features)
         if (toggle.disabled) {
           event.preventDefault();
-          if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) toggle.value = '0';
+          if (
+            toggle.type === 'range' ||
+            toggle.classList.contains('slider-toggle')
+          )
+            toggle.value = '0';
           else toggle.checked = false; // Ensure it stays unchecked
           return;
         }
 
         const section = toggleId.replace(/^main-/, '').replace('toggle-', '');
-        
+
         // Determine on/off for range sliders vs checkboxes
-        const isOn = (this.type === 'range' || this.classList.contains('slider-toggle')) ? this.value === '1' : this.checked;
+        const isOn =
+          this.type === 'range' || this.classList.contains('slider-toggle')
+            ? this.value === '1'
+            : this.checked;
 
         // Special handling for minimal mode
         if (section === 'minimal-mode') {
@@ -910,9 +1026,14 @@ export function setupSettingsEventListeners() {
           case 'training':
             settingKey = 'showTraining';
             break;
-      
+
           default:
-            settingKey = 'show' + section.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
+            settingKey =
+              'show' +
+              section
+                .split('-')
+                .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+                .join('');
         }
         appSettings[settingKey] = isOn;
         saveSettings(appSettings);
@@ -973,18 +1094,20 @@ export function setupSettingsEventListeners() {
 
   // Ensure settings sections behave like main page sections
   try {
-    document.querySelectorAll('#settings-view .settings-section').forEach((section) => {
-      if (!section) return;
-      section.classList.add('draggable-section');
-      if (typeof setupDraggable === 'function') setupDraggable(section);
-      if (typeof setupFloating === 'function') setupFloating(section);
-      if (typeof setupSectionToggle === 'function') setupSectionToggle(section);
-    });
+    document
+      .querySelectorAll('#settings-view .settings-section')
+      .forEach((section) => {
+        if (!section) return;
+        section.classList.add('draggable-section');
+        if (typeof setupDraggable === 'function') setupDraggable(section);
+        if (typeof setupFloating === 'function') setupFloating(section);
+        if (typeof setupSectionToggle === 'function')
+          setupSectionToggle(section);
+      });
   } catch (e) {}
 
-
-// NOTE: addSettingCollapsibles is implemented at top-level below (kept here
-// temporarily in setup flow call so tests can invoke it separately)
+  // NOTE: addSettingCollapsibles is implemented at top-level below (kept here
+  // temporarily in setup flow call so tests can invoke it separately)
   // Export toggles
   const exportToggles = [
     'export-patterns',
@@ -1064,23 +1187,21 @@ export function setupSettingsEventListeners() {
       });
     }
   });
-  
+
   // Initialize Customization UIs
   initializeCustomizationUI();
-  
+
   // Setup additional listeners from the bottom of the file
   setupAdditionalSettingsListeners();
-  
+
   applySettings();
 }
 
-
 function initializeCustomizationUI() {
-    // Legacy migration or empty init
-    if (!appSettings.formFields) appSettings.formFields = [];
-    if (!appSettings.noteTemplates) appSettings.noteTemplates = [];
+  // Legacy migration or empty init
+  if (!appSettings.formFields) appSettings.formFields = [];
+  if (!appSettings.noteTemplates) appSettings.noteTemplates = [];
 }
-
 
 function setupAdditionalSettingsListeners() {
   // Repeat alert sound toggle
@@ -1242,15 +1363,36 @@ function setupAdditionalSettingsListeners() {
       (async () => {
         try {
           const modalModule = await import('../utils/modal.js');
-          const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
-          const ok = await confirmFn({ title: 'Reset All Data', message: 'Are you sure you want to reset ALL data? This cannot be undone!', confirmLabel: 'Reset All', cancelLabel: 'Cancel', danger: true });
+          const confirmFn =
+            (modalModule &&
+              typeof modalModule.showConfirmModal === 'function' &&
+              modalModule.showConfirmModal) ||
+            window.showConfirmModal ||
+            ((opts) =>
+              Promise.resolve(
+                window.confirm(
+                  opts && opts.message ? opts.message : 'Are you sure?'
+                )
+              ));
+          const ok = await confirmFn({
+            title: 'Reset All Data',
+            message:
+              'Are you sure you want to reset ALL data? This cannot be undone!',
+            confirmLabel: 'Reset All',
+            cancelLabel: 'Cancel',
+            danger: true,
+          });
           if (ok) {
             localStorage.clear();
             location.reload();
           }
         } catch (err) {
           console.warn('Reset All Data: confirm fallback triggered', err);
-          if (window.confirm('Are you sure you want to reset ALL data? This cannot be undone!')) {
+          if (
+            window.confirm(
+              'Are you sure you want to reset ALL data? This cannot be undone!'
+            )
+          ) {
             localStorage.clear();
             location.reload();
           }
@@ -1265,18 +1407,33 @@ function setupAdditionalSettingsListeners() {
     clearDataBtn.addEventListener('click', async function () {
       try {
         const modalModule = await import('../utils/modal.js');
-        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmFn =
+          (modalModule &&
+            typeof modalModule.showConfirmModal === 'function' &&
+            modalModule.showConfirmModal) ||
+          window.showConfirmModal ||
+          ((opts) =>
+            Promise.resolve(
+              window.confirm(
+                opts && opts.message ? opts.message : 'Are you sure?'
+              )
+            ));
         const ok = await confirmFn({
           title: 'Clear All Data',
-          message: 'Are you sure you want to permanently delete ALL application data? This action cannot be undone!',
+          message:
+            'Are you sure you want to permanently delete ALL application data? This action cannot be undone!',
           confirmLabel: 'Clear All Data',
           cancelLabel: 'Cancel',
-          danger: true
+          danger: true,
         });
         if (ok) {
           try {
             const storageModule = await import('./storage.js');
-            const clearAllData = (storageModule && typeof storageModule.clearAllData === 'function' && storageModule.clearAllData) || (await import('./storage.js')).clearAllData;
+            const clearAllData =
+              (storageModule &&
+                typeof storageModule.clearAllData === 'function' &&
+                storageModule.clearAllData) ||
+              (await import('./storage.js')).clearAllData;
             if (typeof clearAllData === 'function') clearAllData();
             location.reload();
           } catch (e) {
@@ -1285,10 +1442,18 @@ function setupAdditionalSettingsListeners() {
         }
       } catch (err) {
         console.warn('Clear All Data: confirm fallback triggered', err);
-        if (window.confirm('Are you sure you want to permanently delete ALL application data? This action cannot be undone!')) {
+        if (
+          window.confirm(
+            'Are you sure you want to permanently delete ALL application data? This action cannot be undone!'
+          )
+        ) {
           try {
             const storageModule = await import('./storage.js');
-            const clearAllData = (storageModule && typeof storageModule.clearAllData === 'function' && storageModule.clearAllData) || (await import('./storage.js')).clearAllData;
+            const clearAllData =
+              (storageModule &&
+                typeof storageModule.clearAllData === 'function' &&
+                storageModule.clearAllData) ||
+              (await import('./storage.js')).clearAllData;
             if (typeof clearAllData === 'function') clearAllData();
             location.reload();
           } catch (e) {
@@ -1573,14 +1738,35 @@ async function restoreData(event) {
 
   try {
     const modalModule = await import('../utils/modal.js');
-    const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
-    if (!(await confirmFn({ title: 'Restore Backup', message: 'Are you sure you want to restore from this backup? This will overwrite all existing data.', confirmLabel: 'Restore', cancelLabel: 'Cancel', danger: true }))) {
+    const confirmFn =
+      (modalModule &&
+        typeof modalModule.showConfirmModal === 'function' &&
+        modalModule.showConfirmModal) ||
+      window.showConfirmModal ||
+      ((opts) =>
+        Promise.resolve(
+          window.confirm(opts && opts.message ? opts.message : 'Are you sure?')
+        ));
+    if (
+      !(await confirmFn({
+        title: 'Restore Backup',
+        message:
+          'Are you sure you want to restore from this backup? This will overwrite all existing data.',
+        confirmLabel: 'Restore',
+        cancelLabel: 'Cancel',
+        danger: true,
+      }))
+    ) {
       event.target.value = ''; // Reset file input
       return;
     }
   } catch (err) {
     console.warn('Restore Backup: confirm fallback triggered', err);
-    if (!window.confirm('Are you sure you want to restore from this backup? This will overwrite all existing data.')) {
+    if (
+      !window.confirm(
+        'Are you sure you want to restore from this backup? This will overwrite all existing data.'
+      )
+    ) {
       event.target.value = '';
       return;
     }
@@ -1631,7 +1817,7 @@ function createBackup() {
     steps: loadSteps(),
     notes: loadNotes(),
     settings: appSettings,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const blob = new Blob([JSON.stringify(dataToBackup, null, 2)], {
@@ -1690,7 +1876,9 @@ function updateDataStatistics() {
 // Layout functions
 function applyLayout() {
   // Apply layout & ordering to every sortable container (main + settings)
-  const containers = Array.from(document.querySelectorAll('.sortable-container'));
+  const containers = Array.from(
+    document.querySelectorAll('.sortable-container')
+  );
   if (!containers.length) return;
 
   containers.forEach((container) => {
@@ -1708,7 +1896,10 @@ function applyLayout() {
         const m = cn.match(/^grid-cols-(\d+)-safe$/);
         if (m) container.classList.remove(cn);
       });
-      const cols = Math.max(1, Math.min(4, parseInt(appSettings.gridColumns, 10) || 2));
+      const cols = Math.max(
+        1,
+        Math.min(4, parseInt(appSettings.gridColumns, 10) || 2)
+      );
       container.classList.add(`grid-cols-${cols}-safe`);
       container.style.gap = `${appSettings.gridSpacing}px`;
       container.style.padding = `${appSettings.gridSpacing}px`;
@@ -1737,11 +1928,14 @@ function applyLayout() {
     try {
       const view = container.closest('.app-view');
       const viewKey = view?.id || 'root';
-      const saved = appSettings.savedLayoutsPerView && appSettings.savedLayoutsPerView[viewKey];
+      const saved =
+        appSettings.savedLayoutsPerView &&
+        appSettings.savedLayoutsPerView[viewKey];
       if (saved && Array.isArray(saved.sections) && saved.sections.length) {
         saved.sections.forEach((sectionId) => {
           const sec = document.getElementById(sectionId);
-          if (sec && container !== sec.parentElement) container.appendChild(sec);
+          if (sec && container !== sec.parentElement)
+            container.appendChild(sec);
         });
       }
     } catch (e) {
@@ -1753,10 +1947,19 @@ function applyLayout() {
 async function resetLayout() {
   try {
     const modalModule = await import('../utils/modal.js');
-    const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+    const confirmFn =
+      (modalModule &&
+        typeof modalModule.showConfirmModal === 'function' &&
+        modalModule.showConfirmModal) ||
+      window.showConfirmModal ||
+      ((opts) =>
+        Promise.resolve(
+          window.confirm(opts && opts.message ? opts.message : 'Are you sure?')
+        ));
     const confirmed = await confirmFn({
       title: 'Reset Layout',
-      message: 'Reset layout to default? This will restore the original section order and grid settings.',
+      message:
+        'Reset layout to default? This will restore the original section order and grid settings.',
       confirmLabel: 'Reset',
       cancelLabel: 'Cancel',
       danger: false,
@@ -1765,7 +1968,12 @@ async function resetLayout() {
     if (!confirmed) return;
   } catch (err) {
     console.warn('Reset Layout: confirm fallback triggered', err);
-    if (!window.confirm('Reset layout to default? This will restore the original section order and grid settings.')) return;
+    if (
+      !window.confirm(
+        'Reset layout to default? This will restore the original section order and grid settings.'
+      )
+    )
+      return;
   }
 
   // Restore to default layout values
@@ -1794,12 +2002,14 @@ async function resetLayout() {
   if (gridColumns) {
     gridColumns.value = appSettings.defaultLayout.columns;
     const gridColumnsValue = document.getElementById('grid-columns-value');
-    if (gridColumnsValue) gridColumnsValue.textContent = appSettings.defaultLayout.columns;
+    if (gridColumnsValue)
+      gridColumnsValue.textContent = appSettings.defaultLayout.columns;
   }
   if (gridSpacing) {
     gridSpacing.value = appSettings.defaultLayout.spacing;
     const gridSpacingValue = document.getElementById('grid-spacing-value');
-    if (gridSpacingValue) gridSpacingValue.textContent = appSettings.defaultLayout.spacing + 'px';
+    if (gridSpacingValue)
+      gridSpacingValue.textContent = appSettings.defaultLayout.spacing + 'px';
   }
 }
 
@@ -1807,7 +2017,9 @@ function saveCurrentLayout() {
   // Save the current layout for each sortable container separately. This will
   // persist a layout keyed by the surrounding app-view container so the main
   // page and the settings page can keep their own layouts.
-  const containers = Array.from(document.querySelectorAll('.sortable-container'));
+  const containers = Array.from(
+    document.querySelectorAll('.sortable-container')
+  );
   if (!containers.length) return;
 
   containers.forEach((container) => {
@@ -1841,9 +2053,11 @@ function saveCurrentLayout() {
 
   // Settings group collapse toggles (use .collapse-toggle for expand/collapse)
   const collapseToggles = document.querySelectorAll('.collapse-toggle');
-  collapseToggles.forEach(toggle => {
-    toggle.addEventListener('click', function() {
-      const groupContent = document.getElementById(this.getAttribute('aria-controls'));
+  collapseToggles.forEach((toggle) => {
+    toggle.addEventListener('click', function () {
+      const groupContent = document.getElementById(
+        this.getAttribute('aria-controls')
+      );
       const isExpanded = this.getAttribute('aria-expanded') === 'true';
       // Toggle the expanded state
       this.setAttribute('aria-expanded', !isExpanded);
@@ -1857,16 +2071,28 @@ function saveCurrentLayout() {
   });
 
   // Group-level enable/disable buttons (Enable All / Disable All)
-  const groupEnableBtns = document.querySelectorAll('.group-toggle[data-group]');
-  groupEnableBtns.forEach(btn => {
+  const groupEnableBtns = document.querySelectorAll(
+    '.group-toggle[data-group]'
+  );
+  groupEnableBtns.forEach((btn) => {
     btn.addEventListener('click', function () {
       const groupEl = this.closest('.settings-group');
       if (!groupEl) return;
-      const inputs = Array.from(groupEl.querySelectorAll('input[type="checkbox"], input[type="range"].slider-toggle'));
+      const inputs = Array.from(
+        groupEl.querySelectorAll(
+          'input[type="checkbox"], input[type="range"].slider-toggle'
+        )
+      );
       if (!inputs.length) return;
-      const anyOff = inputs.some(inp => inp.disabled ? false : (inp.type === 'range' ? inp.value !== '1' : !inp.checked));
+      const anyOff = inputs.some((inp) =>
+        inp.disabled
+          ? false
+          : inp.type === 'range'
+            ? inp.value !== '1'
+            : !inp.checked
+      );
       const newVal = anyOff ? '1' : '0';
-      inputs.forEach(inp => {
+      inputs.forEach((inp) => {
         if (inp.disabled) return;
         if (inp.type === 'range') {
           inp.value = newVal;
@@ -1875,16 +2101,20 @@ function saveCurrentLayout() {
         }
         // Trigger change handlers
         inp.dispatchEvent(new Event('change', { bubbles: true }));
-        try { updateSliderVisual(inp); } catch (e) {}
+        try {
+          updateSliderVisual(inp);
+        } catch (e) {}
       });
       this.textContent = anyOff ? 'Disable All' : 'Enable All';
     });
   });
 
   // Initialize group states (expanded by default)
-  groupToggles.forEach(toggle => {
+  groupToggles.forEach((toggle) => {
     toggle.setAttribute('aria-expanded', 'true');
-    const groupContent = document.getElementById(toggle.getAttribute('aria-controls'));
+    const groupContent = document.getElementById(
+      toggle.getAttribute('aria-controls')
+    );
     if (groupContent) {
       groupContent.setAttribute('aria-expanded', 'true');
     }
@@ -1903,10 +2133,19 @@ export async function lazyLoadDynamicComponent(componentId, moduleType) {
     case 'timer':
       try {
         const timerModule = await import('./timer.js');
-        const initializeTimer = (timerModule && typeof timerModule.initializeTimer === 'function' && timerModule.initializeTimer) || (await import('./timer.js')).initializeTimer;
-        const setupTimerEventListeners = (timerModule && typeof timerModule.setupTimerEventListeners === 'function' && timerModule.setupTimerEventListeners) || (await import('./timer.js')).setupTimerEventListeners;
+        const initializeTimer =
+          (timerModule &&
+            typeof timerModule.initializeTimer === 'function' &&
+            timerModule.initializeTimer) ||
+          (await import('./timer.js')).initializeTimer;
+        const setupTimerEventListeners =
+          (timerModule &&
+            typeof timerModule.setupTimerEventListeners === 'function' &&
+            timerModule.setupTimerEventListeners) ||
+          (await import('./timer.js')).setupTimerEventListeners;
         if (typeof initializeTimer === 'function') initializeTimer(componentId);
-        if (typeof setupTimerEventListeners === 'function') setupTimerEventListeners(componentId);
+        if (typeof setupTimerEventListeners === 'function')
+          setupTimerEventListeners(componentId);
       } catch (e) {
         console.warn('lazyLoadDynamicComponent(timer) import failed', e);
       }
@@ -1915,7 +2154,11 @@ export async function lazyLoadDynamicComponent(componentId, moduleType) {
     case 'notes':
       try {
         const notesModule = await import('./notes.js');
-        const initializeNotes = (notesModule && typeof notesModule.initializeNotes === 'function' && notesModule.initializeNotes) || (await import('./notes.js')).initializeNotes;
+        const initializeNotes =
+          (notesModule &&
+            typeof notesModule.initializeNotes === 'function' &&
+            notesModule.initializeNotes) ||
+          (await import('./notes.js')).initializeNotes;
         if (typeof initializeNotes === 'function') initializeNotes(componentId);
       } catch (e) {
         console.warn('lazyLoadDynamicComponent(notes) import failed', e);
@@ -1976,9 +2219,15 @@ async function initializeTwilioSettings() {
 
   // Save settings event listener
   saveButton.addEventListener('click', async () => {
-    const accountSid = document.getElementById('twilio-account-sid')?.value?.trim();
-    const authToken = document.getElementById('twilio-auth-token')?.value?.trim();
-    const phoneNumber = document.getElementById('twilio-phone-number')?.value?.trim();
+    const accountSid = document
+      .getElementById('twilio-account-sid')
+      ?.value?.trim();
+    const authToken = document
+      .getElementById('twilio-auth-token')
+      ?.value?.trim();
+    const phoneNumber = document
+      .getElementById('twilio-phone-number')
+      ?.value?.trim();
 
     if (!accountSid || !authToken || !phoneNumber) {
       showTwilioStatus('Please fill in all fields', 'error');
@@ -1993,9 +2242,9 @@ async function initializeTwilioSettings() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ accountSid, authToken, phoneNumber })
+        body: JSON.stringify({ accountSid, authToken, phoneNumber }),
       });
 
       const result = await response.json();
@@ -2018,7 +2267,9 @@ async function initializeTwilioSettings() {
   // Test SMS event listener
   if (testButton) {
     testButton.addEventListener('click', async () => {
-      const phoneNumber = document.getElementById('twilio-phone-number')?.value?.trim();
+      const phoneNumber = document
+        .getElementById('twilio-phone-number')
+        ?.value?.trim();
 
       if (!phoneNumber) {
         alert('Please enter a phone number first');
@@ -2033,12 +2284,12 @@ async function initializeTwilioSettings() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify({
             to: phoneNumber,
-            message: 'Test SMS from Call Center Helper'
-          })
+            message: 'Test SMS from Call Center Helper',
+          }),
         });
 
         const result = await response.json();
@@ -2068,8 +2319,8 @@ async function loadTwilioSettings() {
   try {
     const response = await fetch('/api/user/twilio', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     });
 
     if (response.ok) {
@@ -2104,72 +2355,90 @@ async function loadTwilioSettings() {
   }
 }
 
-  // Collapsible settings groups
-  const collapseToggle = document.getElementById('toggle-advanced-sections');
-  if (collapseToggle) {
-    collapseToggle.addEventListener('click', function() {
-      const content = document.getElementById('advanced-sections-content');
-      const isExpanded = this.getAttribute('aria-expanded') === 'true';
-      
-      this.setAttribute('aria-expanded', !isExpanded);
-      this.querySelector('.toggle-icon').textContent = isExpanded ? '▼' : '▲';
-      this.querySelector('.toggle-icon').nextSibling.textContent = isExpanded ? 'Show Advanced' : 'Hide Advanced';
-      
-      if (content) {
-        content.style.display = isExpanded ? 'none' : 'block';
-        content.classList.toggle('expanded', !isExpanded);
-        content.classList.toggle('collapsed', isExpanded);
-      }
-    });
-  }
+// Collapsible settings groups
+const collapseToggle = document.getElementById('toggle-advanced-sections');
+if (collapseToggle) {
+  collapseToggle.addEventListener('click', function () {
+    const content = document.getElementById('advanced-sections-content');
+    const isExpanded = this.getAttribute('aria-expanded') === 'true';
 
-  // Settings group collapse toggles
-  const collapseToggles = document.querySelectorAll('.collapse-toggle');
-  collapseToggles.forEach(toggle => {
-    toggle.addEventListener('click', function() {
-      const groupContent = document.getElementById(this.getAttribute('aria-controls'));
-      const isExpanded = this.getAttribute('aria-expanded') === 'true';
-      this.setAttribute('aria-expanded', !isExpanded);
-      if (groupContent) {
-        groupContent.setAttribute('aria-expanded', !isExpanded);
-        groupContent.classList.toggle('collapsed', isExpanded);
-        groupContent.classList.toggle('expanded', !isExpanded);
-      }
-    });
-  });
+    this.setAttribute('aria-expanded', !isExpanded);
+    this.querySelector('.toggle-icon').textContent = isExpanded ? '▼' : '▲';
+    this.querySelector('.toggle-icon').nextSibling.textContent = isExpanded
+      ? 'Show Advanced'
+      : 'Hide Advanced';
 
-  // Initialize collapse toggles as collapsed by default
-  collapseToggles.forEach(toggle => {
-    const groupContent = document.getElementById(toggle.getAttribute('aria-controls'));
-    if (groupContent) {
-      groupContent.setAttribute('aria-expanded', 'false');
-      groupContent.classList.add('collapsed');
+    if (content) {
+      content.style.display = isExpanded ? 'none' : 'block';
+      content.classList.toggle('expanded', !isExpanded);
+      content.classList.toggle('collapsed', isExpanded);
     }
   });
+}
 
-  // Group enable/disable buttons (Enable All / Disable All)
-  const groupEnableBtns = document.querySelectorAll('.group-toggle[data-group]');
-  groupEnableBtns.forEach(btn => {
-    btn.addEventListener('click', function () {
-      const groupEl = this.closest('.settings-group');
-      if (!groupEl) return;
-      const inputs = Array.from(groupEl.querySelectorAll('input[type="checkbox"], input[type="range"].slider-toggle'));
-      if (!inputs.length) return;
-      const anyOff = inputs.some(inp => inp.disabled ? false : (inp.type === 'range' ? inp.value !== '1' : !inp.checked));
-      const newVal = anyOff ? '1' : '0';
-      inputs.forEach(inp => {
-        if (inp.disabled) return;
-        if (inp.type === 'range') {
-          inp.value = newVal;
-        } else {
-          inp.checked = newVal === '1';
-        }
-        inp.dispatchEvent(new Event('change', { bubbles: true }));
-        try { updateSliderVisual(inp); } catch (e) {}
-      });
-      this.textContent = anyOff ? 'Disable All' : 'Enable All';
-    });
+// Settings group collapse toggles
+const collapseToggles = document.querySelectorAll('.collapse-toggle');
+collapseToggles.forEach((toggle) => {
+  toggle.addEventListener('click', function () {
+    const groupContent = document.getElementById(
+      this.getAttribute('aria-controls')
+    );
+    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', !isExpanded);
+    if (groupContent) {
+      groupContent.setAttribute('aria-expanded', !isExpanded);
+      groupContent.classList.toggle('collapsed', isExpanded);
+      groupContent.classList.toggle('expanded', !isExpanded);
+    }
   });
+});
+
+// Initialize collapse toggles as collapsed by default
+collapseToggles.forEach((toggle) => {
+  const groupContent = document.getElementById(
+    toggle.getAttribute('aria-controls')
+  );
+  if (groupContent) {
+    groupContent.setAttribute('aria-expanded', 'false');
+    groupContent.classList.add('collapsed');
+  }
+});
+
+// Group enable/disable buttons (Enable All / Disable All)
+const groupEnableBtns = document.querySelectorAll('.group-toggle[data-group]');
+groupEnableBtns.forEach((btn) => {
+  btn.addEventListener('click', function () {
+    const groupEl = this.closest('.settings-group');
+    if (!groupEl) return;
+    const inputs = Array.from(
+      groupEl.querySelectorAll(
+        'input[type="checkbox"], input[type="range"].slider-toggle'
+      )
+    );
+    if (!inputs.length) return;
+    const anyOff = inputs.some((inp) =>
+      inp.disabled
+        ? false
+        : inp.type === 'range'
+          ? inp.value !== '1'
+          : !inp.checked
+    );
+    const newVal = anyOff ? '1' : '0';
+    inputs.forEach((inp) => {
+      if (inp.disabled) return;
+      if (inp.type === 'range') {
+        inp.value = newVal;
+      } else {
+        inp.checked = newVal === '1';
+      }
+      inp.dispatchEvent(new Event('change', { bubbles: true }));
+      try {
+        updateSliderVisual(inp);
+      } catch (e) {}
+    });
+    this.textContent = anyOff ? 'Disable All' : 'Enable All';
+  });
+});
 
 // Welcome Screen Logic
 // Welcome Screen Logic
@@ -2180,7 +2449,7 @@ function checkWelcomeStatus() {
     const backBtn = document.getElementById('wizard-back');
     const steps = document.querySelectorAll('.wizard-step');
     const dots = document.querySelectorAll('.wizard-dots .dot');
-    
+
     // State
     let currentStep = 1;
     let selectedRole = 'agent';
@@ -2193,34 +2462,34 @@ function checkWelcomeStatus() {
 
       // --- Helpers ---
       function updateStep(step) {
-        steps.forEach(s => {
-            s.classList.remove('active');
-            if (parseInt(s.dataset.step) === step) s.classList.add('active');
+        steps.forEach((s) => {
+          s.classList.remove('active');
+          if (parseInt(s.dataset.step) === step) s.classList.add('active');
         });
-        
+
         dots.forEach((d, i) => {
-            // Logic for dots needs to match visible steps vs actual steps?
-            // Simple approach: just light them up.
-            if (i < step) d.classList.add('active');
-            else d.classList.remove('active');
+          // Logic for dots needs to match visible steps vs actual steps?
+          // Simple approach: just light them up.
+          if (i < step) d.classList.add('active');
+          else d.classList.remove('active');
         });
 
         backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
-        
+
         if (step === 5) {
-            nextBtn.textContent = 'Finish';
+          nextBtn.textContent = 'Finish';
         } else {
-            nextBtn.textContent = 'Next';
+          nextBtn.textContent = 'Next';
         }
       }
 
       // --- Interaction Handlers ---
-      
+
       // Step 1: Role Selection
       const roleCards = document.querySelectorAll('.role-card');
-      roleCards.forEach(card => {
+      roleCards.forEach((card) => {
         card.addEventListener('click', () => {
-          roleCards.forEach(c => c.classList.remove('selected'));
+          roleCards.forEach((c) => c.classList.remove('selected'));
           card.classList.add('selected');
           selectedRole = card.dataset.role;
         });
@@ -2230,9 +2499,9 @@ function checkWelcomeStatus() {
 
       // Step 3: Theme Selection
       const themeCards = document.querySelectorAll('.theme-card');
-      themeCards.forEach(card => {
+      themeCards.forEach((card) => {
         card.addEventListener('click', () => {
-          themeCards.forEach(c => c.classList.remove('selected'));
+          themeCards.forEach((c) => c.classList.remove('selected'));
           card.classList.add('selected');
           selectedTheme = card.dataset.theme;
         });
@@ -2245,52 +2514,52 @@ function checkWelcomeStatus() {
 
         // Skip Step 2 if not custom
         if (currentStep === 1 && selectedRole !== 'custom') {
-            nextStep = 3;
+          nextStep = 3;
         }
 
         if (currentStep === 3) {
-            if (window.setTheme) window.setTheme(selectedTheme);
+          if (window.setTheme) window.setTheme(selectedTheme);
         }
 
         if (currentStep < 5) {
-            currentStep = nextStep;
-            updateStep(currentStep);
+          currentStep = nextStep;
+          updateStep(currentStep);
         } else {
-            // FINISH (Step 5)
-            const nameInput = document.getElementById('welcome-name');
-            if (nameInput) userName = nameInput.value;
-            
-            // Collect modules if custom
-            if (selectedRole === 'custom') {
-                document.querySelectorAll('input[name="modules"]').forEach(cb => {
-                    customModules[cb.value] = cb.checked;
-                });
-            }
+          // FINISH (Step 5)
+          const nameInput = document.getElementById('welcome-name');
+          if (nameInput) userName = nameInput.value;
 
-            applyRolePreset(selectedRole, customModules);
-            
-            appSettings.theme = selectedTheme;
-            if (userName) appSettings.userName = userName;
-            
-            appSettings.hasSeenWelcome = true;
-            saveSettings(appSettings);
-            
-            overlay.classList.remove('active');
-            applySettings();
+          // Collect modules if custom
+          if (selectedRole === 'custom') {
+            document.querySelectorAll('input[name="modules"]').forEach((cb) => {
+              customModules[cb.value] = cb.checked;
+            });
+          }
+
+          applyRolePreset(selectedRole, customModules);
+
+          appSettings.theme = selectedTheme;
+          if (userName) appSettings.userName = userName;
+
+          appSettings.hasSeenWelcome = true;
+          saveSettings(appSettings);
+
+          overlay.classList.remove('active');
+          applySettings();
         }
       });
 
       backBtn.addEventListener('click', () => {
         let prevStep = currentStep - 1;
-        
+
         // Skip Step 2 going back if not custom
         if (currentStep === 3 && selectedRole !== 'custom') {
-            prevStep = 1;
+          prevStep = 1;
         }
 
         if (prevStep >= 1) {
-            currentStep = prevStep;
-            updateStep(currentStep);
+          currentStep = prevStep;
+          updateStep(currentStep);
         }
       });
     }
@@ -2299,45 +2568,55 @@ function checkWelcomeStatus() {
 
 function applyRolePreset(role, customModules = {}) {
   // Defaults set to false for clarity before enabling
-  const allModules = ['showFormatter', 'showCalllogging', 'showScripts', 'showHoldtimer', 'showNotes', 'showAnalytics', 'showCrm', 'showTasks', 'showCollaboration', 'showPerformanceMonitoring'];
-  
+  const allModules = [
+    'showFormatter',
+    'showCalllogging',
+    'showScripts',
+    'showHoldtimer',
+    'showNotes',
+    'showAnalytics',
+    'showCrm',
+    'showTasks',
+    'showCollaboration',
+    'showPerformanceMonitoring',
+  ];
+
   // Helper to reset
   const resetAll = () => {
-      allModules.forEach(m => appSettings[m] = false);
+    allModules.forEach((m) => (appSettings[m] = false));
   };
 
   if (role === 'custom') {
-      // Apply exact check states
-      Object.keys(customModules).forEach(key => {
-          appSettings[key] = customModules[key];
-      });
-      // Ensure Quick actions is on by default for custom?
-      appSettings.showQuickActions = appSettings.showQuickActions ?? true;
-  } 
-  else {
-      resetAll(); // Clear first for presets
-      
-      if (role === 'agent') {
-        appSettings.showFormatter = true;
-        appSettings.showCalllogging = true;
-        appSettings.showScripts = true;
-        appSettings.showHoldtimer = true;
-        appSettings.showNotes = true;
-        appSettings.showQuickActions = true;
-      } else if (role === 'manager') {
-        appSettings.showAnalytics = true;
-        appSettings.showPerformanceMonitoring = true; // Often paired with analytics
-        appSettings.showCollaboration = true;
-        appSettings.showTasks = true;
-        appSettings.showCrm = true;
-        appSettings.showFormatter = true;       // Useful for everyone
-        appSettings.showCalllogging = true;     // Reviewing calls
-        appSettings.showQuickActions = true;
-      } else if (role === 'minimal') {
-        appSettings.showFormatter = true;
-        appSettings.showHoldtimer = true;
-        appSettings.showQuickActions = true;
-      }
+    // Apply exact check states
+    Object.keys(customModules).forEach((key) => {
+      appSettings[key] = customModules[key];
+    });
+    // Ensure Quick actions is on by default for custom?
+    appSettings.showQuickActions = appSettings.showQuickActions ?? true;
+  } else {
+    resetAll(); // Clear first for presets
+
+    if (role === 'agent') {
+      appSettings.showFormatter = true;
+      appSettings.showCalllogging = true;
+      appSettings.showScripts = true;
+      appSettings.showHoldtimer = true;
+      appSettings.showNotes = true;
+      appSettings.showQuickActions = true;
+    } else if (role === 'manager') {
+      appSettings.showAnalytics = true;
+      appSettings.showPerformanceMonitoring = true; // Often paired with analytics
+      appSettings.showCollaboration = true;
+      appSettings.showTasks = true;
+      appSettings.showCrm = true;
+      appSettings.showFormatter = true; // Useful for everyone
+      appSettings.showCalllogging = true; // Reviewing calls
+      appSettings.showQuickActions = true;
+    } else if (role === 'minimal') {
+      appSettings.showFormatter = true;
+      appSettings.showHoldtimer = true;
+      appSettings.showQuickActions = true;
+    }
   }
 
   saveSettings(appSettings);

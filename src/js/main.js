@@ -1,13 +1,18 @@
 // Import synchronous dependencies
-import { io } from "socket.io-client";
-import Chart from "chart.js/auto";
+import { io } from 'socket.io-client';
+import Chart from 'chart.js/auto';
 
 // Expose libraries globally for legacy code compatibility
 window.io = io;
 window.Chart = Chart;
 
 import { auth } from './modules/auth.js';
-import { initializeSettings, appSettings, saveSettings, applySettings } from './modules/settings.js';
+import {
+  initializeSettings,
+  appSettings,
+  saveSettings,
+  applySettings,
+} from './modules/settings.js';
 import { initializeTheme, setupThemeToggle } from './modules/themes.js';
 import { setupTimerEventListeners } from './modules/timer.js';
 import * as patternsModule from './modules/patterns.js';
@@ -56,48 +61,48 @@ const lazyLoadAdvancedModules = async () => {
       { initializeKnowledgeBase },
       { initializeTimeTracking },
       { initializeAdvancedAnalytics },
-      { initializeAPIIntegration }
+      { initializeAPIIntegration },
     ] = await Promise.all([
-      import('./modules/collaboration.js').catch(err => {
+      import('./modules/collaboration.js').catch((err) => {
         console.warn('Collaboration module not available:', err);
         return { initializeCollaboration: () => {} };
       }),
-      import('./modules/reporting.js').catch(err => {
+      import('./modules/reporting.js').catch((err) => {
         console.warn('Reporting module not available:', err);
         return { initializeAdvancedReporting: () => {} };
       }),
-      import('./modules/workflows.js').catch(err => {
+      import('./modules/workflows.js').catch((err) => {
         console.warn('Workflows module not available:', err);
         return { initializeWorkflows: () => {} };
       }),
-      import('./modules/ai-insights.js').catch(err => {
+      import('./modules/ai-insights.js').catch((err) => {
         console.warn('AI Insights module not available:', err);
         return { initializeAIInsights: () => {} };
       }),
-      import('./modules/multichannel.js').catch(err => {
+      import('./modules/multichannel.js').catch((err) => {
         console.warn('Multichannel module not available:', err);
         return { initializeMultiChannel: () => {} };
       }),
-      import('./modules/feedback.js').catch(err => {
+      import('./modules/feedback.js').catch((err) => {
         console.warn('Feedback module not available:', err);
         return { initializeFeedback: () => {} };
       }),
-      import('./modules/knowledge-base.js').catch(err => {
+      import('./modules/knowledge-base.js').catch((err) => {
         console.warn('Knowledge Base module not available:', err);
         return { initializeKnowledgeBase: () => {} };
       }),
-      import('./modules/time-tracking.js').catch(err => {
+      import('./modules/time-tracking.js').catch((err) => {
         console.warn('Time Tracking module not available:', err);
         return { initializeTimeTracking: () => {} };
       }),
-      import('./modules/advanced-analytics.js').catch(err => {
+      import('./modules/advanced-analytics.js').catch((err) => {
         console.warn('Advanced Analytics module not available:', err);
         return { initializeAdvancedAnalytics: () => {} };
       }),
-      import('./modules/api-integration.js').catch(err => {
+      import('./modules/api-integration.js').catch((err) => {
         console.warn('API Integration module not available:', err);
         return { initializeAPIIntegration: () => {} };
-      })
+      }),
     ]);
 
     // Wait for DOM to be ready before initializing
@@ -111,19 +116,72 @@ const lazyLoadAdvancedModules = async () => {
 
     const initializeModules = () => {
       // Initialize lazy-loaded modules with error handling
-      try { initializeCollaboration(); } catch (e) { console.error('Error initializing collaboration:', e); }
-      try { initializeAdvancedReporting(); } catch (e) { console.error('Error initializing reporting:', e); }
-      try { initializeWorkflows(); } catch (e) { console.error('Error initializing workflows:', e); }
-      try { initializeAIInsights(); } catch (e) { console.error('Error initializing AI insights:', e); }
-      try { initializeMultiChannel(); } catch (e) { console.error('Error initializing multichannel:', e); }
-      try { initializeFeedback(); } catch (e) { console.error('Error initializing feedback:', e); }
-      try { initializeKnowledgeBase(); } catch (e) { console.error('Error initializing knowledge base:', e); }
-      try { initializeTimeTracking(); } catch (e) { console.error('Error initializing time tracking:', e); }
-      try { initializeAdvancedAnalytics(); } catch (e) { console.error('Error initializing advanced analytics:', e); }
-      try { initializeAPIIntegration(); } catch (e) { console.error('Error initializing API integration:', e); }
-      try { patternsModule.initializePatterns(); } catch (e) { console.error('Error initializing patterns:', e); }
-      try { patternsModule.setupPatternEventListeners(); } catch (e) { console.error('Error setting up pattern event listeners:', e); }
-      try { setupTimerEventListeners(); window.timerEventListenersSet = true; } catch (e) { console.error('Error setting up timer event listeners:', e); }
+      try {
+        initializeCollaboration();
+      } catch (e) {
+        console.error('Error initializing collaboration:', e);
+      }
+      try {
+        initializeAdvancedReporting();
+      } catch (e) {
+        console.error('Error initializing reporting:', e);
+      }
+      try {
+        initializeWorkflows();
+      } catch (e) {
+        console.error('Error initializing workflows:', e);
+      }
+      try {
+        initializeAIInsights();
+      } catch (e) {
+        console.error('Error initializing AI insights:', e);
+      }
+      try {
+        initializeMultiChannel();
+      } catch (e) {
+        console.error('Error initializing multichannel:', e);
+      }
+      try {
+        initializeFeedback();
+      } catch (e) {
+        console.error('Error initializing feedback:', e);
+      }
+      try {
+        initializeKnowledgeBase();
+      } catch (e) {
+        console.error('Error initializing knowledge base:', e);
+      }
+      try {
+        initializeTimeTracking();
+      } catch (e) {
+        console.error('Error initializing time tracking:', e);
+      }
+      try {
+        initializeAdvancedAnalytics();
+      } catch (e) {
+        console.error('Error initializing advanced analytics:', e);
+      }
+      try {
+        initializeAPIIntegration();
+      } catch (e) {
+        console.error('Error initializing API integration:', e);
+      }
+      try {
+        patternsModule.initializePatterns();
+      } catch (e) {
+        console.error('Error initializing patterns:', e);
+      }
+      try {
+        patternsModule.setupPatternEventListeners();
+      } catch (e) {
+        console.error('Error setting up pattern event listeners:', e);
+      }
+      try {
+        setupTimerEventListeners();
+        window.timerEventListenersSet = true;
+      } catch (e) {
+        console.error('Error setting up timer event listeners:', e);
+      }
 
       advancedModulesLoaded = true;
     };
@@ -266,12 +324,14 @@ function showSettings() {
       window.patternsModule.updatePatternTable();
     } else {
       // Load patterns module
-      import('./modules/patterns.js').then(module => {
-        window.patternsModule = module;
-        module.initializePatterns();
-      }).catch(err => {
-        console.warn('Error loading patterns module for settings:', err);
-      });
+      import('./modules/patterns.js')
+        .then((module) => {
+          window.patternsModule = module;
+          module.initializePatterns();
+        })
+        .catch((err) => {
+          console.warn('Error loading patterns module for settings:', err);
+        });
     }
   } catch (err) {
     console.warn('Error loading patterns for settings:', err);
@@ -341,32 +401,38 @@ function showLogin() {
   `;
   document.body.appendChild(modal);
 
-  document.getElementById('login-submit').addEventListener('click', async () => {
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    try {
-      await auth.login(email, password);
-      showToast('Logged in successfully');
-      modal.remove();
-    } catch (err) {
-      showToast(err.message, 'error');
-    }
-  });
+  document
+    .getElementById('login-submit')
+    .addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      try {
+        await auth.login(email, password);
+        showToast('Logged in successfully');
+        modal.remove();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
 
-  document.getElementById('register-submit').addEventListener('click', async () => {
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    const username = prompt('Username:');
-    try {
-      await auth.register(username, email, password);
-      showToast('Registered successfully');
-      modal.remove();
-    } catch (err) {
-      showToast(err.message, 'error');
-    }
-  });
+  document
+    .getElementById('register-submit')
+    .addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const username = prompt('Username:');
+      try {
+        await auth.register(username, email, password);
+        showToast('Registered successfully');
+        modal.remove();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
 
-  document.getElementById('modal-close').addEventListener('click', () => modal.remove());
+  document
+    .getElementById('modal-close')
+    .addEventListener('click', () => modal.remove());
 }
 
 // Show service worker update notification
@@ -390,13 +456,17 @@ function showUpdateNotification() {
   document.body.appendChild(notification);
 
   // Add event listeners
-  notification.querySelector('.update-refresh').addEventListener('click', () => {
-    window.location.reload();
-  });
+  notification
+    .querySelector('.update-refresh')
+    .addEventListener('click', () => {
+      window.location.reload();
+    });
 
-  notification.querySelector('.update-dismiss').addEventListener('click', () => {
-    notification.remove();
-  });
+  notification
+    .querySelector('.update-dismiss')
+    .addEventListener('click', () => {
+      notification.remove();
+    });
 
   // Auto-dismiss after 10 seconds
   setTimeout(() => {
@@ -474,7 +544,7 @@ function loadSecondaryModules() {
   lazyLoadOnVisible('knowledge-base-main', lazyLoadAdvancedModules);
   lazyLoadOnVisible('time-tracking', lazyLoadAdvancedModules);
   lazyLoadOnVisible('advanced-analytics', lazyLoadAdvancedModules);
-  lazyLoadOnVisible('api-integration', lazyLoadAdvancedModules);
+  lazyLoadOnVisible('api-integration-section', lazyLoadAdvancedModules);
 }
 
 // Ensure floating overlay exists for floating windows
@@ -492,7 +562,9 @@ function setupAllEventListeners() {
     .getElementById('settings-tab')
     ?.addEventListener('click', showSettings);
   document.getElementById('stats-tab')?.addEventListener('click', showStats);
-  document.getElementById('knowledge-base-tab')?.addEventListener('click', showKnowledgeBase);
+  document
+    .getElementById('knowledge-base-tab')
+    ?.addEventListener('click', showKnowledgeBase);
   // Login button - attempt to load a single-page `login.html` once, fall back to modal
   const loginBtn = document.getElementById('login-btn');
   if (loginBtn) {
@@ -604,15 +676,21 @@ function setupAllEventListeners() {
           input.remove();
           // Persist custom title for section so settings and main page keep it
           try {
-            const sectionEl = button.closest('.draggable-section') || button.closest('.card');
-            const key = sectionEl?.getAttribute('data-section') || sectionEl?.id || null;
+            const sectionEl =
+              button.closest('.draggable-section') || button.closest('.card');
+            const key =
+              sectionEl?.getAttribute('data-section') || sectionEl?.id || null;
             if (key) {
               window.appSettings = window.appSettings || appSettings;
-              window.appSettings.customTitles = window.appSettings.customTitles || {};
+              window.appSettings.customTitles =
+                window.appSettings.customTitles || {};
               window.appSettings.customTitles[key] = newTitle;
-              if (typeof saveSettings === 'function') saveSettings(window.appSettings);
+              if (typeof saveSettings === 'function')
+                saveSettings(window.appSettings);
             }
-          } catch (e) { /* non-fatal */ }
+          } catch (e) {
+            /* non-fatal */
+          }
         }
         input.addEventListener('blur', saveTitle);
         input.addEventListener('keydown', (e) => {
@@ -642,13 +720,15 @@ document.addEventListener('DOMContentLoaded', function () {
     setupGlobalErrorHandling();
 
     // Request persistent storage to prevent browser from clearing data
-    import('./modules/storage.js').then(storage => {
-      if (storage.requestPersistentStorage) {
-        storage.requestPersistentStorage();
-      }
-    }).catch(err => {
-      console.warn('Could not request persistent storage:', err);
-    });
+    import('./modules/storage.js')
+      .then((storage) => {
+        if (storage.requestPersistentStorage) {
+          storage.requestPersistentStorage();
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not request persistent storage:', err);
+      });
 
     initializeSettings();
     window.appSettings = appSettings;
@@ -674,14 +754,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ensure patterns module is available and wired (eagerly attach listeners)
     try {
-      if (patternsModule && typeof patternsModule.setupPatternEventListeners === 'function') {
+      if (
+        patternsModule &&
+        typeof patternsModule.setupPatternEventListeners === 'function'
+      ) {
         patternsModule.setupPatternEventListeners();
         window.patternsModule = patternsModule;
 
         // Attach to the main pattern formatter root explicitly (scoped listeners)
         try {
           const mainPatternRoot = document.getElementById('pattern-formatter');
-          if (mainPatternRoot && typeof patternsModule.attachPatternEventListeners === 'function') {
+          if (
+            mainPatternRoot &&
+            typeof patternsModule.attachPatternEventListeners === 'function'
+          ) {
             patternsModule.attachPatternEventListeners(mainPatternRoot);
           }
         } catch (err) {
@@ -690,12 +776,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Attach to the settings Pattern Management subsection if present
         try {
-          const settingsPatternRoot = document.getElementById('pattern-management') || document.getElementById('pattern-management-subsection') || document.querySelector('.pattern-management') || document.querySelector('.pattern-management-subsection');
-          if (settingsPatternRoot && typeof patternsModule.attachPatternEventListeners === 'function') {
+          const settingsPatternRoot =
+            document.getElementById('pattern-management') ||
+            document.getElementById('pattern-management-subsection') ||
+            document.querySelector('.pattern-management') ||
+            document.querySelector('.pattern-management-subsection');
+          if (
+            settingsPatternRoot &&
+            typeof patternsModule.attachPatternEventListeners === 'function'
+          ) {
             patternsModule.attachPatternEventListeners(settingsPatternRoot);
           }
         } catch (err) {
-          console.warn('Could not attach pattern listeners to settings root:', err);
+          console.warn(
+            'Could not attach pattern listeners to settings root:',
+            err
+          );
         }
       }
     } catch (e) {
@@ -709,9 +805,16 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
           const root = ev && ev.detail && ev.detail.root;
           if (!root) return;
-          if (window.patternsModule && typeof window.patternsModule.attachPatternEventListeners === 'function') {
+          if (
+            window.patternsModule &&
+            typeof window.patternsModule.attachPatternEventListeners ===
+              'function'
+          ) {
             window.patternsModule.attachPatternEventListeners(root);
-            try { root.setAttribute && root.setAttribute('data-patterns-attached', 'true'); } catch (e) {}
+            try {
+              root.setAttribute &&
+                root.setAttribute('data-patterns-attached', 'true');
+            } catch (e) {}
           }
         } catch (err) {
           console.error('Error handling floating:created event:', err);
@@ -751,7 +854,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle service worker for offline functionality
     if ('serviceWorker' in navigator) {
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      if (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+      ) {
         // In development mode, unregister any existing service workers
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           registrations.forEach((registration) => {
@@ -762,7 +868,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       } else {
         // In production mode, register service worker
-        navigator.serviceWorker.register('/adamas/sw.js')
+        navigator.serviceWorker
+          .register('/adamas/sw.js')
           .then((registration) => {
             //console.log('Service Worker registered successfully:', registration.scope);
 
@@ -771,7 +878,10 @@ document.addEventListener('DOMContentLoaded', function () {
               const newWorker = registration.installing;
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  if (
+                    newWorker.state === 'installed' &&
+                    navigator.serviceWorker.controller
+                  ) {
                     // New version available
                     showUpdateNotification();
                   }
