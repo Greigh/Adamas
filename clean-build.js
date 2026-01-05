@@ -5,7 +5,7 @@ console.log('🧹 Cleaning all build artifacts...');
 
 const artifacts = ['dist', '.parcel-cache', '.sass-cache'];
 
-artifacts.forEach(artifact => {
+artifacts.forEach((artifact) => {
   const artifactPath = path.join(__dirname, artifact);
   if (fs.existsSync(artifactPath)) {
     console.log(`Removing ${artifact}...`);

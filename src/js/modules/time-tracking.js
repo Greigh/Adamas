@@ -6,7 +6,7 @@ export const timeTrackingState = {
   timeEntries: [],
   billingRates: [],
   projects: [],
-  currentSession: null
+  currentSession: null,
 };
 
 // Default billing rates
@@ -14,27 +14,27 @@ const defaultRates = [
   {
     id: 'standard-support',
     name: 'Standard Support',
-    rate: 75.00,
+    rate: 75.0,
     currency: 'USD',
     unit: 'hour',
-    description: 'General technical support'
+    description: 'General technical support',
   },
   {
     id: 'premium-support',
     name: 'Premium Support',
-    rate: 125.00,
+    rate: 125.0,
     currency: 'USD',
     unit: 'hour',
-    description: 'Priority technical support with faster response'
+    description: 'Priority technical support with faster response',
   },
   {
     id: 'consultation',
     name: 'Consultation',
-    rate: 150.00,
+    rate: 150.0,
     currency: 'USD',
     unit: 'hour',
-    description: 'Expert consultation and advisory services'
-  }
+    description: 'Expert consultation and advisory services',
+  },
 ];
 
 // Default projects
@@ -44,15 +44,15 @@ const defaultProjects = [
     name: 'General Support',
     client: 'Internal',
     billingRate: 'standard-support',
-    status: 'active'
+    status: 'active',
   },
   {
     id: 'premium-client',
     name: 'Premium Client Support',
     client: 'Acme Corp',
     billingRate: 'premium-support',
-    status: 'active'
-  }
+    status: 'active',
+  },
 ];
 
 export function initializeTimeTracking(doc = document) {
@@ -88,7 +88,7 @@ function saveTimeTrackingData() {
     const data = {
       timeEntries: timeTrackingState.timeEntries,
       billingRates: timeTrackingState.billingRates,
-      projects: timeTrackingState.projects
+      projects: timeTrackingState.projects,
     };
     localStorage.setItem('time-tracking-data', JSON.stringify(data));
   } catch (error) {
@@ -169,7 +169,9 @@ function renderActiveTimers(timers) {
     return '<div class="empty-state">No active timers</div>';
   }
 
-  return timers.map(timer => `
+  return timers
+    .map(
+      (timer) => `
     <div class="active-timer-card">
       <div class="timer-info">
         <h5>${timer.description || 'Manual Timer'}</h5>
@@ -183,7 +185,9 @@ function renderActiveTimers(timers) {
         <button class="btn-icon" onclick="stopTimer('${timer.id}')" title="Stop">⏹️</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderTimeEntries(entries) {
@@ -191,7 +195,9 @@ function renderTimeEntries(entries) {
     return '<div class="empty-state">No time entries today</div>';
   }
 
-  return entries.map(entry => `
+  return entries
+    .map(
+      (entry) => `
     <div class="time-entry-card">
       <div class="entry-info">
         <h5>${entry.description}</h5>
@@ -205,14 +211,18 @@ function renderTimeEntries(entries) {
         $${calculateEntryAmount(entry).toFixed(2)}
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderProjectsList(doc) {
   const container = doc.getElementById('projects-list');
   if (!container) return;
 
-  container.innerHTML = timeTrackingState.projects.map(project => `
+  container.innerHTML = timeTrackingState.projects
+    .map(
+      (project) => `
     <div class="project-card">
       <div class="project-info">
         <h5>${project.name}</h5>
@@ -226,11 +236,13 @@ function renderProjectsList(doc) {
         <button class="btn-icon" onclick="editProject('${project.id}')" title="Edit">✏️</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function getRateDisplay(rateId) {
-  const rate = timeTrackingState.billingRates.find(r => r.id === rateId);
+  const rate = timeTrackingState.billingRates.find((r) => r.id === rateId);
   return rate ? `$${rate.rate}/${rate.unit}` : 'No rate';
 }
 
@@ -267,7 +279,9 @@ function formatDuration(ms) {
 export function startTimer(description = 'Manual Timer', projectId = null) {
   const timerId = `timer-${Date.now()}`;
 
-  const project = projectId ? timeTrackingState.projects.find(p => p.id === projectId) : null;
+  const project = projectId
+    ? timeTrackingState.projects.find((p) => p.id === projectId)
+    : null;
 
   const timer = {
     id: timerId,
@@ -276,7 +290,7 @@ export function startTimer(description = 'Manual Timer', projectId = null) {
     projectName: project?.name || 'No Project',
     startTime: Date.now(),
     elapsed: 0,
-    status: 'running'
+    status: 'running',
   };
 
   timeTrackingState.activeTimers.set(timerId, timer);
@@ -301,7 +315,7 @@ export function stopTimer(timerId) {
     startTime: new Date(timer.startTime).toISOString(),
     endTime: new Date().toISOString(),
     duration: duration,
-    billable: true
+    billable: true,
   };
 
   timeTrackingState.timeEntries.push(entry);
@@ -327,7 +341,7 @@ function handleCallStarted(event) {
   }
 }
 
-function handleCallEnded(event) {
+function handleCallEnded() {
   if (timeTrackingState.currentSession) {
     stopTimer(timeTrackingState.currentSession.timerId);
     timeTrackingState.currentSession = null;
@@ -357,7 +371,7 @@ function getTodayEntries() {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  return timeTrackingState.timeEntries.filter(entry => {
+  return timeTrackingState.timeEntries.filter((entry) => {
     const entryDate = new Date(entry.startTime);
     return entryDate >= today && entryDate < tomorrow;
   });
@@ -371,14 +385,17 @@ function calculateTodayHours() {
 
 function calculateTodayRevenue() {
   const todayEntries = getTodayEntries();
-  return todayEntries.reduce((sum, entry) => sum + calculateEntryAmount(entry), 0);
+  return todayEntries.reduce(
+    (sum, entry) => sum + calculateEntryAmount(entry),
+    0
+  );
 }
 
 function calculateWeekHours() {
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
 
-  const weekEntries = timeTrackingState.timeEntries.filter(entry => {
+  const weekEntries = timeTrackingState.timeEntries.filter((entry) => {
     const entryDate = new Date(entry.startTime);
     return entryDate >= weekAgo;
   });
@@ -388,10 +405,14 @@ function calculateWeekHours() {
 }
 
 function calculateEntryAmount(entry) {
-  const project = timeTrackingState.projects.find(p => p.id === entry.projectId);
+  const project = timeTrackingState.projects.find(
+    (p) => p.id === entry.projectId
+  );
   if (!project) return 0;
 
-  const rate = timeTrackingState.billingRates.find(r => r.id === project.billingRate);
+  const rate = timeTrackingState.billingRates.find(
+    (r) => r.id === project.billingRate
+  );
   if (!rate) return 0;
 
   const hours = entry.duration / (1000 * 60 * 60);
@@ -403,19 +424,21 @@ export function exportTimeReport() {
     generatedAt: new Date().toISOString(),
     dateRange: {
       start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      end: new Date().toISOString()
+      end: new Date().toISOString(),
     },
     summary: {
       totalHours: calculateWeekHours(),
       totalRevenue: calculateTodayRevenue(),
-      totalEntries: timeTrackingState.timeEntries.length
+      totalEntries: timeTrackingState.timeEntries.length,
     },
     entries: timeTrackingState.timeEntries.slice(-50), // Last 50 entries
     projects: timeTrackingState.projects,
-    rates: timeTrackingState.billingRates
+    rates: timeTrackingState.billingRates,
   };
 
-  const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(report, null, 2)], {
+    type: 'application/json',
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -435,7 +458,7 @@ window.startManualTimer = () => {
 };
 
 window.startProjectTimer = (projectId) => {
-  const project = timeTrackingState.projects.find(p => p.id === projectId);
+  const project = timeTrackingState.projects.find((p) => p.id === projectId);
   if (project) {
     startTimer(`Project: ${project.name}`, projectId);
   }
@@ -443,7 +466,7 @@ window.startProjectTimer = (projectId) => {
 
 window.stopTimer = stopTimer;
 window.pauseTimer = pauseTimer;
-window.editProject = (projectId) => {
+window.editProject = () => {
   // TODO: Implement project editor
   showToast('Project editor coming soon!', 'info');
 };
@@ -452,10 +475,14 @@ window.exportTimeReport = exportTimeReport;
 
 // Billing calculation functions
 export function calculateTimeEntryCost(timeEntry) {
-  const project = timeTrackingState.projects.find(p => p.id === timeEntry.projectId);
+  const project = timeTrackingState.projects.find(
+    (p) => p.id === timeEntry.projectId
+  );
   if (!project) return 0;
 
-  const rate = timeTrackingState.billingRates.find(r => r.id === project.billingRate);
+  const rate = timeTrackingState.billingRates.find(
+    (r) => r.id === project.billingRate
+  );
   if (!rate) return 0;
 
   const hours = timeEntry.duration / (1000 * 60 * 60); // Convert milliseconds to hours
@@ -463,27 +490,32 @@ export function calculateTimeEntryCost(timeEntry) {
 }
 
 export function calculateProjectTotal(projectId, dateRange = null) {
-  let entries = timeTrackingState.timeEntries.filter(entry => entry.projectId === projectId);
+  let entries = timeTrackingState.timeEntries.filter(
+    (entry) => entry.projectId === projectId
+  );
 
   if (dateRange) {
     const startDate = new Date(dateRange.start);
     const endDate = new Date(dateRange.end);
-    entries = entries.filter(entry => {
+    entries = entries.filter((entry) => {
       const entryDate = new Date(entry.startTime);
       return entryDate >= startDate && entryDate <= endDate;
     });
   }
 
-  return entries.reduce((total, entry) => total + calculateTimeEntryCost(entry), 0);
+  return entries.reduce(
+    (total, entry) => total + calculateTimeEntryCost(entry),
+    0
+  );
 }
 
 export function generateInvoice(projectId, dateRange) {
-  const project = timeTrackingState.projects.find(p => p.id === projectId);
+  const project = timeTrackingState.projects.find((p) => p.id === projectId);
   if (!project) {
     throw new Error('Project not found');
   }
 
-  const entries = timeTrackingState.timeEntries.filter(entry => {
+  const entries = timeTrackingState.timeEntries.filter((entry) => {
     if (entry.projectId !== projectId) return false;
     if (!dateRange) return true;
 
@@ -493,8 +525,14 @@ export function generateInvoice(projectId, dateRange) {
     return entryDate >= startDate && entryDate <= endDate;
   });
 
-  const totalAmount = entries.reduce((total, entry) => total + calculateTimeEntryCost(entry), 0);
-  const totalHours = entries.reduce((total, entry) => total + (entry.duration / (1000 * 60 * 60)), 0);
+  const totalAmount = entries.reduce(
+    (total, entry) => total + calculateTimeEntryCost(entry),
+    0
+  );
+  const totalHours = entries.reduce(
+    (total, entry) => total + entry.duration / (1000 * 60 * 60),
+    0
+  );
 
   return {
     invoiceId: `INV-${Date.now()}`,
@@ -502,23 +540,25 @@ export function generateInvoice(projectId, dateRange) {
     projectName: project.name,
     client: project.client,
     dateRange,
-    entries: entries.map(entry => ({
+    entries: entries.map((entry) => ({
       ...entry,
-      cost: calculateTimeEntryCost(entry)
+      cost: calculateTimeEntryCost(entry),
     })),
     totalHours: Math.round(totalHours * 100) / 100,
     totalAmount: Math.round(totalAmount * 100) / 100,
     currency: 'USD',
-    generatedAt: new Date().toISOString()
+    generatedAt: new Date().toISOString(),
   };
 }
 
 export function getBillingSummary(dateRange = null) {
-  const projects = timeTrackingState.projects.filter(p => p.status === 'active');
+  const projects = timeTrackingState.projects.filter(
+    (p) => p.status === 'active'
+  );
 
-  const summary = projects.map(project => {
+  const summary = projects.map((project) => {
     const total = calculateProjectTotal(project.id, dateRange);
-    const entries = timeTrackingState.timeEntries.filter(entry => {
+    const entries = timeTrackingState.timeEntries.filter((entry) => {
       if (entry.projectId !== project.id) return false;
       if (!dateRange) return true;
 
@@ -528,7 +568,10 @@ export function getBillingSummary(dateRange = null) {
       return entryDate >= startDate && entryDate <= endDate;
     });
 
-    const totalHours = entries.reduce((total, entry) => total + (entry.duration / (1000 * 60 * 60)), 0);
+    const totalHours = entries.reduce(
+      (total, entry) => total + entry.duration / (1000 * 60 * 60),
+      0
+    );
 
     return {
       projectId: project.id,
@@ -536,18 +579,24 @@ export function getBillingSummary(dateRange = null) {
       client: project.client,
       totalHours: Math.round(totalHours * 100) / 100,
       totalAmount: Math.round(total * 100) / 100,
-      entryCount: entries.length
+      entryCount: entries.length,
     };
   });
 
-  const grandTotal = summary.reduce((total, project) => total + project.totalAmount, 0);
-  const totalHours = summary.reduce((total, project) => total + project.totalHours, 0);
+  const grandTotal = summary.reduce(
+    (total, project) => total + project.totalAmount,
+    0
+  );
+  const totalHours = summary.reduce(
+    (total, project) => total + project.totalHours,
+    0
+  );
 
   return {
     projects: summary,
     grandTotal: Math.round(grandTotal * 100) / 100,
     totalHours: Math.round(totalHours * 100) / 100,
-    currency: 'USD'
+    currency: 'USD',
   };
 }
 

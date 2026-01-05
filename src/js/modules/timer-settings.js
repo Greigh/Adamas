@@ -1,31 +1,30 @@
-
 import { showToast } from '../utils/toast.js';
 import { saveData } from './storage.js';
 import { applyTimerSettings } from './timer.js';
 
 export function showHoldTimerSettings() {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    
-    // Get current settings
-    const appSettings = window.appSettings || {};
-    const visibleSections = appSettings.visibleSections || {};
-    
-    const isVisible = visibleSections.timer !== false;
-    const isCountdown = appSettings.timerCountdownMode || false;
-    const duration = appSettings.timerCountdownDuration || 300;
-    const warningTime = appSettings.timerWarningTime || 60;
-    const allowDelete = appSettings.timerAllowHistoryDeletion || false;
-    const soundAlerts = appSettings.timerSoundAlerts !== false;
-    
-    // New Settings
-    const autoStart = appSettings.timerAutoStart || false;
-    const multiTimer = appSettings.timerMultiEnabled || false;
-    const playWarningSound = appSettings.timerPlayWarningSound || false;
-    const repeatAlert = appSettings.timerRepeatAlert || false;
-    const alertSound = appSettings.timerAlertSound || 'endgame';
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
 
-    modal.innerHTML = `
+  // Get current settings
+  const appSettings = window.appSettings || {};
+  const visibleSections = appSettings.visibleSections || {};
+
+  const isVisible = visibleSections.timer !== false;
+  const isCountdown = appSettings.timerCountdownMode || false;
+  const duration = appSettings.timerCountdownDuration || 300;
+  const warningTime = appSettings.timerWarningTime || 60;
+  const allowDelete = appSettings.timerAllowHistoryDeletion || false;
+  const soundAlerts = appSettings.timerSoundAlerts !== false;
+
+  // New Settings
+  const autoStart = appSettings.timerAutoStart || false;
+  const multiTimer = appSettings.timerMultiEnabled || false;
+  const playWarningSound = appSettings.timerPlayWarningSound || false;
+  const repeatAlert = appSettings.timerRepeatAlert || false;
+  const alertSound = appSettings.timerAlertSound || 'endgame';
+
+  modal.innerHTML = `
       <div class="modal settings-modal" style="max-width: 600px; width: 95%;">
         <div class="modal-header">
           <h3>Hold Timer Settings</h3>
@@ -198,153 +197,167 @@ export function showHoldTimerSettings() {
         </div>
       </div>
     `;
-  
-    document.body.appendChild(modal);
-    
-    // Animation
-    requestAnimationFrame(() => modal.classList.add('active'));
-  
-    // DOM Elements
-    const form = modal.querySelector('#timer-settings-form');
-    const modeRadios = modal.querySelectorAll('input[name="timer-mode"]');
-    const durationGroup = modal.querySelector('#duration-group');
-    const closeBtns = modal.querySelectorAll('.modal-close, .modal-close-btn');
-    const tabs = modal.querySelectorAll('.tab-button');
-    const contents = modal.querySelectorAll('.tab-content');
-    const soundToggle = modal.querySelector('#timer-sounds');
-    const soundOptions = modal.querySelector('#sound-options');
 
-    // Tab Switching
-    tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.style.display = 'none');
-            
-            tab.classList.add('active');
-            const target = modal.querySelector(`#tab-${tab.dataset.tab}`);
-            if(target) target.style.display = 'block';
-        });
-    });
+  document.body.appendChild(modal);
 
-    // Toggle duration input visibility based on mode
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            durationGroup.style.display = e.target.value === 'countdown' ? 'block' : 'none';
-        });
-    });
+  // Animation
+  requestAnimationFrame(() => modal.classList.add('active'));
 
-    // Toggle sound options visibility
-    soundToggle.addEventListener('change', (e) => {
-        soundOptions.style.display = e.target.checked ? 'block' : 'none';
-    });
-    
-    // Toggle Custom Sound URL
-    const soundSelect = modal.querySelector('#timer-alert-sound');
-    soundSelect.addEventListener('change', (e) => {
-         const customWrapper = modal.querySelector('#custom-sound-wrapper');
-         if(customWrapper) customWrapper.style.display = e.target.value === 'custom' ? 'block' : 'none';
-    });
+  // DOM Elements
+  const form = modal.querySelector('#timer-settings-form');
+  const modeRadios = modal.querySelectorAll('input[name="timer-mode"]');
+  const durationGroup = modal.querySelector('#duration-group');
+  const closeBtns = modal.querySelectorAll('.modal-close, .modal-close-btn');
+  const tabs = modal.querySelectorAll('.tab-button');
+  const contents = modal.querySelectorAll('.tab-content');
+  const soundToggle = modal.querySelector('#timer-sounds');
+  const soundOptions = modal.querySelector('#sound-options');
 
-    // Toggle Multi-timer options
-    const multiToggle = modal.querySelector('#timer-multi');
-    multiToggle.addEventListener('change', (e) => {
-         const multiOpts = modal.querySelector('#multi-timer-options');
-         if(multiOpts) multiOpts.style.display = e.target.checked ? 'block' : 'none';
+  // Tab Switching
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      tabs.forEach((t) => t.classList.remove('active'));
+      contents.forEach((c) => (c.style.display = 'none'));
+
+      tab.classList.add('active');
+      const target = modal.querySelector(`#tab-${tab.dataset.tab}`);
+      if (target) target.style.display = 'block';
     });
-    
-    // Update Max Timers Value Display
-    const maxTimersInput = modal.querySelector('#max-timers');
-    const maxTimersVal = modal.querySelector('#max-timers-val');
-    if(maxTimersInput && maxTimersVal) {
-        maxTimersInput.addEventListener('input', (e) => {
-            maxTimersVal.textContent = e.target.value;
-        });
+  });
+
+  // Toggle duration input visibility based on mode
+  modeRadios.forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      durationGroup.style.display =
+        e.target.value === 'countdown' ? 'block' : 'none';
+    });
+  });
+
+  // Toggle sound options visibility
+  soundToggle.addEventListener('change', (e) => {
+    soundOptions.style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  // Toggle Custom Sound URL
+  const soundSelect = modal.querySelector('#timer-alert-sound');
+  soundSelect.addEventListener('change', (e) => {
+    const customWrapper = modal.querySelector('#custom-sound-wrapper');
+    if (customWrapper)
+      customWrapper.style.display =
+        e.target.value === 'custom' ? 'block' : 'none';
+  });
+
+  // Toggle Multi-timer options
+  const multiToggle = modal.querySelector('#timer-multi');
+  multiToggle.addEventListener('change', (e) => {
+    const multiOpts = modal.querySelector('#multi-timer-options');
+    if (multiOpts)
+      multiOpts.style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  // Update Max Timers Value Display
+  const maxTimersInput = modal.querySelector('#max-timers');
+  const maxTimersVal = modal.querySelector('#max-timers-val');
+  if (maxTimersInput && maxTimersVal) {
+    maxTimersInput.addEventListener('input', (e) => {
+      maxTimersVal.textContent = e.target.value;
+    });
+  }
+
+  // Close logic
+  const closeModal = () => {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 300);
+  };
+  closeBtns.forEach((btn) => btn.addEventListener('click', closeModal));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Save logic
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const mode = modal.querySelector('input[name="timer-mode"]:checked').value;
+    const newIsCountdown = mode === 'countdown';
+    const newDuration = parseInt(
+      modal.querySelector('#timer-duration').value,
+      10
+    );
+    const newWarning = parseInt(
+      modal.querySelector('#timer-warning').value,
+      10
+    );
+    const newSounds = modal.querySelector('#timer-sounds').checked;
+    const newDelete = modal.querySelector('#timer-delete').checked;
+    const newVisible = modal.querySelector('#timer-visible').checked;
+
+    const newAutoStart = modal.querySelector('#timer-auto-start').checked;
+    const newMultiTimer = modal.querySelector('#timer-multi').checked;
+    const newWarningSound = modal.querySelector('#timer-warning-sound').checked;
+    const newRepeatAlert = modal.querySelector('#timer-repeat').checked;
+    const newAlertSound = modal.querySelector('#timer-alert-sound').value;
+    const newCustomUrl = modal.querySelector('#custom-sound-url')
+      ? modal.querySelector('#custom-sound-url').value
+      : '';
+    const newMaxTimers = modal.querySelector('#max-timers')
+      ? parseInt(modal.querySelector('#max-timers').value, 10)
+      : 3;
+
+    // Update settings object
+    window.appSettings = window.appSettings || {};
+    window.appSettings.timerCountdownMode = newIsCountdown;
+    window.appSettings.timerCountdownDuration = newDuration;
+    window.appSettings.timerWarningTime = newWarning;
+    window.appSettings.timerSoundAlerts = newSounds;
+    window.appSettings.timerAllowHistoryDeletion = newDelete;
+
+    // New Settings Save
+    window.appSettings.timerAutoStart = newAutoStart;
+    window.appSettings.timerMultiEnabled = newMultiTimer; // Note: legacy appSettings property might be multipleTimers, let's set both to be safe or check main.js usage.
+    window.appSettings.multipleTimers = newMultiTimer; // Legacy/Main support
+    window.appSettings.maxTimers = newMaxTimers;
+
+    window.appSettings.timerPlayWarningSound = newWarningSound;
+    window.appSettings.timerRepeatAlert = newRepeatAlert;
+    window.appSettings.timerAlertSound = newAlertSound;
+    window.appSettings.timerCustomSoundUrl = newCustomUrl;
+
+    // Handle Visibility
+    if (!window.appSettings.visibleSections) {
+      window.appSettings.visibleSections = {};
+    }
+    window.appSettings.visibleSections.timer = newVisible;
+
+    // Persist
+    if (window.saveSettings) {
+      window.saveSettings(window.appSettings);
+    } else {
+      saveData('appSettings', window.appSettings);
     }
 
-    // Close logic
-    const closeModal = () => {
-        modal.classList.remove('active');
-        setTimeout(() => modal.remove(), 300);
-    };
-    closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
+    // Apply changes directly via timer module
+    applyTimerSettings({
+      countdownMode: newIsCountdown,
+      countdownDuration: newDuration,
+      warningTime: newWarning,
+      soundAlerts: newSounds,
+      allowDelete: newDelete,
+      // Note: other settings are read directly from appSettings in timer.js as needed
     });
 
-    // Save logic
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const mode = modal.querySelector('input[name="timer-mode"]:checked').value;
-        const newIsCountdown = mode === 'countdown';
-        const newDuration = parseInt(modal.querySelector('#timer-duration').value, 10);
-        const newWarning = parseInt(modal.querySelector('#timer-warning').value, 10);
-        const newSounds = modal.querySelector('#timer-sounds').checked;
-        const newDelete = modal.querySelector('#timer-delete').checked;
-        const newVisible = modal.querySelector('#timer-visible').checked;
-        
-        const newAutoStart = modal.querySelector('#timer-auto-start').checked;
-        const newMultiTimer = modal.querySelector('#timer-multi').checked;
-        const newWarningSound = modal.querySelector('#timer-warning-sound').checked;
-        const newRepeatAlert = modal.querySelector('#timer-repeat').checked;
-        const newAlertSound = modal.querySelector('#timer-alert-sound').value;
-        const newCustomUrl = modal.querySelector('#custom-sound-url') ? modal.querySelector('#custom-sound-url').value : '';
-        const newMaxTimers = modal.querySelector('#max-timers') ? parseInt(modal.querySelector('#max-timers').value, 10) : 3;
+    // Handle immediate visibility update
+    if (!newVisible) {
+      const section = document.getElementById('hold-timer');
+      if (section) section.style.display = 'none';
+      showToast('Hold Timer hidden. Enable it again in Settings.', 'info');
+    } else {
+      const section = document.getElementById('hold-timer');
+      if (section) section.style.display = 'block';
+    }
 
-        // Update settings object
-        window.appSettings = window.appSettings || {};
-        window.appSettings.timerCountdownMode = newIsCountdown;
-        window.appSettings.timerCountdownDuration = newDuration;
-        window.appSettings.timerWarningTime = newWarning;
-        window.appSettings.timerSoundAlerts = newSounds;
-        window.appSettings.timerAllowHistoryDeletion = newDelete;
-        
-        // New Settings Save
-        window.appSettings.timerAutoStart = newAutoStart;
-        window.appSettings.timerMultiEnabled = newMultiTimer; // Note: legacy appSettings property might be multipleTimers, let's set both to be safe or check main.js usage.
-        window.appSettings.multipleTimers = newMultiTimer; // Legacy/Main support
-        window.appSettings.maxTimers = newMaxTimers;
-        
-        window.appSettings.timerPlayWarningSound = newWarningSound;
-        window.appSettings.timerRepeatAlert = newRepeatAlert;
-        window.appSettings.timerAlertSound = newAlertSound;
-        window.appSettings.timerCustomSoundUrl = newCustomUrl;
-        
-        // Handle Visibility
-        if (!window.appSettings.visibleSections) {
-            window.appSettings.visibleSections = {};
-        }
-        window.appSettings.visibleSections.timer = newVisible;
-
-        // Persist
-        if (window.saveSettings) {
-            window.saveSettings(window.appSettings);
-        } else {
-            saveData('appSettings', window.appSettings);
-        }
-
-        // Apply changes directly via timer module
-        applyTimerSettings({
-             countdownMode: newIsCountdown,
-             countdownDuration: newDuration,
-             warningTime: newWarning,
-             soundAlerts: newSounds,
-             allowDelete: newDelete,
-             // Note: other settings are read directly from appSettings in timer.js as needed
-        });
-        
-        // Handle immediate visibility update
-        if (!newVisible) {
-             const section = document.getElementById('hold-timer');
-             if (section) section.style.display = 'none';
-             showToast('Hold Timer hidden. Enable it again in Settings.', 'info');
-        } else {
-             const section = document.getElementById('hold-timer');
-             if (section) section.style.display = 'block';
-        }
-
-        showToast('Timer settings saved', 'success');
-        closeModal();
-    });
+    showToast('Timer settings saved', 'success');
+    closeModal();
+  });
 }

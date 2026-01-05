@@ -23,13 +23,18 @@ class ToastManager {
     if (type && typeof type === 'object' && !Array.isArray(type)) {
       options = type;
       type = options.type || 'info';
-      duration = typeof options.timeout === 'number' ? options.timeout : (options.duration || duration);
+      duration =
+        typeof options.timeout === 'number'
+          ? options.timeout
+          : options.duration || duration;
     }
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
-    const actionHtml = options.actionLabel ? `<button class="toast-action">${options.actionLabel}</button>` : '';
+    const actionHtml = options.actionLabel
+      ? `<button class="toast-action">${options.actionLabel}</button>`
+      : '';
 
     toast.innerHTML = `
       <div class="toast-content">
@@ -118,7 +123,9 @@ try {
     window.showToast = showToast;
     window.toastManager = toastManager;
   }
-} catch (e) {}
+} catch {
+  // ignore
+}
 // Flush any deferred toast calls queued before toast module loaded
 try {
   if (typeof window !== 'undefined' && Array.isArray(window.__deferredCalls)) {
@@ -126,9 +133,13 @@ try {
       if (!item) return false;
       if (item.type === 'toast') {
         try {
-          showToast(item.message, item.toastType || 'info', item.duration || 5000);
-        } catch (e) {
-          console.warn('Deferred toast failed', e);
+          showToast(
+            item.message,
+            item.toastType || 'info',
+            item.duration || 5000
+          );
+        } catch {
+          console.warn('Deferred toast failed');
         }
         return false;
       }

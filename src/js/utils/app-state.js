@@ -10,8 +10,8 @@ const appState = {
   services: {},
   ui: {
     activeSection: null,
-    darkMode: false
-  }
+    darkMode: false,
+  },
 };
 
 // Events system for pub/sub communication
@@ -25,7 +25,7 @@ const eventListeners = {};
 export function setState(path, value) {
   const parts = path.split('.');
   let current = appState;
-  
+
   // Navigate to the proper location
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
@@ -34,11 +34,11 @@ export function setState(path, value) {
     }
     current = current[part];
   }
-  
+
   // Set the value
   const finalPart = parts[parts.length - 1];
   current[finalPart] = value;
-  
+
   // Notify listeners
   triggerEvent(`state:${path}`, value);
 }
@@ -51,7 +51,7 @@ export function setState(path, value) {
 export function getState(path, defaultValue = null) {
   const parts = path.split('.');
   let current = appState;
-  
+
   // Navigate to the proper location
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
@@ -60,7 +60,7 @@ export function getState(path, defaultValue = null) {
     }
     current = current[part];
   }
-  
+
   return current;
 }
 
@@ -74,10 +74,12 @@ export function on(event, callback) {
     eventListeners[event] = [];
   }
   eventListeners[event].push(callback);
-  
+
   // Return an unsubscribe function
   return () => {
-    eventListeners[event] = eventListeners[event].filter(cb => cb !== callback);
+    eventListeners[event] = eventListeners[event].filter(
+      (cb) => cb !== callback
+    );
   };
 }
 
@@ -88,7 +90,7 @@ export function on(event, callback) {
  */
 export function triggerEvent(event, ...args) {
   if (eventListeners[event]) {
-    eventListeners[event].forEach(callback => {
+    eventListeners[event].forEach((callback) => {
       try {
         callback(...args);
       } catch (err) {
@@ -105,5 +107,5 @@ export default {
   setState,
   getState,
   on,
-  triggerEvent
+  triggerEvent,
 };

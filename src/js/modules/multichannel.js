@@ -5,7 +5,10 @@ import { showToast } from '../utils/toast.js';
 export function initializeMultiChannel() {
   // ... existing initialization code ...
   initializePhoneChannel();
-  // ...
+  initializeChatChannel();
+  initializeEmailChannel();
+  initializeSocialChannel();
+  initializeSMSChannel();
 }
 
 function initializePhoneChannel() {
@@ -53,8 +56,8 @@ function initializePhoneChannel() {
         }
         activeCallInfo.textContent = 'Call answered - Connected';
         showToast('Call answered', 'success');
-      } catch (e) {
-        showToast(`Failed to answer: ${e.message}`, 'error');
+      } catch (err) {
+        showToast(`Failed to answer: ${err.message}`, 'error');
       }
     });
   }
@@ -82,8 +85,8 @@ function initializePhoneChannel() {
         await crmManager.endCall();
         activeCallInfo.textContent = 'Call ended';
         showToast('Call ended', 'info');
-      } catch (e) {
-        showToast(`Failed to end call: ${e.message}`, 'error');
+      } catch (err) {
+        showToast(`Failed to end call: ${err.message}`, 'error');
       }
     });
   }

@@ -9,7 +9,7 @@ export const analyticsState = {
   widgets: [],
   dataSources: [],
   customQueries: [],
-  activeDashboard: null
+  activeDashboard: null,
 };
 
 // Default dashboard widgets
@@ -23,8 +23,8 @@ const defaultWidgets = [
       title: 'Daily Call Volume',
       xAxis: 'date',
       yAxis: 'count',
-      timeRange: '30d'
-    }
+      timeRange: '30d',
+    },
   },
   {
     id: 'response-time-gauge',
@@ -34,8 +34,8 @@ const defaultWidgets = [
     config: {
       title: 'Avg Response Time',
       target: 30, // seconds
-      unit: 'seconds'
-    }
+      unit: 'seconds',
+    },
   },
   {
     id: 'satisfaction-score',
@@ -45,8 +45,8 @@ const defaultWidgets = [
     config: {
       title: 'CSAT Score',
       format: 'percentage',
-      target: 85
-    }
+      target: 85,
+    },
   },
   {
     id: 'agent-performance-table',
@@ -57,9 +57,9 @@ const defaultWidgets = [
       title: 'Top Performers',
       columns: ['name', 'calls', 'avgDuration', 'satisfaction'],
       sortBy: 'calls',
-      limit: 10
-    }
-  }
+      limit: 10,
+    },
+  },
 ];
 
 // Default dashboards
@@ -75,10 +75,10 @@ const defaultDashboards = [
       widgetSizes: {
         'call-volume-chart': { w: 2, h: 1 },
         'response-time-gauge': { w: 1, h: 1 },
-        'satisfaction-score': { w: 1, h: 1 }
-      }
+        'satisfaction-score': { w: 1, h: 1 },
+      },
     },
-    isDefault: true
+    isDefault: true,
   },
   {
     id: 'agent-performance',
@@ -89,10 +89,10 @@ const defaultDashboards = [
       columns: 1,
       rows: 1,
       widgetSizes: {
-        'agent-performance-table': { w: 1, h: 1 }
-      }
-    }
-  }
+        'agent-performance-table': { w: 1, h: 1 },
+      },
+    },
+  },
 ];
 
 export function initializeAdvancedAnalytics(doc = document) {
@@ -107,7 +107,7 @@ export function initializeCharts() {
   if (typeof Chart !== 'undefined') {
     // Find all canvas elements that need charts
     const chartCanvases = document.querySelectorAll('canvas[data-chart-type]');
-    chartCanvases.forEach(canvas => {
+    chartCanvases.forEach((canvas) => {
       const chartType = canvas.dataset.chartType;
       const chartData = JSON.parse(canvas.dataset.chartData || '[]');
 
@@ -122,8 +122,8 @@ export function initializeCharts() {
         data: chartData,
         options: {
           responsive: true,
-          maintainAspectRatio: false
-        }
+          maintainAspectRatio: false,
+        },
       });
     });
   }
@@ -158,7 +158,7 @@ function saveAnalyticsData() {
       dashboards: analyticsState.dashboards,
       widgets: analyticsState.widgets,
       customQueries: analyticsState.customQueries,
-      activeDashboard: analyticsState.activeDashboard
+      activeDashboard: analyticsState.activeDashboard,
     };
     localStorage.setItem('analytics-data', JSON.stringify(data));
   } catch (error) {
@@ -181,7 +181,9 @@ function renderAdvancedAnalyticsUI(doc) {
   const container = doc.getElementById('advanced-analytics-container');
   if (!container) return;
 
-  const activeDashboard = analyticsState.dashboards.find(d => d.id === analyticsState.activeDashboard);
+  const activeDashboard = analyticsState.dashboards.find(
+    (d) => d.id === analyticsState.activeDashboard
+  );
 
   container.innerHTML = `
     <div class="analytics-section">
@@ -189,11 +191,15 @@ function renderAdvancedAnalyticsUI(doc) {
         <div class="dashboard-selector">
           <h3>Advanced Analytics</h3>
           <select id="dashboard-select" onchange="switchDashboard(this.value)">
-            ${analyticsState.dashboards.map(d => `
+            ${analyticsState.dashboards
+              .map(
+                (d) => `
               <option value="${d.id}" ${d.id === analyticsState.activeDashboard ? 'selected' : ''}>
                 ${d.name}
               </option>
-            `).join('')}
+            `
+              )
+              .join('')}
           </select>
         </div>
         <div class="dashboard-actions">
@@ -234,14 +240,15 @@ function renderDashboard(dashboard) {
 
   return `
     <div class="dashboard-grid" style="${gridStyle}">
-      ${dashboard.widgets.map(widgetId => {
-        const widget = analyticsState.widgets.find(w => w.id === widgetId);
-        if (!widget) return '';
+      ${dashboard.widgets
+        .map((widgetId) => {
+          const widget = analyticsState.widgets.find((w) => w.id === widgetId);
+          if (!widget) return '';
 
-        const size = layout.widgetSizes[widgetId] || { w: 1, h: 1 };
-        const gridStyle = `grid-column: span ${size.w}; grid-row: span ${size.h};`;
+          const size = layout.widgetSizes[widgetId] || { w: 1, h: 1 };
+          const gridStyle = `grid-column: span ${size.w}; grid-row: span ${size.h};`;
 
-        return `
+          return `
           <div class="dashboard-widget" style="${gridStyle}" data-widget-id="${widgetId}">
             <div class="widget-header">
               <h4>${widget.name}</h4>
@@ -255,14 +262,15 @@ function renderDashboard(dashboard) {
             </div>
           </div>
         `;
-      }).join('')}
+        })
+        .join('')}
     </div>
   `;
 }
 
 function renderDashboardWidgets(dashboard, doc) {
-  dashboard.widgets.forEach(widgetId => {
-    const widget = analyticsState.widgets.find(w => w.id === widgetId);
+  dashboard.widgets.forEach((widgetId) => {
+    const widget = analyticsState.widgets.find((w) => w.id === widgetId);
     if (!widget) return;
 
     const container = doc.getElementById(`widget-${widgetId}`);
@@ -287,7 +295,8 @@ function renderWidget(widget, container) {
       renderTable(widget, container);
       break;
     default:
-      container.innerHTML = '<div class="widget-error">Unknown widget type</div>';
+      container.innerHTML =
+        '<div class="widget-error">Unknown widget type</div>';
   }
 }
 
@@ -350,13 +359,16 @@ function renderMetric(widget, container) {
     const score = getCustomerSatisfactionScore();
     value = `${score}%`;
   } else {
-    value = widget.config.format === 'percentage'
-      ? `${Math.floor(Math.random() * 20) + 80}%`
-      : Math.floor(Math.random() * 1000);
+    value =
+      widget.config.format === 'percentage'
+        ? `${Math.floor(Math.random() * 20) + 80}%`
+        : Math.floor(Math.random() * 1000);
   }
 
   const isGood = widget.config.target
-    ? (widget.config.format === 'percentage' ? parseInt(value) >= widget.config.target : value >= widget.config.target)
+    ? widget.config.format === 'percentage'
+      ? parseInt(value) >= widget.config.target
+      : value >= widget.config.target
     : true;
 
   container.innerHTML = `
@@ -371,19 +383,39 @@ function renderMetric(widget, container) {
 function renderTable(widget, container) {
   let data;
   if (widget.dataSource === 'calls') {
-    data = getAgentPerformanceData().map(agent => ({
+    data = getAgentPerformanceData().map((agent) => ({
       name: agent.agent,
       calls: agent.totalCalls,
       avgDuration: `${Math.floor(agent.avgDuration / 60)}:${(agent.avgDuration % 60).toString().padStart(2, '0')}`,
-      satisfaction: `${agent.satisfaction}%`
+      satisfaction: `${agent.satisfaction}%`,
     }));
   } else {
     // Mock agent performance data
     data = [
-      { name: 'Alice Johnson', calls: 45, avgDuration: '8:32', satisfaction: '92%' },
-      { name: 'Bob Smith', calls: 38, avgDuration: '7:15', satisfaction: '88%' },
-      { name: 'Carol Davis', calls: 52, avgDuration: '9:01', satisfaction: '95%' },
-      { name: 'David Wilson', calls: 29, avgDuration: '6:48', satisfaction: '85%' }
+      {
+        name: 'Alice Johnson',
+        calls: 45,
+        avgDuration: '8:32',
+        satisfaction: '92%',
+      },
+      {
+        name: 'Bob Smith',
+        calls: 38,
+        avgDuration: '7:15',
+        satisfaction: '88%',
+      },
+      {
+        name: 'Carol Davis',
+        calls: 52,
+        avgDuration: '9:01',
+        satisfaction: '95%',
+      },
+      {
+        name: 'David Wilson',
+        calls: 29,
+        avgDuration: '6:48',
+        satisfaction: '85%',
+      },
     ];
   }
 
@@ -392,15 +424,20 @@ function renderTable(widget, container) {
       <table class="analytics-table">
         <thead>
           <tr>
-            ${widget.config.columns.map(col => `<th>${col}</th>`).join('')}
+            ${widget.config.columns.map((col) => `<th>${col}</th>`).join('')}
           </tr>
         </thead>
         <tbody>
-          ${data.slice(0, widget.config.limit || 10).map(row => `
+          ${data
+            .slice(0, widget.config.limit || 10)
+            .map(
+              (row) => `
             <tr>
-              ${widget.config.columns.map(col => `<td>${row[col]}</td>`).join('')}
+              ${widget.config.columns.map((col) => `<td>${row[col]}</td>`).join('')}
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
     </div>
@@ -416,7 +453,7 @@ function generateMockChartData(timeRange) {
     date.setDate(date.getDate() - i);
     data.push({
       date: date.toISOString().split('T')[0],
-      value: Math.floor(Math.random() * 50) + 20
+      value: Math.floor(Math.random() * 50) + 20,
     });
   }
 
@@ -436,8 +473,8 @@ function renderSimpleChart(canvas, data) {
   ctx.lineWidth = 2;
   ctx.beginPath();
 
-  const maxValue = Math.max(...data.map(d => d.value));
-  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const minValue = Math.min(...data.map((d) => d.value));
   const range = maxValue - minValue || 1;
 
   data.forEach((point, index) => {
@@ -475,37 +512,39 @@ function renderChartJSChart(canvas, data, widget) {
   }
 
   // Prepare data for Chart.js
-  const labels = data.map(d => {
+  const labels = data.map((d) => {
     if (d.date) {
       return new Date(d.date).toLocaleDateString();
     }
     return d.label || '';
   });
 
-  const datasets = [{
-    label: widget.config.title || widget.name,
-    data: data.map(d => d.value || d.count || 0),
-    borderColor: 'rgb(52, 152, 219)',
-    backgroundColor: 'rgba(52, 152, 219, 0.1)',
-    tension: 0.1,
-    fill: true
-  }];
+  const datasets = [
+    {
+      label: widget.config.title || widget.name,
+      data: data.map((d) => d.value || d.count || 0),
+      borderColor: 'rgb(52, 152, 219)',
+      backgroundColor: 'rgba(52, 152, 219, 0.1)',
+      tension: 0.1,
+      fill: true,
+    },
+  ];
 
   // Add additional datasets for call types if available
-  if (data.some(d => d.inbound !== undefined)) {
+  if (data.some((d) => d.inbound !== undefined)) {
     datasets.push({
       label: 'Inbound Calls',
-      data: data.map(d => d.inbound || 0),
+      data: data.map((d) => d.inbound || 0),
       borderColor: 'rgb(46, 204, 113)',
       backgroundColor: 'rgba(46, 204, 113, 0.1)',
-      tension: 0.1
+      tension: 0.1,
     });
     datasets.push({
       label: 'Outbound Calls',
-      data: data.map(d => d.outbound || 0),
+      data: data.map((d) => d.outbound || 0),
       borderColor: 'rgb(230, 126, 34)',
       backgroundColor: 'rgba(230, 126, 34, 0.1)',
-      tension: 0.1
+      tension: 0.1,
     });
   }
 
@@ -513,41 +552,41 @@ function renderChartJSChart(canvas, data, widget) {
     type: 'line',
     data: {
       labels,
-      datasets
+      datasets,
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: datasets.length > 1
+          display: datasets.length > 1,
         },
         tooltip: {
           mode: 'index',
-          intersect: false
-        }
+          intersect: false,
+        },
       },
       scales: {
         y: {
           beginAtZero: true,
           ticks: {
-            precision: 0
-          }
+            precision: 0,
+          },
         },
         x: {
           display: true,
           title: {
             display: true,
-            text: 'Date'
-          }
-        }
+            text: 'Date',
+          },
+        },
       },
       interaction: {
         mode: 'nearest',
         axis: 'x',
-        intersect: false
-      }
-    }
+        intersect: false,
+      },
+    },
   });
 }
 
@@ -571,10 +610,23 @@ function handleDashboardActions(event) {
   }
 }
 
+function deleteDashboard(dashboardId) {
+  if (confirm('Are you sure you want to delete this dashboard?')) {
+    analyticsState.dashboards = analyticsState.dashboards.filter(
+      (d) => d.id !== dashboardId
+    );
+    if (analyticsState.activeDashboard === dashboardId) {
+      analyticsState.activeDashboard = analyticsState.dashboards[0]?.id || null;
+    }
+    saveAnalyticsData();
+    renderAdvancedAnalyticsUI(document);
+  }
+}
+
 function switchDashboard(dashboardId) {
   analyticsState.activeDashboard = dashboardId;
   saveAnalyticsData();
-  renderAnalyticsDashboard(document);
+  renderAdvancedAnalyticsUI(document);
 }
 
 function createNewDashboard() {
@@ -589,15 +641,15 @@ function createNewDashboard() {
     layout: {
       columns: 3,
       rows: 2,
-      widgetSizes: {}
+      widgetSizes: {},
     },
-    isDefault: false
+    isDefault: false,
   };
 
   analyticsState.dashboards.push(dashboard);
   analyticsState.activeDashboard = dashboard.id;
   saveAnalyticsData();
-  renderAnalyticsDashboard(document);
+  renderAdvancedAnalyticsUI(document);
   showToast('Dashboard created!', 'success');
 }
 
@@ -607,7 +659,9 @@ function editDashboard() {
 }
 
 function exportDashboard() {
-  const dashboard = analyticsState.dashboards.find(d => d.id === analyticsState.activeDashboard);
+  const dashboard = analyticsState.dashboards.find(
+    (d) => d.id === analyticsState.activeDashboard
+  );
   if (!dashboard) return;
 
   // Create export options modal
@@ -654,17 +708,27 @@ function performExport(dashboard, format) {
   if (format === 'json') {
     const exportData = {
       dashboard,
-      widgets: dashboard.widgets.map(id => analyticsState.widgets.find(w => w.id === id)).filter(Boolean),
-      exportedAt: new Date().toISOString()
+      widgets: dashboard.widgets
+        .map((id) => analyticsState.widgets.find((w) => w.id === id))
+        .filter(Boolean),
+      exportedAt: new Date().toISOString(),
     };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    downloadBlob(blob, `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.json`);
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
+    downloadBlob(
+      blob,
+      `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.json`
+    );
   } else if (format === 'csv') {
     // Export widget data as CSV
     const csvData = generateCSVData(dashboard);
     const blob = new Blob([csvData], { type: 'text/csv' });
-    downloadBlob(blob, `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.csv`);
+    downloadBlob(
+      blob,
+      `${dashboard.name.toLowerCase().replace(/\s+/g, '-')}-dashboard.csv`
+    );
   }
 
   showToast('Dashboard exported!', 'success');
@@ -677,19 +741,19 @@ function generateCSVData(dashboard) {
   rows.push(['Widget', 'Type', 'Data Source', 'Value', 'Date']);
 
   // Add data for each widget
-  dashboard.widgets.forEach(widgetId => {
-    const widget = analyticsState.widgets.find(w => w.id === widgetId);
+  dashboard.widgets.forEach((widgetId) => {
+    const widget = analyticsState.widgets.find((w) => w.id === widgetId);
     if (!widget) return;
 
     if (widget.type === 'line-chart' && widget.dataSource === 'calls') {
       const data = getCallVolumeData(widget.config.timeRange || '30d');
-      data.forEach(point => {
+      data.forEach((point) => {
         rows.push([
           widget.name,
           'Call Volume',
           'Calls',
           point.count,
-          point.date
+          point.date,
         ]);
       });
     } else if (widget.type === 'metric' && widget.dataSource === 'feedback') {
@@ -699,12 +763,12 @@ function generateCSVData(dashboard) {
         'CSAT Score',
         'Feedback',
         `${score}%`,
-        new Date().toISOString().split('T')[0]
+        new Date().toISOString().split('T')[0],
       ]);
     }
   });
 
-  return rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  return rows.map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
 }
 
 function downloadBlob(blob, filename) {
@@ -714,15 +778,18 @@ function downloadBlob(blob, filename) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
-}function handleDataUpdate(event) {
+}
+function handleDataUpdate(event) {
   // Refresh widgets when data updates
   const { dataSource } = event.detail;
   updateWidgetsForDataSource(dataSource);
 }
 
 function updateWidgetsForDataSource(dataSource) {
-  const affectedWidgets = analyticsState.widgets.filter(w => w.dataSource === dataSource);
-  affectedWidgets.forEach(widget => {
+  const affectedWidgets = analyticsState.widgets.filter(
+    (w) => w.dataSource === dataSource
+  );
+  affectedWidgets.forEach((widget) => {
     const container = document.getElementById(`widget-${widget.id}`);
     if (container) {
       renderWidget(widget, container);
@@ -753,7 +820,7 @@ export function getCallVolumeData(timeRange = '30d') {
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split('T')[0];
 
-    const dayCalls = calls.filter(call => {
+    const dayCalls = calls.filter((call) => {
       const callDate = new Date(call.startTime).toISOString().split('T')[0];
       return callDate === dateStr;
     });
@@ -761,8 +828,8 @@ export function getCallVolumeData(timeRange = '30d') {
     data.push({
       date: dateStr,
       count: dayCalls.length,
-      inbound: dayCalls.filter(c => c.callType === 'inbound').length,
-      outbound: dayCalls.filter(c => c.callType === 'outbound').length
+      inbound: dayCalls.filter((c) => c.callType === 'inbound').length,
+      outbound: dayCalls.filter((c) => c.callType === 'outbound').length,
     });
   }
 
@@ -774,7 +841,8 @@ export function getAverageResponseTime() {
   if (calls.length === 0) return 0;
 
   // For demo purposes, simulate response time based on call duration
-  const avgDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0) / calls.length;
+  const avgDuration =
+    calls.reduce((sum, call) => sum + (call.duration || 0), 0) / calls.length;
   return Math.floor(avgDuration / 1000); // Convert to seconds
 }
 
@@ -785,8 +853,8 @@ export function getCustomerSatisfactionScore() {
   let totalScore = 0;
   let count = 0;
 
-  responses.forEach(response => {
-    response.answers.forEach(answer => {
+  responses.forEach((response) => {
+    response.answers.forEach((answer) => {
       if (answer.type === 'rating' && answer.value) {
         const options = answer.options || [];
         const score = options.indexOf(answer.value) + 1; // 1-based rating
@@ -806,17 +874,22 @@ export function getAgentPerformanceData() {
 
   // Group calls by agent (for now, we'll simulate different agents)
   const agents = ['Agent A', 'Agent B', 'Agent C'];
-  const agentData = agents.map(agent => {
-    const agentCalls = calls.filter((_, index) => index % agents.length === agents.indexOf(agent));
+  const agentData = agents.map((agent) => {
+    const agentCalls = calls.filter(
+      (_, index) => index % agents.length === agents.indexOf(agent)
+    );
     const totalCalls = agentCalls.length;
-    const avgDuration = totalCalls > 0 ?
-      agentCalls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls : 0;
+    const avgDuration =
+      totalCalls > 0
+        ? agentCalls.reduce((sum, call) => sum + (call.duration || 0), 0) /
+          totalCalls
+        : 0;
 
     return {
       agent,
       totalCalls,
       avgDuration: Math.floor(avgDuration / 1000), // seconds
-      satisfaction: Math.floor(Math.random() * 20) + 80 // Simulated satisfaction
+      satisfaction: Math.floor(Math.random() * 20) + 80, // Simulated satisfaction
     };
   });
 
@@ -833,15 +906,17 @@ export function getFeedbackTrends() {
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split('T')[0];
 
-    const dayResponses = responses.filter(response => {
-      const responseDate = new Date(response.timestamp).toISOString().split('T')[0];
+    const dayResponses = responses.filter((response) => {
+      const responseDate = new Date(response.timestamp)
+        .toISOString()
+        .split('T')[0];
       return responseDate === dateStr;
     });
 
     data.push({
       date: dateStr,
       responses: dayResponses.length,
-      avgRating: dayResponses.length > 0 ? getCustomerSatisfactionScore() : 0
+      avgRating: dayResponses.length > 0 ? getCustomerSatisfactionScore() : 0,
     });
   }
 
@@ -854,7 +929,7 @@ window.createNewDashboard = createNewDashboard;
 window.editDashboard = editDashboard;
 window.exportDashboard = exportDashboard;
 window.refreshWidget = (widgetId) => {
-  const widget = analyticsState.widgets.find(w => w.id === widgetId);
+  const widget = analyticsState.widgets.find((w) => w.id === widgetId);
   if (widget) {
     const container = document.getElementById(`widget-${widget.id}`);
     if (container) {
@@ -862,7 +937,7 @@ window.refreshWidget = (widgetId) => {
     }
   }
 };
-window.configureWidget = (widgetId) => {
+window.configureWidget = () => {
   showToast('Widget configuration coming soon!', 'info');
 };
 

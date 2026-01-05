@@ -165,8 +165,23 @@ export function renderSteps() {
       (async () => {
         try {
           const modalModule = await import('../utils/modal.js');
-          const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function') ? modalModule.showConfirmModal : (window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?'))));
-          const confirmed = await confirmFn({ title: 'Clear All Steps', message: 'Are you sure you want to delete all steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
+          const confirmFn =
+            modalModule && typeof modalModule.showConfirmModal === 'function'
+              ? modalModule.showConfirmModal
+              : window.showConfirmModal ||
+                ((opts) =>
+                  Promise.resolve(
+                    window.confirm(
+                      opts && opts.message ? opts.message : 'Are you sure?'
+                    )
+                  ));
+          const confirmed = await confirmFn({
+            title: 'Clear All Steps',
+            message: 'Are you sure you want to delete all steps?',
+            confirmLabel: 'Clear',
+            cancelLabel: 'Cancel',
+            danger: true,
+          });
           if (confirmed) {
             steps.length = 0;
             completedSteps.clear();
@@ -176,7 +191,10 @@ export function renderSteps() {
             generateFlow();
           }
         } catch (err) {
-          console.warn('Clear all steps confirmation failed, falling back to window.confirm', err);
+          console.warn(
+            'Clear all steps confirmation failed, falling back to window.confirm',
+            err
+          );
           if (window.confirm('Are you sure you want to delete all steps?')) {
             steps.length = 0;
             completedSteps.clear();

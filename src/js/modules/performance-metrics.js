@@ -10,11 +10,14 @@ export function initializePerformanceMetrics() {
 
 function updateMetrics() {
   const calls = getCallHistory();
-  const completedCalls = calls.filter(call => call.status === 'completed');
+  const completedCalls = calls.filter((call) => call.status === 'completed');
 
   // Calculate metrics
   const callsHandled = completedCalls.length;
-  const totalDuration = completedCalls.reduce((sum, call) => sum + (call.duration || 0), 0);
+  const totalDuration = completedCalls.reduce(
+    (sum, call) => sum + (call.duration || 0),
+    0
+  );
   const aht = callsHandled > 0 ? totalDuration / callsHandled / 1000 / 60 : 0; // in minutes
 
   // Mock data for other metrics (in real app, these would be tracked)
@@ -51,19 +54,22 @@ function updatePerformanceChart() {
   // Mock weekly data
   const data = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [{
-      label: 'Calls Handled',
-      data: [45, 52, 38, 61, 55, 23, 18],
-      borderColor: 'rgb(75, 192, 192)',
-      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      tension: 0.1
-    }, {
-      label: 'Avg Handle Time (min)',
-      data: [8.5, 7.2, 9.1, 6.8, 8.9, 5.5, 4.2],
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      tension: 0.1
-    }]
+    datasets: [
+      {
+        label: 'Calls Handled',
+        data: [45, 52, 38, 61, 55, 23, 18],
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.1,
+      },
+      {
+        label: 'Avg Handle Time (min)',
+        data: [8.5, 7.2, 9.1, 6.8, 8.9, 5.5, 4.2],
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.1,
+      },
+    ],
   };
 
   if (window.performanceChart) {
@@ -77,10 +83,10 @@ function updatePerformanceChart() {
         responsive: true,
         scales: {
           y: {
-            beginAtZero: true
-          }
-        }
-      }
+            beginAtZero: true,
+          },
+        },
+      },
     });
   }
 }

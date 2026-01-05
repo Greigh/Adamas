@@ -126,7 +126,11 @@
 
   &-info {
     border-color: var(--primary-blue);
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+    background: linear-gradient(
+      135deg,
+      var(--primary-blue),
+      var(--primary-blue-dark)
+    );
 
     .toast-message {
       color: white;
@@ -144,7 +148,7 @@
 }
 
 // Dark mode adjustments
-[data-theme="dark"] {
+[data-theme='dark'] {
   .toast {
     &-success {
       background: linear-gradient(135deg, #065f46, #047857);

@@ -86,28 +86,33 @@ function performCustomerSearch(query) {
     calls: [],
     notes: [],
     tasks: [],
-    crm: []
+    crm: [],
   };
 
   const searchFilters = {
     calls: document.getElementById('search-calls')?.checked,
     notes: document.getElementById('search-notes')?.checked,
     tasks: document.getElementById('search-tasks')?.checked,
-    crm: document.getElementById('search-crm')?.checked
+    crm: document.getElementById('search-crm')?.checked,
   };
 
   // Search call history
   if (searchFilters.calls) {
     const callHistory = JSON.parse(localStorage.getItem('callHistory')) || [];
-    results.calls = callHistory.filter(call =>
-      matchesQuery(call, query, ['callerName', 'callerPhone', 'notes', 'callType'])
+    results.calls = callHistory.filter((call) =>
+      matchesQuery(call, query, [
+        'callerName',
+        'callerPhone',
+        'notes',
+        'callType',
+      ])
     );
   }
 
   // Search notes
   if (searchFilters.notes) {
     const notes = JSON.parse(localStorage.getItem('notes')) || [];
-    results.notes = notes.filter(note =>
+    results.notes = notes.filter((note) =>
       matchesQuery(note, query, ['title', 'content', 'tags'])
     );
   }
@@ -115,7 +120,7 @@ function performCustomerSearch(query) {
   // Search tasks
   if (searchFilters.tasks) {
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    results.tasks = tasks.filter(task =>
+    results.tasks = tasks.filter((task) =>
       matchesQuery(task, query, ['title', 'description', 'priority'])
     );
   }
@@ -123,8 +128,14 @@ function performCustomerSearch(query) {
   // Search CRM data (if available)
   if (searchFilters.crm) {
     const crmData = JSON.parse(localStorage.getItem('crm-contacts')) || [];
-    results.crm = crmData.filter(contact =>
-      matchesQuery(contact, query, ['name', 'phone', 'email', 'company', 'notes'])
+    results.crm = crmData.filter((contact) =>
+      matchesQuery(contact, query, [
+        'name',
+        'phone',
+        'email',
+        'company',
+        'notes',
+      ])
     );
   }
 
@@ -133,7 +144,7 @@ function performCustomerSearch(query) {
 
 function matchesQuery(item, query, fields) {
   const lowerQuery = query.toLowerCase();
-  return fields.some(field => {
+  return fields.some((field) => {
     const value = item[field];
     if (typeof value === 'string') {
       return value.toLowerCase().includes(lowerQuery);
@@ -146,10 +157,15 @@ function displaySearchResults(results) {
   const resultsContainer = document.getElementById('search-results');
   if (!resultsContainer) return;
 
-  const totalResults = results.calls.length + results.notes.length + results.tasks.length + results.crm.length;
+  const totalResults =
+    results.calls.length +
+    results.notes.length +
+    results.tasks.length +
+    results.crm.length;
 
   if (totalResults === 0) {
-    resultsContainer.innerHTML = '<div class="no-results">No matching records found</div>';
+    resultsContainer.innerHTML =
+      '<div class="no-results">No matching records found</div>';
     return;
   }
 
@@ -159,7 +175,10 @@ function displaySearchResults(results) {
   if (results.calls.length > 0) {
     html += `<div class="result-section">
       <h4>📞 Call History (${results.calls.length})</h4>
-      ${results.calls.slice(0, 5).map(call => `
+      ${results.calls
+        .slice(0, 5)
+        .map(
+          (call) => `
         <div class="result-item call-result">
           <div class="result-header">
             <strong>${call.callerName}</strong> - ${call.callerPhone}
@@ -168,7 +187,9 @@ function displaySearchResults(results) {
           <div class="result-meta">${new Date(call.startTime).toLocaleString()}</div>
           ${call.notes ? `<div class="result-content">${call.notes.substring(0, 100)}...</div>` : ''}
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>`;
   }
 
@@ -176,7 +197,10 @@ function displaySearchResults(results) {
   if (results.notes.length > 0) {
     html += `<div class="result-section">
       <h4>📝 Notes (${results.notes.length})</h4>
-      ${results.notes.slice(0, 5).map(note => `
+      ${results.notes
+        .slice(0, 5)
+        .map(
+          (note) => `
         <div class="result-item note-result">
           <div class="result-header">
             <strong>${note.title}</strong>
@@ -184,7 +208,9 @@ function displaySearchResults(results) {
           <div class="result-meta">${new Date(note.timestamp).toLocaleString()}</div>
           <div class="result-content">${note.content.substring(0, 100)}...</div>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>`;
   }
 
@@ -192,7 +218,10 @@ function displaySearchResults(results) {
   if (results.tasks.length > 0) {
     html += `<div class="result-section">
       <h4>✅ Tasks (${results.tasks.length})</h4>
-      ${results.tasks.slice(0, 5).map(task => `
+      ${results.tasks
+        .slice(0, 5)
+        .map(
+          (task) => `
         <div class="result-item task-result">
           <div class="result-header">
             <strong>${task.title}</strong>
@@ -201,7 +230,9 @@ function displaySearchResults(results) {
           <div class="result-meta">Due: ${task.dueDate || 'No due date'}</div>
           ${task.description ? `<div class="result-content">${task.description.substring(0, 100)}...</div>` : ''}
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>`;
   }
 
@@ -209,7 +240,10 @@ function displaySearchResults(results) {
   if (results.crm.length > 0) {
     html += `<div class="result-section">
       <h4>🏢 CRM Contacts (${results.crm.length})</h4>
-      ${results.crm.slice(0, 5).map(contact => `
+      ${results.crm
+        .slice(0, 5)
+        .map(
+          (contact) => `
         <div class="result-item crm-result">
           <div class="result-header">
             <strong>${contact.name}</strong>
@@ -218,7 +252,9 @@ function displaySearchResults(results) {
           <div class="result-meta">${contact.phone} | ${contact.email}</div>
           ${contact.notes ? `<div class="result-content">${contact.notes.substring(0, 100)}...</div>` : ''}
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>`;
   }
 

@@ -11,7 +11,7 @@ class PerformanceMonitor {
       interactionToNextPaint: 0,
       memoryUsage: null,
       networkRequests: [],
-      errors: []
+      errors: [],
     };
 
     this.observers = new Map();
@@ -53,7 +53,7 @@ class PerformanceMonitor {
         });
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
         this.observers.set('lcp', lcpObserver);
-      } catch (e) {
+      } catch {
         console.warn('[Performance Monitor] LCP observer not supported');
       }
 
@@ -62,14 +62,19 @@ class PerformanceMonitor {
         const fidObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
-            if (!this.metrics.firstInputDelay || entry.processingStart - entry.startTime > this.metrics.firstInputDelay) {
-              this.metrics.firstInputDelay = entry.processingStart - entry.startTime;
+            if (
+              !this.metrics.firstInputDelay ||
+              entry.processingStart - entry.startTime >
+                this.metrics.firstInputDelay
+            ) {
+              this.metrics.firstInputDelay =
+                entry.processingStart - entry.startTime;
             }
           });
         });
         fidObserver.observe({ entryTypes: ['first-input'] });
         this.observers.set('fid', fidObserver);
-      } catch (e) {
+      } catch {
         console.warn('[Performance Monitor] FID observer not supported');
       }
 
@@ -87,7 +92,7 @@ class PerformanceMonitor {
         });
         clsObserver.observe({ entryTypes: ['layout-shift'] });
         this.observers.set('cls', clsObserver);
-      } catch (e) {
+      } catch {
         console.warn('[Performance Monitor] CLS observer not supported');
       }
 
@@ -104,7 +109,7 @@ class PerformanceMonitor {
         });
         inpObserver.observe({ entryTypes: ['event'] });
         this.observers.set('inp', inpObserver);
-      } catch (e) {
+      } catch {
         console.warn('[Performance Monitor] INP observer not supported');
       }
 
@@ -116,13 +121,15 @@ class PerformanceMonitor {
             if (entry.entryType === 'navigation') {
               this.metrics.pageLoadTime = entry.loadEventEnd - entry.fetchStart;
               this.metrics.firstPaint = this.getPaintTime('first-paint');
-              this.metrics.firstContentfulPaint = this.getPaintTime('first-contentful-paint');
+              this.metrics.firstContentfulPaint = this.getPaintTime(
+                'first-contentful-paint'
+              );
             }
           });
         });
         navigationObserver.observe({ entryTypes: ['navigation'] });
         this.observers.set('navigation', navigationObserver);
-      } catch (e) {
+      } catch {
         console.warn('[Performance Monitor] Navigation observer not supported');
       }
 
@@ -131,20 +138,24 @@ class PerformanceMonitor {
         const resourceObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
-            if (entry.initiatorType !== 'xmlhttprequest' && entry.initiatorType !== 'fetch') return;
+            if (
+              entry.initiatorType !== 'xmlhttprequest' &&
+              entry.initiatorType !== 'fetch'
+            )
+              return;
 
             this.metrics.networkRequests.push({
               url: entry.name,
               duration: entry.responseEnd - entry.requestStart,
               size: entry.transferSize,
               type: entry.initiatorType,
-              timestamp: entry.fetchStart
+              timestamp: entry.fetchStart,
             });
           });
         });
         resourceObserver.observe({ entryTypes: ['resource'] });
         this.observers.set('resource', resourceObserver);
-      } catch (e) {
+      } catch {
         console.warn('[Performance Monitor] Resource observer not supported');
       }
     }
@@ -167,14 +178,16 @@ class PerformanceMonitor {
 
     // Get paint timings
     this.metrics.firstPaint = this.getPaintTime('first-paint');
-    this.metrics.firstContentfulPaint = this.getPaintTime('first-contentful-paint');
+    this.metrics.firstContentfulPaint = this.getPaintTime(
+      'first-contentful-paint'
+    );
   }
 
   // Get paint timing
   getPaintTime(name) {
     if ('performance' in window && 'getEntriesByType' in window.performance) {
       const paintEntries = window.performance.getEntriesByType('paint');
-      const entry = paintEntries.find(entry => entry.name === name);
+      const entry = paintEntries.find((entry) => entry.name === name);
       return entry ? entry.startTime : 0;
     }
     return 0;
@@ -189,7 +202,7 @@ class PerformanceMonitor {
           used: memory.usedJSHeapSize,
           total: memory.totalJSHeapSize,
           limit: memory.jsHeapSizeLimit,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
       }, 5000); // Update every 5 seconds
     }
@@ -204,7 +217,7 @@ class PerformanceMonitor {
         lineno: event.lineno,
         colno: event.colno,
         timestamp: Date.now(),
-        type: 'javascript'
+        type: 'javascript',
       });
     });
 
@@ -212,7 +225,7 @@ class PerformanceMonitor {
       this.metrics.errors.push({
         message: event.reason?.message || event.reason,
         timestamp: Date.now(),
-        type: 'promise'
+        type: 'promise',
       });
     });
   }
@@ -230,25 +243,35 @@ class PerformanceMonitor {
       'Page Load Time': `${metrics.pageLoadTime.toFixed(0)}ms`,
       'First Paint': `${metrics.firstPaint.toFixed(0)}ms`,
       'First Contentful Paint': `${metrics.firstContentfulPaint.toFixed(0)}ms`,
-      'Largest Contentful Paint': metrics.largestContentfulPaint ? `${metrics.largestContentfulPaint.toFixed(0)}ms` : 'N/A',
-      'First Input Delay': metrics.firstInputDelay ? `${metrics.firstInputDelay.toFixed(0)}ms` : 'N/A',
+      'Largest Contentful Paint': metrics.largestContentfulPaint
+        ? `${metrics.largestContentfulPaint.toFixed(0)}ms`
+        : 'N/A',
+      'First Input Delay': metrics.firstInputDelay
+        ? `${metrics.firstInputDelay.toFixed(0)}ms`
+        : 'N/A',
       'Cumulative Layout Shift': metrics.cumulativeLayoutShift.toFixed(4),
-      'Interaction to Next Paint': metrics.interactionToNextPaint ? `${metrics.interactionToNextPaint.toFixed(0)}ms` : 'N/A',
-      'Memory Usage': metrics.memoryUsage ?
-        `${(metrics.memoryUsage.used / 1024 / 1024).toFixed(1)}MB / ${(metrics.memoryUsage.total / 1024 / 1024).toFixed(1)}MB` :
-        'N/A',
+      'Interaction to Next Paint': metrics.interactionToNextPaint
+        ? `${metrics.interactionToNextPaint.toFixed(0)}ms`
+        : 'N/A',
+      'Memory Usage': metrics.memoryUsage
+        ? `${(metrics.memoryUsage.used / 1024 / 1024).toFixed(1)}MB / ${(metrics.memoryUsage.total / 1024 / 1024).toFixed(1)}MB`
+        : 'N/A',
       'Network Requests': metrics.networkRequests.length,
-      'Errors': metrics.errors.length
+      Errors: metrics.errors.length,
     };
   }
 
   // Export metrics as JSON
   exportMetrics() {
-    return JSON.stringify({
-      timestamp: new Date().toISOString(),
-      metrics: this.getMetrics(),
-      formatted: this.getFormattedMetrics()
-    }, null, 2);
+    return JSON.stringify(
+      {
+        timestamp: new Date().toISOString(),
+        metrics: this.getMetrics(),
+        formatted: this.getFormattedMetrics(),
+      },
+      null,
+      2
+    );
   }
 
   // Reset metrics
@@ -263,7 +286,7 @@ class PerformanceMonitor {
       interactionToNextPaint: 0,
       memoryUsage: null,
       networkRequests: [],
-      errors: []
+      errors: [],
     };
   }
 }

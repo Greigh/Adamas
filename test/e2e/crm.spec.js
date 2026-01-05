@@ -9,25 +9,35 @@ const { chromium } = require('playwright');
 describe('CRM E2E - provider UI & persistence', () => {
   let browser;
   let page;
-  const html = fs.readFileSync(path.resolve(__dirname, '../../src/settings.html'), 'utf8');
-  const crmSrc = fs.readFileSync(path.resolve(__dirname, '../../src/js/modules/crm.js'), 'utf8');
+  let server;
+  let baseUrl;
+  const html = fs.readFileSync(
+    path.resolve(__dirname, '../../src/settings.html'),
+    'utf8'
+  );
+  const crmSrc = fs.readFileSync(
+    path.resolve(__dirname, '../../src/js/modules/crm.js'),
+    'utf8'
+  );
 
   beforeAll(async () => {
-      browser = await chromium.launch();
-      page = await browser.newPage();
+    browser = await chromium.launch();
+    page = await browser.newPage();
 
-      // Start a lightweight HTTP server so localStorage and proper origin are available
-      const http = require('http');
-      server = http.createServer((req, res) => {
+    // Start a lightweight HTTP server so localStorage and proper origin are available
+    const http = require('http');
+    server = http
+      .createServer((req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(html);
-      }).listen(4202, '127.0.0.1');
-      baseUrl = 'http://127.0.0.1:4202/';
+      })
+      .listen(4202, '127.0.0.1');
+    baseUrl = 'http://127.0.0.1:4202/';
   });
 
   afterAll(async () => {
     await browser.close();
-      if (server && server.close) server.close();
+    if (server && server.close) server.close();
   });
 
   // Helper: inject the crm module into the page context and expose initializer
@@ -52,7 +62,7 @@ describe('CRM E2E - provider UI & persistence', () => {
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     const existsBeforeInit = await page.evaluate(() => ({
       hasSFConfig: !!document.getElementById('salesforce-config'),
-      hasSFUrl: !!document.getElementById('salesforce-url')
+      hasSFUrl: !!document.getElementById('salesforce-url'),
     }));
     console.log('E2E: element existence before inject', existsBeforeInit);
     await page.waitForSelector('#crm-provider');
@@ -63,20 +73,35 @@ describe('CRM E2E - provider UI & persistence', () => {
     // Select salesforce
     await page.selectOption('#crm-provider', 'salesforce');
     // wait for the provider panels to update
-    await page.waitForFunction(() => {
-      const sf = document.getElementById('salesforce-config');
-      const fn = document.getElementById('finesse-config');
-      return !!sf && !sf.classList.contains('hidden') && !!fn && fn.classList.contains('hidden');
-    }, { timeout: 2000 });
+    await page.waitForFunction(
+      () => {
+        const sf = document.getElementById('salesforce-config');
+        const fn = document.getElementById('finesse-config');
+        return (
+          !!sf &&
+          !sf.classList.contains('hidden') &&
+          !!fn &&
+          fn.classList.contains('hidden')
+        );
+      },
+      { timeout: 2000 }
+    );
 
     // Ensure the salesforce panel is visible & others are hidden
-    const salesforceHidden = await page.$eval('#salesforce-config', (el) => el.classList.contains('hidden'));
-    const finesseHidden = await page.$eval('#finesse-config', (el) => el.classList.contains('hidden'));
+    const salesforceHidden = await page.$eval('#salesforce-config', (el) =>
+      el.classList.contains('hidden')
+    );
+    const finesseHidden = await page.$eval('#finesse-config', (el) =>
+      el.classList.contains('hidden')
+    );
     expect(salesforceHidden).toBe(false);
     expect(finesseHidden).toBe(true);
 
     // Ensure inputs in visible panel are enabled, and inputs in hidden ones are disabled
-    const sfUrlDisabled = await page.$eval('#salesforce-url', (el) => el.disabled);
+    const sfUrlDisabled = await page.$eval(
+      '#salesforce-url',
+      (el) => el.disabled
+    );
     const fnUrlDisabled = await page.$eval('#finesse-url', (el) => el.disabled);
     expect(sfUrlDisabled).toBe(false);
     expect(fnUrlDisabled).toBe(true);
@@ -92,19 +117,32 @@ describe('CRM E2E - provider UI & persistence', () => {
     await page.waitForTimeout(10);
     // Trigger change handlers to cause save
     await page.evaluate(() => {
-      document.getElementById('salesforce-url').dispatchEvent(new Event('change', { bubbles: true }));
-      document.getElementById('salesforce-consumer-key').dispatchEvent(new Event('change', { bubbles: true }));
+      document
+        .getElementById('salesforce-url')
+        .dispatchEvent(new Event('change', { bubbles: true }));
+      document
+        .getElementById('salesforce-consumer-key')
+        .dispatchEvent(new Event('change', { bubbles: true }));
     });
 
     // If save handlers didn't fire, call saveConfig directly (injected exposes function as __crm_saveConfig)
     await page.evaluate(() => {
-      if (window.__crm_saveConfig && typeof window.__crm_saveConfig === 'function') {
-        try { window.__crm_saveConfig(); } catch (e) { /* ignore */ }
+      if (
+        window.__crm_saveConfig &&
+        typeof window.__crm_saveConfig === 'function'
+      ) {
+        try {
+          window.__crm_saveConfig();
+        } catch (e) {
+          /* ignore */
+        }
       }
     });
 
     // Read saved config from localStorage; if empty, dump raw for debugging
-    const rawSaved = await page.evaluate(() => localStorage.getItem('crmConfig'));
+    const rawSaved = await page.evaluate(() =>
+      localStorage.getItem('crmConfig')
+    );
     console.log('E2E: raw crmConfig after save:', rawSaved);
     const saved = JSON.parse(rawSaved || '{}');
     expect(saved.salesforceUrl).toBe('https://acme.salesforce.com');
@@ -114,23 +152,36 @@ describe('CRM E2E - provider UI & persistence', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await injectCRMModule(page);
     // Try to restore fields by explicitly calling the exposed loader (pass document)
-    await page.evaluate(() => { if (window.__crm_loadSaved) window.__crm_loadSaved(document); });
+    await page.evaluate(() => {
+      if (window.__crm_loadSaved) window.__crm_loadSaved(document);
+    });
     const restoredFields = await page.evaluate(() => ({
       url: document.getElementById('salesforce-url')?.value || null,
       key: document.getElementById('salesforce-consumer-key')?.value || null,
-      local: localStorage.getItem('crmConfig')
+      local: localStorage.getItem('crmConfig'),
     }));
-    console.log('E2E: restoredFields after explicit loadSavedConfig', restoredFields);
-    console.log('E2E: restoredFields after reload+loadSavedConfig', restoredFields);
+    console.log(
+      'E2E: restoredFields after explicit loadSavedConfig',
+      restoredFields
+    );
+    console.log(
+      'E2E: restoredFields after reload+loadSavedConfig',
+      restoredFields
+    );
 
     // Sometimes the loader still doesn't populate inputs in this test harness - prefer localStorage as the source of truth
     if (restoredFields.url && restoredFields.key) {
       const urlValue = await page.$eval('#salesforce-url', (el) => el.value);
-      const ckValue = await page.$eval('#salesforce-consumer-key', (el) => el.value);
+      const ckValue = await page.$eval(
+        '#salesforce-consumer-key',
+        (el) => el.value
+      );
       expect(urlValue).toBe('https://acme.salesforce.com');
       expect(ckValue).toBe('ck_abc');
     } else {
-      expect(restoredFields.local).toMatch(/"salesforceUrl":"https:\/\/acme.salesforce.com"/);
+      expect(restoredFields.local).toMatch(
+        /"salesforceUrl":"https:\/\/acme.salesforce.com"/
+      );
       expect(restoredFields.local).toMatch(/"salesforceConsumerKey":"ck_abc"/);
     }
   }, 20000);
@@ -144,7 +195,9 @@ describe('CRM E2E - provider UI & persistence', () => {
     });
 
     // If a settings tab exists (we might be serving index.html), click; otherwise, the page is already settings
-    if (await page.$('#settings-tab')) { await page.click('#settings-tab'); }
+    if (await page.$('#settings-tab')) {
+      await page.click('#settings-tab');
+    }
     await injectCRMModule(page);
     // Ensure the module updates its status (if it hasn't already) using exposed helpers
     await page.evaluate(() => {
@@ -155,19 +208,25 @@ describe('CRM E2E - provider UI & persistence', () => {
     });
     // allow a moment for UI wiring
     await page.waitForTimeout(20);
-    const debugStatus = await page.evaluate(() => ({ statusText: document.getElementById('crm-status')?.textContent || '', btnText: document.getElementById('connect-crm')?.textContent || '' }));
+    const debugStatus = await page.evaluate(() => ({
+      statusText: document.getElementById('crm-status')?.textContent || '',
+      btnText: document.getElementById('connect-crm')?.textContent || '',
+    }));
     console.log('E2E: after force status update', debugStatus);
 
     // Status should indicate connected and Connect button should show 'Disconnect'
     // debug module state & localStorage
-    const dbgState = await page.evaluate(() => ({ state: window.__crm_state || null, storage: localStorage.getItem('crmAccessToken') }));
+    const dbgState = await page.evaluate(() => ({
+      state: window.__crm_state || null,
+      storage: localStorage.getItem('crmAccessToken'),
+    }));
     console.log('E2E: module state at init:', dbgState);
 
     // Instead of depending on UI text in this harness, assert the module/localStorage recognized the token
     const stateAndStorage = await page.evaluate(() => ({
       moduleState: window.__crm_state || null,
       accessToken: localStorage.getItem('crmAccessToken') || null,
-      provider: localStorage.getItem('crmProvider') || null
+      provider: localStorage.getItem('crmProvider') || null,
     }));
 
     expect(stateAndStorage.accessToken).toBe('dummy-token-123');

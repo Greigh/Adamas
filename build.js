@@ -4,7 +4,7 @@ const path = require('path');
 
 const distPath = path.join(__dirname, 'dist');
 const cssOutputPath = path.join(distPath, 'styles');
-const cssFile = path.join(cssOutputPath, 'main.css');
+// const cssFile = path.join(cssOutputPath, 'main.css');
 const jsOutputPath = path.join(distPath, 'js');
 
 console.log('🚀 Starting production build...');
@@ -56,7 +56,12 @@ try {
   }
 
   // 4. Copy static HTML files (privacy, terms, contact, settings) to dist
-  const staticPages = ['privacy.html', 'terms.html', 'contact.html', 'settings.html'];
+  const staticPages = [
+    'privacy.html',
+    'terms.html',
+    'contact.html',
+    'settings.html',
+  ];
   staticPages.forEach((file) => {
     const src = path.join(__dirname, 'src', file);
     const dest = path.join(distPath, file);
@@ -124,7 +129,12 @@ try {
   }
 
   // 4e. Copy download script to dist
-  const downloadScriptSrc = path.join(__dirname, 'src', 'public', 'download-alert-sounds.sh');
+  const downloadScriptSrc = path.join(
+    __dirname,
+    'src',
+    'public',
+    'download-alert-sounds.sh'
+  );
   const downloadScriptDest = path.join(distPath, 'download-alert-sounds.sh');
   if (fs.existsSync(downloadScriptSrc)) {
     fs.copyFileSync(downloadScriptSrc, downloadScriptDest);
@@ -163,7 +173,7 @@ try {
         `✅ Updated build date in Call Center Helper index.html: ${estDate}`
       );
     }
-  } catch (e) {
+  } catch {
     // Fallback to JS Date if shell command fails
     const estDate = new Date().toLocaleString('en-US', {
       timeZone: 'America/New_York',

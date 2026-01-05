@@ -47,6 +47,73 @@
         <div class="container settings-container">
           <div class="sortable-container">
             <div class="settings-grid">
+            <!-- Account Settings Section (Auth Only) -->
+            <section id="account-settings-section" class="card settings-section toggleable-section draggable-section" data-section="account" style="display: none;">
+              <div class="section-header">
+                <div class="drag-handle">⋮⋮</div>
+                <h2 class="section-title">Account Settings</h2>
+                <div class="section-controls">
+                  <button class="edit-title-btn" title="Edit Title">✎</button>
+                  <button class="float-btn" title="Float">⧉</button>
+                </div>
+              </div>
+              <div class="section-content section-content--cols">
+                
+                <!-- Profile Update -->
+                <div class="settings-group">
+                  <h4 class="settings-group-title">Profile Information</h4>
+                  <form id="update-profile-form" class="settings-form">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label for="account-username" class="setting-label">Username</label>
+                      </div>
+                      <div class="setting-control">
+                        <input type="text" id="account-username" name="username" class="form-input" />
+                      </div>
+                    </div>
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label for="account-email" class="setting-label">Email</label>
+                      </div>
+                      <div class="setting-control">
+                        <input type="email" id="account-email" name="email" class="form-input" />
+                      </div>
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Password Update -->
+                 <div class="settings-group" style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                  <h4 class="settings-group-title">Change Password</h4>
+                  <form id="change-password-form" class="settings-form">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label for="current-password" class="setting-label">Current Password</label>
+                      </div>
+                      <div class="setting-control">
+                        <input type="password" id="current-password" name="currentPassword" class="form-input" autocomplete="current-password" />
+                      </div>
+                    </div>
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label for="new-password" class="setting-label">New Password</label>
+                      </div>
+                      <div class="setting-control">
+                        <input type="password" id="new-password" name="newPassword" class="form-input" autocomplete="new-password" />
+                      </div>
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-secondary">Change Password</button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+            </section>
+
             <!-- Appearance Section -->
             <section class="card settings-section toggleable-section draggable-section" data-section="appearance">
               <div class="section-header">

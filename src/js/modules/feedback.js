@@ -7,7 +7,7 @@ export const feedbackState = {
   surveys: [],
   templates: [],
   responses: [],
-  activeSurvey: null
+  activeSurvey: null,
 };
 
 // Default survey templates
@@ -21,22 +21,28 @@ const defaultTemplates = [
         type: 'rating',
         question: 'How satisfied were you with this call?',
         required: true,
-        options: ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied']
+        options: [
+          'Very Dissatisfied',
+          'Dissatisfied',
+          'Neutral',
+          'Satisfied',
+          'Very Satisfied',
+        ],
       },
       {
         id: 'resolution',
         type: 'radio',
         question: 'Was your issue resolved?',
         required: true,
-        options: ['Yes, completely', 'Yes, partially', 'No, not resolved']
+        options: ['Yes, completely', 'Yes, partially', 'No, not resolved'],
       },
       {
         id: 'comments',
         type: 'textarea',
         question: 'Additional comments or feedback:',
-        required: false
-      }
-    ]
+        required: false,
+      },
+    ],
   },
   {
     id: 'agent-feedback',
@@ -45,26 +51,31 @@ const defaultTemplates = [
       {
         id: 'agent-rating',
         type: 'rating',
-        question: 'How would you rate the agent\'s performance?',
+        question: "How would you rate the agent's performance?",
         required: true,
-        options: ['Poor', 'Below Average', 'Average', 'Good', 'Excellent']
+        options: ['Poor', 'Below Average', 'Average', 'Good', 'Excellent'],
       },
       {
         id: 'response-time',
         type: 'radio',
         question: 'How was the response time?',
         required: true,
-        options: ['Too slow', 'Acceptable', 'Fast', 'Very fast']
+        options: ['Too slow', 'Acceptable', 'Fast', 'Very fast'],
       },
       {
         id: 'knowledge',
         type: 'radio',
         question: 'How knowledgeable was the agent?',
         required: true,
-        options: ['Not knowledgeable', 'Somewhat knowledgeable', 'Very knowledgeable', 'Expert']
-      }
-    ]
-  }
+        options: [
+          'Not knowledgeable',
+          'Somewhat knowledgeable',
+          'Very knowledgeable',
+          'Expert',
+        ],
+      },
+    ],
+  },
 ];
 
 export function initializeFeedback(doc = document) {
@@ -96,7 +107,7 @@ function saveFeedbackData() {
     const data = {
       surveys: feedbackState.surveys,
       templates: feedbackState.templates,
-      responses: feedbackState.responses
+      responses: feedbackState.responses,
     };
     localStorage.setItem('feedback-data', JSON.stringify(data));
   } catch (error) {
@@ -150,7 +161,9 @@ function renderTemplatesList(doc) {
   const container = doc.getElementById('feedback-templates-list');
   if (!container) return;
 
-  container.innerHTML = feedbackState.templates.map(template => `
+  container.innerHTML = feedbackState.templates
+    .map(
+      (template) => `
     <div class="template-item">
       <div class="template-info">
         <h5>${template.name}</h5>
@@ -161,7 +174,9 @@ function renderTemplatesList(doc) {
         <button class="btn-sm btn-secondary" onclick="duplicateFeedbackTemplate('${template.id}')">Duplicate</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderResponsesList(doc) {
@@ -170,7 +185,9 @@ function renderResponsesList(doc) {
 
   const recentResponses = feedbackState.responses.slice(-10).reverse();
 
-  container.innerHTML = recentResponses.map(response => `
+  container.innerHTML = recentResponses
+    .map(
+      (response) => `
     <div class="response-item">
       <div class="response-header">
         <span class="response-date">${new Date(response.timestamp).toLocaleString()}</span>
@@ -180,19 +197,22 @@ function renderResponsesList(doc) {
         ${response.surveyName} - ${response.customerName || 'Anonymous'}
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function calculateAverageRating() {
   if (feedbackState.responses.length === 0) return '0.0';
 
   const ratings = feedbackState.responses
-    .map(r => getNumericRating(r))
-    .filter(r => r !== null);
+    .map((r) => getNumericRating(r))
+    .filter((r) => r !== null);
 
   if (ratings.length === 0) return '0.0';
 
-  const average = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+  const average =
+    ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
   return average.toFixed(1);
 }
 
@@ -218,8 +238,12 @@ function getResponseRating(response) {
   return rating ? `${rating}/5 ⭐` : 'N/A';
 }
 
-export function triggerFeedbackSurvey(callData, templateId = 'post-call-basic', doc = document) {
-  const template = feedbackState.templates.find(t => t.id === templateId);
+export function triggerFeedbackSurvey(
+  callData,
+  templateId = 'post-call-basic',
+  doc = document
+) {
+  const template = feedbackState.templates.find((t) => t.id === templateId);
   if (!template) {
     console.error('Survey template not found:', templateId);
     return;
@@ -231,7 +255,7 @@ export function triggerFeedbackSurvey(callData, templateId = 'post-call-basic', 
     template,
     callData,
     timestamp: new Date().toISOString(),
-    status: 'active'
+    status: 'active',
   };
 
   showSurveyModal(doc);
@@ -251,7 +275,7 @@ function showSurveyModal(doc) {
       </div>
       <div class="modal-body">
         <form id="feedback-survey-form">
-          ${survey.template.questions.map(q => renderQuestion(q)).join('')}
+          ${survey.template.questions.map((q) => renderQuestion(q)).join('')}
           <div class="form-actions">
             <button type="button" class="btn-secondary" onclick="closeFeedbackModal()">Skip</button>
             <button type="submit" class="button">Submit Feedback</button>
@@ -280,12 +304,16 @@ function renderQuestion(question) {
         <div class="survey-question">
           <label>${question.question}${question.required ? ' *' : ''}</label>
           <div class="rating-options">
-            ${question.options.map((option, index) => `
+            ${question.options
+              .map(
+                (option) => `
               <label class="rating-option">
                 <input type="radio" name="q_${question.id}" value="${option}"${required}>
                 <span>${option}</span>
               </label>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
         </div>
       `;
@@ -295,12 +323,16 @@ function renderQuestion(question) {
         <div class="survey-question">
           <label>${question.question}${question.required ? ' *' : ''}</label>
           <div class="radio-options">
-            ${question.options.map(option => `
+            ${question.options
+              .map(
+                (option) => `
               <label class="radio-option">
                 <input type="radio" name="q_${question.id}" value="${option}"${required}>
                 <span>${option}</span>
               </label>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
         </div>
       `;
@@ -327,14 +359,16 @@ function handleSurveySubmission(event) {
   const answers = [];
   for (const [key, value] of formData.entries()) {
     const questionId = key.replace('q_', '');
-    const question = feedbackState.activeSurvey.template.questions.find(q => q.id === questionId);
+    const question = feedbackState.activeSurvey.template.questions.find(
+      (q) => q.id === questionId
+    );
     if (question) {
       answers.push({
         questionId,
         question: question.question,
         type: question.type,
         value,
-        options: question.options
+        options: question.options,
       });
     }
   }
@@ -347,7 +381,7 @@ function handleSurveySubmission(event) {
     customerName: feedbackState.activeSurvey.callData?.customerName,
     timestamp: feedbackState.activeSurvey.timestamp,
     answers,
-    submittedAt: new Date().toISOString()
+    submittedAt: new Date().toISOString(),
   };
 
   feedbackState.responses.push(response);
@@ -355,15 +389,17 @@ function handleSurveySubmission(event) {
 
   // Submit feedback to CRM if connected
   if (crmState.isConnected && response.callData) {
-    submitFeedbackToCRM(response).catch(error => {
+    submitFeedbackToCRM(response).catch((error) => {
       console.error('Failed to submit feedback to CRM:', error);
     });
   }
 
   // Dispatch completion event
-  document.dispatchEvent(new CustomEvent('feedback:survey-completed', {
-    detail: { response, survey: feedbackState.activeSurvey }
-  }));
+  document.dispatchEvent(
+    new CustomEvent('feedback:survey-completed', {
+      detail: { response, survey: feedbackState.activeSurvey },
+    })
+  );
 
   closeFeedbackModal();
   showToast('Thank you for your feedback!', 'success');
@@ -381,7 +417,7 @@ async function submitFeedbackToCRM(response) {
       duration: new Date(response.submittedAt) - new Date(response.timestamp),
       notes: `Feedback Survey: ${response.surveyName}\n\n${formatFeedbackAnswers(response.answers)}`,
       contactId: response.callData?.contactId,
-      disposition: 'feedback_submitted'
+      disposition: 'feedback_submitted',
     };
 
     const result = await logCallToCRM(feedbackCallData);
@@ -396,16 +432,18 @@ async function submitFeedbackToCRM(response) {
 }
 
 function formatFeedbackAnswers(answers) {
-  return answers.map(answer => {
-    if (answer.type === 'rating') {
+  return answers
+    .map((answer) => {
+      if (answer.type === 'rating') {
+        return `${answer.question}: ${answer.value}`;
+      } else if (answer.type === 'radio') {
+        return `${answer.question}: ${answer.value}`;
+      } else if (answer.type === 'textarea') {
+        return `${answer.question}:\n${answer.value}`;
+      }
       return `${answer.question}: ${answer.value}`;
-    } else if (answer.type === 'radio') {
-      return `${answer.question}: ${answer.value}`;
-    } else if (answer.type === 'textarea') {
-      return `${answer.question}:\n${answer.value}`;
-    }
-    return `${answer.question}: ${answer.value}`;
-  }).join('\n');
+    })
+    .join('\n');
 }
 
 function closeFeedbackModal() {
@@ -421,24 +459,24 @@ function handleSurveyTrigger(event) {
   triggerFeedbackSurvey(callData, templateId);
 }
 
-function handleSurveyCompletion(event) {
+function handleSurveyCompletion() {
   // Update UI with new response
   renderFeedbackUI(document);
 }
 
 // Global functions for template management
-window.editFeedbackTemplate = function(templateId) {
+window.editFeedbackTemplate = function () {
   // TODO: Implement template editor
   showToast('Template editor coming soon!', 'info');
 };
 
-window.duplicateFeedbackTemplate = function(templateId) {
-  const template = feedbackState.templates.find(t => t.id === templateId);
+window.duplicateFeedbackTemplate = function (templateId) {
+  const template = feedbackState.templates.find((t) => t.id === templateId);
   if (template) {
     const duplicate = {
       ...template,
       id: `${template.id}-copy-${Date.now()}`,
-      name: `${template.name} (Copy)`
+      name: `${template.name} (Copy)`,
     };
     feedbackState.templates.push(duplicate);
     saveFeedbackData();

@@ -1,5 +1,11 @@
 // Accessible modal utilities (confirmation dialog)
-export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = false } = {}) {
+export function showConfirmModal({
+  title = 'Confirm',
+  message = '',
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  danger = false,
+} = {}) {
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
     overlay.className = 'confirm-modal-overlay';
@@ -32,7 +38,9 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
     const previousActive = document.activeElement;
 
     // Focus trap setup - collect all focusable elements
-    const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const focusableElements = modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
 
@@ -42,10 +50,18 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
         overlay.classList.remove('active');
         // Wait for animation to complete
         setTimeout(() => {
-          try { overlay.remove(); } catch (e) {}
+          try {
+            overlay.remove();
+          } catch {
+            // ignore
+          }
         }, 200); // Match CSS transition duration
       } else {
-        try { overlay.remove(); } catch (e) {}
+        try {
+          overlay.remove();
+        } catch {
+          // ignore
+        }
       }
       document.removeEventListener('keydown', onKeyDown);
       // Restore focus to the previously active element
@@ -85,18 +101,20 @@ export function showConfirmModal({ title = 'Confirm', message = '', confirmLabel
       cleanup();
       resolve(false);
     });
-    
+
     // Focus the first focusable element (usually confirm button for dangerous actions)
     setTimeout(() => {
-      try { 
+      try {
         if (firstFocusable) {
           firstFocusable.focus();
         } else if (confirmBtn) {
           confirmBtn.focus();
         }
-      } catch (e) {}
+      } catch {
+        // ignore
+      }
     }, 0);
-    
+
     document.addEventListener('keydown', onKeyDown);
   });
 }
@@ -115,7 +133,7 @@ try {
     window.showConfirmModal = showConfirmModal;
     window.closeModals = closeModals;
   }
-} catch (e) {
+} catch {
   // Non-browser environment or read-only window
 }
 // If any deferred calls were queued before the module loaded, process them now
@@ -124,10 +142,19 @@ try {
     window.__deferredCalls = window.__deferredCalls.filter((item) => {
       if (item && item.type === 'confirm') {
         try {
-          showConfirmModal(item.opts).then(item.resolve).catch((e) => { console.error('Deferred confirm failed', e); item.resolve(false); });
+          showConfirmModal(item.opts)
+            .then(item.resolve)
+            .catch((e) => {
+              console.error('Deferred confirm failed', e);
+              item.resolve(false);
+            });
         } catch (e) {
           console.error('Deferred confirm invocation error', e);
-          try { item.resolve(false); } catch (err) {}
+          try {
+            item.resolve(false);
+          } catch {
+            // ignore
+          }
         }
         return false; // remove from queue
       }

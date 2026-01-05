@@ -18,7 +18,7 @@ export function unregisterShortcut(keyCombo) {
 export function getAllShortcuts() {
   return Array.from(shortcuts.entries()).map(([combo, { description }]) => ({
     combo,
-    description
+    description,
   }));
 }
 
@@ -37,10 +37,22 @@ export function setupKeyboardShortcuts() {
   document.addEventListener('keydown', handleKeyDown);
 
   // Register default shortcuts
-  registerShortcut('ctrl+1', () => switchToSection('pattern-formatter'), 'Switch to Pattern Formatter');
+  registerShortcut(
+    'ctrl+1',
+    () => switchToSection('pattern-formatter'),
+    'Switch to Pattern Formatter'
+  );
   registerShortcut('ctrl+2', () => switchToSection('notes'), 'Switch to Notes');
-  registerShortcut('ctrl+3', () => switchToSection('call-flow-builder'), 'Switch to Call Flow');
-  registerShortcut('ctrl+4', () => switchToSection('hold-timer'), 'Switch to Timer');
+  registerShortcut(
+    'ctrl+3',
+    () => switchToSection('call-flow-builder'),
+    'Switch to Call Flow'
+  );
+  registerShortcut(
+    'ctrl+4',
+    () => switchToSection('hold-timer'),
+    'Switch to Timer'
+  );
   registerShortcut('ctrl+s', () => showSettings(), 'Open Settings');
   registerShortcut('ctrl+m', () => showMainApp(), 'Return to Main App');
   registerShortcut('ctrl+t', () => toggleTimer(), 'Start/Stop Timer');
@@ -57,12 +69,12 @@ export function setupKeyboardShortcuts() {
 function handleKeyDown(event) {
   // Don't trigger shortcuts when typing in input fields (except when Ctrl is pressed)
   const activeElement = document.activeElement;
-  const isInputField = activeElement && (
-    activeElement.tagName === 'INPUT' ||
-    activeElement.tagName === 'TEXTAREA' ||
-    activeElement.tagName === 'SELECT' ||
-    activeElement.contentEditable === 'true'
-  );
+  const isInputField =
+    activeElement &&
+    (activeElement.tagName === 'INPUT' ||
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.tagName === 'SELECT' ||
+      activeElement.contentEditable === 'true');
 
   // Allow Ctrl+shortcuts even in input fields
   if (isInputField && !event.ctrlKey && !event.metaKey) {
@@ -86,7 +98,7 @@ function handleKeyDown(event) {
 // Shortcut action implementations
 function switchToSection(sectionId) {
   // Hide all sections
-  document.querySelectorAll('.draggable-section').forEach(section => {
+  document.querySelectorAll('.draggable-section').forEach((section) => {
     section.style.display = 'none';
   });
 
@@ -100,17 +112,19 @@ function switchToSection(sectionId) {
 
   // Update navigation if present
   const navTabs = document.querySelectorAll('.nav-tab');
-  navTabs.forEach(tab => tab.classList.remove('active'));
-  const activeTab = document.querySelector(`[data-section="${getSectionKey(sectionId)}"]`);
+  navTabs.forEach((tab) => tab.classList.remove('active'));
+  const activeTab = document.querySelector(
+    `[data-section="${getSectionKey(sectionId)}"]`
+  );
   if (activeTab) activeTab.classList.add('active');
 }
 
 function getSectionKey(sectionId) {
   const mapping = {
     'pattern-formatter': 'formatter',
-    'notes': 'notes',
+    notes: 'notes',
     'call-flow-builder': 'callflow',
-    'hold-timer': 'timer'
+    'hold-timer': 'timer',
   };
   return mapping[sectionId] || sectionId;
 }
@@ -129,7 +143,9 @@ function showMainApp() {
 
 function toggleTimer() {
   // Find timer start/stop button and click it
-  const timerBtn = document.querySelector('#hold-timer .timer-btn, #hold-timer button[onclick*="start"], #hold-timer button[onclick*="stop"]');
+  const timerBtn = document.querySelector(
+    '#hold-timer .timer-btn, #hold-timer button[onclick*="start"], #hold-timer button[onclick*="stop"]'
+  );
   if (timerBtn) {
     timerBtn.click();
   }
@@ -137,11 +153,15 @@ function toggleTimer() {
 
 function addNewNote() {
   // Focus on notes input
-  const notesInput = document.querySelector('#notes textarea, #notes input[type="text"]');
+  const notesInput = document.querySelector(
+    '#notes textarea, #notes input[type="text"]'
+  );
   if (notesInput) {
     notesInput.focus();
     // Trigger any "add note" functionality
-    const addBtn = document.querySelector('#notes .add-note-btn, #notes button[onclick*="addNote"]');
+    const addBtn = document.querySelector(
+      '#notes .add-note-btn, #notes button[onclick*="addNote"]'
+    );
     if (addBtn) {
       addBtn.click();
     }
@@ -150,7 +170,9 @@ function addNewNote() {
 
 function focusSearch() {
   // Focus on search inputs if they exist
-  const searchInput = document.querySelector('input[placeholder*="search"], input[placeholder*="find"]');
+  const searchInput = document.querySelector(
+    'input[placeholder*="search"], input[placeholder*="find"]'
+  );
   if (searchInput) {
     searchInput.focus();
   }
@@ -181,9 +203,12 @@ function showHelp() {
       </div>
       <div class="modal-body">
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px; font-family: monospace;">
-          ${getAllShortcuts().map(({ combo, description }) =>
-            `<div>${combo.replace('ctrl', 'Ctrl')}</div><div>${description}</div>`
-          ).join('')}
+          ${getAllShortcuts()
+            .map(
+              ({ combo, description }) =>
+                `<div>${combo.replace('ctrl', 'Ctrl')}</div><div>${description}</div>`
+            )
+            .join('')}
         </div>
       </div>
     </div>
@@ -201,7 +226,9 @@ function showHelp() {
 
 function closeModals() {
   // Close any open modals
-  document.querySelectorAll('.modal-overlay').forEach(modal => modal.remove());
+  document
+    .querySelectorAll('.modal-overlay')
+    .forEach((modal) => modal.remove());
   // Close floating windows
   if (window.floatingManager) {
     window.floatingManager.floatingWindows.forEach((_, sectionId) => {
@@ -212,12 +239,20 @@ function closeModals() {
 
 function undoLastAction() {
   // Check if there's a pending pattern deletion to undo
-  if (window.patterns && window.patterns.lastDeletedPattern && window.patterns.lastDeletedPattern.timeoutId) {
+  if (
+    window.patterns &&
+    window.patterns.lastDeletedPattern &&
+    window.patterns.lastDeletedPattern.timeoutId
+  ) {
     // Cancel the timeout
     window.clearTimeout(window.patterns.lastDeletedPattern.timeoutId);
     // Restore the pattern
     if (window.patterns.lastDeletedPattern.pattern) {
-      window.patterns.patterns.splice(window.patterns.lastDeletedPattern.index, 0, window.patterns.lastDeletedPattern.pattern);
+      window.patterns.patterns.splice(
+        window.patterns.lastDeletedPattern.index,
+        0,
+        window.patterns.lastDeletedPattern.pattern
+      );
       window.patterns.savePatterns(window.patterns.patterns);
       window.patterns.updatePatternTable();
       window.showToast('Pattern restored', { type: 'success' });

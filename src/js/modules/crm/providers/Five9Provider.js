@@ -65,15 +65,10 @@ export class Five9Provider extends CRMProvider {
     // Note: This relies on config being available or passed.
     // Ideally attributes should be stored on instance during connect.
     // simpler to just fail gracefully or support if proxy exists.
-    try {
-      // Implementation omitted since we don't have stored config here easily without passing it in connect
-      // detailed implementation would store domain in this.domain = domain
-      // For now, return empty or mock.
-      return [];
-    } catch (e) {
-      console.error('Five9 lookup error', e);
-      return [];
-    }
+    // Implementation omitted since we don't have stored config here easily without passing it in connect
+    // detailed implementation would store domain in this.domain = domain
+    // For now, return empty or mock.
+    return [];
   }
 
   getMockContacts(searchTerm, searchType) {

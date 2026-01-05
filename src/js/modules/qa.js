@@ -9,7 +9,13 @@ export function initializeQA() {
   const qaReportsList = document.getElementById('qa-reports-list');
 
   // Check if required elements exist
-  if (!callSelect || qaCheckboxes.length === 0 || !qaNotes || !submitQaBtn || !qaReportsList) {
+  if (
+    !callSelect ||
+    qaCheckboxes.length === 0 ||
+    !qaNotes ||
+    !submitQaBtn ||
+    !qaReportsList
+  ) {
     return;
   }
 
@@ -19,7 +25,7 @@ export function initializeQA() {
     const calls = getCallHistory();
     callSelect.innerHTML = '<option value="">Select call to review</option>';
 
-    calls.forEach(call => {
+    calls.forEach((call) => {
       const option = document.createElement('option');
       option.value = call.id;
       option.textContent = `${call.callerName} - ${new Date(call.startTime).toLocaleString()}`;
@@ -30,7 +36,7 @@ export function initializeQA() {
   function submitQA() {
     const callId = callSelect.value;
     const criteria = {};
-    qaCheckboxes.forEach(cb => {
+    qaCheckboxes.forEach((cb) => {
       criteria[cb.dataset.criterion] = cb.checked;
     });
     const notes = qaNotes.value.trim();
@@ -47,7 +53,7 @@ export function initializeQA() {
       notes,
       reviewer: 'Current User', // In real app, get from auth
       timestamp: new Date(),
-      score: calculateScore(criteria)
+      score: calculateScore(criteria),
     };
 
     qaReports.push(report);
@@ -56,7 +62,7 @@ export function initializeQA() {
 
     // Reset form
     callSelect.value = '';
-    qaCheckboxes.forEach(cb => cb.checked = false);
+    qaCheckboxes.forEach((cb) => (cb.checked = false));
     qaNotes.value = '';
 
     alert('QA review submitted!');
@@ -67,13 +73,13 @@ export function initializeQA() {
       greeting: 20,
       empathy: 25,
       resolution: 30,
-      courtesy: 25
+      courtesy: 25,
     };
 
     let totalScore = 0;
     let maxScore = 0;
 
-    Object.keys(criteria).forEach(criterion => {
+    Object.keys(criteria).forEach((criterion) => {
       maxScore += weights[criterion];
       if (criteria[criterion]) {
         totalScore += weights[criterion];
@@ -86,13 +92,16 @@ export function initializeQA() {
   function updateQAReports() {
     qaReportsList.innerHTML = '';
 
-    qaReports.slice(-10).reverse().forEach(report => {
-      const calls = getCallHistory();
-      const call = calls.find(c => c.id === report.callId);
+    qaReports
+      .slice(-10)
+      .reverse()
+      .forEach((report) => {
+        const calls = getCallHistory();
+        const call = calls.find((c) => c.id === report.callId);
 
-      const li = document.createElement('li');
-      li.className = 'qa-report-item';
-      li.innerHTML = `
+        const li = document.createElement('li');
+        li.className = 'qa-report-item';
+        li.innerHTML = `
         <div class="report-header">
           <strong>${call ? call.callerName : 'Unknown Call'}</strong>
           <span class="qa-score">Score: ${report.score}%</span>
@@ -101,14 +110,17 @@ export function initializeQA() {
           ${new Date(report.timestamp).toLocaleString()} by ${report.reviewer}
         </div>
         <div class="report-criteria">
-          ${Object.entries(report.criteria).map(([key, value]) =>
-            `<span class="criterion ${value ? 'passed' : 'failed'}">${key}: ${value ? '✓' : '✗'}</span>`
-          ).join('')}
+          ${Object.entries(report.criteria)
+            .map(
+              ([key, value]) =>
+                `<span class="criterion ${value ? 'passed' : 'failed'}">${key}: ${value ? '✓' : '✗'}</span>`
+            )
+            .join('')}
         </div>
         ${report.notes ? `<div class="report-notes">${report.notes}</div>` : ''}
       `;
-      qaReportsList.appendChild(li);
-    });
+        qaReportsList.appendChild(li);
+      });
   }
 
   submitQaBtn.addEventListener('click', submitQA);

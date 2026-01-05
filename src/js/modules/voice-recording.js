@@ -13,6 +13,32 @@ export function initializeVoiceRecording() {
     // console.warn('Voice recording elements not found'); // Suppress warning for pages that don't have it
     return;
   }
+
+  let mediaRecorder;
+  let recordedChunks = [];
+  let isRecording = false;
+  let isConnected = false;
+  let recordings = JSON.parse(localStorage.getItem('recordings')) || [];
+
+  function updateStatus() {
+    if (!statusDiv) return;
+    if (isRecording) {
+      statusDiv.textContent = 'Status: Recording...';
+      statusDiv.style.color = 'red';
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    } else if (isConnected) {
+      statusDiv.textContent = 'Status: Connected';
+      statusDiv.style.color = 'green';
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    } else {
+      statusDiv.textContent = 'Status: Disconnected';
+      statusDiv.style.color = 'gray';
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+    }
+  }
   //... rest of logic ...
   function connectCUCM() {
     isConnected = !isConnected;

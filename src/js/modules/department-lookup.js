@@ -17,9 +17,12 @@ function createLookupInterface() {
   }
 
   // Generate filter checkboxes dynamically
-  const filterHtml = filterConfig.map(filter =>
-    `<label><input type="checkbox" id="search-${filter.id}" ${filter.checked ? 'checked' : ''}> ${filter.label}</label>`
-  ).join('');
+  const filterHtml = filterConfig
+    .map(
+      (filter) =>
+        `<label><input type="checkbox" id="search-${filter.id}" ${filter.checked ? 'checked' : ''}> ${filter.label}</label>`
+    )
+    .join('');
 
   // Create a lookup modal that can be opened from the toolbar
   const lookupModal = document.createElement('div');
@@ -114,7 +117,7 @@ function clearAllFilters() {
   }
 
   // Reset all filter checkboxes to their default checked state
-  filterConfig.forEach(filter => {
+  filterConfig.forEach((filter) => {
     const checkbox = document.getElementById(`search-${filter.id}`);
     if (checkbox) {
       checkbox.checked = filter.checked;
@@ -131,7 +134,7 @@ function loadDepartmentData() {
   if (stored) {
     try {
       departmentData = JSON.parse(stored);
-    } catch (e) {
+    } catch {
       console.warn('Failed to parse stored department data, using defaults');
       initializeDefaultData();
     }
@@ -143,30 +146,170 @@ function loadDepartmentData() {
 function initializeDefaultData() {
   departmentData = [
     // Emergency contacts
-    { id: 'emergency-911', name: 'Emergency Services', number: '911', type: 'emergency', category: 'Emergency', description: 'Emergency services - Call 911' },
-    { id: 'emergency-security', name: 'Campus Security', number: '555-0101', type: 'emergency', category: 'Emergency', description: 'Campus security office' },
-    { id: 'emergency-medical', name: 'Medical Emergency', number: '555-0111', type: 'emergency', category: 'Emergency', description: 'Medical emergency response' },
+    {
+      id: 'emergency-911',
+      name: 'Emergency Services',
+      number: '911',
+      type: 'emergency',
+      category: 'Emergency',
+      description: 'Emergency services - Call 911',
+    },
+    {
+      id: 'emergency-security',
+      name: 'Campus Security',
+      number: '555-0101',
+      type: 'emergency',
+      category: 'Emergency',
+      description: 'Campus security office',
+    },
+    {
+      id: 'emergency-medical',
+      name: 'Medical Emergency',
+      number: '555-0111',
+      type: 'emergency',
+      category: 'Emergency',
+      description: 'Medical emergency response',
+    },
 
     // Departments
-    { id: 'dept-it', name: 'IT Support', number: '555-1000', type: 'department', category: 'Information Technology', description: 'Technical support and help desk' },
-    { id: 'dept-hr', name: 'Human Resources', number: '555-1001', type: 'department', category: 'Human Resources', description: 'HR department and employee services' },
-    { id: 'dept-finance', name: 'Finance Department', number: '555-1002', type: 'department', category: 'Finance', description: 'Accounting and financial services' },
-    { id: 'dept-sales', name: 'Sales Department', number: '555-1003', type: 'department', category: 'Sales', description: 'Sales team and customer inquiries' },
-    { id: 'dept-marketing', name: 'Marketing Department', number: '555-1004', type: 'department', category: 'Marketing', description: 'Marketing and communications' },
-    { id: 'dept-operations', name: 'Operations', number: '555-1005', type: 'department', category: 'Operations', description: 'Operations and logistics' },
-    { id: 'dept-customer-service', name: 'Customer Service', number: '555-1006', type: 'department', category: 'Customer Service', description: 'Customer support and service' },
-    { id: 'dept-facilities', name: 'Facilities Management', number: '555-1007', type: 'department', category: 'Facilities', description: 'Building maintenance and facilities' },
-    { id: 'dept-legal', name: 'Legal Department', number: '555-1008', type: 'department', category: 'Legal', description: 'Legal counsel and compliance' },
-    { id: 'dept-procurement', name: 'Procurement', number: '555-1009', type: 'department', category: 'Procurement', description: 'Purchasing and vendor management' },
+    {
+      id: 'dept-it',
+      name: 'IT Support',
+      number: '555-1000',
+      type: 'department',
+      category: 'Information Technology',
+      description: 'Technical support and help desk',
+    },
+    {
+      id: 'dept-hr',
+      name: 'Human Resources',
+      number: '555-1001',
+      type: 'department',
+      category: 'Human Resources',
+      description: 'HR department and employee services',
+    },
+    {
+      id: 'dept-finance',
+      name: 'Finance Department',
+      number: '555-1002',
+      type: 'department',
+      category: 'Finance',
+      description: 'Accounting and financial services',
+    },
+    {
+      id: 'dept-sales',
+      name: 'Sales Department',
+      number: '555-1003',
+      type: 'department',
+      category: 'Sales',
+      description: 'Sales team and customer inquiries',
+    },
+    {
+      id: 'dept-marketing',
+      name: 'Marketing Department',
+      number: '555-1004',
+      type: 'department',
+      category: 'Marketing',
+      description: 'Marketing and communications',
+    },
+    {
+      id: 'dept-operations',
+      name: 'Operations',
+      number: '555-1005',
+      type: 'department',
+      category: 'Operations',
+      description: 'Operations and logistics',
+    },
+    {
+      id: 'dept-customer-service',
+      name: 'Customer Service',
+      number: '555-1006',
+      type: 'department',
+      category: 'Customer Service',
+      description: 'Customer support and service',
+    },
+    {
+      id: 'dept-facilities',
+      name: 'Facilities Management',
+      number: '555-1007',
+      type: 'department',
+      category: 'Facilities',
+      description: 'Building maintenance and facilities',
+    },
+    {
+      id: 'dept-legal',
+      name: 'Legal Department',
+      number: '555-1008',
+      type: 'department',
+      category: 'Legal',
+      description: 'Legal counsel and compliance',
+    },
+    {
+      id: 'dept-procurement',
+      name: 'Procurement',
+      number: '555-1009',
+      type: 'department',
+      category: 'Procurement',
+      description: 'Purchasing and vendor management',
+    },
 
     // Locations
-    { id: 'loc-main-office', name: 'Main Office', number: '555-2000', type: 'location', category: 'Headquarters', description: 'Main corporate office' },
-    { id: 'loc-branch-east', name: 'East Branch Office', number: '555-2001', type: 'location', category: 'Branch Office', description: 'Eastern regional office' },
-    { id: 'loc-branch-west', name: 'West Branch Office', number: '555-2002', type: 'location', category: 'Branch Office', description: 'Western regional office' },
-    { id: 'loc-warehouse', name: 'Central Warehouse', number: '555-2003', type: 'location', category: 'Warehouse', description: 'Main distribution warehouse' },
-    { id: 'loc-retail-store', name: 'Retail Store', number: '555-2004', type: 'location', category: 'Retail', description: 'Customer-facing retail location' },
-    { id: 'loc-data-center', name: 'Data Center', number: '555-2005', type: 'location', category: 'Technology', description: 'Primary data center operations' },
-    { id: 'loc-remote-office', name: 'Remote Office', number: '555-2006', type: 'location', category: 'Remote', description: 'Remote work coordination office' }
+    {
+      id: 'loc-main-office',
+      name: 'Main Office',
+      number: '555-2000',
+      type: 'location',
+      category: 'Headquarters',
+      description: 'Main corporate office',
+    },
+    {
+      id: 'loc-branch-east',
+      name: 'East Branch Office',
+      number: '555-2001',
+      type: 'location',
+      category: 'Branch Office',
+      description: 'Eastern regional office',
+    },
+    {
+      id: 'loc-branch-west',
+      name: 'West Branch Office',
+      number: '555-2002',
+      type: 'location',
+      category: 'Branch Office',
+      description: 'Western regional office',
+    },
+    {
+      id: 'loc-warehouse',
+      name: 'Central Warehouse',
+      number: '555-2003',
+      type: 'location',
+      category: 'Warehouse',
+      description: 'Main distribution warehouse',
+    },
+    {
+      id: 'loc-retail-store',
+      name: 'Retail Store',
+      number: '555-2004',
+      type: 'location',
+      category: 'Retail',
+      description: 'Customer-facing retail location',
+    },
+    {
+      id: 'loc-data-center',
+      name: 'Data Center',
+      number: '555-2005',
+      type: 'location',
+      category: 'Technology',
+      description: 'Primary data center operations',
+    },
+    {
+      id: 'loc-remote-office',
+      name: 'Remote Office',
+      number: '555-2006',
+      type: 'location',
+      category: 'Remote',
+      description: 'Remote work coordination office',
+    },
   ];
 
   // Save to localStorage
@@ -184,7 +327,7 @@ export function loadFilterConfig() {
   if (stored) {
     try {
       filterConfig = JSON.parse(stored);
-    } catch (e) {
+    } catch {
       console.warn('Failed to parse stored filter config, using defaults');
       initializeDefaultFilters();
     }
@@ -195,9 +338,14 @@ export function loadFilterConfig() {
 
 export function initializeDefaultFilters() {
   filterConfig = [
-    { id: 'departments', label: 'Departments', type: 'department', checked: true },
+    {
+      id: 'departments',
+      label: 'Departments',
+      type: 'department',
+      checked: true,
+    },
     { id: 'locations', label: 'Locations', type: 'location', checked: true },
-    { id: 'emergency', label: 'Emergency', type: 'emergency', checked: true }
+    { id: 'emergency', label: 'Emergency', type: 'emergency', checked: true },
   ];
 
   // Save to localStorage
@@ -208,23 +356,23 @@ export function saveFilterConfig() {
   localStorage.setItem('departmentFilterConfig', JSON.stringify(filterConfig));
 }
 
-function addFilterConfig(newFilter) {
-  filterConfig.push(newFilter);
-  saveFilterConfig();
-}
+// function addFilterConfig(newFilter) {
+//   filterConfig.push(newFilter);
+//   saveFilterConfig();
+// }
 
-function removeFilterConfig(filterId) {
-  filterConfig = filterConfig.filter(filter => filter.id !== filterId);
-  saveFilterConfig();
-}
+// function removeFilterConfig(filterId) {
+//   filterConfig = filterConfig.filter((filter) => filter.id !== filterId);
+//   saveFilterConfig();
+// }
 
-function updateFilterConfig(filterId, updates) {
-  const index = filterConfig.findIndex(filter => filter.id === filterId);
-  if (index !== -1) {
-    filterConfig[index] = { ...filterConfig[index], ...updates };
-    saveFilterConfig();
-  }
-}
+// function updateFilterConfig(filterId, updates) {
+//   const index = filterConfig.findIndex((filter) => filter.id === filterId);
+//   if (index !== -1) {
+//     filterConfig[index] = { ...filterConfig[index], ...updates };
+//     saveFilterConfig();
+//   }
+// }
 
 function performLookup() {
   const searchInput = document.getElementById('department-search-input');
@@ -236,22 +384,26 @@ function performLookup() {
   }
 
   // Get filter preferences dynamically
-  const activeFilters = filterConfig.filter(filter => {
+  const activeFilters = filterConfig.filter((filter) => {
     const checkbox = document.getElementById(`search-${filter.id}`);
     return checkbox?.checked;
   });
 
   // Filter data based on search term and active filters
-  const filtered = departmentData.filter(item => {
+  const filtered = departmentData.filter((item) => {
     // Check if item type is in active filters
-    const typeFilter = activeFilters.find(filter => filter.type === item.type);
+    const typeFilter = activeFilters.find(
+      (filter) => filter.type === item.type
+    );
     if (!typeFilter) return false;
 
     // Check search term match
-    return item.name.toLowerCase().includes(searchTerm) ||
-           item.category.toLowerCase().includes(searchTerm) ||
-           item.description.toLowerCase().includes(searchTerm) ||
-           item.number.includes(searchTerm);
+    return (
+      item.name.toLowerCase().includes(searchTerm) ||
+      item.category.toLowerCase().includes(searchTerm) ||
+      item.description.toLowerCase().includes(searchTerm) ||
+      item.number.includes(searchTerm)
+    );
   });
 
   displayResults(filtered, searchTerm);
@@ -283,7 +435,7 @@ function displayResults(results, searchTerm) {
   if (grouped.emergency) {
     html += `<div class="result-group">
       <h4 class="group-title">🚨 Emergency Contacts</h4>
-      ${grouped.emergency.map(item => createResultItem(item, searchTerm)).join('')}
+      ${grouped.emergency.map((item) => createResultItem(item, searchTerm)).join('')}
     </div>`;
   }
 
@@ -291,7 +443,7 @@ function displayResults(results, searchTerm) {
   if (grouped.department) {
     html += `<div class="result-group">
       <h4 class="group-title">🏢 Departments</h4>
-      ${grouped.department.map(item => createResultItem(item, searchTerm)).join('')}
+      ${grouped.department.map((item) => createResultItem(item, searchTerm)).join('')}
     </div>`;
   }
 
@@ -299,7 +451,7 @@ function displayResults(results, searchTerm) {
   if (grouped.location) {
     html += `<div class="result-group">
       <h4 class="group-title">📍 Locations</h4>
-      ${grouped.location.map(item => createResultItem(item, searchTerm)).join('')}
+      ${grouped.location.map((item) => createResultItem(item, searchTerm)).join('')}
     </div>`;
   }
 
@@ -377,26 +529,29 @@ function initiateCall(number) {
 }
 
 function copyToClipboard(number) {
-  navigator.clipboard.writeText(number).then(() => {
-    // Show success feedback
-    const toast = document.createElement('div');
-    toast.className = 'toast toast-success';
-    toast.textContent = `Copied ${number} to clipboard`;
-    document.body.appendChild(toast);
+  navigator.clipboard
+    .writeText(number)
+    .then(() => {
+      // Show success feedback
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-success';
+      toast.textContent = `Copied ${number} to clipboard`;
+      document.body.appendChild(toast);
 
-    setTimeout(() => {
-      toast.remove();
-    }, 2000);
-  }).catch(err => {
-    console.error('Failed to copy:', err);
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = number;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-  });
+      setTimeout(() => {
+        toast.remove();
+      }, 2000);
+    })
+    .catch((err) => {
+      console.error('Failed to copy:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = number;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    });
 }
 
 // Function to open the lookup modal
@@ -420,11 +575,13 @@ export function addDepartmentEntry(entry) {
     number: entry.number,
     type: entry.type || 'department',
     category: entry.category || 'Custom',
-    description: entry.description || ''
+    description: entry.description || '',
   };
 
   // Check if entry already exists
-  const existingIndex = departmentData.findIndex(item => item.id === newEntry.id);
+  const existingIndex = departmentData.findIndex(
+    (item) => item.id === newEntry.id
+  );
   if (existingIndex >= 0) {
     departmentData[existingIndex] = newEntry;
   } else {
@@ -442,7 +599,7 @@ export function getDepartmentData() {
 
 // Function to remove a department entry
 export function removeDepartmentEntry(id) {
-  departmentData = departmentData.filter(item => item.id !== id);
+  departmentData = departmentData.filter((item) => item.id !== id);
   localStorage.setItem('departmentData', JSON.stringify(departmentData));
 }
 
@@ -509,7 +666,10 @@ function setupManagementEventListeners() {
 
   // Modal controls
   manageModal?.addEventListener('click', (e) => {
-    if (e.target === manageModal || e.target.classList.contains('modal-close-btn')) {
+    if (
+      e.target === manageModal ||
+      e.target.classList.contains('modal-close-btn')
+    ) {
       manageModal.classList.remove('active');
       document.body.classList.remove('modal-open');
     }
@@ -524,10 +684,11 @@ function setupManagementEventListeners() {
   deleteBtn?.addEventListener('click', async () => {
     const confirmed = await showConfirmModal({
       title: 'Delete All Entries',
-      message: 'Are you sure you want to delete ALL department entries? This action cannot be undone.',
+      message:
+        'Are you sure you want to delete ALL department entries? This action cannot be undone.',
       confirmLabel: 'Delete All',
       cancelLabel: 'Cancel',
-      danger: true
+      danger: true,
     });
 
     if (confirmed) {
@@ -542,10 +703,11 @@ function setupManagementEventListeners() {
   resetBtn?.addEventListener('click', async () => {
     const confirmed = await showConfirmModal({
       title: 'Reset to Defaults',
-      message: 'Are you sure you want to reset all department data to defaults? This will remove all custom entries.',
+      message:
+        'Are you sure you want to reset all department data to defaults? This will remove all custom entries.',
       confirmLabel: 'Reset to Defaults',
       cancelLabel: 'Cancel',
-      danger: false
+      danger: false,
     });
 
     if (confirmed) {
@@ -569,7 +731,7 @@ function setupManagementEventListeners() {
       message: 'Are you sure you want to reset all filter options to defaults?',
       confirmLabel: 'Reset Filters',
       cancelLabel: 'Cancel',
-      danger: false
+      danger: false,
     });
 
     if (confirmed) {
@@ -586,7 +748,7 @@ function populateManagementList() {
 
   listContainer.innerHTML = '';
 
-  departmentData.forEach(item => {
+  departmentData.forEach((item) => {
     const itemElement = document.createElement('div');
     itemElement.className = 'department-item';
     itemElement.innerHTML = `
@@ -619,7 +781,7 @@ function populateManagementList() {
         message: `Are you sure you want to delete "${item.name}"?`,
         confirmLabel: 'Delete',
         cancelLabel: 'Cancel',
-        danger: true
+        danger: true,
       });
 
       if (confirmed) {
@@ -667,7 +829,7 @@ function populateFilterList() {
         message: `Are you sure you want to delete the "${filter.label}" filter?`,
         confirmLabel: 'Delete',
         cancelLabel: 'Cancel',
-        danger: true
+        danger: true,
       });
 
       if (confirmed) {
@@ -683,7 +845,8 @@ function populateFilterList() {
 }
 
 function openFilterEditDialog(filterIndex = null) {
-  const existingFilter = filterIndex !== null ? filterConfig[filterIndex] : null;
+  const existingFilter =
+    filterIndex !== null ? filterConfig[filterIndex] : null;
 
   const dialog = document.createElement('div');
   dialog.className = 'edit-dialog-overlay';
@@ -746,7 +909,9 @@ function openFilterEditDialog(filterIndex = null) {
 }
 
 function openEditDialog(entryId = null) {
-  const existingEntry = entryId ? departmentData.find(item => item.id === entryId) : null;
+  const existingEntry = entryId
+    ? departmentData.find((item) => item.id === entryId)
+    : null;
 
   const dialog = document.createElement('div');
   dialog.className = 'edit-dialog-overlay';
@@ -803,12 +968,12 @@ function openEditDialog(entryId = null) {
       number: document.getElementById('edit-number').value.trim(),
       type: document.getElementById('edit-type').value,
       category: document.getElementById('edit-category').value.trim(),
-      description: document.getElementById('edit-description').value.trim()
+      description: document.getElementById('edit-description').value.trim(),
     };
 
     if (existingEntry) {
       // Update existing entry
-      const index = departmentData.findIndex(item => item.id === entryId);
+      const index = departmentData.findIndex((item) => item.id === entryId);
       if (index !== -1) {
         departmentData[index] = { ...departmentData[index], ...formData };
       }
@@ -816,7 +981,7 @@ function openEditDialog(entryId = null) {
       // Add new entry
       const newEntry = {
         id: `custom-${Date.now()}`,
-        ...formData
+        ...formData,
       };
       departmentData.push(newEntry);
     }

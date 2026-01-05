@@ -168,14 +168,20 @@ export function updateProviderConfig(
     p.setAttribute('aria-hidden', 'true');
     try {
       p.hidden = true;
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
     try {
       p.style.setProperty('display', 'none', 'important');
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
     p.querySelectorAll('input, select, textarea, button').forEach((c) => {
       try {
         c.disabled = true;
-      } catch (e) {}
+      } catch {
+        /* ignore */
+      }
     });
   });
 
@@ -207,16 +213,22 @@ export function updateProviderConfig(
     activePanel.removeAttribute('aria-hidden');
     try {
       activePanel.hidden = false;
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
     try {
       activePanel.style.removeProperty('display');
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
     activePanel
       .querySelectorAll('input, select, textarea, button')
       .forEach((c) => {
         try {
           c.disabled = false;
-        } catch (e) {}
+        } catch {
+          /* ignore */
+        }
       });
   }
 }
@@ -308,7 +320,7 @@ export function loadSavedConfig(doc = document) {
         localStorage.getItem('crmConfig')) ||
         '{}'
     );
-  } catch (e) {
+  } catch {
     config = {};
   }
 
@@ -513,11 +525,7 @@ export const crmConfig = {
   baseUrl: 'https://api.wxcc-us1.cisco.com',
 };
 
-export async function lookupContact(
-  searchTerm,
-  searchType = 'phone',
-  doc = document
-) {
+export async function lookupContact(searchTerm, searchType = 'phone') {
   return crmManager.lookupContact(searchTerm, searchType);
 }
 

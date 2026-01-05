@@ -1,6 +1,6 @@
 // Hold timer module
 // Instead of importing appSettings directly, we'll use a function to access it
-import AppGlobals from '../utils/app-globals.js';
+// import AppGlobals from '../utils/app-globals.js';
 import { saveData, loadData } from './storage.js';
 import { playTimerExpiredSound, stopTimerSound } from '../utils/audio.js';
 import { formatTime } from '../utils/helpers.js';
@@ -31,7 +31,7 @@ export function createTimerInstance(id = null) {
     description: '',
     history: [],
     onTick: null,
-    onComplete: null
+    onComplete: null,
   };
 
   timerInstances.set(id, timer);
@@ -61,7 +61,7 @@ export function startTimer(id = 'main') {
   if (timer.isRunning) return;
 
   timer.isRunning = true;
-  timer.startTime = Date.now() - (timer.pausedTime * 1000);
+  timer.startTime = Date.now() - timer.pausedTime * 1000;
 
   timer.interval = setInterval(() => {
     const elapsed = Math.floor((Date.now() - timer.startTime) / 1000);
@@ -101,7 +101,7 @@ export function stopTimer(id = 'main') {
       duration: timer.seconds,
       category: timer.category,
       description: timer.description,
-      endTime: new Date().toISOString()
+      endTime: new Date().toISOString(),
     });
   }
 
@@ -122,52 +122,66 @@ function checkTimerAlerts(timer) {
   if (!appSettings) return;
 
   const warningTime = appSettings.timerWarningTime || 300;
-  
-  if (timer.isCountdown) {
-      // Countdown Logic
-      const currentTime = timer.countdownSeconds - Math.floor((Date.now() - timer.countdownStartTime - timer.totalPausedTime) / 1000);
-      const remaining = Math.max(0, currentTime); // Should use the same calc as updateTimerDisplay or pass it in
-      
-      // Warning Sound
-      if (remaining === warningTime && appSettings.timerPlayWarningSound && !timer.warningSoundPlayed) {
-           playTimerExpiredSound('beep'); // Use a distinct warning sound or 'beep'
-           timer.warningSoundPlayed = true;
-      }
-      
-      // Expired Sound
-      if (remaining === 0 && !timer.soundPlaying && appSettings.timerSoundAlerts) {
-        const soundType = appSettings.timerAlertSound || 'endgame';
-        const customUrl = appSettings.timerCustomSoundUrl || null;
-        
-        // Pass repeat flag if supported by utils/audio.js, otherwise implement loop here
-        // Assuming playTimerExpiredSound handles basic playback. 
-        // If we need repeat, we might need a more robust audio handler or just set loop=true on the audio element if exposed.
-        // For now, let's assume playTimerExpiredSound plays once. We can loop it if needed.
-        
-        playTimerExpiredSound(soundType, customUrl);
-        timer.soundPlaying = true;
-        
-        if (appSettings.timerRepeatAlert) {
-             timer.soundInterval = setInterval(() => {
-                 playTimerExpiredSound(soundType, customUrl);
-             }, 3000); // Repeat every 3 seconds
-        }
-      }
-  } else {
-      // Stopwatch Logic (existing)
-       const currentTime = Math.floor((Date.now() - timer.startTime - timer.totalPausedTime) / 1000);
-       const remaining = warningTime - currentTime;
 
-      if (remaining === 60 && appSettings.timerShowNotifications) {
-        showNotification('Timer Warning', '1 minute remaining');
+  if (timer.isCountdown) {
+    // Countdown Logic
+    const currentTime =
+      timer.countdownSeconds -
+      Math.floor(
+        (Date.now() - timer.countdownStartTime - timer.totalPausedTime) / 1000
+      );
+    const remaining = Math.max(0, currentTime); // Should use the same calc as updateTimerDisplay or pass it in
+
+    // Warning Sound
+    if (
+      remaining === warningTime &&
+      appSettings.timerPlayWarningSound &&
+      !timer.warningSoundPlayed
+    ) {
+      playTimerExpiredSound('beep'); // Use a distinct warning sound or 'beep'
+      timer.warningSoundPlayed = true;
+    }
+
+    // Expired Sound
+    if (
+      remaining === 0 &&
+      !timer.soundPlaying &&
+      appSettings.timerSoundAlerts
+    ) {
+      const soundType = appSettings.timerAlertSound || 'endgame';
+      const customUrl = appSettings.timerCustomSoundUrl || null;
+
+      // Pass repeat flag if supported by utils/audio.js, otherwise implement loop here
+      // Assuming playTimerExpiredSound handles basic playback.
+      // If we need repeat, we might need a more robust audio handler or just set loop=true on the audio element if exposed.
+      // For now, let's assume playTimerExpiredSound plays once. We can loop it if needed.
+
+      playTimerExpiredSound(soundType, customUrl);
+      timer.soundPlaying = true;
+
+      if (appSettings.timerRepeatAlert) {
+        timer.soundInterval = setInterval(() => {
+          playTimerExpiredSound(soundType, customUrl);
+        }, 3000); // Repeat every 3 seconds
       }
-    
-      if (remaining === 0) {
-        playAlertSound();
-        if (appSettings.timerShowNotifications) {
-          showNotification('Timer Alert', 'Time is up!');
-        }
+    }
+  } else {
+    // Stopwatch Logic (existing)
+    const currentTime = Math.floor(
+      (Date.now() - timer.startTime - timer.totalPausedTime) / 1000
+    );
+    const remaining = warningTime - currentTime;
+
+    if (remaining === 60 && appSettings.timerShowNotifications) {
+      showNotification('Timer Warning', '1 minute remaining');
+    }
+
+    if (remaining === 0) {
+      playAlertSound();
+      if (appSettings.timerShowNotifications) {
+        showNotification('Timer Alert', 'Time is up!');
       }
+    }
   }
 }
 
@@ -176,7 +190,7 @@ function playAlertSound() {
   // Use the audio utility if available
   const { appSettings } = window;
   const soundType = appSettings?.timerAlertSound || 'endgame';
-  
+
   if (window.playTimerExpiredSound) {
     window.playTimerExpiredSound(soundType);
   } else if (window.playAlertSound) {
@@ -441,8 +455,8 @@ function parseTimeInput(input) {
 export function startHoldTimer() {
   stopTimerSound(); // Stop any playing sounds when starting/resuming
   if (holdTimer.soundInterval) {
-      clearInterval(holdTimer.soundInterval);
-      holdTimer.soundInterval = null;
+    clearInterval(holdTimer.soundInterval);
+    holdTimer.soundInterval = null;
   }
 
   if (!holdTimer.isRunning) {
@@ -496,8 +510,8 @@ export function resetTimer() {
   // Stop any playing sounds
   stopTimerSound();
   if (holdTimer.soundInterval) {
-      clearInterval(holdTimer.soundInterval);
-      holdTimer.soundInterval = null;
+    clearInterval(holdTimer.soundInterval);
+    holdTimer.soundInterval = null;
   }
 
   // Save the hold time if we were running or paused
@@ -698,7 +712,7 @@ export function initializeTimer() {
     countdownStartTime: null,
     soundPlaying: false,
     warningSoundPlayed: false,
-    soundInterval: null
+    soundInterval: null,
   };
 
   // Make it globally accessible
@@ -757,20 +771,26 @@ export function updateCountdownDuration(seconds) {
 }
 
 export function applyTimerSettings(newSettings) {
-  const { countdownMode, countdownDuration, warningTime, soundAlerts, allowDelete } = newSettings;
-  
+  const {
+    countdownMode,
+    countdownDuration,
+    // warningTime,
+    // soundAlerts,
+    // allowDelete,
+  } = newSettings;
+
   // Logic to apply changes safely
   if (holdTimer.isCountdown !== countdownMode) {
-      // Mode change - reset to be safe
-      // update internal state so reset picks it up (via appSettings which should be already saved by caller)
-      // Actually resetTimer pulls from appSettings, so we rely on caller having saved them.
-      resetTimer(); 
+    // Mode change - reset to be safe
+    // update internal state so reset picks it up (via appSettings which should be already saved by caller)
+    // Actually resetTimer pulls from appSettings, so we rely on caller having saved them.
+    resetTimer();
   } else {
-      // Just update values if not running
-      if (!holdTimer.isRunning && countdownMode) {
-           holdTimer.countdownSeconds = countdownDuration;
-           holdTimer.lastSetCountdown = countdownDuration;
-      }
+    // Just update values if not running
+    if (!holdTimer.isRunning && countdownMode) {
+      holdTimer.countdownSeconds = countdownDuration;
+      holdTimer.lastSetCountdown = countdownDuration;
+    }
   }
 
   // Force UI updates
@@ -805,7 +825,7 @@ export function setupCountdownControls() {
 
   // The redundant logic for setting contenteditable and adding listeners has been removed.
 }
-  // This is now handled exclusively by the updateTimerDisplay() function.
+// This is now handled exclusively by the updateTimerDisplay() function.
 
 // Function to update timer mode display
 export function updateTimerModeDisplay() {
@@ -931,25 +951,43 @@ export function setupTimerEventListeners() {
   if (clearHistoryBtn) {
     // Remove any existing event listeners to prevent duplicates
     const newClearHistoryBtn = clearHistoryBtn.cloneNode(true);
-    clearHistoryBtn.parentNode.replaceChild(newClearHistoryBtn, clearHistoryBtn);
+    clearHistoryBtn.parentNode.replaceChild(
+      newClearHistoryBtn,
+      clearHistoryBtn
+    );
 
     newClearHistoryBtn.addEventListener('click', async () => {
       try {
         const modalModule = await import('../utils/modal.js');
-        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmFn =
+          (modalModule &&
+            typeof modalModule.showConfirmModal === 'function' &&
+            modalModule.showConfirmModal) ||
+          window.showConfirmModal ||
+          ((opts) =>
+            Promise.resolve(
+              window.confirm(
+                opts && opts.message ? opts.message : 'Are you sure?'
+              )
+            ));
         const confirmed = await confirmFn({
           title: 'Clear Hold History',
-          message: 'Are you sure you want to clear all hold history? This action cannot be undone.',
+          message:
+            'Are you sure you want to clear all hold history? This action cannot be undone.',
           confirmLabel: 'Clear History',
           cancelLabel: 'Cancel',
-          danger: true
+          danger: true,
         });
         if (confirmed) {
           clearHoldHistory();
         }
       } catch (err) {
         console.warn('Clear Hold History: confirm fallback triggered', err);
-        if (window.confirm('Are you sure you want to clear all hold history? This action cannot be undone.')) {
+        if (
+          window.confirm(
+            'Are you sure you want to clear all hold history? This action cannot be undone.'
+          )
+        ) {
           clearHoldHistory();
         }
       }
@@ -959,7 +997,7 @@ export function setupTimerEventListeners() {
   // Set up timer display editing
   const timerTimeDisplay = document.getElementById('timer-time');
   if (timerTimeDisplay) {
-    timerTimeDisplay.addEventListener('click', function() {
+    timerTimeDisplay.addEventListener('click', function () {
       if (holdTimer.isCountdown && !holdTimer.isRunning) {
         this.contentEditable = 'true';
         this.focus();
@@ -968,7 +1006,7 @@ export function setupTimerEventListeners() {
     });
 
     timerTimeDisplay.addEventListener('blur', handleTimeEdit);
-    timerTimeDisplay.addEventListener('keydown', function(e) {
+    timerTimeDisplay.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         this.blur();
@@ -1186,8 +1224,24 @@ function setupTimerInstanceListeners(element, timer) {
   deleteBtn.addEventListener('click', async () => {
     try {
       const modalModule = await import('../utils/modal.js');
-      const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
-      const confirmed = await confirmFn({ title: 'Delete Timer', message: `Delete timer "${timer.description}"?`, confirmLabel: 'Delete', cancelLabel: 'Cancel', danger: true });
+      const confirmFn =
+        (modalModule &&
+          typeof modalModule.showConfirmModal === 'function' &&
+          modalModule.showConfirmModal) ||
+        window.showConfirmModal ||
+        ((opts) =>
+          Promise.resolve(
+            window.confirm(
+              opts && opts.message ? opts.message : 'Are you sure?'
+            )
+          ));
+      const confirmed = await confirmFn({
+        title: 'Delete Timer',
+        message: `Delete timer "${timer.description}"?`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        danger: true,
+      });
       if (confirmed) {
         removeTimerInstance(timer.id);
         element.remove();
@@ -1204,7 +1258,7 @@ function setupTimerInstanceListeners(element, timer) {
   });
 
   // Set up timer callbacks
-  timer.onTick = (seconds) => {
+  timer.onTick = () => {
     updateTimerInstanceDisplay(timer);
   };
 
@@ -1243,7 +1297,10 @@ function updateTimerInstanceDisplay(timer) {
 
   // Update total time
   if (totalElement) {
-    const totalSeconds = timer.history.reduce((sum, session) => sum + session.duration, 0);
+    const totalSeconds = timer.history.reduce(
+      (sum, session) => sum + session.duration,
+      0
+    );
     totalElement.textContent = formatTime(totalSeconds);
   }
 
@@ -1260,8 +1317,12 @@ function updateTimerInstanceDisplay(timer) {
 
 // Update timer instance buttons
 function updateTimerInstanceButtons(timer) {
-  const startBtn = document.querySelector(`[data-timer-id="${timer.id}"].start`);
-  const pauseBtn = document.querySelector(`[data-timer-id="${timer.id}"].pause`);
+  const startBtn = document.querySelector(
+    `[data-timer-id="${timer.id}"].start`
+  );
+  const pauseBtn = document.querySelector(
+    `[data-timer-id="${timer.id}"].pause`
+  );
   const stopBtn = document.querySelector(`[data-timer-id="${timer.id}"].stop`);
 
   if (!startBtn || !pauseBtn || !stopBtn) return;
@@ -1287,7 +1348,7 @@ function saveTimerInstances() {
       id: timer.id,
       category: timer.category,
       description: timer.description,
-      history: timer.history
+      history: timer.history,
     };
   });
   saveData('multipleTimers', timersData);
@@ -1298,7 +1359,7 @@ function loadSavedTimers() {
   const savedTimers = loadData('multipleTimers');
   if (!savedTimers) return;
 
-  Object.values(savedTimers).forEach(timerData => {
+  Object.values(savedTimers).forEach((timerData) => {
     const timer = createTimerInstance(timerData.id);
     timer.category = timerData.category || 'General';
     timer.description = timerData.description || 'Timer';
@@ -1307,9 +1368,12 @@ function loadSavedTimers() {
   });
 
   // Update next timer ID
-  const maxId = Math.max(...Object.keys(savedTimers).map(id => {
-    const match = id.match(/timer-(\d+)/);
-    return match ? parseInt(match[1]) : 0;
-  }), 0);
+  const maxId = Math.max(
+    ...Object.keys(savedTimers).map((id) => {
+      const match = id.match(/timer-(\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    }),
+    0
+  );
   nextTimerId = maxId + 1;
 }

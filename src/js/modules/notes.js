@@ -1,7 +1,17 @@
 // Notes management module
-import { saveNotes, loadNotes, saveNotesData, loadNotesData } from './storage.js';
+import {
+  saveNotes,
+  loadNotes,
+  saveNotesData,
+  loadNotesData,
+} from './storage.js';
 import { appSettings } from './settings.js'; // Add this import
 import { auth } from './auth.js';
+import {
+  setupDraggable,
+  setupFloating,
+  setupSectionToggle,
+} from './draggable.js';
 
 export async function renderNotes() {
   const notesFeed = document.getElementById('notes-feed');
@@ -135,7 +145,7 @@ export async function renderNotes() {
             document.execCommand('copy');
             copyBtn.textContent = 'Copied!';
             setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
-          } catch (err) {
+          } catch {
             alert('Copy failed. Please copy manually.');
           }
           document.body.removeChild(textarea);
@@ -153,7 +163,7 @@ export async function renderNotes() {
 export function setupNotesEventListeners() {
   const notesInput = document.getElementById('notes-input');
   const addNoteBtn = document.getElementById('add-note-btn');
-  const notesFeed = document.getElementById('notes-feed');
+  // const notesFeed = document.getElementById('notes-feed');
 
   // Local addNote function that gets text from input
   function addNote() {
@@ -188,10 +198,21 @@ export function setupNotesEventListeners() {
     newClearNotesBtn.addEventListener('click', async () => {
       try {
         const modalModule = await import('../utils/modal.js');
-        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmFn =
+          (modalModule &&
+            typeof modalModule.showConfirmModal === 'function' &&
+            modalModule.showConfirmModal) ||
+          window.showConfirmModal ||
+          ((opts) =>
+            Promise.resolve(
+              window.confirm(
+                opts && opts.message ? opts.message : 'Are you sure?'
+              )
+            ));
         const confirmed = await confirmFn({
           title: 'Clear All Notes',
-          message: 'Are you sure you want to clear all notes? This action cannot be undone.',
+          message:
+            'Are you sure you want to clear all notes? This action cannot be undone.',
           confirmLabel: 'Clear All Notes',
           cancelLabel: 'Cancel',
           danger: true,
@@ -203,7 +224,11 @@ export function setupNotesEventListeners() {
         }
       } catch (err) {
         console.warn('Clear All Notes: confirm fallback triggered', err);
-        if (window.confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
+        if (
+          window.confirm(
+            'Are you sure you want to clear all notes? This action cannot be undone.'
+          )
+        ) {
           saveNotes([]);
           renderNotes();
         }
@@ -310,7 +335,7 @@ function createNotesUI(notesId) {
 function setupNotesInstanceListeners(notesId) {
   const addNoteBtn = document.getElementById(`add-note-btn-${notesId}`);
   const notesInput = document.getElementById(`notes-input-${notesId}`);
-  const notesFeed = document.getElementById(`notes-feed-${notesId}`);
+  // const notesFeed = document.getElementById(`notes-feed-${notesId}`);
 
   if (addNoteBtn && notesInput) {
     addNoteBtn.addEventListener('click', () => {
@@ -347,10 +372,21 @@ function setupNotesInstanceListeners(notesId) {
     newClearNotesBtn.addEventListener('click', async () => {
       try {
         const modalModule = await import('../utils/modal.js');
-        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function' && modalModule.showConfirmModal) || window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?')));
+        const confirmFn =
+          (modalModule &&
+            typeof modalModule.showConfirmModal === 'function' &&
+            modalModule.showConfirmModal) ||
+          window.showConfirmModal ||
+          ((opts) =>
+            Promise.resolve(
+              window.confirm(
+                opts && opts.message ? opts.message : 'Are you sure?'
+              )
+            ));
         const confirmed = await confirmFn({
           title: 'Clear All Notes',
-          message: 'Are you sure you want to clear all notes? This action cannot be undone.',
+          message:
+            'Are you sure you want to clear all notes? This action cannot be undone.',
           confirmLabel: 'Clear All Notes',
           cancelLabel: 'Cancel',
           danger: true,
@@ -365,8 +401,15 @@ function setupNotesInstanceListeners(notesId) {
           }
         }
       } catch (err) {
-        console.warn('Clear All Notes (instance): confirm fallback triggered', err);
-        if (window.confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
+        console.warn(
+          'Clear All Notes (instance): confirm fallback triggered',
+          err
+        );
+        if (
+          window.confirm(
+            'Are you sure you want to clear all notes? This action cannot be undone.'
+          )
+        ) {
           const notes = notesInstances.get(notesId);
           if (notes) {
             notes.notes = [];
@@ -381,7 +424,9 @@ function setupNotesInstanceListeners(notesId) {
   // Attach edit-title handler for the title edit button
   const noteSection = document.getElementById(notesId);
   if (noteSection) {
-    const editTitleBtn = noteSection.querySelector('button[data-action="edit-title"]');
+    const editTitleBtn = noteSection.querySelector(
+      'button[data-action="edit-title"]'
+    );
     if (editTitleBtn) {
       editTitleBtn.addEventListener('click', () => {
         const titleContainer = editTitleBtn.closest('.title-container');
@@ -547,7 +592,7 @@ function renderNotesInstance(notesId) {
             document.execCommand('copy');
             copyBtn.textContent = 'Copied!';
             setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
-          } catch (err) {
+          } catch {
             alert('Copy failed. Please copy manually.');
           }
           document.body.removeChild(textarea);
@@ -624,7 +669,7 @@ export function initializeNotes() {
           ...auth.getAuthHeader(),
         },
         body: JSON.stringify({ content: text }),
-      }).catch(err => console.error('Failed to save note to server', err));
+      }).catch((err) => console.error('Failed to save note to server', err));
     }
   };
 }

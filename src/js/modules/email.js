@@ -2,11 +2,12 @@
 // Supports sending emails for follow-ups
 
 import { config } from '../utils/config.js';
+import * as auth from './auth.js';
 
 export const emailState = {
   provider: localStorage.getItem('email-provider') || 'smtp',
   config: JSON.parse(localStorage.getItem('email-config') || '{}'),
-  templates: JSON.parse(localStorage.getItem('email-templates') || '[]')
+  templates: JSON.parse(localStorage.getItem('email-templates') || '[]'),
 };
 
 export function initializeEmail() {
@@ -19,15 +20,15 @@ function loadEmailData() {
   // Load from config and localStorage
   emailState.config = {
     smtp: config.email,
-    ...emailState.config
+    ...emailState.config,
   };
 }
 
-function saveEmailData() {
-  localStorage.setItem('email-provider', emailState.provider);
-  localStorage.setItem('email-config', JSON.stringify(emailState.config));
-  localStorage.setItem('email-templates', JSON.stringify(emailState.templates));
-}
+// function saveEmailData() {
+//   localStorage.setItem('email-provider', emailState.provider);
+//   localStorage.setItem('email-config', JSON.stringify(emailState.config));
+//   localStorage.setItem('email-templates', JSON.stringify(emailState.templates));
+// }
 
 function setupEmailEventListeners() {
   // Event listeners
@@ -42,7 +43,7 @@ export async function sendEmail(to, subject, body) {
   const res = await fetch('/api/email/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...auth.getAuthHeader() },
-    body: JSON.stringify({ to, subject, body })
+    body: JSON.stringify({ to, subject, body }),
   });
   return res.ok;
 }

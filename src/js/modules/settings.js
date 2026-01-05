@@ -1,3 +1,4 @@
+/* global showMainApp, showSettings */
 // Settings management module
 
 import {
@@ -10,12 +11,8 @@ import {
   loadNotes,
   saveNotes,
 } from './storage.js';
-import { setupThemeToggle } from './themes.js';
-import {
-  playAlertSound,
-  initAudio,
-  setRepeatAlertSoundMode,
-} from '../utils/audio.js';
+import { initAccountSettings } from './account.js';
+import { initSettingsSearch } from './settings-search.js';
 
 // Draggable helpers for per-section controls (allow settings to be draggable/floating like the main page)
 import {
@@ -23,6 +20,47 @@ import {
   setupFloating,
   setupSectionToggle,
 } from './draggable.js';
+
+import { setupThemeToggle } from './themes.js';
+import {
+  playAlertSound,
+  initAudio,
+  setRepeatAlertSoundMode,
+} from '../utils/audio.js';
+
+// Helper to update slider visual state
+function updateSliderVisual(toggle) {
+  if (!toggle) return;
+  try {
+    // Checkbox-based visual: input[type=checkbox] + <span class="toggle-slider"> as visual
+    if (toggle.type === 'checkbox') {
+      const span = toggle.nextElementSibling;
+      const isOn = !!toggle.checked;
+      if (span && span.classList) {
+        span.classList.toggle('slider-on', isOn);
+        span.setAttribute('role', 'switch');
+        span.setAttribute('aria-checked', isOn ? 'true' : 'false');
+      } else {
+        toggle.classList.toggle('slider-on', isOn);
+        toggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+      }
+      return;
+    }
+
+    // Fallback for legacy range-based sliders
+    if (toggle.type === 'range' || toggle.classList.contains('slider-toggle')) {
+      if (String(toggle.value) === '1') {
+        toggle.classList.add('slider-on');
+        toggle.setAttribute('aria-pressed', 'true');
+      } else {
+        toggle.classList.remove('slider-on');
+        toggle.setAttribute('aria-pressed', 'false');
+      }
+    }
+  } catch {
+    // noop - defensive
+  }
+}
 
 // Settings object for most of the app functionality
 export let appSettings = {
@@ -101,7 +139,7 @@ export let appSettings = {
     url: '',
     autoConnect: false,
     autoStartTimer: true,
-    autoStartTimer: true,
+
     autoStopTimer: true,
   },
   callLoggingVerification: true,
@@ -124,169 +162,35 @@ export let appSettings = {
 };
 
 // Export the saveSettings function
+let saveTimeout = null;
 export function saveSettings() {
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('appSettings', JSON.stringify(appSettings));
   }
+
+  // Cloud Persist (Debounced)
+  const token = localStorage.getItem('token');
+  if (token) {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appSettings),
+      }).catch((err) => console.error('Failed to sync settings:', err));
+    }, 1000); // 1-second debounce
+  }
+
   // Notify other modules
   window.dispatchEvent(
     new CustomEvent('appSettingsChanged', { detail: appSettings })
   );
 }
 
-// Exportable helper so tests can call this directly
-export function addSettingCollapsibles() {
-  const svgChevron =
-    '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.5 5.5L15.5 12L8.5 18.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  document
-    .querySelectorAll('#settings-view .settings-section')
-    .forEach((section) => {
-      const sectionKey =
-        section.id ||
-        section
-          .querySelector('h3')
-          ?.textContent?.trim()
-          .toLowerCase()
-          .replace(/\s+/g, '-') ||
-        'settings';
-      const items = Array.from(section.querySelectorAll('.setting-item'));
-      items.forEach((item, idx) => {
-        // skip if already has a toggle
-        if (item.querySelector('.setting-toggle')) return;
-
-        const desc = item.querySelector('.setting-description');
-        const ctrl = item.querySelector('.setting-control');
-        const hasFile = !!item.querySelector('.file-upload-group');
-        const hasExport = !!item.querySelector('.export-options');
-        const isDanger = item.classList.contains('danger');
-
-        // Heuristics: if the item has a multi-line description long enough, or a file upload/export control
-        // or contains multiple controls - make it collapsible.
-        const textLength = desc?.textContent?.trim().length || 0;
-        const controlCount = ctrl
-          ? ctrl.querySelectorAll('input, button, select, textarea').length
-          : 0;
-        const shouldCollapse =
-          textLength > 80 ||
-          hasFile ||
-          hasExport ||
-          controlCount > 1 ||
-          isDanger;
-
-        if (!shouldCollapse) return;
-
-        // Build a unique key for persistence
-        const label =
-          item.querySelector('.setting-label')?.textContent?.trim() ||
-          `${sectionKey}-${idx}`;
-        const labelKey = label.toLowerCase().replace(/\s+/g, '-');
-        const stateKey = `${sectionKey}::${labelKey}`;
-
-        // Create button
-        const btn = document.createElement('button');
-        btn.className = 'setting-toggle';
-        btn.setAttribute('aria-expanded', 'true');
-        btn.setAttribute('title', 'Collapse');
-        btn.innerHTML = '▾';
-
-        // Insert toggle in the setting header
-        const settingInfo = item.querySelector('.setting-info');
-        if (settingInfo) {
-          settingInfo.appendChild(btn);
-        }
-
-        // Set initial collapsed state from saved settings
-        if (
-          appSettings.collapsedSettingItems &&
-          appSettings.collapsedSettingItems[stateKey]
-        ) {
-          item.classList.add('collapsed');
-          btn.setAttribute('aria-expanded', 'false');
-          btn.innerHTML = '▸';
-        }
-
-        // Add click handler
-        btn.addEventListener('click', (ev) => {
-          ev.preventDefault();
-          const isCollapsed = item.classList.toggle('collapsed');
-          btn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-          btn.innerHTML = isCollapsed ? '▸' : '▾';
-          // Save state
-          appSettings.collapsedSettingItems =
-            appSettings.collapsedSettingItems || {};
-          appSettings.collapsedSettingItems[stateKey] = isCollapsed;
-          saveSettings(appSettings);
-        });
-      });
-    });
-}
-
-// Toggle collapse state for all collapsible setting-items. If `collapse` is
-// true, force collapse, if false, force expand, otherwise toggle based on
-// current mixed state (if any item expanded -> collapse all, else expand all).
-export function toggleCollapseAll(collapse) {
-  const buttons = Array.from(
-    document.querySelectorAll(
-      '#settings-view .settings-section .setting-item .setting-toggle'
-    )
-  );
-  if (!buttons.length) return;
-
-  // Compute current: if any item is not collapsed, we should collapse all
-  const anyExpanded = buttons.some((btn) => {
-    const item = btn.closest('.setting-item');
-    return item && !item.classList.contains('collapsed');
-  });
-  const targetCollapse = typeof collapse === 'boolean' ? collapse : anyExpanded;
-
-  // Helper to build state key like addSettingCollapsibles
-  function stateKeyForItem(item) {
-    const section = item.closest('.settings-section');
-    const sectionKey =
-      section?.id ||
-      section
-        ?.querySelector('h3')
-        ?.textContent?.trim()
-        .toLowerCase()
-        .replace(/\s+/g, '-') ||
-      'settings';
-    const label =
-      item.querySelector('.setting-label')?.textContent?.trim() || '';
-    const labelKey = label.toLowerCase().replace(/\s+/g, '-');
-    return `${sectionKey}::${labelKey}`;
-  }
-
-  buttons.forEach((btn) => {
-    const item = btn.closest('.setting-item');
-    if (!item) return;
-    const key = stateKeyForItem(item);
-    if (targetCollapse) {
-      item.classList.add('collapsed');
-      btn.setAttribute('aria-expanded', 'false');
-      appSettings.collapsedSettingItems =
-        appSettings.collapsedSettingItems || {};
-      // compact state update
-      appSettings.collapsedSettingItems[key] = true;
-    } else {
-      item.classList.remove('collapsed');
-      btn.setAttribute('aria-expanded', 'true');
-      appSettings.collapsedSettingItems =
-        appSettings.collapsedSettingItems || {};
-      // compact state update
-      appSettings.collapsedSettingItems[key] = false;
-    }
-  });
-
-  saveSettings(appSettings);
-  // update header button text
-  const headerBtn = document.querySelector(
-    '#settings-view .settings-header .header-actions .collapse-all'
-  );
-  if (headerBtn) {
-    headerBtn.textContent = targetCollapse ? 'Expand all' : 'Collapse all';
-    headerBtn.setAttribute('aria-pressed', targetCollapse ? 'false' : 'true');
-  }
-}
+// ... (omitted code) ...
 
 // Export the loadSettings function
 export function loadSettings() {
@@ -294,10 +198,47 @@ export function loadSettings() {
 }
 
 export function initializeSettings() {
+  // Initialize drag and drop
+  setupDraggable();
+
+  // Initialize floating windows (popouts)
+  setupFloating();
+
+  // Initialize Account Settings (Profile/Password)
+  initAccountSettings();
+
+  // Initialize Settings Search
+  initSettingsSearch();
+
+  // Initialize section toggles
+  setupSectionToggle();
+
   const saved = loadSettings();
   if (Object.keys(saved).length > 0) {
     appSettings = { ...appSettings, ...saved };
   }
+
+  // Cloud Fetch
+  const token = localStorage.getItem('token');
+  if (token) {
+    fetch('/api/user/settings', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((remoteSettings) => {
+        if (remoteSettings && Object.keys(remoteSettings).length > 0) {
+          console.log('Syncing settings from cloud...');
+          appSettings = { ...appSettings, ...remoteSettings };
+          // Re-apply settings after fetching from cloud
+          applySettings();
+          window.dispatchEvent(
+            new CustomEvent('appSettingsChanged', { detail: appSettings })
+          );
+        }
+      })
+      .catch((err) => console.error('Failed to fetch cloud settings:', err));
+  }
+
   // Backward compatibility: synchronize legacy keys
   if (
     typeof appSettings.showCrmIntegration !== 'undefined' &&
@@ -361,42 +302,8 @@ export function applySettings() {
     minimalModeToggle.checked = appSettings.minimalMode;
   }
 
-  // Helper to update slider visual state
-  function updateSliderVisual(toggle) {
-    if (!toggle) return;
-    try {
-      // Checkbox-based visual: input[type=checkbox] + <span class="toggle-slider"> as visual
-      if (toggle.type === 'checkbox') {
-        const span = toggle.nextElementSibling;
-        const isOn = !!toggle.checked;
-        if (span && span.classList) {
-          span.classList.toggle('slider-on', isOn);
-          span.setAttribute('role', 'switch');
-          span.setAttribute('aria-checked', isOn ? 'true' : 'false');
-        } else {
-          toggle.classList.toggle('slider-on', isOn);
-          toggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
-        }
-        return;
-      }
-
-      // Fallback for legacy range-based sliders
-      if (
-        toggle.type === 'range' ||
-        toggle.classList.contains('slider-toggle')
-      ) {
-        if (String(toggle.value) === '1') {
-          toggle.classList.add('slider-on');
-          toggle.setAttribute('aria-pressed', 'true');
-        } else {
-          toggle.classList.remove('slider-on');
-          toggle.setAttribute('aria-pressed', 'false');
-        }
-      }
-    } catch (e) {
-      // noop - defensive
-    }
-  }
+  // Helper to update slider visual state moved to module scope
+  // updateSliderVisual moved to module scope
 
   // Define feature readiness status
   const featureStatus = {
@@ -429,8 +336,7 @@ export function applySettings() {
     training: 'coming-soon',
     twilio: 'production',
     'quick-actions': 'production',
-    twilio: 'production',
-    'quick-actions': 'production',
+
     performanceMonitoring: 'production',
   };
 
@@ -460,7 +366,7 @@ export function applySettings() {
     'toggle-email': 'email',
     'toggle-training': 'training',
     'toggle-twilio': 'twilio',
-    'toggle-twilio': 'twilio',
+
     'toggle-performance-monitoring': 'performanceMonitoring',
     // Main page toggles
     'main-toggle-formatter': 'formatter',
@@ -488,7 +394,7 @@ export function applySettings() {
     'main-toggle-email': 'email',
     'main-toggle-training': 'training',
     'main-toggle-twilio': 'twilio',
-    'main-toggle-twilio': 'twilio',
+
     'main-toggle-performance-monitoring': 'performanceMonitoring',
     'toggle-quick-actions': 'quick-actions',
     // Call Logging Settings
@@ -588,11 +494,15 @@ export function applySettings() {
         ) {
           try {
             toggle.value = '0';
-          } catch (e) {}
+          } catch {
+            /* ignore */
+          }
         } else {
           try {
             toggle.checked = false;
-          } catch (e) {}
+          } catch {
+            /* ignore */
+          }
         }
         // appSettings[settingKey] = false; // Removed to allow advanced features to stay enabled if set
 
@@ -608,7 +518,9 @@ export function applySettings() {
           // Set numeric value for slider toggles
           try {
             toggle.value = appSettings[settingKey] ? '1' : '0';
-          } catch (e) {}
+          } catch {
+            /* ignore */
+          }
           const isOn = String(toggle.value) === '1';
           if (sectionEls && sectionEls.length) {
             sectionEls.forEach((el) => (el.style.display = isOn ? '' : 'none'));
@@ -616,7 +528,9 @@ export function applySettings() {
         } else {
           try {
             toggle.checked = !!appSettings[settingKey];
-          } catch (e) {}
+          } catch {
+            /* ignore */
+          }
           if (sectionEls && sectionEls.length) {
             sectionEls.forEach(
               (el) => (el.style.display = toggle.checked ? '' : 'none')
@@ -627,7 +541,9 @@ export function applySettings() {
       // Ensure visual state for slider toggles
       try {
         updateSliderVisual(toggle);
-      } catch (e) {}
+      } catch {
+        /* ignore */
+      }
     }
   });
 
@@ -847,9 +763,13 @@ export function applySettings() {
           );
         }
         if (target && map[k]) target.classList.add('collapsed');
-      } catch (e) {}
+      } catch {
+        /* ignore */
+      }
     });
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
 
   // Update collapse-all button initial state (if present)
   try {
@@ -865,7 +785,9 @@ export function applySettings() {
       headerBtn.textContent = anyExpanded ? 'Collapse all' : 'Expand all';
       headerBtn.setAttribute('aria-pressed', anyExpanded ? 'false' : 'true');
     }
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
 
   // Apply any custom titles saved in settings so settings sections match main page
   try {
@@ -884,7 +806,9 @@ export function applySettings() {
         if (titleElem) titleElem.textContent = val;
       }
     });
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
   // (defensive restoration removed — previous behavior restored)
 }
 
@@ -1022,7 +946,6 @@ export function setupSettingsEventListeners() {
           case 'performanceMonitoring':
             settingKey = 'showPerformanceMonitoring';
             break;
-            break;
           case 'training':
             settingKey = 'showTraining';
             break;
@@ -1104,7 +1027,9 @@ export function setupSettingsEventListeners() {
         if (typeof setupSectionToggle === 'function')
           setupSectionToggle(section);
       });
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
 
   // NOTE: addSettingCollapsibles is implemented at top-level below (kept here
   // temporarily in setup flow call so tests can invoke it separately)
@@ -1346,7 +1271,13 @@ function setupAdditionalSettingsListeners() {
 
   const restoreDataBtn = document.getElementById('restore-data-btn');
   if (restoreDataBtn) {
-    restoreDataBtn.addEventListener('click', createBackup);
+    restoreDataBtn.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = restoreData;
+      input.click();
+    });
   }
 
   // Data Management Statistics
@@ -1616,7 +1547,7 @@ function setupAdditionalSettingsListeners() {
           document.execCommand('copy');
           testSoundBtn.textContent = 'Copied!';
           setTimeout(() => (testSoundBtn.textContent = 'Test Sound'), 1000);
-        } catch (err) {
+        } catch {
           alert('Copy failed. Please copy manually.');
         }
         document.body.removeChild(textarea);
@@ -1938,7 +1869,7 @@ function applyLayout() {
             container.appendChild(sec);
         });
       }
-    } catch (e) {
+    } catch {
       // non-fatal
     }
   });
@@ -2103,13 +2034,16 @@ function saveCurrentLayout() {
         inp.dispatchEvent(new Event('change', { bubbles: true }));
         try {
           updateSliderVisual(inp);
-        } catch (e) {}
+        } catch {
+          /* ignore */
+        }
       });
       this.textContent = anyOff ? 'Disable All' : 'Enable All';
     });
   });
 
   // Initialize group states (expanded by default)
+  const groupToggles = document.querySelectorAll('.collapse-toggle');
   groupToggles.forEach((toggle) => {
     toggle.setAttribute('aria-expanded', 'true');
     const groupContent = document.getElementById(
@@ -2213,6 +2147,19 @@ async function initializeTwilioSettings() {
   const saveStatusElement = document.getElementById('twilio-save-status');
 
   if (!saveButton || !statusElement) return;
+
+  function showTwilioStatus(message, type) {
+    if (saveStatusElement) {
+      saveStatusElement.textContent = message;
+      saveStatusElement.className = 'status-message ' + type;
+      saveStatusElement.style.display = 'block';
+      setTimeout(() => {
+        saveStatusElement.style.display = 'none';
+      }, 3000);
+    } else if (statusElement) {
+      statusElement.textContent = message;
+    }
+  }
 
   // Load current Twilio settings
   await loadTwilioSettings();
@@ -2434,7 +2381,9 @@ groupEnableBtns.forEach((btn) => {
       inp.dispatchEvent(new Event('change', { bubbles: true }));
       try {
         updateSliderVisual(inp);
-      } catch (e) {}
+      } catch {
+        /* ignore */
+      }
     });
     this.textContent = anyOff ? 'Disable All' : 'Enable All';
   });

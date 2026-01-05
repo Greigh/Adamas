@@ -8,29 +8,50 @@ export function initializeCollaboration() {
   const typingIndicator = document.getElementById('typing-indicator');
 
   // Check if required elements exist
-  if (!chatInput || !sendBtn || !chatMessages || !teamMembersList || !onlineCount || !typingIndicator) {
+  if (
+    !chatInput ||
+    !sendBtn ||
+    !chatMessages ||
+    !teamMembersList ||
+    !onlineCount ||
+    !typingIndicator
+  ) {
     return;
   }
 
   let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
   let teamMembers = JSON.parse(localStorage.getItem('teamMembers')) || [
-    { id: 1, name: 'Alice Johnson', role: 'Supervisor', status: 'online', avatar: '👩‍💼' },
+    {
+      id: 1,
+      name: 'Alice Johnson',
+      role: 'Supervisor',
+      status: 'online',
+      avatar: '👩‍💼',
+    },
     { id: 2, name: 'Bob Smith', role: 'Agent', status: 'online', avatar: '👨‍💻' },
     { id: 3, name: 'Carol Davis', role: 'Agent', status: 'away', avatar: '👩‍💻' },
-    { id: 4, name: 'David Wilson', role: 'Manager', status: 'offline', avatar: '👨‍💼' }
+    {
+      id: 4,
+      name: 'David Wilson',
+      role: 'Manager',
+      status: 'offline',
+      avatar: '👨‍💼',
+    },
   ];
   let typingUsers = new Set();
   let currentUser = { id: 0, name: 'You', avatar: '👤' };
 
   function updateOnlineCount() {
-    const onlineMembers = teamMembers.filter(member => member.status === 'online').length;
+    const onlineMembers = teamMembers.filter(
+      (member) => member.status === 'online'
+    ).length;
     onlineCount.textContent = `${onlineMembers} online`;
   }
 
   function updateTeamMembersList() {
     teamMembersList.innerHTML = '';
 
-    teamMembers.forEach(member => {
+    teamMembers.forEach((member) => {
       const li = document.createElement('li');
       li.className = `team-member ${member.status}`;
       li.innerHTML = `
@@ -55,8 +76,8 @@ export function initializeCollaboration() {
       return;
     }
 
-    const typingNames = Array.from(typingUsers).map(id => {
-      const member = teamMembers.find(m => m.id === id);
+    const typingNames = Array.from(typingUsers).map((id) => {
+      const member = teamMembers.find((m) => m.id === id);
       return member ? member.name : 'Someone';
     });
 
@@ -76,7 +97,7 @@ export function initializeCollaboration() {
       content: content.trim(),
       sender: sender,
       timestamp: timestamp,
-      type: 'message'
+      type: 'message',
     };
 
     messages.push(message);
@@ -111,55 +132,61 @@ export function initializeCollaboration() {
 
     // Simulate responses from team members
     if (Math.random() > 0.7) {
-      setTimeout(() => {
-        const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
-        const responses = [
-          'Thanks for the update!',
-          'I\'ll handle that right away.',
-          'Good point, let\'s discuss this further.',
-          'Can you provide more details?',
-          'I\'m on it.',
-          'Perfect timing!',
-          'Let me check that for you.',
-          'Great work on that call!'
-        ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        addMessage(randomResponse, randomMember);
-      }, 1000 + Math.random() * 3000);
+      setTimeout(
+        () => {
+          const randomMember =
+            teamMembers[Math.floor(Math.random() * teamMembers.length)];
+          const responses = [
+            'Thanks for the update!',
+            "I'll handle that right away.",
+            "Good point, let's discuss this further.",
+            'Can you provide more details?',
+            "I'm on it.",
+            'Perfect timing!',
+            'Let me check that for you.',
+            'Great work on that call!',
+          ];
+          const randomResponse =
+            responses[Math.floor(Math.random() * responses.length)];
+          addMessage(randomResponse, randomMember);
+        },
+        1000 + Math.random() * 3000
+      );
     }
   }
 
   function handleTyping() {
     // Simulate other users typing occasionally
     if (Math.random() > 0.95) {
-      const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+      const randomMember =
+        teamMembers[Math.floor(Math.random() * teamMembers.length)];
       typingUsers.add(randomMember.id);
       updateTypingIndicator();
     }
   }
 
-  function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-      color: white;
-      padding: 12px 16px;
-      border-radius: 8px;
-      z-index: 1000;
-      animation: slideIn 0.3s ease;
-    `;
-
-    document.body.appendChild(toast);
-    setTimeout(() => {
-      toast.style.animation = 'slideOut 0.3s ease';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
+  //   // function showToast(message, type = 'info') {
+  //     const toast = document.createElement('div');
+  //     toast.className = `toast toast-${type}`;
+  //     toast.textContent = message;
+  //     toast.style.cssText = `
+  //       position: fixed;
+  //       top: 20px;
+  //       right: 20px;
+  //       background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+  //       color: white;
+  //       padding: 12px 16px;
+  //       border-radius: 8px;
+  //       z-index: 1000;
+  //       animation: slideIn 0.3s ease;
+  //     `;
+  //
+  //     document.body.appendChild(toast);
+  //     setTimeout(() => {
+  //       toast.style.animation = 'slideOut 0.3s ease';
+  //       setTimeout(() => toast.remove(), 300);
+  //     }, 3000);
+  //   // }
 
   // Event listeners
   sendBtn.addEventListener('click', sendMessage);
@@ -183,7 +210,7 @@ export function initializeCollaboration() {
 
   // Simulate team member status changes
   setInterval(() => {
-    teamMembers.forEach(member => {
+    teamMembers.forEach((member) => {
       if (Math.random() > 0.95) {
         const statuses = ['online', 'away', 'offline'];
         const newStatus = statuses[Math.floor(Math.random() * statuses.length)];

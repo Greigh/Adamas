@@ -7,43 +7,43 @@ export const availableWidgets = {
     title: 'Call Statistics',
     description: 'Daily call counts and metrics',
     defaultSize: { width: 2, height: 1 },
-    render: renderCallStatsWidget
+    render: renderCallStatsWidget,
   },
   'active-timer': {
     id: 'active-timer',
     title: 'Active Timer',
     description: 'Current call timer status',
     defaultSize: { width: 1, height: 1 },
-    render: renderActiveTimerWidget
+    render: renderActiveTimerWidget,
   },
   'recent-calls': {
     id: 'recent-calls',
     title: 'Recent Calls',
     description: 'Last 5 call interactions',
     defaultSize: { width: 2, height: 2 },
-    render: renderRecentCallsWidget
+    render: renderRecentCallsWidget,
   },
   'pending-tasks': {
     id: 'pending-tasks',
     title: 'Pending Tasks',
     description: 'Outstanding tasks and follow-ups',
     defaultSize: { width: 2, height: 1 },
-    render: renderPendingTasksWidget
+    render: renderPendingTasksWidget,
   },
   'performance-metrics': {
     id: 'performance-metrics',
     title: 'Performance Metrics',
     description: 'Key performance indicators',
     defaultSize: { width: 2, height: 1 },
-    render: renderPerformanceMetricsWidget
+    render: renderPerformanceMetricsWidget,
   },
   'quick-actions': {
     id: 'quick-actions',
     title: 'Quick Actions',
     description: 'Frequently used actions',
     defaultSize: { width: 2, height: 1 },
-    render: renderQuickActionsWidget
-  }
+    render: renderQuickActionsWidget,
+  },
 };
 
 export function initializeCustomizableDashboard() {
@@ -76,7 +76,9 @@ function createDashboardInterface() {
     <div id="widget-selector" class="widget-selector" style="display: none;">
       <h4>Add Widget</h4>
       <div class="widget-grid">
-        ${Object.values(availableWidgets).map(widget => `
+        ${Object.values(availableWidgets)
+          .map(
+            (widget) => `
           <div class="widget-option" data-widget-id="${widget.id}">
             <div class="widget-icon">${getWidgetIcon(widget.id)}</div>
             <div class="widget-info">
@@ -85,7 +87,9 @@ function createDashboardInterface() {
             </div>
             <button class="add-widget-to-dashboard btn btn-small">Add</button>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
     </div>
   `;
@@ -96,7 +100,8 @@ function createDashboardInterface() {
   grid.className = 'dashboard-grid';
 
   // Insert controls at the top of analytics section
-  const sectionContent = dashboardSection.querySelector('.section-content') || dashboardSection;
+  const sectionContent =
+    dashboardSection.querySelector('.section-content') || dashboardSection;
   sectionContent.insertBefore(controls, sectionContent.firstChild);
   sectionContent.appendChild(grid);
 
@@ -111,11 +116,12 @@ function setupDashboardEventListeners() {
 
   // Toggle widget selector
   addWidgetBtn?.addEventListener('click', () => {
-    widgetSelector.style.display = widgetSelector.style.display === 'none' ? 'block' : 'none';
+    widgetSelector.style.display =
+      widgetSelector.style.display === 'none' ? 'block' : 'none';
   });
 
   // Add widget to dashboard
-  document.querySelectorAll('.add-widget-to-dashboard').forEach(btn => {
+  document.querySelectorAll('.add-widget-to-dashboard').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const widgetId = e.target.closest('.widget-option').dataset.widgetId;
       addWidgetToDashboard(widgetId);
@@ -164,9 +170,11 @@ function addWidgetToDashboard(widgetId, showToast = true) {
   grid.appendChild(widgetElement);
 
   // Add remove functionality
-  widgetElement.querySelector('.widget-remove-btn').addEventListener('click', () => {
-    widgetElement.remove();
-  });
+  widgetElement
+    .querySelector('.widget-remove-btn')
+    .addEventListener('click', () => {
+      widgetElement.remove();
+    });
 
   if (showToast) {
     showToast(`Added ${widget.title} widget`, 'success');
@@ -180,7 +188,7 @@ function resetDashboard() {
 
   // Add default widgets
   const defaultWidgets = ['call-stats', 'active-timer', 'recent-calls'];
-  defaultWidgets.forEach(widgetId => {
+  defaultWidgets.forEach((widgetId) => {
     addWidgetToDashboard(widgetId, false); // Don't show toast for default widgets
   });
 
@@ -190,9 +198,9 @@ function resetDashboard() {
 function saveDashboardLayout() {
   const grid = document.getElementById('dashboard-grid');
   if (!grid) return;
-  const widgets = Array.from(grid.children).map(widget => ({
+  const widgets = Array.from(grid.children).map((widget) => ({
     id: widget.dataset.widgetId,
-    position: Array.from(grid.children).indexOf(widget)
+    position: Array.from(grid.children).indexOf(widget),
   }));
 
   localStorage.setItem('dashboard-layout', JSON.stringify(widgets));
@@ -207,13 +215,20 @@ function loadDashboardLayout() {
     try {
       const layout = JSON.parse(saved);
       if (Array.isArray(layout)) {
-        layout.forEach(item => {
-          if (item && typeof item === 'object' && item.id && availableWidgets[item.id]) {
+        layout.forEach((item) => {
+          if (
+            item &&
+            typeof item === 'object' &&
+            item.id &&
+            availableWidgets[item.id]
+          ) {
             addWidgetToDashboard(item.id, false); // Don't show toast when loading saved layout
           }
         });
       } else {
-        console.warn('Saved dashboard layout is not an array, resetting to default');
+        console.warn(
+          'Saved dashboard layout is not an array, resetting to default'
+        );
         resetDashboard();
       }
     } catch (e) {
@@ -230,8 +245,8 @@ function loadDashboardLayout() {
 function renderCallStatsWidget() {
   const callHistory = JSON.parse(localStorage.getItem('callHistory')) || [];
   const today = new Date().toDateString();
-  const todayCalls = callHistory.filter(call =>
-    new Date(call.startTime).toDateString() === today
+  const todayCalls = callHistory.filter(
+    (call) => new Date(call.startTime).toDateString() === today
   );
 
   return `
@@ -267,8 +282,12 @@ function renderRecentCallsWidget() {
 
   return `
     <div class="recent-calls-list">
-      ${recentCalls.length === 0 ? '<p>No recent calls</p>' :
-        recentCalls.map(call => `
+      ${
+        recentCalls.length === 0
+          ? '<p>No recent calls</p>'
+          : recentCalls
+              .map(
+                (call) => `
           <div class="recent-call-item">
             <div class="call-info">
               <strong>${call.callerName}</strong>
@@ -276,7 +295,9 @@ function renderRecentCallsWidget() {
             </div>
             <span class="call-type ${call.callType}">${call.callType}</span>
           </div>
-        `).join('')
+        `
+              )
+              .join('')
       }
     </div>
   `;
@@ -284,18 +305,25 @@ function renderRecentCallsWidget() {
 
 function renderPendingTasksWidget() {
   const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-  const pendingTasks = tasks.filter(task => !task.completed);
+  const pendingTasks = tasks.filter((task) => !task.completed);
 
   return `
     <div class="pending-tasks-list">
-      ${pendingTasks.length === 0 ? '<p>No pending tasks</p>' :
-        pendingTasks.slice(0, 3).map(task => `
+      ${
+        pendingTasks.length === 0
+          ? '<p>No pending tasks</p>'
+          : pendingTasks
+              .slice(0, 3)
+              .map(
+                (task) => `
           <div class="task-item">
             <input type="checkbox" ${task.completed ? 'checked' : ''}>
             <span class="${task.completed ? 'completed' : ''}">${task.title}</span>
             <span class="priority priority-${task.priority}">${task.priority}</span>
           </div>
-        `).join('')
+        `
+              )
+              .join('')
       }
       ${pendingTasks.length > 3 ? `<p>...and ${pendingTasks.length - 3} more</p>` : ''}
     </div>
@@ -335,7 +363,7 @@ function getWidgetIcon(widgetId) {
     'recent-calls': '📞',
     'pending-tasks': '✅',
     'performance-metrics': '📈',
-    'quick-actions': '⚡'
+    'quick-actions': '⚡',
   };
   return icons[widgetId] || '📦';
 }
@@ -343,7 +371,7 @@ function getWidgetIcon(widgetId) {
 // Function to refresh all dashboard widgets
 export function refreshDashboardWidgets() {
   const widgets = document.querySelectorAll('.dashboard-widget');
-  widgets.forEach(widget => {
+  widgets.forEach((widget) => {
     const widgetId = widget.dataset.widgetId;
     const content = widget.querySelector('.widget-content');
     if (availableWidgets[widgetId] && content) {

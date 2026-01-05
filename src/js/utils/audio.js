@@ -146,7 +146,9 @@ export function stopTimerSound() {
   if (timerSoundSource) {
     try {
       timerSoundSource.stop();
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
     timerSoundSource = null;
   }
   if (activeAudio) {

@@ -15,9 +15,20 @@ export function initializeTasks() {
   const totalCount = document.getElementById('total-count');
 
   // Check if required elements exist
-  if (!addTaskBtn || !taskTitleInput || !taskDescriptionInput || !taskPrioritySelect ||
-      !taskDueDateInput || !taskAssigneeSelect || !taskList || !searchInput ||
-      !sortSelect || !progressBar || !completedCount || !totalCount) {
+  if (
+    !addTaskBtn ||
+    !taskTitleInput ||
+    !taskDescriptionInput ||
+    !taskPrioritySelect ||
+    !taskDueDateInput ||
+    !taskAssigneeSelect ||
+    !taskList ||
+    !searchInput ||
+    !sortSelect ||
+    !progressBar ||
+    !completedCount ||
+    !totalCount
+  ) {
     return;
   }
 
@@ -30,12 +41,13 @@ export function initializeTasks() {
     { id: 'me', name: 'Me', avatar: '👤' },
     { id: 'alice', name: 'Alice Johnson', avatar: '👩‍💼' },
     { id: 'bob', name: 'Bob Smith', avatar: '👨‍💻' },
-    { id: 'carol', name: 'Carol Davis', avatar: '👩‍💻' }
+    { id: 'carol', name: 'Carol Davis', avatar: '👩‍💻' },
   ];
 
   function initializeAssignees() {
-    taskAssigneeSelect.innerHTML = '<option value="">Select assignee...</option>';
-    defaultAssignees.forEach(assignee => {
+    taskAssigneeSelect.innerHTML =
+      '<option value="">Select assignee...</option>';
+    defaultAssignees.forEach((assignee) => {
       const option = document.createElement('option');
       option.value = assignee.id;
       option.textContent = assignee.name;
@@ -66,7 +78,7 @@ export function initializeTasks() {
       createdAt: new Date(),
       updatedAt: new Date(),
       subtasks: [],
-      tags: []
+      tags: [],
     };
 
     tasks.push(task);
@@ -90,18 +102,25 @@ export function initializeTasks() {
   function updateTaskList() {
     taskList.innerHTML = '';
 
-    let filteredTasks = tasks.filter(task => {
+    let filteredTasks = tasks.filter((task) => {
       if (currentFilter === 'all') return true;
-      if (currentFilter === 'overdue') return task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'completed';
+      if (currentFilter === 'overdue')
+        return (
+          task.dueDate &&
+          new Date(task.dueDate) < new Date() &&
+          task.status !== 'completed'
+        );
       return task.status === currentFilter;
     });
 
     // Apply search filter
     const searchTerm = searchInput.value.toLowerCase();
     if (searchTerm) {
-      filteredTasks = filteredTasks.filter(task =>
-        task.title.toLowerCase().includes(searchTerm) ||
-        (task.description && task.description.toLowerCase().includes(searchTerm))
+      filteredTasks = filteredTasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchTerm) ||
+          (task.description &&
+            task.description.toLowerCase().includes(searchTerm))
       );
     }
 
@@ -118,21 +137,24 @@ export function initializeTasks() {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
           return new Date(b.dueDate) - new Date(a.dueDate);
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { high: 3, medium: 2, low: 1 };
           return priorityOrder[b.priority] - priorityOrder[a.priority];
+        }
         case 'created-desc':
         default:
           return new Date(b.createdAt) - new Date(a.createdAt);
       }
     });
 
-    filteredTasks.forEach(task => {
+    filteredTasks.forEach((task) => {
       const li = document.createElement('li');
       li.className = `task-item ${task.status} priority-${task.priority} ${isOverdue(task) ? 'overdue' : ''}`;
 
-      const assignee = defaultAssignees.find(a => a.id === task.assignee);
-      const dueDateText = task.dueDate ? formatDueDate(task.dueDate) : 'No due date';
+      const assignee = defaultAssignees.find((a) => a.id === task.assignee);
+      const dueDateText = task.dueDate
+        ? formatDueDate(task.dueDate)
+        : 'No due date';
 
       li.innerHTML = `
         <div class="task-header">
@@ -148,12 +170,16 @@ export function initializeTasks() {
               </div>
             </div>
             ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
-            ${assignee ? `
+            ${
+              assignee
+                ? `
               <div class="task-assignee">
                 <span class="assignee-avatar">${assignee.avatar}</span>
                 <span class="assignee-name">${assignee.name}</span>
               </div>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
         </div>
         <div class="task-actions">
@@ -167,9 +193,12 @@ export function initializeTasks() {
       `;
 
       // Add event listeners
-      li.querySelector('input[type="checkbox"]').addEventListener('change', (e) => {
-        toggleTask(parseInt(e.target.dataset.id));
-      });
+      li.querySelector('input[type="checkbox"]').addEventListener(
+        'change',
+        (e) => {
+          toggleTask(parseInt(e.target.dataset.id));
+        }
+      );
       li.querySelector('.btn-edit').addEventListener('click', (e) => {
         editTask(parseInt(e.target.dataset.id));
       });
@@ -185,7 +214,7 @@ export function initializeTasks() {
     const icons = {
       high: '🔴',
       medium: '🟡',
-      low: '🟢'
+      low: '🟢',
     };
     return icons[priority] || '⚪';
   }
@@ -210,11 +239,15 @@ export function initializeTasks() {
   }
 
   function isOverdue(task) {
-    return task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'completed';
+    return (
+      task.dueDate &&
+      new Date(task.dueDate) < new Date() &&
+      task.status !== 'completed'
+    );
   }
 
   function toggleTask(taskId) {
-    const task = tasks.find(t => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (task) {
       task.status = task.status === 'completed' ? 'pending' : 'completed';
       task.updatedAt = new Date();
@@ -222,13 +255,14 @@ export function initializeTasks() {
       updateTaskList();
       updateProgress();
 
-      const statusText = task.status === 'completed' ? 'completed' : 'marked as pending';
+      const statusText =
+        task.status === 'completed' ? 'completed' : 'marked as pending';
       showToast(`Task "${task.title}" ${statusText}`, 'success');
     }
   }
 
   function editTask(taskId) {
-    const task = tasks.find(t => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
     const modal = document.createElement('div');
@@ -267,7 +301,7 @@ export function initializeTasks() {
               <label for="edit-assignee">Assignee</label>
               <select id="edit-assignee">
                 <option value="">Unassigned</option>
-                ${defaultAssignees.map(a => `<option value="${a.id}" ${task.assignee === a.id ? 'selected' : ''}>${a.name}</option>`).join('')}
+                ${defaultAssignees.map((a) => `<option value="${a.id}" ${task.assignee === a.id ? 'selected' : ''}>${a.name}</option>`).join('')}
               </select>
             </div>
           </form>
@@ -279,11 +313,17 @@ export function initializeTasks() {
       </div>
     `;
 
-    modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
-    modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+    modal
+      .querySelector('.modal-close')
+      .addEventListener('click', () => modal.remove());
+    modal
+      .querySelector('.modal-cancel')
+      .addEventListener('click', () => modal.remove());
     modal.querySelector('.modal-save').addEventListener('click', () => {
       const newTitle = modal.querySelector('#edit-title').value.trim();
-      const newDescription = modal.querySelector('#edit-description').value.trim();
+      const newDescription = modal
+        .querySelector('#edit-description')
+        .value.trim();
       const newPriority = modal.querySelector('#edit-priority').value;
       const newDueDate = modal.querySelector('#edit-due-date').value;
       const newAssignee = modal.querySelector('#edit-assignee').value;
@@ -313,7 +353,7 @@ export function initializeTasks() {
 
   function deleteTask(taskId) {
     if (confirm('Are you sure you want to delete this task?')) {
-      tasks = tasks.filter(t => t.id !== taskId);
+      tasks = tasks.filter((t) => t.id !== taskId);
       localStorage.setItem('tasks', JSON.stringify(tasks));
       updateTaskList();
       updateProgress();
@@ -322,7 +362,9 @@ export function initializeTasks() {
   }
 
   function updateProgress() {
-    const completed = tasks.filter(task => task.status === 'completed').length;
+    const completed = tasks.filter(
+      (task) => task.status === 'completed'
+    ).length;
     const total = tasks.length;
     const percentage = total > 0 ? (completed / total) * 100 : 0;
 
@@ -332,9 +374,12 @@ export function initializeTasks() {
   }
 
   function checkDueDateNotifications() {
-    const overdueTasks = tasks.filter(task => isOverdue(task));
+    const overdueTasks = tasks.filter((task) => isOverdue(task));
     if (overdueTasks.length > 0) {
-      showToast(`You have ${overdueTasks.length} overdue task${overdueTasks.length !== 1 ? 's' : ''}`, 'warning');
+      showToast(
+        `You have ${overdueTasks.length} overdue task${overdueTasks.length !== 1 ? 's' : ''}`,
+        'warning'
+      );
     }
   }
 
@@ -364,9 +409,9 @@ export function initializeTasks() {
   // Event listeners
   addTaskBtn.addEventListener('click', addTask);
 
-  filters.forEach(filter => {
+  filters.forEach((filter) => {
     filter.addEventListener('click', () => {
-      filters.forEach(f => f.classList.remove('active'));
+      filters.forEach((f) => f.classList.remove('active'));
       filter.classList.add('active');
       currentFilter = filter.dataset.filter;
       updateTaskList();

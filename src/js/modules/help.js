@@ -8,7 +8,7 @@ export function initializeHelp() {
 
 function setupTooltips() {
   // Add tooltips to elements with data-tooltip
-  document.querySelectorAll('[data-tooltip]').forEach(el => {
+  document.querySelectorAll('[data-tooltip]').forEach((el) => {
     el.addEventListener('mouseenter', showTooltip);
     el.addEventListener('mouseleave', hideTooltip);
   });
@@ -22,7 +22,7 @@ function showTooltip(event) {
 
   const rect = event.target.getBoundingClientRect();
   tooltip.style.left = rect.left + 'px';
-  tooltip.style.top = (rect.top - 30) + 'px';
+  tooltip.style.top = rect.top - 30 + 'px';
 }
 
 function hideTooltip() {

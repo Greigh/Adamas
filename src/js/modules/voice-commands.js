@@ -10,20 +10,22 @@ export const voiceState = {
     'new note': () => window.createNewNote(),
     'save note': () => window.saveCurrentNote(),
     'next script': () => window.loadNextScript(),
-    'previous script': () => window.loadPreviousScript()
-  }
+    'previous script': () => window.loadPreviousScript(),
+  },
 };
 
 export function initializeVoiceCommands() {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     voiceState.recognition = new SpeechRecognition();
     voiceState.recognition.continuous = true;
     voiceState.recognition.interimResults = false;
     voiceState.recognition.lang = 'en-US';
 
     voiceState.recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+      const transcript =
+        event.results[event.results.length - 1][0].transcript.toLowerCase();
       processCommand(transcript);
     };
 

@@ -16,8 +16,8 @@ export const themes = {
       success: '#4caf50',
       warning: '#ff9800',
       error: '#f44336',
-      info: '#2196f3'
-    }
+      info: '#2196f3',
+    },
   },
   dark: {
     name: 'Dark',
@@ -32,8 +32,8 @@ export const themes = {
       success: '#81c784',
       warning: '#ffb74d',
       error: '#ef5350',
-      info: '#64b5f6'
-    }
+      info: '#64b5f6',
+    },
   },
   highContrast: {
     name: 'High Contrast',
@@ -48,24 +48,24 @@ export const themes = {
       success: '#00ff00',
       warning: '#ffff00',
       error: '#ff0000',
-      info: '#00ffff'
-    }
-  }
+      info: '#00ffff',
+    },
+  },
 };
 
 export function initializeTheme() {
-    const savedTheme = loadTheme() || 'light';
-    applyTheme(savedTheme);
+  const savedTheme = loadTheme() || 'light';
+  applyTheme(savedTheme);
 
-    // Set initial toggle state
-    updateThemeToggle(savedTheme);
+  // Set initial toggle state
+  updateThemeToggle(savedTheme);
 }
 
 export function updateThemeIndicator(theme) {
-    const indicator = document.getElementById('current-theme');
-    if (indicator) {
-        indicator.textContent = themes[theme]?.name || 'Light';
-    }
+  const indicator = document.getElementById('current-theme');
+  if (indicator) {
+    indicator.textContent = themes[theme]?.name || 'Light';
+  }
 }
 
 export function applyTheme(themeName) {
@@ -86,7 +86,10 @@ export function applyTheme(themeName) {
   if (themeName === 'highContrast') {
     root.style.setProperty('--focus-outline', '2px solid #ffff00');
     root.style.setProperty('--shadow-sm', '0 1px 2px 0 rgb(255 255 255 / 0.5)');
-    root.style.setProperty('--shadow-md', '0 4px 6px -1px rgb(255 255 255 / 0.3)');
+    root.style.setProperty(
+      '--shadow-md',
+      '0 4px 6px -1px rgb(255 255 255 / 0.3)'
+    );
   } else {
     root.style.removeProperty('--focus-outline');
     root.style.removeProperty('--shadow-sm');
@@ -99,22 +102,22 @@ export function applyTheme(themeName) {
 }
 
 export function switchToLight() {
-    applyTheme('light');
+  applyTheme('light');
 }
 
 export function switchToDark() {
-    applyTheme('dark');
+  applyTheme('dark');
 }
 
 export function switchToHighContrast() {
-    applyTheme('highContrast');
+  applyTheme('highContrast');
 }
 
 export function setupThemeToggle() {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        // Create theme selector dropdown
-        themeToggle.innerHTML = `
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    // Create theme selector dropdown
+    themeToggle.innerHTML = `
             <select id="theme-selector" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);">
                 <option value="light">Light Theme</option>
                 <option value="dark">Dark Theme</option>
@@ -122,38 +125,38 @@ export function setupThemeToggle() {
             </select>
         `;
 
-        const selector = document.getElementById('theme-selector');
-        if (selector) {
-            // Set current theme
-            const currentTheme = loadTheme() || 'light';
-            selector.value = currentTheme;
+    const selector = document.getElementById('theme-selector');
+    if (selector) {
+      // Set current theme
+      const currentTheme = loadTheme() || 'light';
+      selector.value = currentTheme;
 
-            selector.addEventListener('change', (e) => {
-                applyTheme(e.target.value);
-            });
-        }
+      selector.addEventListener('change', (e) => {
+        applyTheme(e.target.value);
+      });
     }
+  }
 
-    // Legacy dark mode toggle support
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
-    if (darkModeToggle) {
-        const currentTheme = loadTheme() || 'light';
-        darkModeToggle.checked = currentTheme === 'dark';
+  // Legacy dark mode toggle support
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  if (darkModeToggle) {
+    const currentTheme = loadTheme() || 'light';
+    darkModeToggle.checked = currentTheme === 'dark';
 
-        darkModeToggle.addEventListener('change', function() {
-            applyTheme(this.checked ? 'dark' : 'light');
-        });
-    }
+    darkModeToggle.addEventListener('change', function () {
+      applyTheme(this.checked ? 'dark' : 'light');
+    });
+  }
 }
 
 function updateThemeToggle(theme) {
-    const selector = document.getElementById('theme-selector');
-    if (selector) {
-        selector.value = theme;
-    }
+  const selector = document.getElementById('theme-selector');
+  if (selector) {
+    selector.value = theme;
+  }
 
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
-    if (darkModeToggle) {
-        darkModeToggle.checked = theme === 'dark';
-    }
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  if (darkModeToggle) {
+    darkModeToggle.checked = theme === 'dark';
+  }
 }

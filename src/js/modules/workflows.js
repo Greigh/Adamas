@@ -12,15 +12,23 @@ export function initializeWorkflows() {
   const activeWorkflowsList = document.getElementById('active-workflows-list');
 
   // Check if required elements exist
-  if (!workflowSteps || !stepTypeSelector || !stepConfigForm || !addStepBtn ||
-      !saveWorkflowBtn || !testWorkflowBtn || !clearWorkflowBtn || !activeWorkflowsList) {
+  if (
+    !workflowSteps ||
+    !stepTypeSelector ||
+    !stepConfigForm ||
+    !addStepBtn ||
+    !saveWorkflowBtn ||
+    !testWorkflowBtn ||
+    !clearWorkflowBtn ||
+    !activeWorkflowsList
+  ) {
     return;
   }
 
   let workflows = loadData('workflows') || [];
   let currentWorkflow = { steps: [] };
   let selectedStepType = null;
-  let editingStepIndex = -1;
+  // let editingStepIndex = -1;
 
   // Initialize event listeners
   initializeEventListeners();
@@ -50,9 +58,9 @@ export function initializeWorkflows() {
     const stepType = option.dataset.type;
 
     // Update selection UI
-    document.querySelectorAll('.step-type-option').forEach(opt =>
-      opt.classList.remove('selected')
-    );
+    document
+      .querySelectorAll('.step-type-option')
+      .forEach((opt) => opt.classList.remove('selected'));
     option.classList.add('selected');
 
     selectedStepType = stepType;
@@ -268,7 +276,7 @@ export function initializeWorkflows() {
             <button type="submit" class="button btn-primary">Add Notification Step</button>
           </div>
         </form>
-      `
+      `,
     };
 
     return forms[stepType] || '<p>Unknown step type</p>';
@@ -298,7 +306,7 @@ export function initializeWorkflows() {
       id: Date.now(),
       type: stepType,
       config: config,
-      order: currentWorkflow.steps.length
+      order: currentWorkflow.steps.length,
     };
 
     currentWorkflow.steps.push(step);
@@ -355,7 +363,7 @@ export function initializeWorkflows() {
       task: 'Create Task',
       wait: 'Wait/Delay',
       condition: 'Condition',
-      notification: 'Notification'
+      notification: 'Notification',
     };
     return types[type] || type;
   }
@@ -433,7 +441,7 @@ export function initializeWorkflows() {
       createdAt: new Date(),
       active: true,
       lastRun: null,
-      runCount: 0
+      runCount: 0,
     };
 
     workflows.push(workflow);
@@ -454,15 +462,32 @@ export function initializeWorkflows() {
       return;
     }
 
-    alert(`Testing workflow with ${currentWorkflow.steps.length} steps...\n\nThis would execute each step in sequence.`);
+    alert(
+      `Testing workflow with ${currentWorkflow.steps.length} steps...\n\nThis would execute each step in sequence.`
+    );
   }
 
   async function clearWorkflow() {
     if (currentWorkflow.steps.length === 0) return;
     try {
       const modalModule = await import('../utils/modal.js');
-      const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function') ? modalModule.showConfirmModal : (window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?'))));
-      const confirmed = await confirmFn({ title: 'Clear Steps', message: 'Are you sure you want to clear all workflow steps?', confirmLabel: 'Clear', cancelLabel: 'Cancel', danger: true });
+      const confirmFn =
+        modalModule && typeof modalModule.showConfirmModal === 'function'
+          ? modalModule.showConfirmModal
+          : window.showConfirmModal ||
+            ((opts) =>
+              Promise.resolve(
+                window.confirm(
+                  opts && opts.message ? opts.message : 'Are you sure?'
+                )
+              ));
+      const confirmed = await confirmFn({
+        title: 'Clear Steps',
+        message: 'Are you sure you want to clear all workflow steps?',
+        confirmLabel: 'Clear',
+        cancelLabel: 'Cancel',
+        danger: true,
+      });
       if (confirmed) {
         currentWorkflow = { steps: [] };
         updateWorkflowSteps();
@@ -470,8 +495,13 @@ export function initializeWorkflows() {
         hideStepConfigForm();
       }
     } catch (err) {
-      console.warn('Clear workflow confirmation failed, falling back to window.confirm', err);
-      if (window.confirm('Are you sure you want to clear all workflow steps?')) {
+      console.warn(
+        'Clear workflow confirmation failed, falling back to window.confirm',
+        err
+      );
+      if (
+        window.confirm('Are you sure you want to clear all workflow steps?')
+      ) {
         currentWorkflow = { steps: [] };
         updateWorkflowSteps();
         updateButtonsState();
@@ -492,7 +522,7 @@ export function initializeWorkflows() {
 
     activeWorkflowsList.innerHTML = '';
 
-    workflows.forEach(workflow => {
+    workflows.forEach((workflow) => {
       const workflowDiv = document.createElement('div');
       workflowDiv.className = 'workflow-item';
       workflowDiv.innerHTML = `
@@ -512,7 +542,7 @@ export function initializeWorkflows() {
   }
 
   function runWorkflow(workflowId) {
-    const workflow = workflows.find(w => w.id === workflowId);
+    const workflow = workflows.find((w) => w.id === workflowId);
     if (!workflow) return;
 
     // Update run statistics
@@ -562,31 +592,41 @@ export function initializeWorkflows() {
         await delay(500); // Simulate task creation
         break;
 
-      case 'wait':
-        const duration = parseInt(step.config.duration) * (step.config.unit === 'hours' ? 3600000 :
-                          step.config.unit === 'days' ? 86400000 : 60000);
+      case 'wait': {
+        const duration =
+          parseInt(step.config.duration) *
+          (step.config.unit === 'hours'
+            ? 3600000
+            : step.config.unit === 'days'
+              ? 86400000
+              : 60000);
         console.log(`Waiting for ${step.config.duration} ${step.config.unit}`);
         await delay(duration);
         break;
+      }
 
       case 'condition':
-        console.log(`Evaluating condition: ${step.config.field} ${step.config.operator} ${step.config.value}`);
+        console.log(
+          `Evaluating condition: ${step.config.field} ${step.config.operator} ${step.config.value}`
+        );
         await delay(500); // Simulate condition evaluation
         break;
 
       case 'notification':
-        console.log(`Sending ${step.config.type} notification to ${step.config.recipient}`);
+        console.log(
+          `Sending ${step.config.type} notification to ${step.config.recipient}`
+        );
         await delay(1000); // Simulate notification sending
         break;
     }
   }
 
   function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   function editWorkflow(workflowId) {
-    const workflow = workflows.find(w => w.id === workflowId);
+    const workflow = workflows.find((w) => w.id === workflowId);
     if (!workflow) return;
 
     currentWorkflow = { ...workflow };
@@ -594,52 +634,72 @@ export function initializeWorkflows() {
     updateButtonsState();
   }
 
-    async function deleteWorkflow(workflowId) {
-      try {
-        const modalModule = await import('../utils/modal.js');
-        const confirmFn = (modalModule && typeof modalModule.showConfirmModal === 'function') ? modalModule.showConfirmModal : (window.showConfirmModal || (opts => Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Are you sure?'))));
-        const confirmed = await confirmFn({
-          title: 'Delete Workflow',
-          message: 'Are you sure you want to delete this workflow? This action cannot be undone.',
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel',
-          danger: true,
-        });
-        if (confirmed) {
-          workflows = workflows.filter(w => w.id !== workflowId);
-          saveData('workflows', workflows);
-          updateActiveWorkflows();
-        }
-      } catch (err) {
-        console.warn('Delete workflow confirmation failed, falling back to window.confirm', err);
-        if (window.confirm('Are you sure you want to delete this workflow? This action cannot be undone.')) {
-          workflows = workflows.filter(w => w.id !== workflowId);
-          saveData('workflows', workflows);
-          updateActiveWorkflows();
-        }
+  async function deleteWorkflow(workflowId) {
+    try {
+      const modalModule = await import('../utils/modal.js');
+      const confirmFn =
+        modalModule && typeof modalModule.showConfirmModal === 'function'
+          ? modalModule.showConfirmModal
+          : window.showConfirmModal ||
+            ((opts) =>
+              Promise.resolve(
+                window.confirm(
+                  opts && opts.message ? opts.message : 'Are you sure?'
+                )
+              ));
+      const confirmed = await confirmFn({
+        title: 'Delete Workflow',
+        message:
+          'Are you sure you want to delete this workflow? This action cannot be undone.',
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        danger: true,
+      });
+      if (confirmed) {
+        workflows = workflows.filter((w) => w.id !== workflowId);
+        saveData('workflows', workflows);
+        updateActiveWorkflows();
+      }
+    } catch (err) {
+      console.warn(
+        'Delete workflow confirmation failed, falling back to window.confirm',
+        err
+      );
+      if (
+        window.confirm(
+          'Are you sure you want to delete this workflow? This action cannot be undone.'
+        )
+      ) {
+        workflows = workflows.filter((w) => w.id !== workflowId);
+        saveData('workflows', workflows);
+        updateActiveWorkflows();
       }
     }
+  }
 
   // Global functions for HTML onclick handlers
-  window.hideStepConfigForm = function() {
+  function hideStepConfigForm() {
     stepConfigForm.style.display = 'none';
-    document.querySelectorAll('.step-type-option').forEach(opt =>
-      opt.classList.remove('selected')
-    );
+    document
+      .querySelectorAll('.step-type-option')
+      .forEach((opt) => opt.classList.remove('selected'));
     selectedStepType = null;
-  };
+  }
+  window.hideStepConfigForm = hideStepConfigForm;
 
-  window.removeWorkflowStep = function(stepId) {
-    currentWorkflow.steps = currentWorkflow.steps.filter(step => step.id !== stepId);
+  window.removeWorkflowStep = function (stepId) {
+    currentWorkflow.steps = currentWorkflow.steps.filter(
+      (step) => step.id !== stepId
+    );
     updateWorkflowSteps();
     updateButtonsState();
   };
 
-  window.editWorkflowStep = function(stepId) {
-    const step = currentWorkflow.steps.find(s => s.id === stepId);
+  window.editWorkflowStep = function (stepId) {
+    const step = currentWorkflow.steps.find((s) => s.id === stepId);
     if (!step) return;
 
-    editingStepIndex = currentWorkflow.steps.findIndex(s => s.id === stepId);
+    // editingStepIndex = currentWorkflow.steps.findIndex((s) => s.id === stepId);
     selectedStepType = step.type;
     showStepConfigForm(step.type);
 
@@ -652,14 +712,14 @@ export function initializeWorkflows() {
     }, 100);
   };
 
-  window.duplicateWorkflowStep = function(stepId) {
-    const step = currentWorkflow.steps.find(s => s.id === stepId);
+  window.duplicateWorkflowStep = function (stepId) {
+    const step = currentWorkflow.steps.find((s) => s.id === stepId);
     if (!step) return;
 
     const duplicatedStep = {
       ...step,
       id: Date.now(),
-      order: currentWorkflow.steps.length
+      order: currentWorkflow.steps.length,
     };
 
     currentWorkflow.steps.push(duplicatedStep);

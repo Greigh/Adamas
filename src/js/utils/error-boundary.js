@@ -1,5 +1,6 @@
 // Error Boundary Utility
 // Provides error handling and recovery for critical application functions
+import { showToast } from './toast.js';
 
 export class ErrorBoundary {
   constructor(name = 'Component') {
@@ -18,7 +19,10 @@ export class ErrorBoundary {
           try {
             return await fallback(error, ...args);
           } catch (fallbackError) {
-            console.error(`Fallback also failed for ${this.name}:`, fallbackError);
+            console.error(
+              `Fallback also failed for ${this.name}:`,
+              fallbackError
+            );
           }
         }
         throw error;
@@ -34,7 +38,8 @@ export class ErrorBoundary {
       message: error.message,
       stack: error.stack,
       timestamp: new Date().toISOString(),
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
+      userAgent:
+        typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
     };
 
     this.errors.push(errorInfo);
@@ -44,7 +49,10 @@ export class ErrorBoundary {
 
     // Show user-friendly error message
     if (typeof showToast === 'function') {
-      showToast(`An error occurred in ${this.name}. Please try again.`, 'error');
+      showToast(
+        `An error occurred in ${this.name}. Please try again.`,
+        'error'
+      );
     }
 
     // Limit stored errors to prevent memory leaks
@@ -85,7 +93,8 @@ export function setupGlobalErrorHandling() {
           filename: event.filename,
           lineno: event.lineno,
           colno: event.colno,
-          error: (event.error && event.error.stack) ? event.error.stack : event.error,
+          error:
+            event.error && event.error.stack ? event.error.stack : event.error,
           showConfirmModalType: typeof window.showConfirmModal,
           showToastType: typeof window.showToast,
           toastManagerType: typeof window.toastManager,
@@ -97,7 +106,14 @@ export function setupGlobalErrorHandling() {
         console.error('Global error handler failure:', e, event);
       }
       if (typeof showToast === 'function') {
-        try { showToast('An unexpected error occurred. Please refresh the page.', 'error'); } catch (e) { console.warn('showToast failed in error handler', e); }
+        try {
+          showToast(
+            'An unexpected error occurred. Please refresh the page.',
+            'error'
+          );
+        } catch (e) {
+          console.warn('showToast failed in error handler', e);
+        }
       }
     });
 
@@ -118,7 +134,14 @@ export function setupGlobalErrorHandling() {
         console.error('Unhandled rejection handler failed', e, event);
       }
       if (typeof showToast === 'function') {
-        try { showToast('An unexpected error occurred. Please refresh the page.', 'error'); } catch (e) { console.warn('showToast failed in unhandledrejection handler', e); }
+        try {
+          showToast(
+            'An unexpected error occurred. Please refresh the page.',
+            'error'
+          );
+        } catch (e) {
+          console.warn('showToast failed in unhandledrejection handler', e);
+        }
       }
     });
   }

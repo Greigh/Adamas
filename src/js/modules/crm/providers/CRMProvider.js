@@ -18,7 +18,7 @@ export class CRMProvider {
    * @returns {Promise<void>}
    * @throws {Error} If connection fails.
    */
-  async connect(config) {
+  async connect() {
     throw new Error("Method 'connect()' must be implemented.");
   }
 
@@ -37,7 +37,7 @@ export class CRMProvider {
    * @param {Object} config - The configuration object to validate.
    * @returns {string[]} An array of error messages, or empty array if valid.
    */
-  validateConfig(config) {
+  validateConfig() {
     throw new Error("Method 'validateConfig()' must be implemented.");
   }
 
@@ -47,7 +47,7 @@ export class CRMProvider {
    * @param {string} searchType - 'phone', 'email', 'name'
    * @returns {Promise<Array>} Array of contact objects.
    */
-  async lookupContact(searchTerm, searchType) {
+  async lookupContact() {
     console.warn(`Contact lookup not implemented for ${this.name}`);
     return [];
   }
@@ -57,12 +57,12 @@ export class CRMProvider {
    * @param {Object} callRecord - The call data to log.
    * @returns {Promise<Object>} Result with success/id.
    */
-  async logCall(callRecord) {
+  async logCall() {
     console.warn(`Provider ${this.name} has not implemented logCall`);
     return { success: false, message: 'Not implemented' };
   }
 
-  async makeCall(number) {
+  async makeCall() {
     console.warn(`Provider ${this.name} has not implemented makeCall`);
     return { success: false, message: 'Not implemented' };
   }

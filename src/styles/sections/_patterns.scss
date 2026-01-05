@@ -131,6 +131,9 @@
         border-radius: 0.25rem;
         cursor: pointer;
         transition: map.get($transitions, fast);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .history-use-btn {

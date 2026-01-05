@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,28 +8,61 @@
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>"
     />
-    <link rel="manifest" href="<%= htmlWebpackPlugin.files.publicPath %>manifest.json" />
-    
+    <link
+      rel="manifest"
+      href="<%= htmlWebpackPlugin.files.publicPath %>manifest.json"
+    />
+
     <!-- SEO & Open Graph -->
-    <meta name="description" content="Adamas - The ultimate call center assistant. Enhance agent productivity with tools for notes, call summarization, CRM integration, and analytics." />
-    <meta name="keywords" content="call center, agent tools, crm, productivity, adamas, analytics, softphone" />
+    <meta
+      name="description"
+      content="Adamas - The ultimate call center assistant. Enhance agent productivity with tools for notes, call summarization, CRM integration, and analytics."
+    />
+    <meta
+      name="keywords"
+      content="call center, agent tools, crm, productivity, adamas, analytics, softphone"
+    />
     <meta name="author" content="Daniel Hipskind" />
-    
+
     <!-- Open Graph (Facebook/LinkedIn) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://danielhipskind.com/adamas/" />
-    <meta property="og:title" content="Adamas | Intelligent Call Center Assistant" />
-    <meta property="og:description" content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics." />
-    <meta property="og:image" content="https://danielhipskind.com/adamas/og-image.png" />
-    
+    <meta
+      property="og:title"
+      content="Adamas | Intelligent Call Center Assistant"
+    />
+    <meta
+      property="og:description"
+      content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics."
+    />
+    <meta
+      property="og:image"
+      content="https://danielhipskind.com/adamas/og-image.png"
+    />
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://danielhipskind.com/adamas/" />
-    <meta property="twitter:title" content="Adamas | Intelligent Call Center Assistant" />
-    <meta property="twitter:description" content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics." />
-    <meta property="twitter:title" content="Adamas | Intelligent Call Center Assistant" />
-    <meta property="twitter:description" content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics." />
-    <meta property="twitter:image" content="https://danielhipskind.com/adamas/og-image.png" />
+    <meta
+      property="twitter:title"
+      content="Adamas | Intelligent Call Center Assistant"
+    />
+    <meta
+      property="twitter:description"
+      content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics."
+    />
+    <meta
+      property="twitter:title"
+      content="Adamas | Intelligent Call Center Assistant"
+    />
+    <meta
+      property="twitter:description"
+      content="Boost call center efficiency with real-time tools, CRM integration, and smart analytics."
+    />
+    <meta
+      property="twitter:image"
+      content="https://danielhipskind.com/adamas/og-image.png"
+    />
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://danielhipskind.com/adamas/" />
@@ -69,11 +102,15 @@
       if (!window.showToast) {
         window.showToast = function (message, type, duration) {
           // Queue toast requests until toastManager is available
-          window.__deferredCalls.push({ type: 'toast', message, toastType: type, duration });
+          window.__deferredCalls.push({
+            type: 'toast',
+            message,
+            toastType: type,
+            duration,
+          });
         };
       }
     </script>
-
   </head>
   <body>
     <div id="app">
@@ -86,9 +123,11 @@
           <nav class="main-nav">
             <button id="main-tab" class="nav-tab active">Main</button>
             <button id="stats-tab" class="nav-tab">Stats</button>
-            <button id="knowledge-base-tab" class="nav-tab">Knowledge Base</button>
+            <button id="knowledge-base-tab" class="nav-tab">
+              Knowledge Base
+            </button>
             <button id="settings-tab" class="nav-tab">Settings</button>
-
+            <button id="header-login-btn" class="nav-tab">Login</button>
           </nav>
         </div>
       </header>
@@ -97,21 +136,75 @@
       <div id="quick-actions-toolbar" class="quick-actions-toolbar">
         <div class="toolbar-content">
           <div class="toolbar-group">
-            <button id="quick-new-call" class="quick-action-btn" title="New Call">📞 New Call</button>
-            <button id="quick-timer" class="quick-action-btn" title="Quick Timer">⏱️ Timer</button>
-            <button id="quick-note" class="quick-action-btn" title="Quick Note">📝 Note</button>
-            <button id="quick-search" class="quick-action-btn" title="Customer Search">🔍 Search</button>
-            <button id="quick-template" class="quick-action-btn" title="Templates">📋 Template</button>
-            <button id="quick-department-lookup" class="quick-action-btn" title="Department Lookup">🏢 Dept Lookup</button>
+            <button
+              id="quick-new-call"
+              class="quick-action-btn"
+              title="New Call"
+            >
+              📞 New Call
+            </button>
+            <button
+              id="quick-timer"
+              class="quick-action-btn"
+              title="Quick Timer"
+            >
+              ⏱️ Timer
+            </button>
+            <button id="quick-note" class="quick-action-btn" title="Quick Note">
+              📝 Note
+            </button>
+            <button
+              id="quick-search"
+              class="quick-action-btn"
+              title="Customer Search"
+            >
+              🔍 Search
+            </button>
+            <button
+              id="quick-template"
+              class="quick-action-btn"
+              title="Templates"
+            >
+              📋 Template
+            </button>
+            <button
+              id="quick-department-lookup"
+              class="quick-action-btn"
+              title="Department Lookup"
+            >
+              🏢 Dept Lookup
+            </button>
           </div>
           <div class="toolbar-group">
-            <button id="quick-export" class="quick-action-btn" title="Export">📊 Export</button>
-            <button id="quick-dashboard" class="quick-action-btn" title="Dashboard">📈 Dashboard</button>
-            <button id="quick-queue" class="quick-action-btn" title="Queue Status">📋 Queue</button>
-            <button id="quick-chat" class="quick-action-btn" title="Team Chat">💬 Chat</button>
+            <button id="quick-export" class="quick-action-btn" title="Export">
+              📊 Export
+            </button>
+            <button
+              id="quick-dashboard"
+              class="quick-action-btn"
+              title="Dashboard"
+            >
+              📈 Dashboard
+            </button>
+            <button
+              id="quick-queue"
+              class="quick-action-btn"
+              title="Queue Status"
+            >
+              📋 Queue
+            </button>
+            <button id="quick-chat" class="quick-action-btn" title="Team Chat">
+              💬 Chat
+            </button>
           </div>
         </div>
-        <button id="toolbar-toggle" class="toolbar-toggle-btn" title="Toggle Toolbar">▼</button>
+        <button
+          id="toolbar-toggle"
+          class="toolbar-toggle-btn"
+          title="Toggle Toolbar"
+        >
+          ▼
+        </button>
       </div>
 
       <!-- Main App View -->
@@ -132,7 +225,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -180,7 +275,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -242,7 +339,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -290,7 +389,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -312,7 +413,10 @@
                   <button id="start-timer" class="button timer-btn start">
                     Start Hold
                   </button>
-                  <button id="reset-timer" class="button timer-btn reset hidden">
+                  <button
+                    id="reset-timer"
+                    class="button timer-btn reset hidden"
+                  >
                     Stop
                   </button>
                 </div>
@@ -384,7 +488,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -415,7 +521,11 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label for="call-type">Call Type</label>
-                    <select id="call-type" name="call-type" aria-label="Call type">
+                    <select
+                      id="call-type"
+                      name="call-type"
+                      aria-label="Call type"
+                    >
                       <option value="inbound">Inbound</option>
                       <option value="outbound">Outbound</option>
                     </select>
@@ -423,67 +533,142 @@
 
                   <div class="form-group timer-group">
                     <div id="call-timer" class="call-timer">00:00</div>
-                    <div id="active-call-hold-badge" class="hold-timer-badge" style="display: none;">Hold: 00:00</div>
-                    <button id="start-call-log" class="button btn-sm">Start Call</button>
+                    <div
+                      id="active-call-hold-badge"
+                      class="hold-timer-badge"
+                      style="display: none"
+                    >
+                      Hold: 00:00
+                    </div>
+                    <button id="start-call-log" class="button btn-sm">
+                      Start Call
+                    </button>
                   </div>
                 </div>
 
                 <!-- Verification Section (Hidden by default) -->
-                <div id="call-verification-section" class="form-section" style="display: none;">
+                <div
+                  id="call-verification-section"
+                  class="form-section"
+                  style="display: none"
+                >
                   <h5 class="section-label">Verification</h5>
-                  <div id="verification-fields-container" class="checkbox-group">
+                  <div
+                    id="verification-fields-container"
+                    class="checkbox-group"
+                  >
                     <!-- Dynamic Fields -->
                   </div>
                 </div>
 
                 <!-- Sensitive Data Section (Hidden by default) -->
-                <div id="call-sensitive-section" class="form-section" style="display: none;">
+                <div
+                  id="call-sensitive-section"
+                  class="form-section"
+                  style="display: none"
+                >
                   <h5 class="section-label">Caller Data</h5>
                   <div class="form-row">
                     <div class="form-group">
                       <label for="caller-account">Account #</label>
-                      <input type="text" id="caller-account" name="caller-account" placeholder="Account Number">
+                      <input
+                        type="text"
+                        id="caller-account"
+                        name="caller-account"
+                        placeholder="Account Number"
+                      />
                     </div>
                     <div class="form-group">
                       <label for="caller-ssn">SSN</label>
-                      <input type="password" id="caller-ssn" name="caller-ssn" placeholder="XXX-XX-XXXX" autocomplete="off">
+                      <input
+                        type="password"
+                        id="caller-ssn"
+                        name="caller-ssn"
+                        placeholder="XXX-XX-XXXX"
+                        autocomplete="off"
+                      />
                     </div>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <label for="call-notes" style="margin-bottom: 0;">Notes</label>
-                    <div id="call-templates-container" style="display: none;">
-                      <select id="note-template-select" class="btn-sm" style="padding: 2px 5px; height: auto;">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 0.5rem;
+                    "
+                  >
+                    <label for="call-notes" style="margin-bottom: 0"
+                      >Notes</label
+                    >
+                    <div id="call-templates-container" style="display: none">
+                      <select
+                        id="note-template-select"
+                        class="btn-sm"
+                        style="padding: 2px 5px; height: auto"
+                      >
                         <option value="">Insert Template...</option>
                         <!-- Dynamic Options -->
                       </select>
                     </div>
                   </div>
-                  <textarea id="call-notes" name="call-notes" placeholder="Call notes..."></textarea>
+                  <textarea
+                    id="call-notes"
+                    name="call-notes"
+                    placeholder="Call notes..."
+                  ></textarea>
                 </div>
 
                 <div class="call-controls">
-                  <button id="end-call-log" class="btn btn-primary" disabled style="background-color: var(--danger); border-color: var(--danger); color: white;">
+                  <button
+                    id="end-call-log"
+                    class="btn btn-primary"
+                    disabled
+                    style="
+                      background-color: var(--danger);
+                      border-color: var(--danger);
+                      color: white;
+                    "
+                  >
                     End Call
                   </button>
-                  <button id="hold-call-btn" class="btn btn-secondary" disabled title="Hold Call">
+                  <button
+                    id="hold-call-btn"
+                    class="btn btn-secondary"
+                    disabled
+                    title="Hold Call"
+                  >
                     ⏸️ Hold
                   </button>
-                  <button id="save-call-log" class="button" disabled>Save Log</button>
+                  <button id="save-call-log" class="button" disabled>
+                    Save Log
+                  </button>
                 </div>
               </div>
               <div class="timer-group">
                 <div class="call-history-header">
                   <h4>Recent Calls</h4>
                   <div class="history-actions">
-                    <button id="show-analytics" class="button btn-sm btn-icon" title="Analytics">📊</button>
-                    <button id="export-calls" class="button btn-sm btn-icon" title="Export">⬇️</button>
+                    <button
+                      id="show-analytics"
+                      class="button btn-sm btn-icon"
+                      title="Analytics"
+                    >
+                      📊
+                    </button>
+                    <button
+                      id="export-calls"
+                      class="button btn-sm btn-icon"
+                      title="Export"
+                    >
+                      ⬇️
+                    </button>
                   </div>
                 </div>
                 <div class="history-filters">
-                  <input type="text" id="call-search" placeholder="Search...">
+                  <input type="text" id="call-search" placeholder="Search..." />
                   <select id="call-filter">
                     <option value="all">All</option>
                     <option value="inbound">Inbound</option>
@@ -512,7 +697,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -532,27 +719,62 @@
                     Complaints
                   </button>
                 </div>
-                <button id="manage-categories-btn" class="button btn-sm btn-secondary" title="Manage Categories">⚙️</button>
+                <button
+                  id="manage-categories-btn"
+                  class="button btn-sm btn-secondary"
+                  title="Manage Categories"
+                >
+                  ⚙️
+                </button>
               </div>
-              
+
               <div class="script-controls-bar">
-                <input type="text" id="script-search" placeholder="Search scripts..." class="search-input" />
-                <button id="new-script-btn" class="button btn-primary">+ New Script</button>
+                <input
+                  type="text"
+                  id="script-search"
+                  placeholder="Search scripts..."
+                  class="search-input"
+                />
+                <button id="new-script-btn" class="button btn-primary">
+                  + New Script
+                </button>
               </div>
 
               <div class="script-list" id="script-list">
                 <!-- Scripts will be loaded here -->
               </div>
 
-              <div class="script-editor" id="script-editor-container" style="display: none;">
+              <div
+                class="script-editor"
+                id="script-editor-container"
+                style="display: none"
+              >
                 <div class="editor-toolbar">
                   <div class="format-group">
-                    <button class="editor-btn" data-action="bold" title="Bold"><strong>B</strong></button>
-                    <button class="editor-btn" data-action="italic" title="Italic"><em>I</em></button>
-                    <button class="editor-btn" data-action="underline" title="Underline"><u>U</u></button>
+                    <button class="editor-btn" data-action="bold" title="Bold">
+                      <strong>B</strong>
+                    </button>
+                    <button
+                      class="editor-btn"
+                      data-action="italic"
+                      title="Italic"
+                    >
+                      <em>I</em>
+                    </button>
+                    <button
+                      class="editor-btn"
+                      data-action="underline"
+                      title="Underline"
+                    >
+                      <u>U</u>
+                    </button>
                   </div>
                   <div class="variable-group">
-                    <select id="variable-insert" class="variable-select" title="Insert Variable">
+                    <select
+                      id="variable-insert"
+                      class="variable-select"
+                      title="Insert Variable"
+                    >
                       <option value="">{ } Insert Variable</option>
                       <option value="customer_name">Customer Name</option>
                       <option value="agent_name">Agent Name</option>
@@ -563,7 +785,13 @@
                     </select>
                   </div>
                   <div class="view-group">
-                    <button id="toggle-preview-btn" class="editor-btn" title="Toggle Preview">👁️ Preview</button>
+                    <button
+                      id="toggle-preview-btn"
+                      class="editor-btn"
+                      title="Toggle Preview"
+                    >
+                      👁️ Preview
+                    </button>
                   </div>
                 </div>
 
@@ -573,13 +801,27 @@
                     placeholder="Write your script here... Use {{variable}} for dynamic content."
                     class="script-textarea"
                   ></textarea>
-                  <div id="script-preview-pane" class="script-preview-pane" style="display: none;"></div>
+                  <div
+                    id="script-preview-pane"
+                    class="script-preview-pane"
+                    style="display: none"
+                  ></div>
                 </div>
 
                 <div class="editor-actions">
-                  <button id="cancel-script" class="button btn-secondary">Cancel</button>
-                  <button id="copy-script-btn" class="button btn-secondary" style="display: none;">📋 Copy</button>
-                  <button id="save-script" class="button btn-primary">Save Script</button>
+                  <button id="cancel-script" class="button btn-secondary">
+                    Cancel
+                  </button>
+                  <button
+                    id="copy-script-btn"
+                    class="button btn-secondary"
+                    style="display: none"
+                  >
+                    📋 Copy
+                  </button>
+                  <button id="save-script" class="button btn-primary">
+                    Save Script
+                  </button>
                 </div>
               </div>
             </div>
@@ -600,7 +842,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -653,7 +897,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -692,7 +938,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -731,7 +979,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -849,7 +1099,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -883,26 +1135,150 @@
 
       <!-- Settings View -->
       <div id="settings-view" class="app-view hidden">
-        <div class="container sortable-container">
-
-
-            <!-- Appearance Section -->
-            <section class="card settings-section toggleable-section draggable-section" data-section="settings-appearance">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Appearance">
-                    Appearance
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
-                <button class="float-btn" title="Float">⧉</button>
-                </div>
+        <div class="settings-header container">
+            <h1>App Settings</h1>
+            <div class="settings-search-container">
+              <input type="text" id="settings-search-input" placeholder="Search settings..." class="search-input" />
+              <button id="settings-search-clear" class="search-clear-btn" aria-label="Clear search" style="display: none;">×</button>
+            </div>
+        </div>
+        <div class="container settings-container">
+          <div class="sortable-container">
+          <!-- Account Settings Section (Auth Only) -->
+          <section
+            id="account-settings-section"
+            class="card settings-section toggleable-section draggable-section"
+            data-section="account"
+            style="display: none"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title">Account Settings</h2>
               </div>
-              <div class="section-content section-content--cols">
-                <p>Customize the look and feel of the application:</p>
+              <div class="section-controls">
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content section-content--cols">
+              <!-- Profile Update -->
+              <div class="settings-group">
+                <h4 class="settings-group-title">Profile Information</h4>
+                <form id="update-profile-form" class="settings-form">
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="account-username" class="setting-label"
+                        >Username</label
+                      >
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="account-username"
+                        name="username"
+                        class="form-input"
+                      />
+                    </div>
+                  </div>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="account-email" class="setting-label"
+                        >Email</label
+                      >
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="email"
+                        id="account-email"
+                        name="email"
+                        class="form-input"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="button btn-primary">
+                      Update Profile
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Password Update -->
+              <div
+                class="settings-group"
+                style="
+                  margin-top: 1.5rem;
+                  border-top: 1px solid var(--border-color);
+                  padding-top: 1rem;
+                "
+              >
+                <h4 class="settings-group-title">Change Password</h4>
+                <form id="change-password-form" class="settings-form">
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="current-password" class="setting-label"
+                        >Current Password</label
+                      >
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="current-password"
+                        name="currentPassword"
+                        class="form-input"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="new-password" class="setting-label"
+                        >New Password</label
+                      >
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="new-password"
+                        name="newPassword"
+                        class="form-input"
+                        autocomplete="new-password"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="button btn-secondary">
+                      Change Password
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <!-- Appearance Section -->
+          <section
+            class="card settings-section toggleable-section draggable-section"
+            data-section="settings-appearance"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Appearance">
+                  Appearance
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content section-content--cols">
+              <p>Customize the look and feel (Theme, Dark Mode) of the application:</p>
 
               <div class="popup-settings">
                 <div class="setting-item">
@@ -937,7 +1313,7 @@
                       <div class="setting-label">Prefer Browser Popups</div>
                     </div>
                   </div>
-                  <div class="setting-content" >
+                  <div class="setting-content">
                     <div class="setting-description">
                       Open sections in separate windows where possible. If
                       blocked, the app falls back to opening a new tab.
@@ -962,7 +1338,7 @@
                       <div class="setting-label">Always on Top</div>
                     </div>
                   </div>
-                  <div class="setting-content" >
+                  <div class="setting-content">
                     <div class="setting-description">
                       Keep popup windows pinned above other desktop windows for
                       quick reference.
@@ -987,7 +1363,7 @@
                       <div class="setting-label">Popup Window Width</div>
                     </div>
                   </div>
-                  <div class="setting-content" >
+                  <div class="setting-content">
                     <div class="setting-description">
                       Default width (in pixels) for standalone windows.
                     </div>
@@ -1011,7 +1387,7 @@
                       <div class="setting-label">Popup Window Height</div>
                     </div>
                   </div>
-                  <div class="setting-content" >
+                  <div class="setting-content">
                     <div class="setting-description">
                       Default height (in pixels) for standalone windows.
                     </div>
@@ -1096,315 +1472,643 @@
                   </div>
                   <div class="appearance-content">
                     <p class="appearance-description">
-                      Show or hide the sticky toolbar at the top of the screen for
-                      fast access to common actions.
+                      Show or hide the sticky toolbar at the top of the screen
+                      for fast access to common actions.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-            </section>
+          </section>
 
-            <!-- Visible Sections -->
-            <section class="card settings-section toggleable-section draggable-section" data-section="settings-visible-sections">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Visible Sections">
-                    Visible Sections
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+          <!-- Visible Sections -->
+          <section
+            class="card settings-section toggleable-section draggable-section"
+            data-section="settings-visible-sections"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Visible Sections">
+                  Visible Sections
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content section-content--cols">
+              <p>Choose which sections to display on the main page:</p>
+
+              <div class="section-groups-grid">
+                <!-- Group 1: Call Handling Tools -->
+                <div class="section-group">
+                  <h4>Call Handling Tools</h4>
+                  <div class="toggle-grid">
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Format phone numbers"
+                          >Number Formatter</span
+                        >
+                        <label class="switch" for="toggle-formatter">
+                          <input
+                            type="checkbox"
+                            id="toggle-formatter"
+                            name="toggle-formatter"
+                            class="section-toggle"
+                            data-section="formatter"
+                            checked
+                            aria-label="Show Number Formatter"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span
+                          class="toggle-text"
+                          title="Step-by-step procedures"
+                          >Call Flow Builder</span
+                        >
+                        <label class="switch" for="toggle-callflow">
+                          <input
+                            type="checkbox"
+                            id="toggle-callflow"
+                            name="toggle-callflow"
+                            class="section-toggle"
+                            data-section="callflow"
+                            checked
+                            aria-label="Show Call Flow Builder"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span
+                          class="toggle-text"
+                          title="Quick notes with timestamps"
+                          >Notes</span
+                        >
+                        <label class="switch" for="toggle-notes">
+                          <input
+                            type="checkbox"
+                            id="toggle-notes"
+                            name="toggle-notes"
+                            class="section-toggle"
+                            data-section="notes"
+                            checked
+                            aria-label="Show Notes"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Track hold times"
+                          >Hold Timer</span
+                        >
+                        <label class="switch" for="toggle-holdtimer">
+                          <input
+                            type="checkbox"
+                            id="toggle-holdtimer"
+                            name="toggle-holdtimer"
+                            class="section-toggle"
+                            data-section="holdtimer"
+                            checked
+                            aria-label="Show Hold Timer"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Access scripts"
+                          >Script Library</span
+                        >
+                        <label class="switch" for="toggle-scripts">
+                          <input
+                            type="checkbox"
+                            id="toggle-scripts"
+                            name="toggle-scripts"
+                            class="section-toggle"
+                            data-section="scripts"
+                            aria-label="Show Script Library"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 2: Communication & Collaboration -->
+                <div class="section-group">
+                  <h4>Communication & Collaboration</h4>
+                  <div class="toggle-grid">
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Multi-channel handling"
+                          >Multi-Channel Support</span
+                        >
+                        <label class="switch" for="toggle-multichannel">
+                          <input
+                            type="checkbox"
+                            id="toggle-multichannel"
+                            name="toggle-multichannel"
+                            class="section-toggle"
+                            data-section="multichannel"
+                            checked
+                            aria-label="Show Multi-Channel Support"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Team chat and status"
+                          >Team Collaboration</span
+                        >
+                        <label class="switch" for="toggle-collaboration">
+                          <input
+                            type="checkbox"
+                            id="toggle-collaboration"
+                            name="toggle-collaboration"
+                            class="section-toggle"
+                            data-section="collaboration"
+                            checked
+                            aria-label="Show Team Collaboration"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Call recording"
+                          >Voice Recording</span
+                        >
+                        <label class="switch" for="toggle-voicerecording">
+                          <input
+                            type="checkbox"
+                            id="toggle-voicerecording"
+                            name="toggle-voicerecording"
+                            class="section-toggle"
+                            data-section="voicerecording"
+                            aria-label="Show Voice Recording"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Customer surveys"
+                          >Customer Feedback</span
+                        >
+                        <label class="switch" for="toggle-feedback">
+                          <input
+                            type="checkbox"
+                            id="toggle-feedback"
+                            name="toggle-feedback"
+                            class="section-toggle"
+                            data-section="feedback"
+                            checked
+                            aria-label="Show Customer Feedback"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 3: Management & Logging -->
+                <div class="section-group">
+                  <h4>Management & Logging</h4>
+                  <div class="toggle-grid">
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Log call details"
+                          >Call Logging</span
+                        >
+                        <label class="switch" for="toggle-calllogging">
+                          <input
+                            type="checkbox"
+                            id="toggle-calllogging"
+                            name="toggle-calllogging"
+                            class="section-toggle"
+                            data-section="calllogging"
+                            aria-label="Show Call Logging"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Manage tasks"
+                          >Task Management</span
+                        >
+                        <label class="switch" for="toggle-tasks">
+                          <input
+                            type="checkbox"
+                            id="toggle-tasks"
+                            name="toggle-tasks"
+                            class="section-toggle"
+                            data-section="tasks"
+                            aria-label="Show Task Management"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Track time and billing"
+                          >Time Tracking</span
+                        >
+                        <label class="switch" for="toggle-time-tracking">
+                          <input
+                            type="checkbox"
+                            id="toggle-time-tracking"
+                            name="toggle-time-tracking"
+                            class="section-toggle"
+                            data-section="timeTracking"
+                            checked
+                            aria-label="Show Time Tracking"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span
+                          class="toggle-text"
+                          title="Knowledge base articles"
+                          >Knowledge Base</span
+                        >
+                        <label class="switch" for="toggle-knowledge-base">
+                          <input
+                            type="checkbox"
+                            id="toggle-knowledge-base"
+                            name="toggle-knowledge-base"
+                            class="section-toggle"
+                            data-section="knowledgeBase"
+                            aria-label="Show Knowledge Base"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 4: Automation & Intelligence -->
+                <div class="section-group">
+                  <h4>Automation & Intelligence</h4>
+                  <div class="toggle-grid">
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Automated workflows"
+                          >Automated Workflows</span
+                        >
+                        <label class="switch" for="toggle-workflows">
+                          <input
+                            type="checkbox"
+                            id="toggle-workflows"
+                            name="toggle-workflows"
+                            class="section-toggle"
+                            data-section="workflows"
+                            checked
+                            aria-label="Show Automated Workflows"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="External integrations"
+                          >API Integration</span
+                        >
+                        <label class="switch" for="toggle-api-integration">
+                          <input
+                            type="checkbox"
+                            id="toggle-api-integration"
+                            name="toggle-api-integration"
+                            class="section-toggle"
+                            data-section="apiIntegration"
+                            checked
+                            aria-label="Show API Integration"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 5: Analytics -->
+                <div class="section-group">
+                  <h4>Analytics</h4>
+                  <div class="toggle-grid">
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Custom dashboards"
+                          >Advanced Analytics</span
+                        >
+                        <label class="switch" for="toggle-advanced-analytics">
+                          <input
+                            type="checkbox"
+                            id="toggle-advanced-analytics"
+                            name="toggle-advanced-analytics"
+                            class="section-toggle"
+                            data-section="advancedAnalytics"
+                            checked
+                            aria-label="Show Advanced Analytics"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-content">
+                        <span class="toggle-text" title="Performance metrics"
+                          >Performance Monitoring</span
+                        >
+                        <label
+                          class="switch"
+                          for="toggle-performance-monitoring"
+                        >
+                          <input
+                            type="checkbox"
+                            id="toggle-performance-monitoring"
+                            name="toggle-performance-monitoring"
+                            class="section-toggle"
+                            data-section="performanceMonitoring"
+                            aria-label="Show Performance Monitoring"
+                          />
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="section-content section-content--cols">
-                <p>Choose which sections to display on the main page:</p>
-
-                <div class="section-groups-grid">
-                  <!-- Group 1: Call Handling Tools -->
-                  <div class="section-group">
-                    <h4>Call Handling Tools</h4>
-                    <div class="toggle-grid">
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Format phone numbers">Number Formatter</span>
-                          <label class="switch" for="toggle-formatter">
-                            <input type="checkbox" id="toggle-formatter" name="toggle-formatter" class="section-toggle" data-section="formatter" checked aria-label="Show Number Formatter" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Step-by-step procedures">Call Flow Builder</span>
-                          <label class="switch" for="toggle-callflow">
-                            <input type="checkbox" id="toggle-callflow" name="toggle-callflow" class="section-toggle" data-section="callflow" checked aria-label="Show Call Flow Builder" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Quick notes with timestamps">Notes</span>
-                          <label class="switch" for="toggle-notes">
-                            <input type="checkbox" id="toggle-notes" name="toggle-notes" class="section-toggle" data-section="notes" checked aria-label="Show Notes" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Track hold times">Hold Timer</span>
-                          <label class="switch" for="toggle-holdtimer">
-                            <input type="checkbox" id="toggle-holdtimer" name="toggle-holdtimer" class="section-toggle" data-section="holdtimer" checked aria-label="Show Hold Timer" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Access scripts">Script Library</span>
-                          <label class="switch" for="toggle-scripts">
-                            <input type="checkbox" id="toggle-scripts" name="toggle-scripts" class="section-toggle" data-section="scripts" aria-label="Show Script Library" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Group 2: Communication & Collaboration -->
-                  <div class="section-group">
-                    <h4>Communication & Collaboration</h4>
-                    <div class="toggle-grid">
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Multi-channel handling">Multi-Channel Support</span>
-                          <label class="switch" for="toggle-multichannel">
-                            <input type="checkbox" id="toggle-multichannel" name="toggle-multichannel" class="section-toggle" data-section="multichannel" checked aria-label="Show Multi-Channel Support" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Team chat and status">Team Collaboration</span>
-                          <label class="switch" for="toggle-collaboration">
-                            <input type="checkbox" id="toggle-collaboration" name="toggle-collaboration" class="section-toggle" data-section="collaboration" checked aria-label="Show Team Collaboration" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Call recording">Voice Recording</span>
-                          <label class="switch" for="toggle-voicerecording">
-                            <input type="checkbox" id="toggle-voicerecording" name="toggle-voicerecording" class="section-toggle" data-section="voicerecording" aria-label="Show Voice Recording" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                       <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Customer surveys">Customer Feedback</span>
-                          <label class="switch" for="toggle-feedback">
-                            <input type="checkbox" id="toggle-feedback" name="toggle-feedback" class="section-toggle" data-section="feedback" checked aria-label="Show Customer Feedback" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Group 3: Management & Logging -->
-                  <div class="section-group">
-                    <h4>Management & Logging</h4>
-                    <div class="toggle-grid">
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Log call details">Call Logging</span>
-                          <label class="switch" for="toggle-calllogging">
-                            <input type="checkbox" id="toggle-calllogging" name="toggle-calllogging" class="section-toggle" data-section="calllogging" aria-label="Show Call Logging" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Manage tasks">Task Management</span>
-                          <label class="switch" for="toggle-tasks">
-                            <input type="checkbox" id="toggle-tasks" name="toggle-tasks" class="section-toggle" data-section="tasks" aria-label="Show Task Management" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Track time and billing">Time Tracking</span>
-                          <label class="switch" for="toggle-time-tracking">
-                            <input type="checkbox" id="toggle-time-tracking" name="toggle-time-tracking" class="section-toggle" data-section="timeTracking" checked aria-label="Show Time Tracking" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                       <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Knowledge base articles">Knowledge Base</span>
-                          <label class="switch" for="toggle-knowledge-base">
-                            <input type="checkbox" id="toggle-knowledge-base" name="toggle-knowledge-base" class="section-toggle" data-section="knowledgeBase" aria-label="Show Knowledge Base" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Group 4: Automation & Intelligence -->
-                  <div class="section-group">
-                    <h4>Automation & Intelligence</h4>
-                    <div class="toggle-grid">
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Automated workflows">Automated Workflows</span>
-                          <label class="switch" for="toggle-workflows">
-                            <input type="checkbox" id="toggle-workflows" name="toggle-workflows" class="section-toggle" data-section="workflows" checked aria-label="Show Automated Workflows" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="External integrations">API Integration</span>
-                          <label class="switch" for="toggle-api-integration">
-                            <input type="checkbox" id="toggle-api-integration" name="toggle-api-integration" class="section-toggle" data-section="apiIntegration" checked aria-label="Show API Integration" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Group 5: Analytics -->
-                  <div class="section-group">
-                    <h4>Analytics</h4>
-                    <div class="toggle-grid">
-
-                        <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Custom dashboards">Advanced Analytics</span>
-                          <label class="switch" for="toggle-advanced-analytics">
-                            <input type="checkbox" id="toggle-advanced-analytics" name="toggle-advanced-analytics" class="section-toggle" data-section="advancedAnalytics" checked aria-label="Show Advanced Analytics" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="toggle-item">
-                        <div class="toggle-content">
-                          <span class="toggle-text" title="Performance metrics">Performance Monitoring</span>
-                          <label class="switch" for="toggle-performance-monitoring">
-                            <input type="checkbox" id="toggle-performance-monitoring" name="toggle-performance-monitoring" class="section-toggle" data-section="performanceMonitoring" aria-label="Show Performance Monitoring" />
-                            <span class="slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
+            </div>
             <!-- Visible Sections remain inside the top grid -->
-            </section>
+          </section>
 
-
-            <!-- Data Management Section -->
-            <section id="data-management-section" class="card settings-section toggleable-section draggable-section" data-section="settings-data-management">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Data Management">
-                    Data Management
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+          <!-- Data Management Section -->
+          <section
+            id="data-management-section"
+            class="card settings-section toggleable-section draggable-section"
+            data-section="settings-data-management"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Data Management">
+                  Data Management
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content">
+              <p>Manage your application data:</p>
+
+              <!-- Scope Selection -->
+              <div class="setting-group" style="margin-bottom: 1rem">
+                <h4
+                  style="
+                    margin-bottom: 0.75rem;
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    color: var(--text-secondary);
+                    letter-spacing: 0.5px;
+                  "
+                >
+                  Export Scope
+                </h4>
+
+                <div
+                  class="scope-selector"
+                  style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem"
+                >
+                  <button
+                    type="button"
+                    class="button btn-sm scope-btn active"
+                    data-scope="all"
+                    style="flex: 1"
+                  >
+                    All Data
+                  </button>
+                  <button
+                    type="button"
+                    class="button btn-sm scope-btn"
+                    data-scope="settings"
+                    style="flex: 1"
+                  >
+                    Settings Only
+                  </button>
+                  <button
+                    type="button"
+                    class="button btn-sm scope-btn"
+                    data-scope="custom"
+                    style="flex: 1"
+                  >
+                    Custom...
+                  </button>
                 </div>
               </div>
-              <div class="section-content">
-                <p>Manage your application data:</p>
 
-                <!-- Scope Selection -->
-                <div class="setting-group" style="margin-bottom: 1rem;">
-                  <h4 style="margin-bottom: 0.75rem; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Export Scope</h4>
-                  
-                  <div class="scope-selector" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
-                    <button type="button" class="button btn-sm scope-btn active" data-scope="all" style="flex: 1;">All Data</button>
-                    <button type="button" class="button btn-sm scope-btn" data-scope="settings" style="flex: 1;">Settings Only</button>
-                    <button type="button" class="button btn-sm scope-btn" data-scope="custom" style="flex: 1;">Custom...</button>
-                  </div>
+              <!-- Action Buttons Grid -->
+              <div
+                class="data-actions-container"
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                  gap: 0.75rem;
+                "
+              >
+                <div
+                  class="action-card"
+                  style="
+                    background: var(--bg-secondary);
+                    padding: 0.75rem;
+                    border-radius: 6px;
+                    text-align: center;
+                  "
+                >
+                  <button
+                    id="export-data-btn"
+                    class="button btn-sm full-width"
+                    style="width: 100%"
+                  >
+                    ⬇️ Export JSON
+                  </button>
+                  <small
+                    style="
+                      display: block;
+                      margin-top: 0.25rem;
+                      color: var(--text-muted);
+                      font-size: 0.75rem;
+                    "
+                    >Download file</small
+                  >
                 </div>
-
-                <!-- Action Buttons Grid -->
-                <div class="data-actions-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem;">
-                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
-                       <button id="export-data-btn" class="button btn-sm full-width" style="width: 100%;">⬇️ Export JSON</button>
-                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Download file</small>
-                   </div>
-                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
-                        <div class="file-upload-group">
-                           <button id="import-data-btn" class="button btn-sm full-width" style="width: 100%;">📁 Import JSON</button>
-                        </div>
-                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Merge with current</small>
-                   </div>
-                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
-                       <button id="backup-data-btn" class="button btn-sm full-width" style="width: 100%;">💾 Local Backup</button>
-                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Save to browser</small>
-                   </div>
-                   <div class="action-card" style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; text-align: center;">
-                       <div class="file-upload-group">
-                           <button id="restore-data-btn" class="button btn-sm full-width" style="width: 100%;">🔄 Restore Backup</button>
-                       </div>
-                       <small style="display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">Overwrite current</small>
-                   </div>
-                </div>
-
-                <!-- Danger Zone -->
-                <div class="setting-item danger" style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
-                  <div class="setting-info">
-                    <div class="setting-label" style="color: var(--danger-color);">Clear All Data</div>
-                    <div class="setting-description">
-                      Permanently delete ALL application data.
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <button id="clear-data-btn" class="button btn-danger">
-                      Start Over
+                <div
+                  class="action-card"
+                  style="
+                    background: var(--bg-secondary);
+                    padding: 0.75rem;
+                    border-radius: 6px;
+                    text-align: center;
+                  "
+                >
+                  <div class="file-upload-group">
+                    <button
+                      id="import-data-btn"
+                      class="button btn-sm full-width"
+                      style="width: 100%"
+                    >
+                      📁 Import JSON
                     </button>
                   </div>
+                  <small
+                    style="
+                      display: block;
+                      margin-top: 0.25rem;
+                      color: var(--text-muted);
+                      font-size: 0.75rem;
+                    "
+                    >Merge with current</small
+                  >
+                </div>
+                <div
+                  class="action-card"
+                  style="
+                    background: var(--bg-secondary);
+                    padding: 0.75rem;
+                    border-radius: 6px;
+                    text-align: center;
+                  "
+                >
+                  <button
+                    id="backup-data-btn"
+                    class="button btn-sm full-width"
+                    style="width: 100%"
+                  >
+                    💾 Local Backup
+                  </button>
+                  <small
+                    style="
+                      display: block;
+                      margin-top: 0.25rem;
+                      color: var(--text-muted);
+                      font-size: 0.75rem;
+                    "
+                    >Save to browser</small
+                  >
+                </div>
+                <div
+                  class="action-card"
+                  style="
+                    background: var(--bg-secondary);
+                    padding: 0.75rem;
+                    border-radius: 6px;
+                    text-align: center;
+                  "
+                >
+                  <div class="file-upload-group">
+                    <button
+                      id="restore-data-btn"
+                      class="button btn-sm full-width"
+                      style="width: 100%"
+                    >
+                      🔄 Restore Backup
+                    </button>
+                  </div>
+                  <small
+                    style="
+                      display: block;
+                      margin-top: 0.25rem;
+                      color: var(--text-muted);
+                      font-size: 0.75rem;
+                    "
+                    >Overwrite current</small
+                  >
                 </div>
               </div>
-            </section>
 
-            <!-- Performance Monitoring Section -->
-            <section id="performance-monitoring-section" class="card settings-section toggleable-section draggable-section" data-section="performanceMonitoring">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="📊 Performance Monitoring">
-                    📊 Performance Monitoring
-                  </h2>
+              <!-- Danger Zone -->
+              <div
+                class="setting-item danger"
+                style="
+                  margin-top: 1.5rem;
+                  border-top: 1px solid var(--border-color);
+                  padding-top: 1.5rem;
+                "
+              >
+                <div class="setting-info">
+                  <div class="setting-label" style="color: var(--danger-color)">
+                    Clear All Data
+                  </div>
+                  <div class="setting-description">
+                    Permanently delete ALL application data.
+                  </div>
                 </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
-                <button class="float-btn" title="Float">⧉</button>
+                <div class="setting-control">
+                  <button id="clear-data-btn" class="button btn-danger">
+                    Start Over
+                  </button>
                 </div>
               </div>
-              <div class="section-content section-content--cols">
-                <p>Monitor application performance metrics and diagnostics:</p>
+            </div>
+          </section>
+
+          <!-- Performance Monitoring Section -->
+          <section
+            id="performance-monitoring-section"
+            class="card settings-section toggleable-section draggable-section"
+            data-section="performanceMonitoring"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2
+                  class="section-title"
+                  data-original="📊 Performance Monitoring"
+                >
+                  📊 Performance Monitoring
+                </h2>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
+                <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content section-content--cols">
+              <p>Monitor application performance metrics and diagnostics:</p>
 
               <div class="setting-item">
                 <div class="setting-info">
@@ -1457,536 +2161,581 @@
                 </div>
               </div>
             </div>
-            </section>
+          </section>
 
-            <!-- CRM Integration Settings -->
-            <section id="crm-integration-section" class="card settings-section toggleable-section draggable-section" data-section="settings-crm-integration">
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="CRM Integration">
-                    CRM Integration
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+          <!-- CRM Integration Settings -->
+          <section
+            id="crm-integration-section"
+            class="card settings-section toggleable-section draggable-section"
+            data-section="settings-crm-integration"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="CRM Integration">
+                  CRM Integration
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
+              </div>
+            </div>
+            <div class="section-content section-content--cols">
+              <p>
+                Configure CRM integration for contact lookup and call logging:
+              </p>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-label">CRM Provider</div>
+                  <div class="setting-description">
+                    Select your CRM provider for integration
+                  </div>
+                </div>
+                <div class="setting-control">
+                  <select
+                    id="crm-provider"
+                    name="crm-provider"
+                    aria-label="CRM Provider"
+                  >
+                    <option value="finesse">Cisco Finesse</option>
+                    <option value="five9">Five9</option>
+                    <option value="salesforce">Salesforce</option>
+                    <option value="zendesk">Zendesk</option>
+                    <option value="hubspot">HubSpot</option>
+                    <option value="dynamics">Microsoft Dynamics 365</option>
+                  </select>
                 </div>
               </div>
-              <div class="section-content section-content--cols">
-                <p>
-                  Configure CRM integration for contact lookup and call logging:
-                </p>
 
-                <div class="setting-item">
-                  <div class="setting-info">
-                    <div class="setting-label">CRM Provider</div>
-                    <div class="setting-description">
-                      Select your CRM provider for integration
-                    </div>
-                  </div>
-                  <div class="setting-control">
-                    <select
-                      id="crm-provider"
-                      name="crm-provider"
-                      aria-label="CRM Provider"
-                    >
-                      <option value="finesse">Cisco Finesse</option>
-                      <option value="five9">Five9</option>
-                      <option value="salesforce">Salesforce</option>
-                      <option value="zendesk">Zendesk</option>
-                      <option value="hubspot">HubSpot</option>
-                      <option value="dynamics">Microsoft Dynamics 365</option>
-                    </select>
-                  </div>
-                </div>
+              <!-- CRM Configuration Section -->
+              <div
+                id="crm-config-section"
+                class="settings-subsection crm-config-section"
+              >
+                <h4>CRM Configuration</h4>
 
-                <!-- CRM Configuration Section -->
-                <div id="crm-config-section" class="settings-subsection crm-config-section">
-                  <h4>CRM Configuration</h4>
-
-                  <!-- Cisco Finesse Configuration -->
-                  <div id="finesse-config-form" class="crm-provider-config">
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Finesse Server URL</div>
-                        <div class="setting-description">
-                          Your Cisco Finesse server URL (e.g.,
-                          https://finesse-server:8445)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="url"
-                          id="finesse-url"
-                          name="finesse-url"
-                          placeholder="https://finesse-server:8445"
-                          aria-label="Finesse server URL"
-                          autocomplete="off"
-                        />
+                <!-- Cisco Finesse Configuration -->
+                <div id="finesse-config-form" class="crm-provider-config">
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Finesse Server URL</div>
+                      <div class="setting-description">
+                        Your Cisco Finesse server URL (e.g.,
+                        https://finesse-server:8445)
                       </div>
                     </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Agent Username</div>
-                        <div class="setting-description">
-                          Your Cisco Finesse agent username
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="finesse-username"
-                          name="finesse-username"
-                          placeholder="agent_username"
-                          aria-label="Finesse agent username"
-                          autocomplete="username"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Agent Password</div>
-                        <div class="setting-description">
-                          Your Cisco Finesse agent password
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="finesse-password"
-                          name="finesse-password"
-                          placeholder="Enter password"
-                          aria-label="Finesse agent password"
-                          autocomplete="current-password"
-                        />
-                      </div>
+                    <div class="setting-control">
+                      <input
+                        type="url"
+                        id="finesse-url"
+                        name="finesse-url"
+                        placeholder="https://finesse-server:8445"
+                        aria-label="Finesse server URL"
+                        autocomplete="off"
+                      />
                     </div>
                   </div>
 
-                  <!-- Five9 Configuration -->
-                  <div id="five9-config-form" class="crm-provider-config hidden">
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Five9 Domain</div>
-                        <div class="setting-description">
-                          Your Five9 domain (e.g., yourcompany.five9.com)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="five9-domain"
-                          name="five9-domain"
-                          placeholder="yourcompany.five9.com"
-                          aria-label="Five9 domain"
-                          autocomplete="off"
-                        />
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Agent Username</div>
+                      <div class="setting-description">
+                        Your Cisco Finesse agent username
                       </div>
                     </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">API Username</div>
-                        <div class="setting-description">
-                          Your Five9 API username
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="five9-username"
-                          name="five9-username"
-                          placeholder="api_username"
-                          aria-label="Five9 API username"
-                          autocomplete="username"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">API Password</div>
-                        <div class="setting-description">
-                          Your Five9 API password
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="five9-password"
-                          name="five9-password"
-                          placeholder="Enter password"
-                          aria-label="Five9 API password"
-                          autocomplete="current-password"
-                        />
-                      </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="finesse-username"
+                        name="finesse-username"
+                        placeholder="agent_username"
+                        aria-label="Finesse agent username"
+                        autocomplete="username"
+                      />
                     </div>
                   </div>
 
-                  <!-- Salesforce Configuration -->
-                  <div id="salesforce-config-form" class="crm-provider-config hidden">
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Salesforce Instance URL</div>
-                        <div class="setting-description">
-                          Your Salesforce instance URL (e.g.,
-                          https://yourcompany.my.salesforce.com)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="url"
-                          id="salesforce-url"
-                          name="salesforce-url"
-                          placeholder="https://yourcompany.my.salesforce.com"
-                          aria-label="Salesforce instance URL"
-                        />
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Agent Password</div>
+                      <div class="setting-description">
+                        Your Cisco Finesse agent password
                       </div>
                     </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Consumer Key</div>
-                        <div class="setting-description">
-                          Your Salesforce Connected App Consumer Key
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="salesforce-consumer-key"
-                          name="salesforce-consumer-key"
-                          placeholder="Your Consumer Key"
-                          aria-label="Salesforce Consumer Key"
-                          autocomplete="off"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Consumer Secret</div>
-                        <div class="setting-description">
-                          Your Salesforce Connected App Consumer Secret
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="salesforce-consumer-secret"
-                          name="salesforce-consumer-secret"
-                          placeholder="Your Consumer Secret"
-                          aria-label="Salesforce Consumer Secret"
-                          autocomplete="current-password"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Username</div>
-                        <div class="setting-description">
-                          Your Salesforce username
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="email"
-                          id="salesforce-username"
-                          name="salesforce-username"
-                          placeholder="user@company.com"
-                          aria-label="Salesforce username"
-                          autocomplete="username"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Password + Security Token</div>
-                        <div class="setting-description">
-                          Your Salesforce password followed by your security token
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="salesforce-password"
-                          name="salesforce-password"
-                          placeholder="password + security_token"
-                          aria-label="Salesforce password and security token"
-                          autocomplete="current-password"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Zendesk Configuration -->
-                  <div id="zendesk-config-form" class="crm-provider-config hidden">
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Zendesk Subdomain</div>
-                        <div class="setting-description">
-                          Your Zendesk subdomain (e.g., yourcompany.zendesk.com)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="zendesk-subdomain"
-                          name="zendesk-subdomain"
-                          placeholder="yourcompany"
-                          aria-label="Zendesk subdomain"
-                          autocomplete="off"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">API Token</div>
-                        <div class="setting-description">
-                          Your Zendesk API token (generate from Admin > API)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="zendesk-api-token"
-                          name="zendesk-api-token"
-                          placeholder="Your API token"
-                          aria-label="Zendesk API token"
-                          autocomplete="current-password"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Email Address</div>
-                        <div class="setting-description">
-                          The email address associated with your Zendesk account
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="email"
-                          id="zendesk-email"
-                          name="zendesk-email"
-                          placeholder="admin@company.com"
-                          aria-label="Zendesk email"
-                          autocomplete="username"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- HubSpot Configuration -->
-                  <div id="hubspot-config-form" class="crm-provider-config hidden">
-                    <!-- Hidden username field for accessibility -->
-                    <input type="text" id="hubspot-username" name="hubspot-username" autocomplete="username" style="display: none;" aria-hidden="true">
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">HubSpot API Key</div>
-                        <div class="setting-description">
-                          Your HubSpot API key (found in Settings > Integrations >
-                          API Key)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="hubspot-api-key"
-                          name="hubspot-api-key"
-                          placeholder="Your HubSpot API key"
-                          aria-label="HubSpot API key"
-                          autocomplete="current-password"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Microsoft Dynamics 365 Configuration -->
-                  <div id="dynamics-config-form" class="crm-provider-config hidden">
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Dynamics 365 URL</div>
-                        <div class="setting-description">
-                          Your Dynamics 365 organization URL (e.g.,
-                          https://yourorg.crm.dynamics.com)
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="url"
-                          id="dynamics-url"
-                          name="dynamics-url"
-                          placeholder="https://yourorg.crm.dynamics.com"
-                          aria-label="Dynamics 365 URL"
-                          autocomplete="off"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Client ID</div>
-                        <div class="setting-description">
-                          Your Azure AD application client ID
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="dynamics-client-id"
-                          name="dynamics-client-id"
-                          placeholder="Your Client ID"
-                          aria-label="Dynamics Client ID"
-                          autocomplete="off"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Client Secret</div>
-                        <div class="setting-description">
-                          Your Azure AD application client secret
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="password"
-                          id="dynamics-client-secret"
-                          name="dynamics-client-secret"
-                          placeholder="Your Client Secret"
-                          aria-label="Dynamics Client Secret"
-                          autocomplete="current-password"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="setting-item">
-                      <div class="setting-info">
-                        <div class="setting-label">Tenant ID</div>
-                        <div class="setting-description">
-                          Your Azure AD tenant ID
-                        </div>
-                      </div>
-                      <div class="setting-control">
-                        <input
-                          type="text"
-                          id="dynamics-tenant-id"
-                          name="dynamics-tenant-id"
-                          placeholder="Your Tenant ID"
-                          aria-label="Dynamics Tenant ID"
-                          autocomplete="off"
-                        />
-                      </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="finesse-password"
+                        name="finesse-password"
+                        placeholder="Enter password"
+                        aria-label="Finesse agent password"
+                        autocomplete="current-password"
+                      />
                     </div>
                   </div>
                 </div>
 
-                <div class="setting-item crm-connection-item">
-                  <div class="setting-info">
-                    <div class="setting-label">CRM Connection</div>
-                    <div class="setting-description">
-                      Connect to your CRM system to enable contact lookup and call
-                      logging
+                <!-- Five9 Configuration -->
+                <div id="five9-config-form" class="crm-provider-config hidden">
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Five9 Domain</div>
+                      <div class="setting-description">
+                        Your Five9 domain (e.g., yourcompany.five9.com)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="five9-domain"
+                        name="five9-domain"
+                        placeholder="yourcompany.five9.com"
+                        aria-label="Five9 domain"
+                        autocomplete="off"
+                      />
                     </div>
                   </div>
-                  <div class="setting-control">
-                    <button id="connect-crm" class="button btn-sm" aria-label="Connect to CRM system" aria-describedby="crm-status">
-                      Connect to CRM
-                    </button>
-                    <div id="crm-status" class="status-text" role="status" aria-live="polite">
-                      Status: Disconnected
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">API Username</div>
+                      <div class="setting-description">
+                        Your Five9 API username
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="five9-username"
+                        name="five9-username"
+                        placeholder="api_username"
+                        aria-label="Five9 API username"
+                        autocomplete="username"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">API Password</div>
+                      <div class="setting-description">
+                        Your Five9 API password
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="five9-password"
+                        name="five9-password"
+                        placeholder="Enter password"
+                        aria-label="Five9 API password"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Salesforce Configuration -->
+                <div
+                  id="salesforce-config-form"
+                  class="crm-provider-config hidden"
+                >
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Salesforce Instance URL</div>
+                      <div class="setting-description">
+                        Your Salesforce instance URL (e.g.,
+                        https://yourcompany.my.salesforce.com)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="url"
+                        id="salesforce-url"
+                        name="salesforce-url"
+                        placeholder="https://yourcompany.my.salesforce.com"
+                        aria-label="Salesforce instance URL"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Consumer Key</div>
+                      <div class="setting-description">
+                        Your Salesforce Connected App Consumer Key
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="salesforce-consumer-key"
+                        name="salesforce-consumer-key"
+                        placeholder="Your Consumer Key"
+                        aria-label="Salesforce Consumer Key"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Consumer Secret</div>
+                      <div class="setting-description">
+                        Your Salesforce Connected App Consumer Secret
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="salesforce-consumer-secret"
+                        name="salesforce-consumer-secret"
+                        placeholder="Your Consumer Secret"
+                        aria-label="Salesforce Consumer Secret"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Username</div>
+                      <div class="setting-description">
+                        Your Salesforce username
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="email"
+                        id="salesforce-username"
+                        name="salesforce-username"
+                        placeholder="user@company.com"
+                        aria-label="Salesforce username"
+                        autocomplete="username"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Password + Security Token</div>
+                      <div class="setting-description">
+                        Your Salesforce password followed by your security token
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="salesforce-password"
+                        name="salesforce-password"
+                        placeholder="password + security_token"
+                        aria-label="Salesforce password and security token"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Zendesk Configuration -->
+                <div
+                  id="zendesk-config-form"
+                  class="crm-provider-config hidden"
+                >
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Zendesk Subdomain</div>
+                      <div class="setting-description">
+                        Your Zendesk subdomain (e.g., yourcompany.zendesk.com)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="zendesk-subdomain"
+                        name="zendesk-subdomain"
+                        placeholder="yourcompany"
+                        aria-label="Zendesk subdomain"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">API Token</div>
+                      <div class="setting-description">
+                        Your Zendesk API token (generate from Admin > API)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="zendesk-api-token"
+                        name="zendesk-api-token"
+                        placeholder="Your API token"
+                        aria-label="Zendesk API token"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Email Address</div>
+                      <div class="setting-description">
+                        The email address associated with your Zendesk account
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="email"
+                        id="zendesk-email"
+                        name="zendesk-email"
+                        placeholder="admin@company.com"
+                        aria-label="Zendesk email"
+                        autocomplete="username"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- HubSpot Configuration -->
+                <div
+                  id="hubspot-config-form"
+                  class="crm-provider-config hidden"
+                >
+                  <!-- Hidden username field for accessibility -->
+                  <input
+                    type="text"
+                    id="hubspot-username"
+                    name="hubspot-username"
+                    autocomplete="username"
+                    style="display: none"
+                    aria-hidden="true"
+                  />
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">HubSpot API Key</div>
+                      <div class="setting-description">
+                        Your HubSpot API key (found in Settings > Integrations >
+                        API Key)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="hubspot-api-key"
+                        name="hubspot-api-key"
+                        placeholder="Your HubSpot API key"
+                        aria-label="HubSpot API key"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Microsoft Dynamics 365 Configuration -->
+                <div
+                  id="dynamics-config-form"
+                  class="crm-provider-config hidden"
+                >
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Dynamics 365 URL</div>
+                      <div class="setting-description">
+                        Your Dynamics 365 organization URL (e.g.,
+                        https://yourorg.crm.dynamics.com)
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="url"
+                        id="dynamics-url"
+                        name="dynamics-url"
+                        placeholder="https://yourorg.crm.dynamics.com"
+                        aria-label="Dynamics 365 URL"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Client ID</div>
+                      <div class="setting-description">
+                        Your Azure AD application client ID
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="dynamics-client-id"
+                        name="dynamics-client-id"
+                        placeholder="Your Client ID"
+                        aria-label="Dynamics Client ID"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Client Secret</div>
+                      <div class="setting-description">
+                        Your Azure AD application client secret
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="password"
+                        id="dynamics-client-secret"
+                        name="dynamics-client-secret"
+                        placeholder="Your Client Secret"
+                        aria-label="Dynamics Client Secret"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <div class="setting-label">Tenant ID</div>
+                      <div class="setting-description">
+                        Your Azure AD tenant ID
+                      </div>
+                    </div>
+                    <div class="setting-control">
+                      <input
+                        type="text"
+                        id="dynamics-tenant-id"
+                        name="dynamics-tenant-id"
+                        placeholder="Your Tenant ID"
+                        aria-label="Dynamics Tenant ID"
+                        autocomplete="off"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
-            </section>
 
-            <!-- Customer Feedback Section -->
-            <section
-              id="customer-feedback"
-              class="card toggleable-section draggable-section"
-              data-section="feedback"
-            >
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Customer Feedback">
-                    Customer Feedback
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
+              <div class="setting-item crm-connection-item">
+                <div class="setting-info">
+                  <div class="setting-label">CRM Connection</div>
+                  <div class="setting-description">
+                    Connect to your CRM system to enable contact lookup and call
+                    logging
+                  </div>
                 </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <div class="setting-control">
+                  <button
+                    id="connect-crm"
+                    class="button btn-sm"
+                    aria-label="Connect to CRM system"
+                    aria-describedby="crm-status"
+                  >
+                    Connect to CRM
+                  </button>
+                  <div
+                    id="crm-status"
+                    class="status-text"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    Status: Disconnected
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Customer Feedback Section -->
+          <section
+            id="customer-feedback"
+            class="card toggleable-section draggable-section"
+            data-section="feedback"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="Customer Feedback">
+                  Customer Feedback
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
-                </div>
               </div>
-              <div class="section-content">
-                <div id="feedback-container"></div>
-              </div>
-            </section>
+            </div>
+            <div class="section-content">
+              <div id="feedback-container"></div>
+            </div>
+          </section>
 
-            <!-- Time Tracking & Billing Section -->
-            <section
-              id="time-tracking"
-              class="card toggleable-section draggable-section"
-              data-section="timetracking"
-            >
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="Time Tracking & Billing">
-                    Time Tracking & Billing
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+          <!-- Time Tracking & Billing Section -->
+          <section
+            id="time-tracking"
+            class="card toggleable-section draggable-section"
+            data-section="timetracking"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2
+                  class="section-title"
+                  data-original="Time Tracking & Billing"
+                >
+                  Time Tracking & Billing
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
-                </div>
               </div>
-              <div class="section-content">
-                <div id="time-tracking-container"></div>
-              </div>
-            </section>
+            </div>
+            <div class="section-content">
+              <div id="time-tracking-container"></div>
+            </div>
+          </section>
 
-            <!-- API Integration Section -->
-            <section
-              id="api-integration"
-              class="card toggleable-section draggable-section"
-              data-section="apiintegration"
-            >
-              <div class="section-header">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="title-container">
-                  <h2 class="section-title" data-original="API Integration">
-                    API Integration
-                  </h2>
-                  <button class="edit-title-btn" title="Edit Title">✎</button>
-                </div>
-                <div class="section-controls">
-                  <button class="section-settings-btn" title="Customize Section">⚙️</button>
+          <!-- API Integration Section -->
+          <section
+            id="api-integration"
+            class="card toggleable-section draggable-section"
+            data-section="apiintegration"
+          >
+            <div class="section-header">
+              <div class="drag-handle">⋮⋮</div>
+              <div class="title-container">
+                <h2 class="section-title" data-original="API Integration">
+                  API Integration
+                </h2>
+                <button class="edit-title-btn" title="Edit Title">✎</button>
+              </div>
+              <div class="section-controls">
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
-                </div>
               </div>
-              <div class="section-content">
-                <div id="api-integration-container"></div>
-              </div>
-            </section>
+            </div>
+            <div class="section-content">
+              <div id="api-integration-container"></div>
+            </div>
+          </section>
 
-
-
-            <!-- Mobile companion removed -->
-          </div>
+          <!-- Mobile companion removed -->
+        </div>
       </div>
 
       <!-- Stats View -->
@@ -2007,11 +2756,13 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
-              <div class="section-content section-content--cols">
+            <div class="section-content section-content--cols">
               <div class="analytics-tabs">
                 <button class="analytics-tab active" data-tab="overview">
                   Overview
@@ -2066,7 +2817,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2150,7 +2903,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2180,7 +2935,7 @@
           </section>
 
           <!-- Phase 3: Advanced Reporting -->
-            <!-- Advanced Analytics Section (Consolidated) -->
+          <!-- Advanced Analytics Section (Consolidated) -->
           <section
             id="advanced-analytics"
             class="card toggleable-section draggable-section"
@@ -2195,7 +2950,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2306,7 +3063,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2405,7 +3164,9 @@
                 <button class="edit-title-btn" title="Edit Title">✎</button>
               </div>
               <div class="section-controls">
-                <button class="section-settings-btn" title="Customize Section">⚙️</button>
+                <button class="section-settings-btn" title="Customize Section">
+                  ⚙️
+                </button>
                 <button class="float-btn" title="Float">⧉</button>
               </div>
             </div>
@@ -2418,45 +3179,105 @@
 
       <!-- Export Selection Modal -->
       <div id="export-selection-modal" class="modal-overlay">
-        <div class="modal" style="max-width: 400px; width: 100%;">
+        <div class="modal" style="max-width: 400px; width: 100%">
           <div class="modal-header">
             <h3>Select Data to Export</h3>
             <button class="close-modal">&times;</button>
           </div>
           <div class="modal-body">
             <div class="checkbox-list">
-              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+              <div
+                class="checkbox-item"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 0.5rem 0;
+                  border-bottom: 1px solid var(--border-color);
+                "
+              >
                 <span class="label">Number Patterns</span>
                 <label class="switch">
-                  <input type="checkbox" id="export-patterns" name="export-patterns" checked />
+                  <input
+                    type="checkbox"
+                    id="export-patterns"
+                    name="export-patterns"
+                    checked
+                  />
                   <span class="slider"></span>
                 </label>
               </div>
-              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+              <div
+                class="checkbox-item"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 0.5rem 0;
+                  border-bottom: 1px solid var(--border-color);
+                "
+              >
                 <span class="label">Call Flow Steps</span>
                 <label class="switch">
-                  <input type="checkbox" id="export-steps" name="export-steps" checked />
+                  <input
+                    type="checkbox"
+                    id="export-steps"
+                    name="export-steps"
+                    checked
+                  />
                   <span class="slider"></span>
                 </label>
               </div>
-              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+              <div
+                class="checkbox-item"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 0.5rem 0;
+                  border-bottom: 1px solid var(--border-color);
+                "
+              >
                 <span class="label">Notes</span>
                 <label class="switch">
-                  <input type="checkbox" id="export-notes" name="export-notes" checked />
+                  <input
+                    type="checkbox"
+                    id="export-notes"
+                    name="export-notes"
+                    checked
+                  />
                   <span class="slider"></span>
                 </label>
               </div>
-              <div class="checkbox-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0;">
+              <div
+                class="checkbox-item"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 0.5rem 0;
+                "
+              >
                 <span class="label">Application Settings</span>
                 <label class="switch">
-                  <input type="checkbox" id="export-settings" name="export-settings" checked />
+                  <input
+                    type="checkbox"
+                    id="export-settings"
+                    name="export-settings"
+                    checked
+                  />
                   <span class="slider"></span>
                 </label>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button id="save-export-selection" class="button btn-primary full-width">Done</button>
+            <button
+              id="save-export-selection"
+              class="button btn-primary full-width"
+            >
+              Done
+            </button>
           </div>
         </div>
       </div>
@@ -2464,12 +3285,14 @@
       <!-- Welcome Overlay -->
       <div id="welcome-overlay" class="welcome-overlay">
         <div class="welcome-content wizard-container">
-          
           <!-- Step 1: Role Selection -->
           <div class="wizard-step active" data-step="1">
             <div class="welcome-header">
               <h1>Welcome to Adamas</h1>
-              <p>Your ultimate call center companion. Let's set up your workspace.</p>
+              <p>
+                Your ultimate call center companion. Let's set up your
+                workspace.
+              </p>
             </div>
             <div class="welcome-body">
               <div class="role-grid">
@@ -2533,64 +3356,108 @@
               <p>Choose the tools you need for your daily work.</p>
             </div>
             <div class="welcome-body">
-              <div class="module-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; max-width: 800px; margin: 0 auto; text-align: left;">
+              <div
+                class="module-grid"
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                  gap: 1rem;
+                  max-width: 800px;
+                  margin: 0 auto;
+                  text-align: left;
+                "
+              >
                 <!-- Call Logging -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showCalllogging" checked>
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showCalllogging"
+                    checked
+                  />
                   <span class="module-icon">📞</span>
                   <span class="module-name">Call Logging</span>
                 </label>
-                 <!-- Formatter -->
-                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showFormatter" checked>
+                <!-- Formatter -->
+                <label class="module-card">
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showFormatter"
+                    checked
+                  />
                   <span class="module-icon">🔢</span>
                   <span class="module-name">Formatter</span>
                 </label>
                 <!-- Scripts -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showScripts" checked>
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showScripts"
+                    checked
+                  />
                   <span class="module-icon">📜</span>
                   <span class="module-name">Scripts</span>
                 </label>
                 <!-- Timer -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showHoldtimer" checked>
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showHoldtimer"
+                    checked
+                  />
                   <span class="module-icon">⏱️</span>
                   <span class="module-name">Hold Timer</span>
                 </label>
                 <!-- Notes -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showNotes" checked>
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showNotes"
+                    checked
+                  />
                   <span class="module-icon">📝</span>
                   <span class="module-name">Notes</span>
                 </label>
                 <!-- Analytics -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showAnalytics">
+                  <input type="checkbox" name="modules" value="showAnalytics" />
                   <span class="module-icon">📊</span>
                   <span class="module-name">Analytics</span>
                 </label>
                 <!-- CRM -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showCrm">
+                  <input type="checkbox" name="modules" value="showCrm" />
                   <span class="module-icon">👥</span>
                   <span class="module-name">CRM</span>
                 </label>
                 <!-- Tasks -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showTasks">
+                  <input type="checkbox" name="modules" value="showTasks" />
                   <span class="module-icon">✅</span>
                   <span class="module-name">Tasks</span>
                 </label>
                 <!-- Collaboration -->
                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showCollaboration">
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showCollaboration"
+                  />
                   <span class="module-icon">🤝</span>
                   <span class="module-name">Collaboration</span>
                 </label>
-                 <!-- Quick Actions -->
-                 <label class="module-card">
-                  <input type="checkbox" name="modules" value="showQuickActions" checked>
+                <!-- Quick Actions -->
+                <label class="module-card">
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showQuickActions"
+                    checked
+                  />
                   <span class="module-icon">⚡</span>
                   <span class="module-name">Quick Bar</span>
                 </label>
@@ -2605,7 +3472,10 @@
               <p>Select the theme that fits your vibe.</p>
             </div>
             <div class="welcome-body">
-              <div class="theme-grid" style="display: flex; justify-content: center; gap: 2rem;">
+              <div
+                class="theme-grid"
+                style="display: flex; justify-content: center; gap: 2rem"
+              >
                 <div class="theme-card" data-theme="light">
                   <div class="theme-preview light"></div>
                   <h3>Light Mode</h3>
@@ -2624,10 +3494,34 @@
               <h1>Who are you?</h1>
               <p>Personalize your experience.</p>
             </div>
-            <div class="welcome-body" style="max-width: 400px; margin: 0 auto;">
-              <div class="input-group" style="margin-bottom: 1.5rem; text-align: left;">
-                <label for="welcome-name" style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem;">Your Name</label>
-                <input type="text" id="welcome-name" placeholder="Agent Smith" style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem;">
+            <div class="welcome-body" style="max-width: 400px; margin: 0 auto">
+              <div
+                class="input-group"
+                style="margin-bottom: 1.5rem; text-align: left"
+              >
+                <label
+                  for="welcome-name"
+                  style="
+                    display: block;
+                    color: var(--text-secondary);
+                    margin-bottom: 0.5rem;
+                  "
+                  >Your Name</label
+                >
+                <input
+                  type="text"
+                  id="welcome-name"
+                  placeholder="Agent Smith"
+                  style="
+                    width: 100%;
+                    padding: 0.8rem;
+                    border-radius: 0.5rem;
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                  "
+                />
               </div>
             </div>
           </div>
@@ -2639,13 +3533,27 @@
               <p>Your workspace is ready. Enjoy using Adamas.</p>
             </div>
             <div class="welcome-body">
-              <div style="font-size: 4rem; margin-bottom: 1rem;">🚀</div>
+              <div style="font-size: 4rem; margin-bottom: 1rem">🚀</div>
             </div>
           </div>
 
           <!-- Navigation -->
-          <div class="welcome-footer wizard-nav" style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
-            <button id="wizard-back" class="button btn-ghost" style="visibility: hidden;">Back</button>
+          <div
+            class="welcome-footer wizard-nav"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-top: auto;
+            "
+          >
+            <button
+              id="wizard-back"
+              class="button btn-ghost"
+              style="visibility: hidden"
+            >
+              Back
+            </button>
             <div class="wizard-dots">
               <span class="dot active"></span>
               <span class="dot"></span>
@@ -2653,9 +3561,10 @@
               <span class="dot"></span>
               <span class="dot"></span>
             </div>
-            <button id="wizard-next" class="button btn-primary get-started-btn">Next</button>
+            <button id="wizard-next" class="button btn-primary get-started-btn">
+              Next
+            </button>
           </div>
-
         </div>
       </div>
 
@@ -2674,6 +3583,5 @@
         </div>
       </footer>
     </div>
-
   </body>
 </html>

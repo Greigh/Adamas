@@ -1,3 +1,4 @@
+/* global self, caches, fetch, console, clients, URL */
 // Service Worker for Call Center Helper
 const CACHE_NAME = 'call-center-helper-v1.0.0';
 const STATIC_CACHE = 'call-center-helper-static-v1.0.0';
@@ -35,12 +36,13 @@ const STATIC_FILES = [
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing service worker');
   event.waitUntil(
-    caches.open(STATIC_CACHE)
+    caches
+      .open(STATIC_CACHE)
       .then((cache) => {
         console.log('[Service Worker] Caching static files');
         // Use add() for each file individually to handle missing files gracefully
-        const cachePromises = STATIC_FILES.map(url => {
-          return cache.add(url).catch(error => {
+        const cachePromises = STATIC_FILES.map((url) => {
+          return cache.add(url).catch((error) => {
             console.warn(`[Service Worker] Failed to cache ${url}:`, error);
             return Promise.resolve(); // Don't fail the entire operation
           });
@@ -91,7 +93,8 @@ self.addEventListener('fetch', (event) => {
           // Cache successful API responses
           if (response.ok) {
             const responseClone = response.clone();
-            caches.open(DYNAMIC_CACHE)
+            caches
+              .open(DYNAMIC_CACHE)
               .then((cache) => cache.put(request, responseClone));
           }
           return response;
@@ -106,44 +109,45 @@ self.addEventListener('fetch', (event) => {
 
   // Cache-first strategy for static files
   event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-        // Network-first for HTML files
-        if (request.destination === 'document') {
-          return fetch(request)
-            .then((response) => {
-              if (response.ok) {
-                const responseClone = response.clone();
-                caches.open(DYNAMIC_CACHE)
-                  .then((cache) => cache.put(request, responseClone));
-              }
-              return response;
-            })
-            .catch(() => {
-              // Return offline fallback
-              return caches.match('/src/index.html');
-            });
-        }
-
-        // Network-first for other requests
+      // Network-first for HTML files
+      if (request.destination === 'document') {
         return fetch(request)
           .then((response) => {
             if (response.ok) {
               const responseClone = response.clone();
-              caches.open(DYNAMIC_CACHE)
+              caches
+                .open(DYNAMIC_CACHE)
                 .then((cache) => cache.put(request, responseClone));
             }
             return response;
           })
           .catch(() => {
-            // Return cached version if available
-            return caches.match(request);
+            // Return offline fallback
+            return caches.match('/src/index.html');
           });
-      })
+      }
+
+      // Network-first for other requests
+      return fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches
+              .open(DYNAMIC_CACHE)
+              .then((cache) => cache.put(request, responseClone));
+          }
+          return response;
+        })
+        .catch(() => {
+          // Return cached version if available
+          return caches.match(request);
+        });
+    })
   );
 });
 
@@ -174,12 +178,10 @@ self.addEventListener('push', (event) => {
     badge: '/icon-192x192.png',
     vibrate: [100, 50, 100],
     data: data.data || {},
-    actions: data.actions || []
+    actions: data.actions || [],
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 // Notification click handler
@@ -189,14 +191,10 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   if (event.action === 'view') {
-    event.waitUntil(
-      clients.openWindow(event.notification.data.url || '/')
-    );
+    event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
   } else {
     // Default action - open the app
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+    event.waitUntil(clients.openWindow('/'));
   }
 });
 
@@ -238,10 +236,7 @@ async function syncSettings() {
 }
 
 async function syncAllData() {
-  await Promise.all([
-    syncNotes(),
-    syncSettings()
-  ]);
+  await Promise.all([syncNotes(), syncSettings()]);
 }
 
 // Placeholder functions for data operations
@@ -250,7 +245,7 @@ async function getPendingNotes() {
   return [];
 }
 
-async function syncNoteWithServer(note) {
+async function syncNoteWithServer() {
   // Implementation would depend on your backend API
   return Promise.resolve();
 }
@@ -265,7 +260,7 @@ async function getLocalSettings() {
   return {};
 }
 
-async function syncSettingsWithServer(settings) {
+async function syncSettingsWithServer() {
   // Implementation would depend on your backend API
   return Promise.resolve();
 }
@@ -284,12 +279,10 @@ self.addEventListener('push', (event) => {
     icon: '/src/public/icons/icon-192.png',
     badge: '/src/public/icons/icon-192.png',
     vibrate: [200, 100, 200],
-    data: data.data || {}
+    data: data.data || {},
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 // Notification click
@@ -297,9 +290,7 @@ self.addEventListener('notificationclick', (event) => {
   console.log('[Service Worker] Notification click:', event);
   event.notification.close();
 
-  event.waitUntil(
-    clients.openWindow('/callcenterhelper/')
-  );
+  event.waitUntil(clients.openWindow('/callcenterhelper/'));
 });
 
 // Message handler for communication with main thread

@@ -8,7 +8,12 @@
  * @param {Function} onRetry - Callback function called on each retry
  * @returns {Promise} - Result of the function call
  */
-export async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000, onRetry = null) {
+export async function retryWithBackoff(
+  fn,
+  maxRetries = 3,
+  baseDelay = 1000,
+  onRetry = null
+) {
   let lastError;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -27,7 +32,7 @@ export async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000, onR
         onRetry(attempt + 1, maxRetries, delay, error);
       }
 
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
@@ -41,12 +46,16 @@ export async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000, onR
  * @param {string} timeoutMessage - Message for timeout error
  * @returns {Promise} - Promise with timeout
  */
-export function withTimeout(promise, timeoutMs = 30000, timeoutMessage = 'Operation timed out') {
+export function withTimeout(
+  promise,
+  timeoutMs = 30000,
+  timeoutMessage = 'Operation timed out'
+) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
       setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
-    )
+    ),
   ]);
 }
 
@@ -92,7 +101,7 @@ class RateLimiter {
     const now = Date.now();
 
     // Remove old calls outside the window
-    this.calls = this.calls.filter(call => now - call < this.windowMs);
+    this.calls = this.calls.filter((call) => now - call < this.windowMs);
 
     if (this.calls.length >= this.maxCalls) {
       // Wait until the oldest call expires
@@ -100,7 +109,7 @@ class RateLimiter {
       const waitTime = this.windowMs - (now - oldestCall);
 
       if (waitTime > 0) {
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
         return this.waitForSlot(); // Recursively check again
       }
     }

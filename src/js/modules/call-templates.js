@@ -735,7 +735,7 @@ export function showCallLoggingSettings() {
   refreshList();
 }
 
-function applyCallTemplate(template) {
+export function applyCallTemplate(template) {
   const form = document.querySelector('.call-log-form');
   if (!form) return;
 

@@ -73,9 +73,11 @@ function setupQuickActionButtons() {
   });
 
   // Department Lookup - Opens department/phone lookup
-  document.getElementById('quick-department-lookup')?.addEventListener('click', () => {
-    handleDepartmentLookup();
-  });
+  document
+    .getElementById('quick-department-lookup')
+    ?.addEventListener('click', () => {
+      handleDepartmentLookup();
+    });
 }
 
 function handleNewCall() {
@@ -115,7 +117,7 @@ function handleNewCall() {
 
 function handleQuickTimer() {
   // Import timer module dynamically
-  import('./timer.js').then(timer => {
+  import('./timer.js').then(() => {
     const timerSection = document.getElementById('hold-timer');
     if (timerSection) {
       // Expand section if minimized
@@ -136,7 +138,9 @@ function handleQuickTimer() {
 
       timerSection.scrollIntoView({ behavior: 'smooth' });
       // Try to start the timer if it's not running
-      const startBtn = timerSection.querySelector('.start-timer-btn, .timer-btn');
+      const startBtn = timerSection.querySelector(
+        '.start-timer-btn, .timer-btn'
+      );
       if (startBtn && !startBtn.disabled) {
         startBtn.click();
       }
@@ -182,7 +186,7 @@ function handleQuickNote() {
 
 function handleCustomerSearch() {
   // Import and open customer search modal
-  import('./customer-search.js').then(search => {
+  import('./customer-search.js').then((search) => {
     search.openCustomerSearch();
   });
 }
@@ -217,7 +221,7 @@ function handleCallTemplate() {
 
 function handleExport() {
   // Open export dialog
-  import('./export-functionality.js').then(exportModule => {
+  import('./export-functionality.js').then((exportModule) => {
     exportModule.openExportModal();
   });
 }
@@ -262,12 +266,14 @@ function handleTeamChat() {
 
 function handleDepartmentLookup() {
   // Import department lookup module dynamically
-  import('./department-lookup.js').then(deptModule => {
-    deptModule.openDepartmentLookupModal();
-  }).catch(err => {
-    console.error('Failed to load department lookup module:', err);
-    showToast('Department lookup feature not available', 'error');
-  });
+  import('./department-lookup.js')
+    .then((deptModule) => {
+      deptModule.openDepartmentLookupModal();
+    })
+    .catch((err) => {
+      console.error('Failed to load department lookup module:', err);
+      showToast('Department lookup feature not available', 'error');
+    });
 }
 
 // Import showToast for notifications

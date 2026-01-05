@@ -17,8 +17,6 @@ import { initializeTheme, setupThemeToggle } from './modules/themes.js';
 import { setupTimerEventListeners } from './modules/timer.js';
 import * as patternsModule from './modules/patterns.js';
 window.patternsModule = patternsModule;
-import { setupCallFlowEventListeners } from './modules/callflow.js';
-import { setupNotesEventListeners } from './modules/notes.js';
 import { setupSettingsEventListeners } from './modules/settings.js';
 import {
   minimizeSection,
@@ -44,6 +42,7 @@ import { initializeQuickActionsToolbar } from './modules/quick-actions.js';
 
 // Import error boundary for global error handling
 import { setupGlobalErrorHandling } from './utils/error-boundary.js';
+import { showToast } from './utils/toast.js';
 
 // Lazy load advanced features
 let advancedModulesLoaded = false;
@@ -385,6 +384,80 @@ function showKnowledgeBase() {
   }
 }
 
+function updateAuthHeader() {
+  const btn = document.getElementById('header-login-btn');
+  if (!btn) return;
+
+  if (auth.isLoggedIn()) {
+    const user = auth.getUser();
+    btn.textContent = `Logout (${user ? user.username : 'User'})`;
+    btn.onclick = () => {
+      auth.logout();
+      showToast('Logged out successfully', 'success');
+      updateAuthHeader();
+      // Optional: Reload to clear state if needed, but for now just stay
+      window.location.reload();
+    };
+  } else {
+    btn.textContent = 'Login';
+    btn.onclick = () => showLogin();
+  }
+}
+
+// Show Register Modal
+function showRegister() {
+  const modal = document.createElement('div');
+  modal.className = 'confirm-modal-overlay';
+  modal.innerHTML = `
+    <div class="confirm-modal">
+      <h3>Create Account</h3>
+      <form id="register-form" style="display: contents;">
+        <input id="reg-username" type="text" placeholder="Username" required autocomplete="username" />
+        <input id="reg-email" type="email" placeholder="Email" required autocomplete="email" />
+        <input id="reg-password" type="password" placeholder="Password" required autocomplete="new-password" />
+        <button type="submit" id="do-register-submit">Create Account</button>
+      </form>
+      <button type="button" id="switch-to-login">Already have an account? Login</button>
+      <button type="button" id="modal-close">Close</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    modal.classList.add('active');
+  });
+
+  document.getElementById('reg-username').focus();
+
+  document
+    .getElementById('register-form')
+    .addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      try {
+        await auth.register(username, email, password);
+        showToast('Registration successful! Please login.', 'success');
+        modal.remove();
+        showLogin(); // Switch to login after success
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+  document.getElementById('switch-to-login').addEventListener('click', () => {
+    modal.remove();
+    showLogin();
+  });
+
+  document
+    .getElementById('modal-close')
+    .addEventListener('click', () => modal.remove());
+}
+
 function showLogin() {
   // Simple modal for login/register
   const modal = document.createElement('div');
@@ -392,42 +465,50 @@ function showLogin() {
   modal.innerHTML = `
     <div class="confirm-modal">
       <h3>Login</h3>
-      <input id="login-email" type="email" placeholder="Email" />
-      <input id="login-password" type="password" placeholder="Password" />
-      <button id="login-submit">Login</button>
-      <button id="register-submit">Register</button>
-      <button id="modal-close">Close</button>
+      <form id="login-form-submit" style="display: contents;">
+        <input id="login-email" type="email" placeholder="Email" required autocomplete="username" />
+        <input id="login-password" type="password" placeholder="Password" required autocomplete="current-password" />
+        <button type="submit" id="login-submit">Login</button>
+      </form>
+      <button type="button" id="switch-to-register">Need an account? Register</button>
+      <button type="button" id="modal-close">Close</button>
     </div>
   `;
   document.body.appendChild(modal);
 
+  // Trigger animation
+  requestAnimationFrame(() => {
+    modal.classList.add('active');
+  });
+
+  // Focus email
+  const emailInput = document.getElementById('login-email');
+  if (emailInput) emailInput.focus();
+
   document
-    .getElementById('login-submit')
-    .addEventListener('click', async () => {
+    .getElementById('login-form-submit')
+    .addEventListener('submit', async (e) => {
+      e.preventDefault();
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
       try {
         await auth.login(email, password);
         showToast('Logged in successfully');
         modal.remove();
+        updateAuthHeader();
+        // Reload to sync fresh data
+        window.location.reload();
       } catch (err) {
         showToast(err.message, 'error');
       }
     });
 
+  // Switch to Register Modal
   document
-    .getElementById('register-submit')
-    .addEventListener('click', async () => {
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-      const username = prompt('Username:');
-      try {
-        await auth.register(username, email, password);
-        showToast('Registered successfully');
-        modal.remove();
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
+    .getElementById('switch-to-register')
+    .addEventListener('click', () => {
+      modal.remove();
+      showRegister();
     });
 
   document
@@ -688,7 +769,7 @@ function setupAllEventListeners() {
               if (typeof saveSettings === 'function')
                 saveSettings(window.appSettings);
             }
-          } catch (e) {
+          } catch {
             /* non-fatal */
           }
         }
@@ -742,6 +823,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set up all event listeners for the application
     setupAllEventListeners();
+    updateAuthHeader();
 
     // Initialize keyboard shortcuts
     setupKeyboardShortcuts();
@@ -814,7 +896,9 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
               root.setAttribute &&
                 root.setAttribute('data-patterns-attached', 'true');
-            } catch (e) {}
+            } catch {
+              /* ignore */
+            }
           }
         } catch (err) {
           console.error('Error handling floating:created event:', err);

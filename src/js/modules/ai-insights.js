@@ -65,7 +65,7 @@ function exportInsights() {
     trends: predictTrends(calls),
     metrics: calculateMetrics(calls),
     suggestions: generateSuggestions(calls),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const dataStr = JSON.stringify(insights, null, 2);
@@ -146,18 +146,23 @@ function analyzeSentiment(calls) {
 
   // Analyze based on call duration, notes, and patterns
   const totalCalls = calls.length;
-  const avgDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls;
+  // const avgDuration =
+  //   calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls;
 
   // Mock sentiment calculation based on call data
-  let positive = 0, neutral = 0, negative = 0;
+  let positive = 0,
+    neutral = 0,
+    negative = 0;
 
-  calls.forEach(call => {
+  calls.forEach((call) => {
     const duration = call.duration || 0;
     const hasNotes = call.notes && call.notes.length > 0;
 
-    if (duration > 600) { // Long calls might indicate complex issues
+    if (duration > 600) {
+      // Long calls might indicate complex issues
       negative += 0.4;
-    } else if (duration < 120) { // Short calls might be efficient
+    } else if (duration < 120) {
+      // Short calls might be efficient
       positive += 0.3;
     } else {
       neutral += 0.3;
@@ -165,7 +170,10 @@ function analyzeSentiment(calls) {
 
     if (hasNotes) {
       // Notes might indicate issues or resolutions
-      if (call.notes.toLowerCase().includes('escalated') || call.notes.toLowerCase().includes('complaint')) {
+      if (
+        call.notes.toLowerCase().includes('escalated') ||
+        call.notes.toLowerCase().includes('complaint')
+      ) {
         negative += 0.3;
       } else {
         positive += 0.2;
@@ -218,28 +226,39 @@ function predictTrends(calls) {
   // Analyze call patterns over time
   const now = new Date();
   const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const recentCalls = calls.filter(call => new Date(call.timestamp) > lastWeek);
+  const recentCalls = calls.filter(
+    (call) => new Date(call.timestamp) > lastWeek
+  );
 
   const trends = [];
 
   // Volume trend
-  const weeklyGrowth = ((recentCalls.length / Math.max(calls.length * 0.2, 1)) - 1) * 100;
+  const weeklyGrowth =
+    (recentCalls.length / Math.max(calls.length * 0.2, 1) - 1) * 100;
   if (Math.abs(weeklyGrowth) > 10) {
-    trends.push(`Call volume ${weeklyGrowth > 0 ? 'increasing' : 'decreasing'} by ${Math.abs(Math.round(weeklyGrowth))}% this week`);
+    trends.push(
+      `Call volume ${weeklyGrowth > 0 ? 'increasing' : 'decreasing'} by ${Math.abs(Math.round(weeklyGrowth))}% this week`
+    );
   }
 
   // Duration trend
-  const avgDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0) / calls.length;
-  const recentAvgDuration = recentCalls.reduce((sum, call) => sum + (call.duration || 0), 0) / recentCalls.length;
-  const durationChange = ((recentAvgDuration - avgDuration) / avgDuration) * 100;
+  const avgDuration =
+    calls.reduce((sum, call) => sum + (call.duration || 0), 0) / calls.length;
+  const recentAvgDuration =
+    recentCalls.reduce((sum, call) => sum + (call.duration || 0), 0) /
+    recentCalls.length;
+  const durationChange =
+    ((recentAvgDuration - avgDuration) / avgDuration) * 100;
 
   if (Math.abs(durationChange) > 5) {
-    trends.push(`Average call duration ${durationChange > 0 ? 'increasing' : 'decreasing'} by ${Math.abs(Math.round(durationChange))}%`);
+    trends.push(
+      `Average call duration ${durationChange > 0 ? 'increasing' : 'decreasing'} by ${Math.abs(Math.round(durationChange))}%`
+    );
   }
 
   // Peak hours analysis
   const hourCounts = {};
-  calls.forEach(call => {
+  calls.forEach((call) => {
     const hour = new Date(call.timestamp).getHours();
     hourCounts[hour] = (hourCounts[hour] || 0) + 1;
   });
@@ -248,17 +267,21 @@ function predictTrends(calls) {
     hourCounts[a] > hourCounts[b] ? a : b
   );
 
-  trends.push(`Peak call volume at ${peakHour}:00-${parseInt(peakHour) + 1}:00`);
+  trends.push(
+    `Peak call volume at ${peakHour}:00-${parseInt(peakHour) + 1}:00`
+  );
 
   // Add some predictive insights
-  trends.push('Customer satisfaction likely to improve with current resolution rates');
+  trends.push(
+    'Customer satisfaction likely to improve with current resolution rates'
+  );
   trends.push('Consider staffing adjustments for predicted busy periods');
 
   return `
     <div class="trend-predictions">
       <h4>Trend Analysis & Predictions</h4>
       <ul>
-        ${trends.map(trend => `<li>${trend}</li>`).join('')}
+        ${trends.map((trend) => `<li>${trend}</li>`).join('')}
       </ul>
     </div>
   `;
@@ -275,20 +298,29 @@ function calculateMetrics(calls) {
   }
 
   const totalCalls = calls.length;
-  const avgDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls;
-  const totalDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0);
+  const avgDuration =
+    calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls;
+  // const totalDuration = calls.reduce(
+  //   (sum, call) => sum + (call.duration || 0),
+  //   0
+  // );
 
   // Calculate resolution rate (mock - in real app would be based on call outcomes)
-  const resolvedCalls = calls.filter(call =>
-    call.notes && (call.notes.toLowerCase().includes('resolved') ||
-                   call.notes.toLowerCase().includes('closed') ||
-                   call.notes.toLowerCase().includes('solved'))
+  const resolvedCalls = calls.filter(
+    (call) =>
+      call.notes &&
+      (call.notes.toLowerCase().includes('resolved') ||
+        call.notes.toLowerCase().includes('closed') ||
+        call.notes.toLowerCase().includes('solved'))
   ).length;
 
   const resolutionRate = Math.round((resolvedCalls / totalCalls) * 100);
 
   // Calculate first call resolution (mock)
-  const firstCallResolution = Math.max(0, resolutionRate - Math.floor(Math.random() * 20));
+  const firstCallResolution = Math.max(
+    0,
+    resolutionRate - Math.floor(Math.random() * 20)
+  );
 
   // Calculate customer satisfaction (mock based on sentiment analysis)
   const satisfactionScore = Math.round(65 + Math.random() * 30);
@@ -331,35 +363,49 @@ function generateSuggestions(calls) {
 
   const suggestions = [];
   const totalCalls = calls.length;
-  const avgDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls;
+  const avgDuration =
+    calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls;
 
   // Duration-based suggestions
-  if (avgDuration > 300) { // 5 minutes
-    suggestions.push('Consider implementing call-back systems to reduce long hold times');
-    suggestions.push('Train agents on common issues to improve resolution speed');
+  if (avgDuration > 300) {
+    // 5 minutes
+    suggestions.push(
+      'Consider implementing call-back systems to reduce long hold times'
+    );
+    suggestions.push(
+      'Train agents on common issues to improve resolution speed'
+    );
   }
 
   // Volume-based suggestions
   if (totalCalls > 50) {
-    suggestions.push('Consider adding more agents during peak hours to reduce wait times');
+    suggestions.push(
+      'Consider adding more agents during peak hours to reduce wait times'
+    );
   }
 
   // Pattern-based suggestions
-  const patterns = calls.filter(call => call.pattern).length;
+  const patterns = calls.filter((call) => call.pattern).length;
   if (patterns / totalCalls > 0.3) {
-    suggestions.push('Leverage call patterns to create automated responses for common queries');
+    suggestions.push(
+      'Leverage call patterns to create automated responses for common queries'
+    );
   }
 
   // Add general suggestions
   suggestions.push('Implement customer feedback surveys after call resolution');
-  suggestions.push('Create knowledge base articles for frequently asked questions');
-  suggestions.push('Monitor agent performance metrics for continuous improvement');
+  suggestions.push(
+    'Create knowledge base articles for frequently asked questions'
+  );
+  suggestions.push(
+    'Monitor agent performance metrics for continuous improvement'
+  );
 
   return `
     <div class="optimization-suggestions">
       <h4>AI-Generated Optimization Suggestions</h4>
       <ul>
-        ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+        ${suggestions.map((suggestion) => `<li>${suggestion}</li>`).join('')}
       </ul>
       <div class="suggestion-actions">
         <button class="button" onclick="implementSuggestion()">Implement Selected</button>
@@ -370,8 +416,10 @@ function generateSuggestions(calls) {
 }
 
 // Mock function for implementing suggestions
-window.implementSuggestion = function() {
-  alert('Suggestion implementation feature would integrate with your CRM/workflow system.');
+window.implementSuggestion = function () {
+  alert(
+    'Suggestion implementation feature would integrate with your CRM/workflow system.'
+  );
 };
 
 // Make functions globally available for HTML onclick handlers

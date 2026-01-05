@@ -13,7 +13,14 @@ export class Auth {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    const data = await res.json();
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server error: ${res.statusText || 'Unknown error'}`);
+    }
+
     if (res.ok) {
       this.token = data.token;
       this.user = data.user;
@@ -21,7 +28,13 @@ export class Auth {
       localStorage.setItem('user', JSON.stringify(this.user));
       return true;
     }
-    throw new Error(data.error);
+
+    console.error('Login error response:', data);
+    const errorMessage = data.errors
+      ? data.errors.map((e) => e.msg).join(', ')
+      : data.error || 'Login failed';
+
+    throw new Error(errorMessage);
   }
 
   async register(username, email, password, role = 'agent') {
@@ -30,11 +43,77 @@ export class Auth {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password, role }),
     });
-    const data = await res.json();
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server error: ${res.statusText || 'Unknown error'}`);
+    }
+
     if (res.ok) {
       return true;
     }
-    throw new Error(data.error);
+
+    console.error('Registration error response:', data);
+    const errorMessage = data.errors
+      ? data.errors.map((e) => e.msg).join(', ')
+      : data.error || 'Registration failed';
+
+    throw new Error(errorMessage);
+  }
+
+  async updateProfile(username, email) {
+    const res = await fetch('/api/user/profile', {
+      method: 'PUT',
+      headers: this.getAuthHeader(),
+      body: JSON.stringify({ username, email }),
+    });
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server error: ${res.statusText || 'Unknown error'}`);
+    }
+
+    if (res.ok) {
+      // Update local user data
+      this.user = { ...this.user, ...data };
+      localStorage.setItem('user', JSON.stringify(this.user));
+      return true;
+    }
+
+    console.error('Update profile error:', data);
+    const errorMessage = data.errors
+      ? data.errors.map((e) => e.msg).join(', ')
+      : data.error || 'Update failed';
+    throw new Error(errorMessage);
+  }
+
+  async updatePassword(currentPassword, newPassword) {
+    const res = await fetch('/api/user/password', {
+      method: 'PUT',
+      headers: this.getAuthHeader(),
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server error: ${res.statusText || 'Unknown error'}`);
+    }
+
+    if (res.ok) {
+      return true;
+    }
+
+    console.error('Update password error:', data);
+    const errorMessage = data.errors
+      ? data.errors.map((e) => e.msg).join(', ')
+      : data.error || 'Update failed';
+    throw new Error(errorMessage);
   }
 
   logout() {
@@ -62,9 +141,16 @@ export class Auth {
 
   hasPermission(permission) {
     const rolePermissions = {
-      admin: ['read', 'write', 'delete', 'manage_users', 'view_reports', 'audit'],
+      admin: [
+        'read',
+        'write',
+        'delete',
+        'manage_users',
+        'view_reports',
+        'audit',
+      ],
       supervisor: ['read', 'write', 'delete', 'view_reports'],
-      agent: ['read', 'write']
+      agent: ['read', 'write'],
     };
     return rolePermissions[this.getRole()]?.includes(permission) || false;
   }

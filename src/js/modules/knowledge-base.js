@@ -6,7 +6,7 @@ export const kbState = {
   categories: [],
   bookmarks: [],
   searchIndex: null,
-  lastSync: null
+  lastSync: null,
 };
 
 // Default knowledge base content
@@ -32,7 +32,7 @@ const defaultArticles = [
     `,
     tags: ['basics', 'communication', 'customer-service'],
     lastModified: new Date().toISOString(),
-    author: 'System'
+    author: 'System',
   },
   {
     id: 'escalation-procedures',
@@ -57,7 +57,7 @@ const defaultArticles = [
     `,
     tags: ['escalation', 'supervisor', 'procedures'],
     lastModified: new Date().toISOString(),
-    author: 'System'
+    author: 'System',
   },
   {
     id: 'password-reset',
@@ -82,8 +82,8 @@ const defaultArticles = [
     `,
     tags: ['password', 'security', 'technical'],
     lastModified: new Date().toISOString(),
-    author: 'System'
-  }
+    author: 'System',
+  },
 ];
 
 const defaultCategories = [
@@ -91,7 +91,7 @@ const defaultCategories = [
   { id: 'faqs', name: 'FAQs', color: '#2ecc71' },
   { id: 'technical', name: 'Technical Support', color: '#e74c3c' },
   { id: 'policies', name: 'Policies', color: '#f39c12' },
-  { id: 'training', name: 'Training', color: '#9b59b6' }
+  { id: 'training', name: 'Training', color: '#9b59b6' },
 ];
 
 export function initializeKnowledgeBase(doc = document) {
@@ -129,7 +129,7 @@ function saveKBData() {
       articles: kbState.articles,
       categories: kbState.categories,
       bookmarks: kbState.bookmarks,
-      lastSync: kbState.lastSync
+      lastSync: kbState.lastSync,
     };
     localStorage.setItem('knowledge-base-data', JSON.stringify(data));
   } catch (error) {
@@ -166,7 +166,7 @@ function renderKnowledgeBaseUI(doc) {
           <input type="text" id="kb-search-input" placeholder="Search articles..." class="kb-search">
           <select id="kb-category-filter" class="kb-filter">
             <option value="">All Categories</option>
-            ${kbState.categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('')}
+            ${kbState.categories.map((cat) => `<option value="${cat.id}">${cat.name}</option>`).join('')}
           </select>
           <button class="btn-sm" onclick="openKBArticleModal()">Add Article</button>
         </div>
@@ -216,17 +216,19 @@ function renderBookmarksList(doc) {
     return;
   }
 
-  container.innerHTML = kbState.bookmarks.map(articleId => {
-    const article = kbState.articles.find(a => a.id === articleId);
-    if (!article) return '';
+  container.innerHTML = kbState.bookmarks
+    .map((articleId) => {
+      const article = kbState.articles.find((a) => a.id === articleId);
+      if (!article) return '';
 
-    return `
+      return `
       <div class="kb-bookmark-item" onclick="openKBArticle('${article.id}')">
         <h5>${article.title}</h5>
         <span class="kb-category" style="background: ${getCategoryColor(article.category)}">${article.category}</span>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 }
 
 function renderRecentList(doc) {
@@ -237,12 +239,16 @@ function renderRecentList(doc) {
     .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
     .slice(0, 5);
 
-  container.innerHTML = recentArticles.map(article => `
+  container.innerHTML = recentArticles
+    .map(
+      (article) => `
     <div class="kb-recent-item" onclick="openKBArticle('${article.id}')">
       <h5>${article.title}</h5>
       <span class="kb-date">${new Date(article.lastModified).toLocaleDateString()}</span>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderArticlesList(doc, filteredArticles = null) {
@@ -256,7 +262,9 @@ function renderArticlesList(doc, filteredArticles = null) {
     return;
   }
 
-  container.innerHTML = articles.map(article => `
+  container.innerHTML = articles
+    .map(
+      (article) => `
     <div class="kb-article-card" onclick="openKBArticle('${article.id}')">
       <div class="kb-article-header">
         <h4>${article.title}</h4>
@@ -270,7 +278,7 @@ function renderArticlesList(doc, filteredArticles = null) {
         ${getArticlePreview(article.content)}
       </div>
       <div class="kb-article-tags">
-        ${article.tags.map(tag => `<span class="kb-tag">${tag}</span>`).join('')}
+        ${article.tags.map((tag) => `<span class="kb-tag">${tag}</span>`).join('')}
       </div>
       <div class="kb-article-actions">
         <button class="btn-icon" onclick="event.stopPropagation(); toggleKBBookmark('${article.id}')" title="Bookmark">
@@ -279,11 +287,13 @@ function renderArticlesList(doc, filteredArticles = null) {
         <button class="btn-icon" onclick="event.stopPropagation(); editKBArticle('${article.id}')" title="Edit">✏️</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function getCategoryColor(categoryName) {
-  const category = kbState.categories.find(c => c.name === categoryName);
+  const category = kbState.categories.find((c) => c.name === categoryName);
   return category ? category.color : '#95a5a6';
 }
 
@@ -297,9 +307,10 @@ function getArticlePreview(content) {
 
 function buildSearchIndex() {
   // Simple search index - in production, use a proper search library
-  kbState.searchIndex = kbState.articles.map(article => ({
+  kbState.searchIndex = kbState.articles.map((article) => ({
     id: article.id,
-    searchableText: `${article.title} ${article.content.replace(/<[^>]*>/g, '')} ${article.tags.join(' ')}`.toLowerCase()
+    searchableText:
+      `${article.title} ${article.content.replace(/<[^>]*>/g, '')} ${article.tags.join(' ')}`.toLowerCase(),
   }));
 }
 
@@ -311,8 +322,9 @@ function handleSearch(event) {
     return;
   }
 
-  const filteredArticles = kbState.articles.filter(article => {
-    const searchableText = `${article.title} ${article.content.replace(/<[^>]*>/g, '')} ${article.tags.join(' ')}`.toLowerCase();
+  const filteredArticles = kbState.articles.filter((article) => {
+    const searchableText =
+      `${article.title} ${article.content.replace(/<[^>]*>/g, '')} ${article.tags.join(' ')}`.toLowerCase();
     return searchableText.includes(query);
   });
 
@@ -327,10 +339,12 @@ function handleCategoryFilter(event) {
     return;
   }
 
-  const category = kbState.categories.find(c => c.id === categoryId);
+  const category = kbState.categories.find((c) => c.id === categoryId);
   if (!category) return;
 
-  const filteredArticles = kbState.articles.filter(article => article.category === category.name);
+  const filteredArticles = kbState.articles.filter(
+    (article) => article.category === category.name
+  );
   renderArticlesList(document, filteredArticles);
 }
 
@@ -346,7 +360,7 @@ function handleQuickSearch(event) {
 }
 
 export function openKBArticle(articleId, doc = document) {
-  const article = kbState.articles.find(a => a.id === articleId);
+  const article = kbState.articles.find((a) => a.id === articleId);
   if (!article) return;
 
   const modal = doc.createElement('div');
@@ -369,7 +383,7 @@ export function openKBArticle(articleId, doc = document) {
           ${article.content}
         </div>
         <div class="kb-article-tags">
-          ${article.tags.map(tag => `<span class="kb-tag">${tag}</span>`).join('')}
+          ${article.tags.map((tag) => `<span class="kb-tag">${tag}</span>`).join('')}
         </div>
       </div>
       <div class="modal-footer">
@@ -398,7 +412,9 @@ export function toggleKBBookmark(articleId) {
 }
 
 function openKBArticleModal(articleId = null) {
-  const article = articleId ? kbState.articles.find(a => a.id === articleId) : null;
+  const article = articleId
+    ? kbState.articles.find((a) => a.id === articleId)
+    : null;
 
   const modal = document.createElement('div');
   modal.className = 'modal kb-editor-modal';
@@ -419,7 +435,7 @@ function openKBArticleModal(articleId = null) {
             <label for="kb-category">Category *</label>
             <select id="kb-category" required>
               <option value="">Select Category</option>
-              ${kbState.categories.map(cat => `<option value="${cat.name}" ${article?.category === cat.name ? 'selected' : ''}>${cat.name}</option>`).join('')}
+              ${kbState.categories.map((cat) => `<option value="${cat.name}" ${article?.category === cat.name ? 'selected' : ''}>${cat.name}</option>`).join('')}
             </select>
           </div>
 
@@ -455,7 +471,12 @@ function saveKBArticle(articleId) {
     return;
   }
 
-  const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+  const tags = tagsInput
+    ? tagsInput
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag)
+    : [];
 
   const articleData = {
     title,
@@ -463,12 +484,12 @@ function saveKBArticle(articleId) {
     content,
     tags,
     lastModified: new Date().toISOString(),
-    author: 'User' // In production, get from user session
+    author: 'User', // In production, get from user session
   };
 
   if (articleId) {
     // Update existing article
-    const index = kbState.articles.findIndex(a => a.id === articleId);
+    const index = kbState.articles.findIndex((a) => a.id === articleId);
     if (index > -1) {
       kbState.articles[index] = { ...kbState.articles[index], ...articleData };
     }
@@ -482,7 +503,10 @@ function saveKBArticle(articleId) {
   buildSearchIndex();
   renderKnowledgeBaseUI(document);
   closeKBModal();
-  showToast(`Article ${articleId ? 'updated' : 'created'} successfully!`, 'success');
+  showToast(
+    `Article ${articleId ? 'updated' : 'created'} successfully!`,
+    'success'
+  );
 }
 
 function closeKBModal() {
@@ -502,9 +526,11 @@ window.closeKBModal = closeKBModal;
 
 // Quick search function for integration with other modules
 export function searchKnowledgeBase(query) {
-  document.dispatchEvent(new CustomEvent('kb:quick-search', {
-    detail: { query }
-  }));
+  document.dispatchEvent(
+    new CustomEvent('kb:quick-search', {
+      detail: { query },
+    })
+  );
 }
 
 // Import toast for notifications

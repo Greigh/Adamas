@@ -57,7 +57,7 @@ export function updatePatternTable() {
 
   tbodies.forEach((tbody) => {
     tbody.innerHTML = '';
-    patterns.forEach((pattern, idx) => {
+    patterns.forEach((pattern) => {
       const row = document.createElement('tr');
       row.setAttribute('draggable', 'true');
       row.setAttribute('data-pattern-id', pattern.id);
@@ -67,8 +67,12 @@ export function updatePatternTable() {
         <td class="minlen-cell">${pattern.minLength}</td>
         <td class="format-cell">${pattern.format}</td>
         <td class="row-actions">
-          <button class="edit-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Edit pattern">✎</button>
-          <button class="delete-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Delete pattern">🗑\uFE0E</button>
+          <button class="edit-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Edit pattern">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button class="delete-pattern-btn" data-pattern-id="${pattern.id}" aria-label="Delete pattern">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         </td>
       `;
       tbody.appendChild(row);
@@ -214,14 +218,20 @@ export function addPattern(root = document) {
   try {
     if (getElement(root, 'startSequence'))
       getElement(root, 'startSequence').value = '';
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
   try {
     if (getElement(root, 'minLength')) getElement(root, 'minLength').value = '';
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
   try {
     if (getElement(root, 'formatPattern'))
       getElement(root, 'formatPattern').value = '';
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
 }
 
 export function reorderPattern(id, delta) {
@@ -281,7 +291,9 @@ export function startEditPattern(id, root = document) {
   try {
     row.querySelector('.edit-start')?.focus();
     row.querySelector('.edit-start')?.select();
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
 }
 
 export function saveEditPattern(id, root = document) {
@@ -315,7 +327,7 @@ export function saveEditPattern(id, root = document) {
   }
 }
 
-export function cancelEditPattern(root = document) {
+export function cancelEditPattern() {
   editingPatternId = null;
   updatePatternTable();
 }
@@ -354,7 +366,9 @@ export function deletePattern(id, options = { undoable: true }) {
         try {
           if (lastDeletedPattern && lastDeletedPattern.timeoutId)
             window.clearTimeout(lastDeletedPattern.timeoutId);
-        } catch (e) {}
+        } catch {
+          /* ignore */
+        }
         // Restore
         if (lastDeletedPattern) {
           patterns.splice(
@@ -537,7 +551,9 @@ export function displayHistory(root = document) {
       <div class="history-result">${entry.result}</div>
       <div class="history-actions">
         <button class="history-use-btn" title="Use this result">Use</button>
-        <button class="history-delete-btn" title="Delete this entry">🗑\uFE0E</button>
+        <button class="history-delete-btn" title="Delete this entry">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
       </div>
     </div>
   `
@@ -797,7 +813,7 @@ export function copyResult(root = document) {
     try {
       document.execCommand('copy');
       showCopiedMsg();
-    } catch (err) {
+    } catch {
       alert('Copy failed. Please copy manually.');
     }
     document.body.removeChild(textarea);
@@ -868,7 +884,7 @@ export async function pasteFromClipboard(providedText, root = document) {
   if (!text && navigator.clipboard && navigator.clipboard.readText) {
     try {
       text = await navigator.clipboard.readText();
-    } catch (err) {
+    } catch {
       text = '';
     }
   }
@@ -877,7 +893,7 @@ export async function pasteFromClipboard(providedText, root = document) {
       if (typeof window.prompt === 'function') {
         text = window.prompt('Paste number here:') || '';
       }
-    } catch (err) {
+    } catch {
       text = '';
     }
   }
@@ -893,7 +909,7 @@ export async function pasteFromClipboard(providedText, root = document) {
 // Small utility to normalize arbitrary pasted input to digits-only
 export function normalizeNumber(text) {
   if (!text) return '';
-  return text.replace(/[\s()\-+\.]/g, '').replace(/[^0-9]/g, '');
+  return text.replace(/[\s()\-+.]/g, '').replace(/[^0-9]/g, '');
 }
 
 // Ensure this function is exported for dynamic import
@@ -908,7 +924,9 @@ export function attachPatternEventListeners(root = document) {
     ) {
       return;
     }
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
   // Tabs within the root - No longer needed since tabs were removed
   const getElement = (r, id) => {
     if (!r) return null;
@@ -929,12 +947,16 @@ export function attachPatternEventListeners(root = document) {
   if (numberInput) {
     try {
       numberInput.addEventListener('input', () => formatNumber(root));
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
   }
   if (copyBtn) {
     try {
       copyBtn.addEventListener('click', () => copyResult(root));
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
   }
 
   const pasteBtn = getElement(root, 'pastePatternBtn');
@@ -943,7 +965,9 @@ export function attachPatternEventListeners(root = document) {
       pasteBtn.addEventListener('click', () => {
         pasteFromClipboard(undefined, root);
       });
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
     // Tooltip show/hide for accessibility
     const tooltip = pasteBtn
       .closest('.tooltip-wrapper')
@@ -972,7 +996,9 @@ export function attachPatternEventListeners(root = document) {
   if (formatBtn) {
     try {
       formatBtn.addEventListener('click', () => formatNumber(root));
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
   }
 
   const clearBtn = getElement(root, 'clearPatternBtn');
@@ -984,21 +1010,29 @@ export function attachPatternEventListeners(root = document) {
   if (addBtn) {
     try {
       addBtn.addEventListener('click', () => addPattern(root));
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
   }
   // Ensure update pattern table attaches all event handlers and DnD
   try {
     updatePatternTable();
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
   // Display history
   try {
     displayHistory(root);
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
   try {
     if (root && root.setAttribute) {
       root.setAttribute('data-patterns-attached', 'true');
     }
-  } catch (e) {}
+  } catch {
+    /* ignore */
+  }
 }
 
 // Backwards-compatible default that wires the document root

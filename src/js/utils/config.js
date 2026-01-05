@@ -5,7 +5,7 @@ export const config = {
   twilio: {
     accountSid: process.env.TWILIO_ACCOUNT_SID || '',
     authToken: process.env.TWILIO_AUTH_TOKEN || '',
-    phoneNumber: process.env.TWILIO_PHONE_NUMBER || ''
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER || '',
   },
 
   // Email Configuration
@@ -13,7 +13,7 @@ export const config = {
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT) || 587,
     user: process.env.EMAIL_USER || '',
-    pass: process.env.EMAIL_PASS || ''
+    pass: process.env.EMAIL_PASS || '',
   },
 
   // Telephony Configuration
@@ -23,7 +23,7 @@ export const config = {
       host: process.env.ASTERISK_HOST || '',
       port: parseInt(process.env.ASTERISK_PORT) || 5038,
       user: process.env.ASTERISK_USER || '',
-      pass: process.env.ASTERISK_PASS || ''
+      pass: process.env.ASTERISK_PASS || '',
     },
     finesse: {
       host: process.env.FINESSE_HOST || '',
@@ -31,31 +31,31 @@ export const config = {
       agentId: process.env.FINESSE_AGENT_ID || '',
       password: process.env.FINESSE_AGENT_PASSWORD || '',
       extension: process.env.FINESSE_AGENT_EXTENSION || '',
-      ssl: process.env.FINESSE_SSL === 'true'
-    }
+      ssl: process.env.FINESSE_SSL === 'true',
+    },
   },
 
   // CRM API Keys
   crm: {
     salesforce: {
       clientId: process.env.SALESFORCE_CLIENT_ID || '',
-      clientSecret: process.env.SALESFORCE_CLIENT_SECRET || ''
+      clientSecret: process.env.SALESFORCE_CLIENT_SECRET || '',
     },
     hubspot: {
-      apiKey: process.env.HUBSPOT_API_KEY || ''
+      apiKey: process.env.HUBSPOT_API_KEY || '',
     },
     zendesk: {
-      apiKey: process.env.ZENDESK_API_KEY || ''
+      apiKey: process.env.ZENDESK_API_KEY || '',
     },
     freshdesk: {
-      apiKey: process.env.FRESHDESK_API_KEY || ''
-    }
+      apiKey: process.env.FRESHDESK_API_KEY || '',
+    },
   },
 
   // Push Notifications
   push: {
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
-    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || ''
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || '',
   },
 
   // Feature Flags
@@ -67,8 +67,8 @@ export const config = {
     training: true,
     auditLogging: true,
     dataEncryption: false, // Disabled by default for compatibility
-    gdprCompliance: true
-  }
+    gdprCompliance: true,
+  },
 };
 
 // Load configuration from localStorage (user overrides)
@@ -101,7 +101,7 @@ export function saveUserConfig() {
       twilio: config.twilio,
       email: config.email,
       telephony: config.telephony,
-      features: config.features
+      features: config.features,
     };
     localStorage.setItem('user-config', JSON.stringify(userConfig));
   } catch (error) {

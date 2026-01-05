@@ -4,7 +4,7 @@
 export const cameraState = {
   stream: null,
   canvas: null,
-  photos: []
+  photos: [],
 };
 
 export function initializeCamera() {
@@ -17,7 +17,9 @@ function setupCameraEventListeners() {
 
 export async function startCamera() {
   try {
-    cameraState.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    cameraState.stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+    });
     const video = document.getElementById('camera-video');
     if (video) {
       video.srcObject = cameraState.stream;
@@ -29,14 +31,16 @@ export async function startCamera() {
 
 export function stopCamera() {
   if (cameraState.stream) {
-    cameraState.stream.getTracks().forEach(track => track.stop());
+    cameraState.stream.getTracks().forEach((track) => track.stop());
     cameraState.stream = null;
   }
 }
 
 export function capturePhoto() {
   const video = document.getElementById('camera-video');
-  const canvas = document.getElementById('camera-canvas') || document.createElement('canvas');
+  const canvas =
+    document.getElementById('camera-canvas') ||
+    document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;

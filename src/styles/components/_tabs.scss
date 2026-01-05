@@ -40,7 +40,9 @@
     background: var(--white);
     color: var(--primary-blue);
     border-color: var(--gray-300);
-    border-bottom-color: var(--white); /* Hide bottom border to merge with content */
+    border-bottom-color: var(
+      --white
+    ); /* Hide bottom border to merge with content */
     font-weight: 600;
     z-index: 2; /* Sit above container border */
   }
@@ -89,7 +91,7 @@
 }
 
 // Dark mode
-[data-theme="dark"] {
+[data-theme='dark'] {
   .tab-container {
     background: var(--dark-surface);
   }

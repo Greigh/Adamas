@@ -100,7 +100,7 @@ function setupExportEventListeners() {
 
   // Set default date range (last 30 days)
   const today = new Date();
-  const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+  const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   document.getElementById('export-date-to').valueAsDate = today;
   document.getElementById('export-date-from').valueAsDate = thirtyDaysAgo;
@@ -108,7 +108,9 @@ function setupExportEventListeners() {
 
 function showExportPreview() {
   const data = collectExportData();
-  const format = document.querySelector('input[name="export-format"]:checked').value;
+  const format = document.querySelector(
+    'input[name="export-format"]:checked'
+  ).value;
   const preview = document.getElementById('export-preview');
   const content = document.getElementById('preview-content');
 
@@ -126,7 +128,9 @@ function showExportPreview() {
 
 function performExport() {
   const data = collectExportData();
-  const format = document.querySelector('input[name="export-format"]:checked').value;
+  const format = document.querySelector(
+    'input[name="export-format"]:checked'
+  ).value;
 
   if (format === 'csv') {
     exportToCSV(data);
@@ -142,7 +146,7 @@ function collectExportData() {
     calls: document.getElementById('export-calls').checked,
     notes: document.getElementById('export-notes').checked,
     tasks: document.getElementById('export-tasks').checked,
-    performance: document.getElementById('export-performance').checked
+    performance: document.getElementById('export-performance').checked,
   };
 
   const dateFrom = document.getElementById('export-date-from').value;
@@ -178,7 +182,7 @@ function collectExportData() {
     // This would integrate with performance metrics
     data.performance = {
       timestamp: new Date().toISOString(),
-      metrics: 'Performance data export coming soon'
+      metrics: 'Performance data export coming soon',
     };
   }
 
@@ -190,7 +194,7 @@ function filterByDateRange(items, dateFrom, dateTo, dateField) {
   const to = new Date(dateTo);
   to.setHours(23, 59, 59, 999); // End of day
 
-  return items.filter(item => {
+  return items.filter((item) => {
     const itemDate = new Date(item[dateField]);
     return itemDate >= from && itemDate <= to;
   });
@@ -202,9 +206,10 @@ function generateCSVPreview(data) {
   if (data.calls && data.calls.length > 0) {
     preview += `<h5>Call History (${data.calls.length} records)</h5>`;
     preview += '<table class="preview-table"><thead><tr>';
-    preview += '<th>Caller Name</th><th>Phone</th><th>Type</th><th>Start Time</th><th>Duration</th>';
+    preview +=
+      '<th>Caller Name</th><th>Phone</th><th>Type</th><th>Start Time</th><th>Duration</th>';
     preview += '</tr></thead><tbody>';
-    data.calls.slice(0, 3).forEach(call => {
+    data.calls.slice(0, 3).forEach((call) => {
       preview += `<tr>
         <td>${call.callerName}</td>
         <td>${call.callerPhone}</td>
@@ -224,7 +229,7 @@ function generateCSVPreview(data) {
     preview += '<table class="preview-table"><thead><tr>';
     preview += '<th>Title</th><th>Content</th><th>Timestamp</th>';
     preview += '</tr></thead><tbody>';
-    data.notes.slice(0, 3).forEach(note => {
+    data.notes.slice(0, 3).forEach((note) => {
       preview += `<tr>
         <td>${note.title}</td>
         <td>${note.content.substring(0, 50)}...</td>
@@ -245,7 +250,7 @@ function exportToCSV(data) {
   if (data.calls && data.calls.length > 0) {
     csvContent += 'Call History\n';
     csvContent += 'Caller Name,Phone,Type,Start Time,Duration,Notes\n';
-    data.calls.forEach(call => {
+    data.calls.forEach((call) => {
       csvContent += `"${call.callerName}","${call.callerPhone}","${call.callType}","${new Date(call.startTime).toLocaleString()}","${call.duration ? Math.floor(call.duration / 1000 / 60) + 'm' : 'N/A'}","${call.notes || ''}"\n`;
     });
     csvContent += '\n';
@@ -255,7 +260,7 @@ function exportToCSV(data) {
   if (data.notes && data.notes.length > 0) {
     csvContent += 'Notes\n';
     csvContent += 'Title,Content,Timestamp,Tags\n';
-    data.notes.forEach(note => {
+    data.notes.forEach((note) => {
       csvContent += `"${note.title}","${note.content}","${new Date(note.timestamp).toLocaleString()}","${note.tags || ''}"\n`;
     });
     csvContent += '\n';
@@ -265,7 +270,7 @@ function exportToCSV(data) {
   if (data.tasks && data.tasks.length > 0) {
     csvContent += 'Tasks\n';
     csvContent += 'Title,Description,Priority,Status,Due Date,Created\n';
-    data.tasks.forEach(task => {
+    data.tasks.forEach((task) => {
       csvContent += `"${task.title}","${task.description || ''}","${task.priority}","${task.completed ? 'Completed' : 'Pending'}","${task.dueDate || ''}","${new Date(task.createdAt).toLocaleString()}"\n`;
     });
   }
@@ -310,8 +315,8 @@ export function openExportModal() {
 export function exportTodaysCalls() {
   const today = new Date().toDateString();
   const calls = JSON.parse(localStorage.getItem('callHistory')) || [];
-  const todaysCalls = calls.filter(call =>
-    new Date(call.startTime).toDateString() === today
+  const todaysCalls = calls.filter(
+    (call) => new Date(call.startTime).toDateString() === today
   );
 
   if (todaysCalls.length === 0) {

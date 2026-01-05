@@ -1,25 +1,23 @@
 // Advanced Reporting Module
 import { getCallHistory } from './call-logging.js';
 
+let reportTypeSelect = null;
+let startDateInput = null;
+let endDateInput = null;
+let reportOutput = null;
+let currentReportData = null;
+let chartInstances = [];
+
 export function initializeAdvancedReporting() {
-  const reportTypeSelect = document.getElementById('report-type');
-  const startDateInput = document.getElementById('report-start-date');
-  const endDateInput = document.getElementById('report-end-date');
+  reportTypeSelect = document.getElementById('report-type');
+  startDateInput = document.getElementById('report-start-date');
+  endDateInput = document.getElementById('report-end-date');
+  reportOutput = document.getElementById('report-output');
   const generateBtn = document.getElementById('generate-report');
   const clearFiltersBtn = document.getElementById('clear-filters');
   const exportReportBtn = document.getElementById('export-report');
-  const reportOutput = document.getElementById('report-output');
   const refreshBtn = document.getElementById('refresh-report');
   const scheduleReportBtn = document.getElementById('schedule-report');
-
-  // Check if required elements exist
-  if (!reportTypeSelect || !startDateInput || !endDateInput || !generateBtn ||
-      !clearFiltersBtn || !exportReportBtn || !reportOutput || !refreshBtn || !scheduleReportBtn) {
-    return;
-  }
-
-  let currentReportData = null;
-  let chartInstances = [];
 
   generateBtn.addEventListener('click', generateReport);
   clearFiltersBtn.addEventListener('click', clearFilters);
@@ -49,7 +47,7 @@ function generateReport() {
   // Add one day to end date to include the full end date
   endDate.setHours(23, 59, 59, 999);
 
-  const calls = getCallHistory().filter(call => {
+  const calls = getCallHistory().filter((call) => {
     const callDate = new Date(call.startTime);
     return callDate >= startDate && callDate <= endDate;
   });
@@ -90,16 +88,20 @@ function generateReport() {
 
 function generateCallReport(calls, startDate, endDate) {
   const totalCalls = calls.length;
-  const inboundCalls = calls.filter(c => c.callType === 'inbound').length;
-  const outboundCalls = calls.filter(c => c.callType === 'outbound').length;
-  const internalCalls = calls.filter(c => c.callType === 'internal').length;
-  const transferCalls = calls.filter(c => c.callType === 'transfer').length;
-  const callbackCalls = calls.filter(c => c.callType === 'callback').length;
-  const completedCalls = calls.filter(c => c.status === 'completed').length;
+  const inboundCalls = calls.filter((c) => c.callType === 'inbound').length;
+  const outboundCalls = calls.filter((c) => c.callType === 'outbound').length;
+  // const internalCalls = calls.filter((c) => c.callType === 'internal').length;
+  const transferCalls = calls.filter((c) => c.callType === 'transfer').length;
+  // const callbackCalls = calls.filter((c) => c.callType === 'callback').length;
+  const completedCalls = calls.filter((c) => c.status === 'completed').length;
 
-  const totalDuration = calls.reduce((sum, call) => sum + (call.duration || 0), 0);
+  const totalDuration = calls.reduce(
+    (sum, call) => sum + (call.duration || 0),
+    0
+  );
   const avgDuration = totalCalls > 0 ? totalDuration / totalCalls : 0;
-  const completionRate = totalCalls > 0 ? (completedCalls / totalCalls * 100).toFixed(1) : 0;
+  const completionRate =
+    totalCalls > 0 ? ((completedCalls / totalCalls) * 100).toFixed(1) : 0;
 
   return `
     <div class="report-header">
@@ -180,7 +182,11 @@ function generateCallReport(calls, startDate, endDate) {
             </tr>
           </thead>
           <tbody>
-            ${calls.slice(-20).reverse().map(call => `
+            ${calls
+              .slice(-20)
+              .reverse()
+              .map(
+                (call) => `
               <tr>
                 <td>
                   <div class="caller-info">
@@ -196,7 +202,9 @@ function generateCallReport(calls, startDate, endDate) {
                   <button class="btn-action" onclick="viewCallDetails(${call.id})">👁️</button>
                 </td>
               </tr>
-            `).join('')}
+            `
+              )
+              .join('')}
           </tbody>
         </table>
       </div>
@@ -206,8 +214,11 @@ function generateCallReport(calls, startDate, endDate) {
 
 function generatePerformanceReport(calls, startDate, endDate) {
   const totalCalls = calls.length;
-  const completedCalls = calls.filter(c => c.status === 'completed').length;
-  const avgHandleTime = totalCalls > 0 ? calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls : 0;
+  // const completedCalls = calls.filter((c) => c.status === 'completed').length;
+  const avgHandleTime =
+    totalCalls > 0
+      ? calls.reduce((sum, call) => sum + (call.duration || 0), 0) / totalCalls
+      : 0;
   const firstCallResolution = calculateFCR(calls);
   const customerSatisfaction = calculateCSAT(calls);
   const callsPerHour = calculateCPH(calls, startDate, endDate);
@@ -411,7 +422,9 @@ function generateTrendsReport(calls, startDate, endDate) {
             </tr>
           </thead>
           <tbody>
-            ${dailyStats.map(day => `
+            ${dailyStats
+              .map(
+                (day) => `
               <tr>
                 <td>${day.date}</td>
                 <td>${day.total}</td>
@@ -420,7 +433,9 @@ function generateTrendsReport(calls, startDate, endDate) {
                 <td>${formatDuration(day.avgDuration)}</td>
                 <td>${day.completionRate}%</td>
               </tr>
-            `).join('')}
+            `
+              )
+              .join('')}
           </tbody>
         </table>
       </div>
@@ -431,10 +446,16 @@ function generateTrendsReport(calls, startDate, endDate) {
 function generateAgentReport(calls, startDate, endDate) {
   // Mock agent data
   const agents = [
-    { name: 'Alice Johnson', calls: 45, avgDuration: 420000, fcr: 92, csat: 94 },
+    {
+      name: 'Alice Johnson',
+      calls: 45,
+      avgDuration: 420000,
+      fcr: 92,
+      csat: 94,
+    },
     { name: 'Bob Smith', calls: 38, avgDuration: 380000, fcr: 88, csat: 91 },
     { name: 'Carol Davis', calls: 52, avgDuration: 450000, fcr: 85, csat: 89 },
-    { name: 'David Wilson', calls: 41, avgDuration: 395000, fcr: 90, csat: 93 }
+    { name: 'David Wilson', calls: 41, avgDuration: 395000, fcr: 90, csat: 93 },
   ];
 
   return `
@@ -448,7 +469,9 @@ function generateAgentReport(calls, startDate, endDate) {
     <div class="agent-leaderboard">
       <h4>🏆 Top Performers</h4>
       <div class="leaderboard-list">
-        ${agents.map((agent, index) => `
+        ${agents
+          .map(
+            (agent, index) => `
           <div class="leaderboard-item">
             <div class="rank">#${index + 1}</div>
             <div class="agent-info">
@@ -461,7 +484,9 @@ function generateAgentReport(calls, startDate, endDate) {
             </div>
             <div class="agent-score">${agent.csat}%</div>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
     </div>
 
@@ -491,7 +516,9 @@ function generateAgentReport(calls, startDate, endDate) {
             </tr>
           </thead>
           <tbody>
-            ${agents.map(agent => `
+            ${agents
+              .map(
+                (agent) => `
               <tr>
                 <td><strong>${agent.name}</strong></td>
                 <td>${agent.calls}</td>
@@ -500,7 +527,9 @@ function generateAgentReport(calls, startDate, endDate) {
                 <td>${agent.csat}%</td>
                 <td><span class="performance-score">${Math.round((agent.fcr + agent.csat) / 2)}%</span></td>
               </tr>
-            `).join('')}
+            `
+              )
+              .join('')}
           </tbody>
         </table>
       </div>
@@ -508,14 +537,14 @@ function generateAgentReport(calls, startDate, endDate) {
   `;
 }
 
-function initializeCharts(reportType, calls, startDate, endDate) {
+function initializeCharts() {
   // Destroy existing charts
-  chartInstances.forEach(chart => chart.destroy());
+  chartInstances.forEach((chart) => chart.destroy());
   chartInstances = [];
 
   // Mock chart initialization - in real app, use Chart.js or similar
   const chartContainers = document.querySelectorAll('.chart-container canvas');
-  chartContainers.forEach(canvas => {
+  chartContainers.forEach((canvas) => {
     const ctx = canvas.getContext('2d');
 
     // Simple mock chart drawing
@@ -525,16 +554,20 @@ function initializeCharts(reportType, calls, startDate, endDate) {
     ctx.font = '16px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Chart visualization', canvas.width / 2, canvas.height / 2);
-    ctx.fillText('(Chart.js integration needed)', canvas.width / 2, canvas.height / 2 + 20);
+    ctx.fillText(
+      '(Chart.js integration needed)',
+      canvas.width / 2,
+      canvas.height / 2 + 20
+    );
   });
 }
 
-function calculateFCR(calls) {
+function calculateFCR() {
   // Mock FCR calculation
   return Math.floor(80 + Math.random() * 15);
 }
 
-function calculateCSAT(calls) {
+function calculateCSAT() {
   // Mock CSAT calculation
   return Math.floor(85 + Math.random() * 10);
 }
@@ -551,7 +584,7 @@ function generateDailyStats(calls, startDate, days) {
     const date = new Date(startDate);
     date.setDate(date.getDate() + i);
 
-    const dayCalls = calls.filter(call => {
+    const dayCalls = calls.filter((call) => {
       const callDate = new Date(call.startTime);
       return callDate.toDateString() === date.toDateString();
     });
@@ -559,10 +592,21 @@ function generateDailyStats(calls, startDate, days) {
     stats.push({
       date: date.toLocaleDateString(),
       total: dayCalls.length,
-      inbound: dayCalls.filter(c => c.callType === 'inbound').length,
-      outbound: dayCalls.filter(c => c.callType === 'outbound').length,
-      avgDuration: dayCalls.length > 0 ? dayCalls.reduce((sum, c) => sum + (c.duration || 0), 0) / dayCalls.length : 0,
-      completionRate: dayCalls.length > 0 ? Math.round((dayCalls.filter(c => c.status === 'completed').length / dayCalls.length) * 100) : 0
+      inbound: dayCalls.filter((c) => c.callType === 'inbound').length,
+      outbound: dayCalls.filter((c) => c.callType === 'outbound').length,
+      avgDuration:
+        dayCalls.length > 0
+          ? dayCalls.reduce((sum, c) => sum + (c.duration || 0), 0) /
+            dayCalls.length
+          : 0,
+      completionRate:
+        dayCalls.length > 0
+          ? Math.round(
+              (dayCalls.filter((c) => c.status === 'completed').length /
+                dayCalls.length) *
+                100
+            )
+          : 0,
     });
   }
   return stats;
@@ -627,7 +671,10 @@ function exportReport() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.setAttribute('href', url);
-  link.setAttribute('download', `${reportType}_report_${startDate.toISOString().split('T')[0]}_to_${endDate.toISOString().split('T')[0]}.csv`);
+  link.setAttribute(
+    'download',
+    `${reportType}_report_${startDate.toISOString().split('T')[0]}_to_${endDate.toISOString().split('T')[0]}.csv`
+  );
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
@@ -673,12 +720,19 @@ function scheduleReport() {
   `;
 
   modal.querySelector('.modal-save').addEventListener('click', () => {
-    showToast('Report scheduled successfully! You will receive it via email.', 'success');
+    showToast(
+      'Report scheduled successfully! You will receive it via email.',
+      'success'
+    );
     modal.remove();
   });
 
-  modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
-  modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+  modal
+    .querySelector('.modal-close')
+    .addEventListener('click', () => modal.remove());
+  modal
+    .querySelector('.modal-cancel')
+    .addEventListener('click', () => modal.remove());
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.remove();
   });
@@ -687,73 +741,120 @@ function scheduleReport() {
 }
 
 function generateCallCSV(calls) {
-  const headers = ['Caller Name', 'Phone', 'Call Type', 'Start Time', 'Duration', 'Status', 'CRM Synced'];
-  const rows = calls.map(call => [
+  const headers = [
+    'Caller Name',
+    'Phone',
+    'Call Type',
+    'Start Time',
+    'Duration',
+    'Status',
+    'CRM Synced',
+  ];
+  const rows = calls.map((call) => [
     call.callerName,
     call.callerPhone,
     call.callType,
     new Date(call.startTime).toLocaleString(),
     call.duration ? formatDuration(call.duration) : 'N/A',
     call.status,
-    call.crmId ? 'Yes' : 'No'
+    call.crmId ? 'Yes' : 'No',
   ]);
 
-  return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+  return [headers, ...rows]
+    .map((row) => row.map((field) => `"${field}"`).join(','))
+    .join('\n');
 }
 
 function generatePerformanceCSV(calls) {
   const headers = ['Metric', 'Value', 'Trend'];
   const metrics = [
     ['Total Calls', calls.length, '+12.5%'],
-    ['Average Handle Time', formatDuration(calls.reduce((sum, call) => sum + (call.duration || 0), 0) / Math.max(calls.length, 1)), '-8.3%'],
+    [
+      'Average Handle Time',
+      formatDuration(
+        calls.reduce((sum, call) => sum + (call.duration || 0), 0) /
+          Math.max(calls.length, 1)
+      ),
+      '-8.3%',
+    ],
     ['First Call Resolution', `${calculateFCR(calls)}%`, '+5.1%'],
     ['Customer Satisfaction', `${calculateCSAT(calls)}%`, '+3.2%'],
-    ['Calls per Hour', calculateCPH(calls, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date()), '+8.7%']
+    [
+      'Calls per Hour',
+      calculateCPH(
+        calls,
+        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        new Date()
+      ),
+      '+8.7%',
+    ],
   ];
 
-  return [headers, ...metrics].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+  return [headers, ...metrics]
+    .map((row) => row.map((field) => `"${field}"`).join(','))
+    .join('\n');
 }
 
-function generateQACSV(calls) {
+function generateQACSV() {
   const headers = ['Category', 'Score', 'Target'];
   const categories = [
     ['Greeting & Courtesy', '96%', '95%'],
     ['Empathy & Communication', '89%', '90%'],
     ['Problem Resolution', '85%', '85%'],
     ['Documentation', '92%', '90%'],
-    ['Overall Score', '88%', '87%']
+    ['Overall Score', '88%', '87%'],
   ];
 
-  return [headers, ...categories].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+  return [headers, ...categories]
+    .map((row) => row.map((field) => `"${field}"`).join(','))
+    .join('\n');
 }
 
 function generateTrendsCSV(calls, startDate, endDate) {
   const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
   const dailyStats = generateDailyStats(calls, startDate, days);
 
-  const headers = ['Date', 'Total Calls', 'Inbound', 'Outbound', 'Avg Duration', 'Completion Rate'];
-  const rows = dailyStats.map(day => [
+  const headers = [
+    'Date',
+    'Total Calls',
+    'Inbound',
+    'Outbound',
+    'Avg Duration',
+    'Completion Rate',
+  ];
+  const rows = dailyStats.map((day) => [
     day.date,
     day.total,
     day.inbound,
     day.outbound,
     formatDuration(day.avgDuration),
-    `${day.completionRate}%`
+    `${day.completionRate}%`,
   ]);
 
-  return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+  return [headers, ...rows]
+    .map((row) => row.map((field) => `"${field}"`).join(','))
+    .join('\n');
 }
 
 function generateAgentCSV() {
-  const headers = ['Agent', 'Calls Handled', 'Avg Handle Time', 'First Call Resolution', 'Customer Satisfaction', 'Performance Score'];
+  const headers = [
+    'Agent',
+    'Calls Handled',
+    'Avg Handle Time',
+    'First Call Resolution',
+    'Customer Satisfaction',
+    'Performance Score',
+  ];
   const agents = [
     ['Alice Johnson', 45, formatDuration(420000), '92%', '94%', '93%'],
     ['Bob Smith', 38, formatDuration(380000), '88%', '91%', '90%'],
     ['Carol Davis', 52, formatDuration(450000), '85%', '89%', '87%'],
-    ['David Wilson', 41, formatDuration(395000), '90%', '93%', '92%']
+    ['David Wilson', 41, formatDuration(395000), '90%', '93%', '92%'],
   ];
 
-  return [headers, ...agents].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+  return [headers, ...agents]
+    .map((row) => row.map((field) => `"${field}"`).join(','))
+    .join('\n');
 }
 
 function showToast(message, type = 'info') {

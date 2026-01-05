@@ -106,6 +106,29 @@ export function initializeCallLogging() {
   let callHistory = JSON.parse(localStorage.getItem('callHistory')) || [];
   let callTimerInterval = null;
   let holdTimerInterval = null;
+  const token = localStorage.getItem('token'); // Simple check for auth
+  const isHybridMode = !!token; // If token exists, we are in 'Cloud' mode
+
+  // Load history based on mode
+  if (isHybridMode) {
+    fetch('/api/calls', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          callHistory = data.map((log) => ({
+            ...log,
+            id: log._id || log.id, // Ensure we have an ID for frontend logic
+          }));
+          updateCallHistory();
+        }
+      })
+      .catch((err) => console.error('Failed to load cloud call history:', err));
+  } else {
+    // Guest mode: load from local storage (already done above)
+    updateCallHistory();
+  }
 
   // function renderTemplateOptions() { ... removed ... }
 
@@ -186,7 +209,7 @@ export function initializeCallLogging() {
       const li = document.createElement('li');
       li.className = 'call-history-item';
 
-      const verificationBadges = 0; // Calculated in template now
+      // const verificationBadges = 0; // Calculated in template now
 
       li.innerHTML = `
         <div class="call-icon">${getCallIcon(call.callType)}</div>
@@ -270,7 +293,7 @@ export function initializeCallLogging() {
   function startCall() {
     const callerName = callerNameInput.value.trim();
     const callerPhone = callerPhoneInput.value.trim();
-    const callType = callTypeSelect.value;
+    // const callType = callTypeSelect.value;
 
     if (!callerName || !callerPhone) {
       showToast('Please enter caller name and phone number', 'error');
@@ -453,17 +476,7 @@ export function initializeCallLogging() {
             if (result.success) {
               callRecord.crmId = result.id;
               // Update the call in history with CRM ID
-              const existingIndex = callHistory.findIndex(
-                (c) => c.id === callRecord.id
-              );
-              if (existingIndex !== -1) {
-                callHistory[existingIndex] = callRecord;
-                localStorage.setItem(
-                  'callHistory',
-                  JSON.stringify(callHistory)
-                );
-                updateCallHistory();
-              }
+              updateCallInHistory(callRecord); // Refactored to helper
               showToast('Call logged to CRM successfully', 'success');
             }
           })
@@ -474,15 +487,7 @@ export function initializeCallLogging() {
       }
 
       // Update existing call or add new if it's a completed active call
-      const existingIndex = callHistory.findIndex(
-        (c) => c.id === callRecord.id
-      );
-      if (existingIndex !== -1) {
-        callHistory[existingIndex] = callRecord;
-        showToast('Call log updated successfully', 'success');
-      } else {
-        callHistory.unshift(callRecord);
-      }
+      updateCallInHistory(callRecord, true);
     } else {
       // Manual log or update of a historical call from the form
       // Get Custom Field Data
@@ -522,21 +527,93 @@ export function initializeCallLogging() {
         callRecord.notes = headerBlock + callRecord.notes;
       }
 
-      const existingIndex = callHistory.findIndex(
-        (c) => c.id === callRecord.id
-      );
-      if (existingIndex !== -1) {
-        callHistory[existingIndex] = callRecord;
-        showToast('Call log updated successfully', 'success');
-      } else {
-        callHistory.unshift(callRecord);
-        showToast('Call logged manually', 'success');
-      }
+      updateCallInHistory(callRecord, true);
       clearForm(); // Clear form after manual save/update
     }
+  }
 
-    localStorage.setItem('callHistory', JSON.stringify(callHistory));
-    updateCallHistory();
+  // Helper to handle updating Call History (Local or Cloud)
+  function updateCallInHistory(callRecord, showSuccessToast = false) {
+    // Check if updating existing
+    const existingIndex = callHistory.findIndex((c) => c.id === callRecord.id);
+    const isNew = existingIndex === -1;
+
+    // Apply to local state first for instant UI update
+    if (!isNew) {
+      callHistory[existingIndex] = callRecord;
+    } else {
+      callHistory.unshift(callRecord);
+    }
+    updateCallHistory(); // Update UI immediately
+
+    // Persist
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Cloud Mode
+      // const method = isNew ? 'POST' : 'PUT';
+      // const url = isNew ? '/api/calls' : `/api/calls/${callRecord.id}`;
+      // If it was a mongo ID (string), use it. If number (timestamp), existing backend might need _id.
+      // However, for new POST, we don't send ID in URL.
+      // For PUT, we need a valid ID. If it's a local timestamp ID and we try to PUT to server, it will fail 404.
+      // Sync Issue Strategy:
+      // If we created a call LOCALLY (e.g. before login) and then logged in?
+      // We only sync from server on load. If we create new while logged in, it works.
+      // If we edit an old local call while logged in? It won't have a Mongo _id.
+      // Ideally we should disable editing local calls when logged in, or create a copy.
+      // For this scope: We assume user starts fresh or we handle 'Not Found' by Creating new.
+
+      // If ID is numeric (local timestamp), treat as NEW POST if we are trying to update?
+      // Actually, simplified: Always POST if ID looks local (number)?
+      // Start with standard logic:
+
+      // Note: To make PUT work with Mongo, we need the valid Mongo _id.
+      // If callRecord.id is a timestamp, we can't PUT to /api/calls/:timestamp.
+      // We should probably just POST it as a new log if it doesn't have a Mongo ID.
+
+      const isMongoId =
+        typeof callRecord.id === 'string' && callRecord.id.length === 24;
+
+      if (isNew || !isMongoId) {
+        fetch('/api/calls', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(callRecord),
+        })
+          .then((res) => res.json())
+          .then((savedLog) => {
+            // Update local record with real server ID
+            callRecord.id = savedLog._id;
+            callRecord._id = savedLog._id;
+            // Re-render to ensure buttons have correct ID
+            updateCallHistory();
+            if (showSuccessToast) showToast(`Call logged to cloud`, 'success');
+          })
+          .catch(() => showToast('Failed to save to cloud', 'error'));
+      } else {
+        // Update existing valid Mongo ID
+        fetch(`/api/calls/${callRecord.id}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(callRecord),
+        }).then(() => {
+          if (showSuccessToast) showToast('Call log updated', 'success');
+        });
+      }
+    } else {
+      // Local Mode
+      localStorage.setItem('callHistory', JSON.stringify(callHistory));
+      if (showSuccessToast)
+        showToast(
+          isNew ? 'Call logged locally' : 'Call log updated',
+          'success'
+        );
+    }
   }
 
   function clearForm() {
@@ -603,10 +680,30 @@ export function initializeCallLogging() {
     });
 
     if (confirmed) {
+      // Optimistic update
       callHistory = callHistory.filter((call) => call.id !== id);
-      localStorage.setItem('callHistory', JSON.stringify(callHistory));
       updateCallHistory();
-      showToast('Call deleted', 'success');
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Cloud Delete
+        // Check if it's a real server ID
+        if (typeof id === 'string' && id.length === 24) {
+          fetch(`/api/calls/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then(() => showToast('Call deleted from cloud', 'success'))
+            .catch(() => showToast('Failed to delete from cloud', 'error'));
+        } else {
+          // It was a local-only log that got mixed in? Just ignore server.
+          showToast('Call deleted', 'success');
+        }
+      } else {
+        // Local Delete
+        localStorage.setItem('callHistory', JSON.stringify(callHistory));
+        showToast('Call deleted', 'success');
+      }
     }
   }
 

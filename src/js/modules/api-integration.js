@@ -317,7 +317,7 @@ function startAPIServer() {
       navigator.serviceWorker
         .register('/adamas/sw.js')
         .then(() => {}) //console.log('API Service Worker registered'))
-        .catch((err) => {}); //console.log('Service Worker registration failed:', err));
+        .catch(() => {}); //console.log('Service Worker registration failed:', err));
     }
 
     //console.log(`API server started on port ${apiState.serverPort}`);
@@ -397,7 +397,7 @@ function handleAPIRequest(method, path, data, apiKey) {
   return result;
 }
 
-function handleCallsAPI(data) {
+function handleCallsAPI() {
   // Get call data from local storage
   try {
     const savedCalls = localStorage.getItem('call_history');
@@ -410,7 +410,7 @@ function handleCallsAPI(data) {
   }
 }
 
-function handleAgentsAPI(data) {
+function handleAgentsAPI() {
   // Mock agent data
   const mockAgents = [
     { id: 1, name: 'Alice Johnson', status: 'available', calls: 45 },
@@ -468,7 +468,8 @@ function handleLoginAPI(data) {
   if (user) {
     // Generate a mock token
     const token = `mock-jwt-token-${Date.now()}`;
-    const { password, ...userWithoutPassword } = user;
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password;
     return { status: 200, data: { token, user: userWithoutPassword } };
   } else {
     // Demo backdoor for testing if no users exist or generic "admin/admin" check

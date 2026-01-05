@@ -5,7 +5,10 @@ import fs from 'fs';
 import path from 'path';
 import { JSDOM } from 'jsdom';
 
-const html = fs.readFileSync(path.resolve(__dirname, '../src/settings.html'), 'utf8');
+const html = fs.readFileSync(
+  path.resolve(__dirname, '../src/settings.html'),
+  'utf8'
+);
 
 describe('CRM module helpers (unit)', () => {
   let dom, doc;
@@ -16,7 +19,15 @@ describe('CRM module helpers (unit)', () => {
 
     // ensure a basic localStorage stub exists
     if (!global.localStorage) {
-      global.localStorage = (function () { let s = {}; return { getItem: k => (k in s ? s[k] : null), setItem: (k,v)=>s[k]=v, removeItem: k=>delete s[k], clear: ()=>s={} }; })();
+      global.localStorage = (function () {
+        let s = {};
+        return {
+          getItem: (k) => (k in s ? s[k] : null),
+          setItem: (k, v) => (s[k] = v),
+          removeItem: (k) => delete s[k],
+          clear: () => (s = {}),
+        };
+      })();
     }
     // wire window/document globals used by module
     global.window = dom.window;
@@ -25,7 +36,11 @@ describe('CRM module helpers (unit)', () => {
 
   afterEach(() => {
     if (dom && dom.window) dom.window.close();
-    try { global.localStorage.clear(); } catch (e) {}
+    try {
+      global.localStorage.clear();
+    } catch {
+      // ignore
+    }
   });
 
   test('updateProviderConfig only shows the chosen provider panel', async () => {
@@ -33,8 +48,12 @@ describe('CRM module helpers (unit)', () => {
     crm.moduleState.currentProvider = 'five9';
     crm.updateProviderConfig('five9', doc);
 
-    expect(doc.getElementById('five9-config-form').classList.contains('hidden')).toBe(false);
-    expect(doc.getElementById('finesse-config-form').classList.contains('hidden')).toBe(true);
+    expect(
+      doc.getElementById('five9-config-form').classList.contains('hidden')
+    ).toBe(false);
+    expect(
+      doc.getElementById('finesse-config-form').classList.contains('hidden')
+    ).toBe(true);
     // ensure hidden panels have inputs disabled and visible one is enabled
     const five9Input = doc.getElementById('five9-domain');
     const finesseInput = doc.getElementById('finesse-url');
@@ -43,7 +62,9 @@ describe('CRM module helpers (unit)', () => {
     // check hidden property + inline style
     expect(doc.getElementById('five9-config-form').hidden).toBe(false);
     expect(doc.getElementById('finesse-config-form').hidden).toBe(true);
-    expect(doc.getElementById('finesse-config-form').style.display).toBe('none');
+    expect(doc.getElementById('finesse-config-form').style.display).toBe(
+      'none'
+    );
   });
 
   test('saveConfig writes non-sensitive fields and loadSavedConfig restores them', async () => {
@@ -66,7 +87,9 @@ describe('CRM module helpers (unit)', () => {
     u.value = '';
     n.value = '';
     crm.loadSavedConfig(doc);
-    expect(doc.getElementById('finesse-url').value).toBe('https://example.finesse');
+    expect(doc.getElementById('finesse-url').value).toBe(
+      'https://example.finesse'
+    );
     expect(doc.getElementById('finesse-username').value).toBe('tester');
   });
 
@@ -111,7 +134,9 @@ describe('CRM module helpers (unit)', () => {
     // call initializer which will use the DOM
     crm.initializeCRM(doc);
     expect(doc.getElementById('crm-provider').value).toBe('salesforce');
-    expect(doc.getElementById('salesforce-config-form').classList.contains('hidden')).toBe(false);
+    expect(
+      doc.getElementById('salesforce-config-form').classList.contains('hidden')
+    ).toBe(false);
     // ensure fields inside salesforce panel are enabled while others are disabled
     expect(doc.getElementById('salesforce-url').disabled).toBe(false);
     expect(doc.getElementById('finesse-url').disabled).toBe(true);
