@@ -15,6 +15,7 @@ Adamas is a modern React web app built with Vite, designed to assist call center
 
 ## Project Structure
 
+```
 Adamas/
 ├── src/
 │   ├── components/      # Reusable React components
@@ -25,6 +26,7 @@ Adamas/
 ├── vite.config.js       # Vite configuration
 ├── package.json         # Dependencies and scripts
 └── README.md
+```
 
 ## Prerequisites
 
