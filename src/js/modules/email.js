@@ -2,7 +2,6 @@
 // Supports sending emails for follow-ups
 
 import { config } from '../utils/config.js';
-import * as auth from './auth.js';
 import { apiFetch } from '../utils/api.js';
 import { saveData, loadData, STORAGE_LIMITS } from './storage.js';
 

@@ -68,6 +68,92 @@ function sendHtmlFile(res, filePath) {
   res.send(html);
 }
 
+function clearSessionCookie(res) {
+  const opts = sessionCookieOptions();
+  res.clearCookie(SESSION_COOKIE, {
+    httpOnly: true,
+    secure: opts.secure,
+    sameSite: 'lax',
+    path: '/',
+  });
+}
+
+/** Reject private/link-local literal hosts and require Finesse-ish hostnames. */
+function isAllowedFinesseUrl(rawUrl) {
+  let urlObj;
+  try {
+    urlObj = new URL(rawUrl);
+  } catch {
+    return false;
+  }
+  if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') return false;
+  const host = String(urlObj.hostname || '').toLowerCase();
+  if (!host || host === 'localhost' || host.endsWith('.local')) return false;
+  if (
+    /^(10\.|127\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(
+      host
+    )
+  ) {
+    return false;
+  }
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return false;
+  if (host.includes(':')) return false; // raw IPv6
+  const patterns = [
+    /(^|\.)cisco\.com$/i,
+    /(^|\.)lminfosys\.net$/i,
+    /(^|\.)finesse\./i,
+    /\.finesse\./i,
+    /^finesse[.-]/i,
+  ];
+  return patterns.some((p) => p.test(host));
+}
+
+function maskSsnServer(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (!digits) return { ssn: '', ssnLast4: '' };
+  return {
+    ssn: `***${digits.slice(-4)}`,
+    ssnLast4: digits.slice(-4),
+  };
+}
+
+function sanitizeCallLogPayload(body, userId) {
+  const src = body && typeof body === 'object' ? body : {};
+  const {
+    userId: _u,
+    _id: _id,
+    password: _p,
+    twilio: _t,
+    __v: _v,
+    ...rest
+  } = src;
+  const ssnFields = maskSsnServer(rest.ssn || rest.ssnLast4 || '');
+  return {
+    ...rest,
+    ...ssnFields,
+    userId,
+  };
+}
+
+async function deleteUserAccount(userId, res) {
+  await Models.User.findByIdAndDelete(userId);
+  await Models.Note.deleteMany({ userId });
+  await Models.CallLog.deleteMany({ userId });
+  // Best-effort popup cleanup for this user
+  for (const [id, meta] of popupStore.entries()) {
+    if (meta.userId && String(meta.userId) === String(userId)) {
+      try {
+        fs.unlinkSync(meta.filePath);
+      } catch {
+        /* ignore */
+      }
+      popupStore.delete(id);
+    }
+  }
+  clearSessionCookie(res);
+  return res.json({ message: 'Account deleted' });
+}
+
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -363,7 +449,7 @@ app.use(
         // element.style / style= attributes (not style tags)
         styleSrcAttr: ["'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
-        connectSrc: ["'self'", 'https://www.google.com', 'ws:', 'wss:'],
+        connectSrc: ["'self'", 'https://www.google.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'", 'blob:'],
@@ -377,7 +463,26 @@ app.use(
 );
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      // Allow non-browser / same-origin tools (no Origin header)
+      if (!origin) return callback(null, true);
+      const allowed = (
+        process.env.CORS_ORIGINS ||
+        process.env.FRONTEND_ORIGIN ||
+        ''
+      )
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (allowed.length === 0) {
+        // Unconfigured: reflect request origin (set CORS_ORIGINS in production)
+        return callback(null, true);
+      }
+      if (allowed.includes(origin) || allowed.includes('*')) {
+        return callback(null, true);
+      }
+      return callback(new Error('CORS origin not allowed'));
+    },
     credentials: true,
   })
 );
@@ -409,12 +514,21 @@ const authLimiter = rateLimit({
 });
 
 // Auth middleware — httpOnly cookie session, with Bearer fallback for tooling
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   const token = readSessionToken(req);
   if (!token) return res.status(401).json({ error: 'Access denied' });
   try {
     const verified = jwt.verify(token, EFFECTIVE_JWT_SECRET);
-    req.user = verified;
+    // Reject deleted / unknown users so JWTs do not outlive the account
+    const user = await Models.User.findById(verified._id);
+    if (!user) {
+      clearSessionCookie(res);
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    req.user = {
+      _id: user._id,
+      role: user.role || verified.role || 'agent',
+    };
     next();
   } catch {
     res.status(401).json({ error: 'Invalid token' });
@@ -661,13 +775,7 @@ app.get('/api/me', async (req, res) => {
 });
 
 app.post('/api/logout', (req, res) => {
-  const opts = sessionCookieOptions();
-  res.clearCookie(SESSION_COOKIE, {
-    httpOnly: true,
-    secure: opts.secure,
-    sameSite: 'lax',
-    path: '/',
-  });
+  clearSessionCookie(res);
   res.json({ message: 'Logged out' });
 });
 
@@ -735,6 +843,8 @@ app.put(
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
+    // Invalidate current session — client must re-login
+    clearSessionCookie(res);
     res.json({ message: 'Password updated successfully' });
   }
 );
@@ -767,16 +877,7 @@ app.get('/api/calls', auth, async (req, res) => {
 
 app.post('/api/calls', auth, async (req, res) => {
   try {
-    const logData = { ...req.body, userId: req.user._id };
-    // If ID was passed (from local sync), ensure we use it or generate new if conflict?
-    // Mongoose generates _id. If client sends 'id' (timestamp), store it in customData or similar if needed.
-    // But for hybrid sync, we usually assume server is source of truth.
-    // Client will receive the new _id and map it.
-
-    // HOWEVER: The client likely sends 'id' property which is Date.now().
-    // We can store this as 'clientRefId' or just ignore and use _id.
-    // Let's rely on standard Mongoose _id.
-
+    const logData = sanitizeCallLogPayload(req.body, req.user._id);
     const callLog = new Models.CallLog(logData);
     await callLog.save();
     await logAudit(
@@ -798,16 +899,11 @@ app.put('/api/calls/:id', auth, async (req, res) => {
     if (!existing || String(existing.userId) !== String(req.user._id)) {
       return res.status(404).json({ error: 'Call log not found' });
     }
-    // Prevent ownership / identity tampering via body
-    const {
-      userId: _ignoreUserId,
-      _id: _ignoreId,
-      password: _ignorePassword,
-      ...safeBody
-    } = req.body || {};
+    const safeBody = sanitizeCallLogPayload(req.body, req.user._id);
+    delete safeBody.userId; // ownership already verified; don't churn id type
     const updated = await Models.CallLog.findByIdAndUpdate(
       req.params.id,
-      { $set: safeBody },
+      { $set: { ...safeBody, userId: existing.userId } },
       { new: true }
     );
     if (!updated) return res.status(404).json({ error: 'Call log not found' });
@@ -902,16 +998,32 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
 });
 
-// Email
+// Email — constrain open-relay risk
 app.post('/api/email/send', auth, (req, res) => {
-  const { to, subject, text } = req.body;
+  const { to, subject, text } = req.body || {};
+  const toAddr = String(to || '').trim();
+  const subj = String(subject || '').slice(0, 200);
+  const body = String(text || '').slice(0, 10000);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(toAddr)) {
+    return res.status(400).json({ error: 'Invalid recipient email' });
+  }
+  const domainAllow = (process.env.EMAIL_ALLOW_DOMAINS || '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  if (domainAllow.length) {
+    const domain = toAddr.split('@')[1].toLowerCase();
+    if (!domainAllow.includes(domain)) {
+      return res.status(403).json({ error: 'Recipient domain not allowed' });
+    }
+  }
   transporter.sendMail(
-    { from: process.env.EMAIL_USER, to, subject, text },
+    { from: process.env.EMAIL_USER, to: toAddr, subject: subj, text: body },
     async (err) => {
       if (err) {
         res.status(500).json({ error: 'Email failed' });
       } else {
-        await logAudit(req.user._id, 'send', 'email', { to }, req);
+        await logAudit(req.user._id, 'send', 'email', { to: toAddr }, req);
         res.json({ message: 'Email sent' });
       }
     }
@@ -924,15 +1036,22 @@ app.get('/api/crm/salesforce', auth, async (req, res) => {
   res.json({ message: 'CRM integration placeholder' });
 });
 
-// Finesse debug endpoint - returns detailed connection info
-app.get('/adamas/api/finesse/debug', auth, async (req, res) => {
-  const { url, username, password } = req.query;
+// Finesse debug — disabled in production unless FINESSE_DEBUG=true.
+// Credentials must be POSTed in the body (never query strings).
+function finesseDebugEnabled(req, res) {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    process.env.FINESSE_DEBUG !== 'true'
+  ) {
+    res.status(404).json({ error: 'Not found' });
+    return false;
+  }
+  return true;
+}
 
-  console.log('🐛 Finesse debug request:', {
-    url,
-    username,
-    hasPassword: !!password,
-  });
+app.post('/adamas/api/finesse/debug', auth, async (req, res) => {
+  if (!finesseDebugEnabled(req, res)) return;
+  const { url, username, password } = req.body || {};
 
   if (!url || !username || !password) {
     return res.status(400).json({
@@ -942,24 +1061,12 @@ app.get('/adamas/api/finesse/debug', auth, async (req, res) => {
   }
 
   try {
-    const urlObj = new URL(url);
-    const allowedHosts = [
-      /\.cisco\.com$/,
-      /finesse/i,
-      /lmgrccx/i,
-      /lminfosys\.net$/,
-    ];
-    const isAllowed = allowedHosts.some((pattern) =>
-      pattern.test(urlObj.hostname)
-    );
-    if (!isAllowed) {
+    if (!isAllowedFinesseUrl(url)) {
       return res.status(400).json({ error: 'Invalid Finesse server URL' });
     }
 
-    const finesseUrl = `${url}/finesse/api/User/${encodeURIComponent(username)}`;
+    const finesseUrl = `${url.replace(/\/$/, '')}/finesse/api/User/${encodeURIComponent(username)}`;
     const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-
-    console.log('🐛 Debug: Testing connection to:', finesseUrl);
 
     const startTime = Date.now();
     const response = await fetch(finesseUrl, {
@@ -972,24 +1079,17 @@ app.get('/adamas/api/finesse/debug', auth, async (req, res) => {
       },
     });
     const endTime = Date.now();
-
     const responseBody = await response.text();
 
-    const debugInfo = {
+    res.json({
       request: {
         url: finesseUrl,
         method: 'GET',
-        headers: {
-          Authorization: '[REDACTED]',
-          Accept: 'application/xml',
-          'X-Cisco-Finesse-OS': 'CallCenterHelper',
-          'User-Agent': 'CallCenterHelper/1.0',
-        },
+        headers: { Authorization: '[REDACTED]', Accept: 'application/xml' },
       },
       response: {
         status: response.status,
         statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
         bodyLength: responseBody.length,
         body:
           responseBody.length > 1000
@@ -997,141 +1097,24 @@ app.get('/adamas/api/finesse/debug', auth, async (req, res) => {
             : responseBody,
         timing: `${endTime - startTime}ms`,
       },
-      server: {
-        nodeVersion: process.version,
-        platform: process.platform,
-        timestamp: new Date().toISOString(),
-      },
-    };
-
-    console.log('🐛 Debug result:', {
-      status: response.status,
-      timing: debugInfo.response.timing,
-      bodyLength: responseBody.length,
     });
-
-    res.json(debugInfo);
   } catch (error) {
-    console.error('🐛 Debug error:', error);
-    res.status(500).json({
-      error: error.message,
-      details: {
-        name: error.name,
-        code: error.code,
-      },
-      server: {
-        nodeVersion: process.version,
-        platform: process.platform,
-        timestamp: new Date().toISOString(),
-      },
-    });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Finesse debug endpoint for User
-app.get('/adamas/api/finesse/debug/User/:username', auth, async (req, res) => {
-  const { url, username, password } = req.query;
-
-  console.log('🐛 Finesse debug request:', {
-    url,
-    username,
-    hasPassword: !!password,
+// Legacy GET debug endpoints — permanently disabled (password-in-query risk)
+app.get('/adamas/api/finesse/debug', auth, (req, res) => {
+  res.status(405).json({
+    error: 'Use POST /adamas/api/finesse/debug with credentials in the body',
   });
-
-  if (!url || !username || !password) {
-    return res.status(400).json({
-      error: 'Missing required parameters',
-      required: ['url', 'username', 'password'],
-    });
-  }
-
-  try {
-    const urlObj = new URL(url);
-    const allowedHosts = [
-      /\.cisco\.com$/,
-      /finesse/i,
-      /lmgrccx/i,
-      /lminfosys\.net$/,
-    ];
-    const isAllowed = allowedHosts.some((pattern) =>
-      pattern.test(urlObj.hostname)
-    );
-    if (!isAllowed) {
-      return res.status(400).json({ error: 'Invalid Finesse server URL' });
-    }
-
-    const finesseUrl = `${url}/finesse/api/User/${encodeURIComponent(username)}`;
-    const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-
-    console.log('🐛 Debug: Testing connection to:', finesseUrl);
-
-    const startTime = Date.now();
-    const response = await fetch(finesseUrl, {
-      method: 'GET',
-      headers: {
-        Authorization: authHeader,
-        Accept: 'application/xml',
-        'X-Cisco-Finesse-OS': 'CallCenterHelper',
-        'User-Agent': 'CallCenterHelper/1.0',
-      },
-    });
-    const endTime = Date.now();
-
-    const responseBody = await response.text();
-
-    const debugInfo = {
-      request: {
-        url: finesseUrl,
-        method: 'GET',
-        headers: {
-          Authorization: '[REDACTED]',
-          Accept: 'application/xml',
-          'X-Cisco-Finesse-OS': 'CallCenterHelper',
-          'User-Agent': 'CallCenterHelper/1.0',
-        },
-      },
-      response: {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        bodyLength: responseBody.length,
-        body:
-          responseBody.length > 1000
-            ? responseBody.substring(0, 1000) + '...'
-            : responseBody,
-        timing: `${endTime - startTime}ms`,
-      },
-      server: {
-        nodeVersion: process.version,
-        platform: process.platform,
-        timestamp: new Date().toISOString(),
-      },
-    };
-
-    console.log('🐛 Debug result:', {
-      status: response.status,
-      timing: debugInfo.response.timing,
-      bodyLength: responseBody.length,
-    });
-
-    res.json(debugInfo);
-  } catch (error) {
-    console.error('🐛 Debug error:', error);
-    res.status(500).json({
-      error: error.message,
-      details: {
-        name: error.name,
-        code: error.code,
-      },
-      server: {
-        nodeVersion: process.version,
-        platform: process.platform,
-        timestamp: new Date().toISOString(),
-      },
-    });
-  }
 });
 
+app.get('/adamas/api/finesse/debug/User/:username', auth, (req, res) => {
+  res.status(405).json({
+    error: 'Use POST /adamas/api/finesse/debug with credentials in the body',
+  });
+});
 // Finesse API proxy (GET)
 app.get('/adamas/api/finesse/User/:username', auth, async (req, res) => {
   const { username } = req.params;
@@ -1145,14 +1128,7 @@ app.get('/adamas/api/finesse/User/:username', auth, async (req, res) => {
   }
 
   try {
-    const urlObj = new URL(url);
-    const allowedHosts = [
-      /\.cisco\.com$/,
-      /finesse/i,
-      /lmgrccx/i,
-      /lminfosys\.net$/,
-    ];
-    if (!allowedHosts.some((pattern) => pattern.test(urlObj.hostname))) {
+    if (!isAllowedFinesseUrl(url)) {
       return res.status(400).json({ error: 'Invalid Finesse server URL' });
     }
 
@@ -1202,14 +1178,7 @@ app.post('/adamas/api/finesse/User/:username/Dialogs', auth, async (req, res) =>
   }
 
   try {
-    const urlObj = new URL(url);
-    const allowedHosts = [
-      /\.cisco\.com$/,
-      /finesse/i,
-      /lmgrccx/i,
-      /lminfosys\.net$/,
-    ];
-    if (!allowedHosts.some((pattern) => pattern.test(urlObj.hostname))) {
+    if (!isAllowedFinesseUrl(url)) {
       return res.status(400).json({ error: 'Invalid Finesse server URL' });
     }
 
@@ -1279,14 +1248,7 @@ app.put('/adamas/api/finesse/Dialog/:dialogId', auth, async (req, res) => {
   }
 
   try {
-    const urlObj = new URL(url);
-    const allowedHosts = [
-      /\.cisco\.com$/,
-      /finesse/i,
-      /lmgrccx/i,
-      /lminfosys\.net$/,
-    ];
-    if (!allowedHosts.some((pattern) => pattern.test(urlObj.hostname))) {
+    if (!isAllowedFinesseUrl(url)) {
       return res.status(400).json({ error: 'Invalid Finesse server URL' });
     }
 
@@ -1358,11 +1320,18 @@ app.post('/api/webhook/:workflow', (req, res) => {
   } else if (process.env.NODE_ENV === 'production') {
     return res.status(503).json({ error: 'Webhooks disabled' });
   }
-  // Trigger workflow based on req.params.workflow
-  io.emit('workflow-trigger', {
-    workflow: req.params.workflow,
+  // Trigger workflow for authenticated sockets only (per-user room if userId provided)
+  const targetUserId = req.body?.userId || req.query.userId;
+  const payload = {
+    workflow: String(req.params.workflow || '').slice(0, 100),
     payload: req.body,
-  });
+  };
+  if (targetUserId) {
+    io.to(String(targetUserId)).emit('workflow-trigger', payload);
+  } else {
+    // No broadcast to all sockets — require an explicit room target
+    return res.status(400).json({ error: 'userId required for webhook delivery' });
+  }
   res.json({ message: 'Webhook received' });
 });
 
@@ -1509,29 +1478,51 @@ app.get('/api/export', auth, async (req, res) => {
 
 // GDPR: Delete account
 app.delete('/api/user', auth, async (req, res) => {
-  await Models.User.findByIdAndDelete(req.user._id);
-  await Models.Note.deleteMany({ userId: req.user._id });
-  res.json({ message: 'Account deleted' });
+  try {
+    await deleteUserAccount(req.user._id, res);
+  } catch {
+    res.status(500).json({ error: 'Failed to delete account' });
+  }
 });
 
 // Parse JSON bodies for popup creation
 app.use(bodyParser.json({ limit: '2mb' }));
 
+// Stricter limiter for popup HTML writes (disk DoS)
+const popupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many popup requests' },
+});
+
 // Endpoint to create a popup page. Expects { html: '<html>...</html>' }
 // Requires auth to prevent unauthenticated stored XSS on this origin.
-app.post('/popup', auth, (req, res) => {
+app.post('/popup', auth, popupLimiter, (req, res) => {
   const { html } = req.body || {};
   if (!html || typeof html !== 'string')
     return res.status(400).json({ error: 'Missing html' });
-  if (html.length > 500000)
+  if (html.length > 200000)
     return res.status(400).json({ error: 'Popup HTML too large' });
+
+  // Cap concurrent popups per user
+  let userPopups = 0;
+  for (const meta of popupStore.values()) {
+    if (meta.userId && String(meta.userId) === String(req.user._id)) {
+      userPopups += 1;
+    }
+  }
+  if (userPopups >= 20) {
+    return res.status(429).json({ error: 'Too many active popups' });
+  }
 
   const id = nanoid();
   const filename = `${id}.html`;
   const filePath = path.join(popupsDir, filename);
 
   try {
-    const hardened = `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data: https: http:; script-src 'none';"/></head><body>${html}</body></html>`;
+    const hardened = `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; style-src 'unsafe-inline'; img-src data: https: http:; script-src 'none';"/></head><body>${html}</body></html>`;
     fs.writeFileSync(filePath, hardened, 'utf8');
     const createdAt = Date.now();
     popupStore.set(id, { filePath, createdAt, userId: req.user._id });
@@ -1607,11 +1598,9 @@ app.get('/api/user/data', auth, async (req, res) => {
 // GDPR Compliance: Data Deletion
 app.delete('/api/user/delete', auth, async (req, res) => {
   try {
-    await Models.Note.deleteMany({ userId: req.user._id });
-    await Models.AuditLog.deleteMany({ userId: req.user._id });
-    await Models.User.findByIdAndDelete(req.user._id);
     await logAudit(req.user._id, 'delete', 'user_account', {}, req);
-    res.json({ message: 'Account deleted' });
+    await Models.AuditLog.deleteMany({ userId: req.user._id });
+    await deleteUserAccount(req.user._id, res);
   } catch {
     res.status(500).json({ error: 'Failed to delete account' });
   }

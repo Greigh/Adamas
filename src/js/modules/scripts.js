@@ -1,4 +1,5 @@
 import { saveData, loadData, STORAGE_LIMITS } from './storage.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 export function initializeScripts() {
   const container = document.querySelector('.section-content');
@@ -181,13 +182,13 @@ export function initializeScripts() {
       scriptItem.innerHTML = `
         <div class="script-title">
           <span class="script-icon">${getCategoryIcon(script.category)}</span>
-          ${script.title}
+          ${escapeHtml(script.title)}
           ${script.favorite ? '⭐' : ''}
         </div>
-        <div class="script-preview">${script.content.substring(0, 80)}...</div>
+        <div class="script-preview">${escapeHtml(script.content.substring(0, 80))}...</div>
         <div class="script-meta">
-          <span class="script-category-tag">${script.category}</span>
-          <span class="script-usage">Used ${script.usage} times</span>
+          <span class="script-category-tag">${escapeHtml(script.category)}</span>
+          <span class="script-usage">Used ${Number(script.usage) || 0} times</span>
         </div>
       `;
       scriptItem.addEventListener('click', () => loadScript(script));

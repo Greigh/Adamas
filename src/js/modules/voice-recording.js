@@ -91,6 +91,16 @@ export function initializeVoiceRecording() {
             timestamp: new Date(),
             duration: 0,
           };
+          // Revoke older object URLs to avoid leaking blob memory
+          recordings.forEach((r) => {
+            if (r && r.url && String(r.url).startsWith('blob:')) {
+              try {
+                URL.revokeObjectURL(r.url);
+              } catch {
+                /* ignore */
+              }
+            }
+          });
           recordings.push(recording);
           persistRecordings();
           updateRecordingsList();

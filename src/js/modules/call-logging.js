@@ -112,7 +112,7 @@ export function initializeCallLogging() {
   let holdTimerInterval = null;
   let autoSaveInterval = null;
   const CALL_HISTORY_MAX = STORAGE_LIMITS.callHistory || 200;
-  const isHybridMode = auth.isLoggedIn();
+  const isHybridMode = () => auth.isLoggedIn();
 
   function maskSsn(value) {
     const raw = String(value || '').replace(/\D/g, '');
@@ -135,7 +135,7 @@ export function initializeCallLogging() {
   }
 
   // Load history based on mode
-  if (isHybridMode) {
+  if (isHybridMode()) {
     apiFetch('/api/calls')
       .then((res) => res.json())
       .then((data) => {

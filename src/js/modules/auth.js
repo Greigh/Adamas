@@ -30,14 +30,14 @@ export class Auth {
         sessionStorage.setItem(USER_KEY, JSON.stringify(this.user));
         return true;
       }
+      // Explicit unauthenticated response — drop stale profile
+      this.user = null;
+      sessionStorage.removeItem(USER_KEY);
+      return false;
     } catch {
-      /* offline / server down */
+      // Offline / server down — keep optimistic sessionStorage profile
+      return !!this.user;
     }
-    // Stale profile without a valid cookie
-    if (!this.user) return false;
-    this.user = null;
-    sessionStorage.removeItem(USER_KEY);
-    return false;
   }
 
   async login(email, password) {
@@ -169,6 +169,16 @@ export class Auth {
     try {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('crmAccessToken');
+      sessionStorage.removeItem('crmAccessToken');
+    } catch {
+      /* ignore */
+    }
+    try {
+      const { crmManager } = await import('./crm/CRMManager.js');
+      if (crmManager && typeof crmManager.clearPersistedSecrets === 'function') {
+        crmManager.clearPersistedSecrets();
+      }
     } catch {
       /* ignore */
     }

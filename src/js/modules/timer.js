@@ -112,6 +112,9 @@ export function stopTimer(id = 'main') {
       description: timer.description,
       endTime: new Date().toISOString(),
     });
+    if (timer.history.length > 50) {
+      timer.history = timer.history.slice(-50);
+    }
   }
 
   timer.seconds = 0;
@@ -668,6 +671,9 @@ function logHoldTime(duration) {
 
   // Add to history
   holdTimer.holdHistory.unshift(holdEntry);
+  if (holdTimer.holdHistory.length > 100) {
+    holdTimer.holdHistory = holdTimer.holdHistory.slice(0, 100);
+  }
 
   // Update counters
   holdTimer.holdCount++;

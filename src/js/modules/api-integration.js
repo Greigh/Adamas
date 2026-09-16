@@ -460,61 +460,47 @@ function handleLoginAPI(data) {
     return { status: 400, error: 'Email and password required' };
   }
 
+  // Mock local auth is demo-only — never use plaintext password stores in production builds
+  if (
+    typeof process !== 'undefined' &&
+    process.env &&
+    process.env.NODE_ENV === 'production'
+  ) {
+    return { status: 403, error: 'Mock API login disabled' };
+  }
+
   const users = JSON.parse(localStorage.getItem('users') || '[]');
   const user = users.find(
     (u) => u.email === data.email && u.password === data.password
   );
 
   if (user) {
-    // Generate a mock token
     const token = `mock-jwt-token-${Date.now()}`;
     const userWithoutPassword = { ...user };
     delete userWithoutPassword.password;
     return { status: 200, data: { token, user: userWithoutPassword } };
-  } else {
-    // Demo backdoor for testing if no users exist or generic "admin/admin" check
-    if (data.email === 'admin@example.com' && data.password === 'admin') {
-      const token = `mock-admin-token-${Date.now()}`;
-      return {
-        status: 200,
-        data: {
-          token,
-          user: {
-            id: 0,
-            email: 'admin@example.com',
-            role: 'admin',
-            username: 'Admin',
-          },
-        },
-      };
-    }
-    return { status: 401, error: 'Invalid credentials' };
   }
+
+  return { status: 401, error: 'Invalid credentials' };
 }
 
 function handleRegisterAPI(data) {
+  if (
+    typeof process !== 'undefined' &&
+    process.env &&
+    process.env.NODE_ENV === 'production'
+  ) {
+    return { status: 403, error: 'Mock API registration disabled' };
+  }
   if (!data || !data.email || !data.password || !data.username) {
     return { status: 400, error: 'Username, email and password required' };
   }
 
-  const users = JSON.parse(localStorage.getItem('users') || '[]');
-  if (users.find((u) => u.email === data.email)) {
-    return { status: 409, error: 'Email already exists' };
-  }
-
-  const newUser = {
-    id: Date.now(),
-    username: data.username,
-    email: data.email,
-    password: data.password, // In a real app, hash this!
-    role: data.role || 'agent',
-    createdAt: new Date().toISOString(),
+  // Do not persist plaintext passwords — mock register is ephemeral only
+  return {
+    status: 201,
+    message: 'User registered successfully (mock; not persisted)',
   };
-
-  users.push(newUser);
-  localStorage.setItem('users', JSON.stringify(users));
-
-  return { status: 201, message: 'User registered successfully' };
 }
 
 function validateAPIKey(apiKey) {
