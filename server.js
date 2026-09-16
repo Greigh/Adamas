@@ -22,9 +22,17 @@ const SESSION_COOKIE = 'adamas_session';
 const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 
 function sessionCookieOptions() {
+  // COOKIE_SECURE=true|false overrides; otherwise Secure in production (HTTPS).
+  // Local smoke against http:// should set COOKIE_SECURE=false.
+  const secure =
+    process.env.COOKIE_SECURE === 'true'
+      ? true
+      : process.env.COOKIE_SECURE === 'false'
+        ? false
+        : process.env.NODE_ENV === 'production';
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure,
     sameSite: 'lax',
     path: '/',
     maxAge: SESSION_MAX_AGE_MS,
@@ -653,9 +661,10 @@ app.get('/api/me', async (req, res) => {
 });
 
 app.post('/api/logout', (req, res) => {
+  const opts = sessionCookieOptions();
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: opts.secure,
     sameSite: 'lax',
     path: '/',
   });
