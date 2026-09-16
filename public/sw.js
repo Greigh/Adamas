@@ -1,8 +1,7 @@
-/* global self, caches, fetch, console, clients, URL */
-// Service Worker for Call Center Helper
-const CACHE_NAME = 'call-center-helper-v1.0.0';
-const STATIC_CACHE = 'call-center-helper-static-v1.0.0';
-const DYNAMIC_CACHE = 'call-center-helper-dynamic-v1.0.0';
+// Service Worker for Adamas
+const CACHE_NAME = 'adamas-v1.0.0';
+const STATIC_CACHE = 'adamas-static-v1.0.0';
+const DYNAMIC_CACHE = 'adamas-dynamic-v1.0.0';
 
 // Files to cache immediately
 const STATIC_FILES = [
@@ -40,17 +39,10 @@ self.addEventListener('install', (event) => {
       .open(STATIC_CACHE)
       .then((cache) => {
         console.log('[Service Worker] Caching static files');
-        // Use add() for each file individually to handle missing files gracefully
-        const cachePromises = STATIC_FILES.map((url) => {
-          return cache.add(url).catch((error) => {
-            console.warn(`[Service Worker] Failed to cache ${url}:`, error);
-            return Promise.resolve(); // Don't fail the entire operation
-          });
-        });
-        return Promise.all(cachePromises);
+        return cache.addAll(STATIC_FILES);
       })
       .catch((error) => {
-        console.error('[Service Worker] Error opening cache:', error);
+        console.error('[Service Worker] Error caching static files:', error);
       })
   );
   self.skipWaiting();
@@ -85,24 +77,24 @@ self.addEventListener('fetch', (event) => {
   // Skip external requests
   if (!url.origin.includes(self.location.origin)) return;
 
-  // Handle API requests differently
-  if (url.pathname.startsWith('/api/')) {
+  // Skip webpack development files
+  if (
+    url.pathname.includes('.hot-update.') ||
+    url.pathname.includes('__webpack_hmr') ||
+    url.pathname.startsWith('/sockjs-node/')
+  ) {
+    return;
+  }
+
+  // Handle API requests — never cache authenticated API data
+  if (url.pathname.startsWith('/api/') || url.pathname.includes('/api/')) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Cache successful API responses
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches
-              .open(DYNAMIC_CACHE)
-              .then((cache) => cache.put(request, responseClone));
-          }
-          return response;
+      fetch(request).catch(() =>
+        new Response(JSON.stringify({ error: 'Offline' }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
         })
-        .catch(() => {
-          // Return cached API response if available
-          return caches.match(request);
-        })
+      )
     );
     return;
   }
@@ -264,34 +256,6 @@ async function syncSettingsWithServer() {
   // Implementation would depend on your backend API
   return Promise.resolve();
 }
-
-// Push notifications
-self.addEventListener('push', (event) => {
-  console.log('[Service Worker] Push received:', event);
-
-  let data = { title: 'Call Center Helper', body: 'New notification' };
-  if (event.data) {
-    data = event.data.json();
-  }
-
-  const options = {
-    body: data.body,
-    icon: '/src/public/icons/icon-192.png',
-    badge: '/src/public/icons/icon-192.png',
-    vibrate: [200, 100, 200],
-    data: data.data || {},
-  };
-
-  event.waitUntil(self.registration.showNotification(data.title, options));
-});
-
-// Notification click
-self.addEventListener('notificationclick', (event) => {
-  console.log('[Service Worker] Notification click:', event);
-  event.notification.close();
-
-  event.waitUntil(clients.openWindow('/callcenterhelper/'));
-});
 
 // Message handler for communication with main thread
 self.addEventListener('message', (event) => {

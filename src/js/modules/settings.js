@@ -163,7 +163,13 @@ export let appSettings = {
 
 // Export the saveSettings function
 let saveTimeout = null;
-export function saveSettings() {
+export function saveSettings(settings) {
+  if (settings && typeof settings === 'object') {
+    Object.assign(appSettings, settings);
+  }
+  if (typeof window !== 'undefined') {
+    window.appSettings = appSettings;
+  }
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('appSettings', JSON.stringify(appSettings));
   }
@@ -215,7 +221,10 @@ export function initializeSettings() {
 
   const saved = loadSettings();
   if (Object.keys(saved).length > 0) {
-    appSettings = { ...appSettings, ...saved };
+    Object.assign(appSettings, saved);
+  }
+  if (typeof window !== 'undefined') {
+    window.appSettings = appSettings;
   }
 
   // Cloud Fetch
@@ -228,7 +237,10 @@ export function initializeSettings() {
       .then((remoteSettings) => {
         if (remoteSettings && Object.keys(remoteSettings).length > 0) {
           console.log('Syncing settings from cloud...');
-          appSettings = { ...appSettings, ...remoteSettings };
+          Object.assign(appSettings, remoteSettings);
+          if (typeof window !== 'undefined') {
+            window.appSettings = appSettings;
+          }
           // Re-apply settings after fetching from cloud
           applySettings();
           window.dispatchEvent(

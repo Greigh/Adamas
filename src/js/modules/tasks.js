@@ -1,4 +1,6 @@
 // Task Management Module
+import { escapeHtml } from '../utils/helpers.js';
+
 export function initializeTasks() {
   const addTaskBtn = document.getElementById('add-task');
   const taskTitleInput = document.getElementById('task-title');
@@ -153,19 +155,19 @@ export function initializeTasks() {
           </div>
           <div class="task-main">
             <div class="task-title-section">
-              <h4 class="task-title ${task.status === 'completed' ? 'completed' : ''}">${task.title}</h4>
+              <h4 class="task-title ${task.status === 'completed' ? 'completed' : ''}">${escapeHtml(task.title || '')}</h4>
               <div class="task-meta">
-                <span class="task-priority priority-${task.priority}">${getPriorityIcon(task.priority)} ${task.priority}</span>
-                <span class="task-due-date ${isOverdue(task) ? 'overdue' : ''}">${dueDateText}</span>
+                <span class="task-priority priority-${escapeHtml(task.priority || '')}">${getPriorityIcon(task.priority)} ${escapeHtml(task.priority || '')}</span>
+                <span class="task-due-date ${isOverdue(task) ? 'overdue' : ''}">${escapeHtml(dueDateText)}</span>
               </div>
             </div>
-            ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+            ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
             ${
               assignee
                 ? `
               <div class="task-assignee">
-                <span class="assignee-avatar">${assignee.avatar}</span>
-                <span class="assignee-name">${assignee.name}</span>
+                <span class="assignee-avatar">${escapeHtml(assignee.avatar)}</span>
+                <span class="assignee-name">${escapeHtml(assignee.name)}</span>
               </div>
             `
                 : ''

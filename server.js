@@ -42,6 +42,18 @@ const server = http.createServer(app);
 const io = socketIo(server);
 const port = process.env.PORT || 8080;
 
+// Fail closed if JWT secret is missing in production; use a noisy default only in non-production.
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET environment variable is required in production');
+  }
+  logger.warn(
+    'WARNING: JWT_SECRET is not set. Using an insecure development default.'
+  );
+}
+const EFFECTIVE_JWT_SECRET = JWT_SECRET || 'dev-only-insecure-secret';
+
 // Database connection
 let isDbConnected = false;
 let db = {}; // Will hold User, Note, AuditLog models (real or mock)
@@ -310,12 +322,21 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Stricter limiter for auth endpoints (credential stuffing)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many auth attempts, please try again later' },
+});
+
 // Auth middleware
 const auth = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Access denied' });
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    const verified = jwt.verify(token, EFFECTIVE_JWT_SECRET);
     req.user = verified;
     next();
   } catch {
@@ -323,13 +344,49 @@ const auth = (req, res, next) => {
   }
 };
 
-// File upload
+function escapeHtml(text) {
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeRegExp(string) {
+  return String(string).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// File upload — images only, size-capped, randomized name
+const ALLOWED_UPLOAD_EXTS = new Set([
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.webp',
+]);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname)),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    const safeExt = ALLOWED_UPLOAD_EXTS.has(ext) ? ext : '';
+    cb(null, `${Date.now()}-${nanoid(8)}${safeExt}`);
+  },
 });
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    if (!ALLOWED_UPLOAD_EXTS.has(ext)) {
+      return cb(new Error('Only image uploads are allowed'));
+    }
+    if (!String(file.mimetype || '').startsWith('image/')) {
+      return cb(new Error('Only image uploads are allowed'));
+    }
+    cb(null, true);
+  },
+});
 
 // Ensure directories
 const srcPath = path.join(__dirname, 'dist');
@@ -367,19 +424,22 @@ async function handleContactForm(req, res) {
   }
 
   try {
-    // Send email notification
+    // Send email notification (HTML-escaped to prevent mail client injection)
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
     await transporter.sendMail({
-      from: `"${name}" <${process.env.EMAIL_USER}>`,
+      from: `"${String(name).replace(/["\r\n]/g, '')}" <${process.env.EMAIL_USER}>`,
       replyTo: email,
       to: process.env.EMAIL_USER,
-      subject: `Adamas Contact: Message from ${name}`,
+      subject: `Adamas Contact: Message from ${String(name).replace(/[\r\n]/g, '')}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
       html: `
         <h3>New Contact Message</h3>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
         <div style="margin-top: 1em; padding: 1em; background: #f5f5f5; border-radius: 5px;">
-          ${message.replace(/\n/g, '<br>')}
+          ${safeMessage}
         </div>
       `,
     });
@@ -422,6 +482,7 @@ const popupStore = new Map();
 // Auth routes
 app.post(
   '/api/register',
+  authLimiter,
   [
     body('username').isLength({ min: 3 }).trim().escape(),
     body('email').isEmail().normalizeEmail(),
@@ -432,13 +493,14 @@ app.post(
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
 
-    const { username, email, password, role = 'agent' } = req.body;
+    const { username, email, password } = req.body;
+    // Never accept client-supplied role — always provision as agent
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new Models.User({
       username,
       email,
       password: hashedPassword,
-      role,
+      role: 'agent',
     });
     try {
       await user.save();
@@ -451,6 +513,7 @@ app.post(
 
 app.post(
   '/api/login',
+  authLimiter,
   [body('email').isEmail().normalizeEmail(), body('password').exists()],
   async (req, res) => {
     const errors = validationResult(req);
@@ -464,7 +527,8 @@ app.post(
     }
     const token = jwt.sign(
       { _id: user._id, role: user.role },
-      process.env.JWT_SECRET || 'secret'
+      EFFECTIVE_JWT_SECRET,
+      { expiresIn: '12h' }
     );
     res.json({
       token,
@@ -601,9 +665,20 @@ app.post('/api/calls', auth, async (req, res) => {
 
 app.put('/api/calls/:id', auth, async (req, res) => {
   try {
+    const existing = await Models.CallLog.findById(req.params.id);
+    if (!existing || String(existing.userId) !== String(req.user._id)) {
+      return res.status(404).json({ error: 'Call log not found' });
+    }
+    // Prevent ownership / identity tampering via body
+    const {
+      userId: _ignoreUserId,
+      _id: _ignoreId,
+      password: _ignorePassword,
+      ...safeBody
+    } = req.body || {};
     const updated = await Models.CallLog.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: safeBody },
       { new: true }
     );
     if (!updated) return res.status(404).json({ error: 'Call log not found' });
@@ -615,6 +690,10 @@ app.put('/api/calls/:id', auth, async (req, res) => {
 
 app.delete('/api/calls/:id', auth, async (req, res) => {
   try {
+    const existing = await Models.CallLog.findById(req.params.id);
+    if (!existing || String(existing.userId) !== String(req.user._id)) {
+      return res.status(404).json({ error: 'Call log not found' });
+    }
     await Models.CallLog.findByIdAndDelete(req.params.id);
     await logAudit(
       req.user._id,
@@ -663,16 +742,27 @@ app.put('/api/user/settings', auth, async (req, res) => {
 });
 
 // File upload
-app.post('/api/upload', auth, upload.single('file'), (req, res) => {
-  res.json({ filePath: `/uploads/${req.file.filename}` });
+app.post('/api/upload', auth, (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message || 'Upload failed' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    res.json({ filePath: `/uploads/${req.file.filename}` });
+  });
 });
 
 // Search
 app.get('/api/search', auth, async (req, res) => {
   const { q } = req.query;
+  if (!q || typeof q !== 'string' || q.length > 200) {
+    return res.status(400).json({ error: 'Invalid search query' });
+  }
   const notes = await Models.Note.find({
     userId: req.user._id,
-    content: new RegExp(q, 'i'),
+    content: new RegExp(escapeRegExp(q), 'i'),
   });
   res.json(notes);
 });
@@ -706,7 +796,7 @@ app.get('/api/crm/salesforce', auth, async (req, res) => {
 });
 
 // Finesse debug endpoint - returns detailed connection info
-app.get('/adamas/api/finesse/debug', async (req, res) => {
+app.get('/adamas/api/finesse/debug', auth, async (req, res) => {
   const { url, username, password } = req.query;
 
   console.log('🐛 Finesse debug request:', {
@@ -799,7 +889,6 @@ app.get('/adamas/api/finesse/debug', async (req, res) => {
       details: {
         name: error.name,
         code: error.code,
-        stack: error.stack,
       },
       server: {
         nodeVersion: process.version,
@@ -811,7 +900,7 @@ app.get('/adamas/api/finesse/debug', async (req, res) => {
 });
 
 // Finesse debug endpoint for User
-app.get('/adamas/api/finesse/debug/User/:username', async (req, res) => {
+app.get('/adamas/api/finesse/debug/User/:username', auth, async (req, res) => {
   const { url, username, password } = req.query;
 
   console.log('🐛 Finesse debug request:', {
@@ -904,7 +993,6 @@ app.get('/adamas/api/finesse/debug/User/:username', async (req, res) => {
       details: {
         name: error.name,
         code: error.code,
-        stack: error.stack,
       },
       server: {
         nodeVersion: process.version,
@@ -916,7 +1004,7 @@ app.get('/adamas/api/finesse/debug/User/:username', async (req, res) => {
 });
 
 // Finesse API proxy (GET)
-app.get('/adamas/api/finesse/User/:username', async (req, res) => {
+app.get('/adamas/api/finesse/User/:username', auth, async (req, res) => {
   const { username } = req.params;
   const { url } = req.query;
   const authHeader = req.headers.authorization;
@@ -964,7 +1052,7 @@ app.get('/adamas/api/finesse/User/:username', async (req, res) => {
 
 // Finesse API Proxy (POST - Make Call)
 // Route: /finesse/api/User/{id}/Dialogs
-app.post('/adamas/api/finesse/User/:username/Dialogs', async (req, res) => {
+app.post('/adamas/api/finesse/User/:username/Dialogs', auth, async (req, res) => {
   const { username } = req.params;
   const { url } = req.query;
   const authHeader = req.headers.authorization;
@@ -1050,7 +1138,7 @@ app.post('/adamas/api/finesse/User/:username/Dialogs', async (req, res) => {
 
 // Finesse API Proxy (PUT - Answer, Hold, Retrieve, Drop)
 // Route: /finesse/api/Dialog/{id}
-app.put('/adamas/api/finesse/Dialog/:dialogId', async (req, res) => {
+app.put('/adamas/api/finesse/Dialog/:dialogId', auth, async (req, res) => {
   const { dialogId } = req.params;
   const { url } = req.query;
   const authHeader = req.headers.authorization;
@@ -1129,10 +1217,23 @@ app.post('/api/ai-insights', auth, async (req, res) => {
   }
 });
 
-// Webhooks for workflows
+// Webhooks for workflows — require shared secret when configured
 app.post('/api/webhook/:workflow', (req, res) => {
+  const expected = process.env.WEBHOOK_SECRET;
+  if (expected) {
+    const provided =
+      req.header('X-Webhook-Secret') || req.query.secret || req.body?.secret;
+    if (provided !== expected) {
+      return res.status(401).json({ error: 'Invalid webhook secret' });
+    }
+  } else if (process.env.NODE_ENV === 'production') {
+    return res.status(503).json({ error: 'Webhooks disabled' });
+  }
   // Trigger workflow based on req.params.workflow
-  io.emit('workflow-trigger', req.body);
+  io.emit('workflow-trigger', {
+    workflow: req.params.workflow,
+    payload: req.body,
+  });
   res.json({ message: 'Webhook received' });
 });
 
@@ -1245,7 +1346,11 @@ io.on('connection', (socket) => {
 
 // GDPR: Data export
 app.get('/api/export', auth, async (req, res) => {
-  const user = await Models.User.findById(req.user._id);
+  const userDoc = await Models.User.findById(req.user._id);
+  if (!userDoc) return res.status(404).json({ error: 'User not found' });
+  const user = userDoc.toObject ? userDoc.toObject() : { ...userDoc };
+  delete user.password;
+  if (user.twilio) delete user.twilio.authToken;
   const notes = await Models.Note.find({ userId: req.user._id });
   res.json({ user, notes });
 });
@@ -1261,18 +1366,23 @@ app.delete('/api/user', auth, async (req, res) => {
 app.use(bodyParser.json({ limit: '2mb' }));
 
 // Endpoint to create a popup page. Expects { html: '<html>...</html>' }
-app.post('/popup', (req, res) => {
+// Requires auth to prevent unauthenticated stored XSS on this origin.
+app.post('/popup', auth, (req, res) => {
   const { html } = req.body || {};
-  if (!html) return res.status(400).json({ error: 'Missing html' });
+  if (!html || typeof html !== 'string')
+    return res.status(400).json({ error: 'Missing html' });
+  if (html.length > 500000)
+    return res.status(400).json({ error: 'Popup HTML too large' });
 
   const id = nanoid();
   const filename = `${id}.html`;
   const filePath = path.join(popupsDir, filename);
 
   try {
-    fs.writeFileSync(filePath, html, 'utf8');
+    const hardened = `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data: https: http:; script-src 'none';"/></head><body>${html}</body></html>`;
+    fs.writeFileSync(filePath, hardened, 'utf8');
     const createdAt = Date.now();
-    popupStore.set(id, { filePath, createdAt });
+    popupStore.set(id, { filePath, createdAt, userId: req.user._id });
     res.json({ id, url: `/popups/${filename}` });
   } catch (err) {
     console.error('Error writing popup file', err);
@@ -1281,10 +1391,13 @@ app.post('/popup', (req, res) => {
 });
 
 // Optional helper endpoint to delete a popup page
-app.delete('/popup/:id', (req, res) => {
+app.delete('/popup/:id', auth, (req, res) => {
   const id = req.params.id;
   const meta = popupStore.get(id);
   if (!meta) return res.status(404).json({ error: 'Not found' });
+  if (meta.userId && String(meta.userId) !== String(req.user._id)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   try {
     fs.unlinkSync(meta.filePath);
     popupStore.delete(id);
@@ -1324,7 +1437,11 @@ setInterval(() => {
 // GDPR Compliance: Data Export
 app.get('/api/user/data', auth, async (req, res) => {
   try {
-    const user = await Models.User.findById(req.user._id).select('-password');
+    const userDoc = await Models.User.findById(req.user._id);
+    if (!userDoc) return res.status(404).json({ error: 'User not found' });
+    const user = userDoc.toObject ? userDoc.toObject() : { ...userDoc };
+    delete user.password;
+    if (user.twilio) delete user.twilio.authToken;
     const notes = await Models.Note.find({ userId: req.user._id });
     const auditLogs = await Models.AuditLog.find({ userId: req.user._id });
     const data = { user, notes, auditLogs };

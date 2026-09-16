@@ -50,6 +50,10 @@ export function removeTimerInstance(id) {
     if (timer.interval) {
       clearInterval(timer.interval);
     }
+    if (timer.soundInterval) {
+      clearInterval(timer.soundInterval);
+      timer.soundInterval = null;
+    }
     timerInstances.delete(id);
   }
 }
@@ -94,6 +98,11 @@ export function stopTimer(id = 'main') {
   timer.isRunning = false;
   timer.pausedTime = 0;
   clearInterval(timer.interval);
+  if (timer.soundInterval) {
+    clearInterval(timer.soundInterval);
+    timer.soundInterval = null;
+  }
+  timer.soundPlaying = false;
 
   // Add to history
   if (timer.seconds > 0) {

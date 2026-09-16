@@ -1,5 +1,12 @@
 // Team Collaboration Module
+import { escapeHtml } from '../utils/helpers.js';
+
+let collaborationInitialized = false;
+let collaborationStatusInterval = null;
+
 export function initializeCollaboration() {
+  if (collaborationInitialized) return;
+
   const chatInput = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-message');
   const chatMessages = document.getElementById('chat-messages');
@@ -11,6 +18,8 @@ export function initializeCollaboration() {
   if (!chatInput || !sendBtn || !chatMessages || !teamMembersList) {
     return;
   }
+
+  collaborationInitialized = true;
 
   // Create optional UI affordances when markup is incomplete
   if (!onlineCount) {
@@ -123,13 +132,13 @@ export function initializeCollaboration() {
     const messageEl = document.createElement('div');
     messageEl.className = `chat-message ${message.sender.id === currentUser.id ? 'own' : 'other'}`;
     messageEl.innerHTML = `
-      <div class="message-avatar">${message.sender.avatar}</div>
+      <div class="message-avatar">${escapeHtml(message.sender.avatar || '')}</div>
       <div class="message-content">
         <div class="message-header">
-          <span class="message-sender">${message.sender.name}</span>
+          <span class="message-sender">${escapeHtml(message.sender.name || '')}</span>
           <span class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</span>
         </div>
-        <div class="message-text">${message.content}</div>
+        <div class="message-text">${escapeHtml(message.content || '')}</div>
       </div>
     `;
 
@@ -222,7 +231,8 @@ export function initializeCollaboration() {
   updateTypingIndicator();
 
   // Simulate team member status changes
-  setInterval(() => {
+  if (collaborationStatusInterval) clearInterval(collaborationStatusInterval);
+  collaborationStatusInterval = setInterval(() => {
     teamMembers.forEach((member) => {
       if (Math.random() > 0.95) {
         const statuses = ['online', 'away', 'offline'];

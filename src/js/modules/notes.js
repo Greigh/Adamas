@@ -12,6 +12,7 @@ import {
   setupFloating,
   setupSectionToggle,
 } from './draggable.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 export async function renderNotes() {
   const notesFeed = document.getElementById('notes-feed');
@@ -75,7 +76,7 @@ export async function renderNotes() {
     } else {
       contentDiv.innerHTML = note.text
         .split('\n')
-        .map((line) => `<div>${line}</div>`)
+        .map((line) => `<div>${escapeHtml(line)}</div>`)
         .join('');
     }
 
@@ -522,7 +523,7 @@ function renderNotesInstance(notesId) {
     } else {
       contentDiv.innerHTML = note.text
         .split('\n')
-        .map((line) => `<div>${line}</div>`)
+        .map((line) => `<div>${escapeHtml(line)}</div>`)
         .join('');
     }
 

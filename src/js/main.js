@@ -46,9 +46,12 @@ import { showToast } from './utils/toast.js';
 
 // Lazy load advanced features
 let advancedModulesLoaded = false;
+let advancedModulesLoadingPromise = null;
 const lazyLoadAdvancedModules = async () => {
   if (advancedModulesLoaded) return;
+  if (advancedModulesLoadingPromise) return advancedModulesLoadingPromise;
 
+  advancedModulesLoadingPromise = (async () => {
   try {
     const [
       { initializeCollaboration },
@@ -188,7 +191,11 @@ const lazyLoadAdvancedModules = async () => {
     initializeWhenReady();
   } catch (error) {
     console.error('Failed to load advanced modules:', error);
+    advancedModulesLoadingPromise = null; // allow retry on failure
   }
+  })();
+
+  return advancedModulesLoadingPromise;
 };
 
 // Tab navigation functions

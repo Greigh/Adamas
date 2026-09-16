@@ -869,6 +869,9 @@ export class FloatingWindowManager {
         this.removePoppedOutIndicator(sectionId);
       }
 
+      if (typeof floatingWindow.__floatingDragCleanup === 'function') {
+        floatingWindow.__floatingDragCleanup();
+      }
       floatingWindow.remove();
       this.floatingWindows.delete(sectionId);
     }
@@ -962,7 +965,7 @@ export class FloatingWindowManager {
       });
     }
 
-    document.addEventListener('mousemove', (e) => {
+    const onMouseMove = (e) => {
       if (!isDragging) return;
 
       e.preventDefault();
@@ -971,11 +974,20 @@ export class FloatingWindowManager {
 
       window.style.left = `${currentX}px`;
       window.style.top = `${currentY}px`;
-    });
+    };
 
-    document.addEventListener('mouseup', () => {
+    const onMouseUp = () => {
       isDragging = false;
-    });
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+    // Allow dock/close to remove document listeners and avoid leaks
+    window.__floatingDragCleanup = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
   }
 }
 
@@ -1024,14 +1036,21 @@ export function setupAllFloating() {
 }
 
 // Update your initialization code to periodically check for new sections
+let floatingInitialized = false;
+let floatingSetupInterval = null;
+
 export function initFloating() {
+  if (floatingInitialized) return;
+  floatingInitialized = true;
+
   // Initialize the floating manager
   getFloatingManager();
 
   setupAllFloating();
 
   // Periodically check for new floating buttons
-  setInterval(setupAllFloating, 2000);
+  if (floatingSetupInterval) clearInterval(floatingSetupInterval);
+  floatingSetupInterval = setInterval(setupAllFloating, 2000);
 }
 
 // Export the instance getter for external use

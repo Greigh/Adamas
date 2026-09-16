@@ -86,24 +86,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle API requests differently
-  if (url.pathname.startsWith('/api/')) {
+  // Handle API requests — never cache authenticated API data
+  if (url.pathname.startsWith('/api/') || url.pathname.includes('/api/')) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Cache successful API responses
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches
-              .open(DYNAMIC_CACHE)
-              .then((cache) => cache.put(request, responseClone));
-          }
-          return response;
+      fetch(request).catch(() =>
+        new Response(JSON.stringify({ error: 'Offline' }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
         })
-        .catch(() => {
-          // Return cached API response if available
-          return caches.match(request);
-        })
+      )
     );
     return;
   }

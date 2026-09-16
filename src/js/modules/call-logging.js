@@ -4,6 +4,7 @@ import { startHoldTimer } from './timer.js';
 import { applyCallLogSettings } from './call-templates.js';
 import { showToast } from '../utils/toast.js';
 import { showConfirmModal } from '../utils/modal.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 export function initializeCallLogging() {
   // Initialize call templates first
@@ -106,8 +107,30 @@ export function initializeCallLogging() {
   let callHistory = JSON.parse(localStorage.getItem('callHistory')) || [];
   let callTimerInterval = null;
   let holdTimerInterval = null;
+  let autoSaveInterval = null;
+  const CALL_HISTORY_MAX = 200;
   const token = localStorage.getItem('token'); // Simple check for auth
   const isHybridMode = !!token; // If token exists, we are in 'Cloud' mode
+
+  function maskSsn(value) {
+    const raw = String(value || '').replace(/\D/g, '');
+    return raw ? `***${raw.slice(-4)}` : '';
+  }
+
+  function persistCallHistory() {
+    if (callHistory.length > CALL_HISTORY_MAX) {
+      callHistory = callHistory.slice(0, CALL_HISTORY_MAX);
+    }
+    // Never persist raw SSNs in localStorage
+    const sanitized = callHistory.map((call) => ({
+      ...call,
+      ssn: maskSsn(call.ssn || call.ssnLast4 || ''),
+      ssnLast4: (
+        call.ssnLast4 || String(call.ssn || '').replace(/\D/g, '')
+      ).slice(-4),
+    }));
+    localStorage.setItem('callHistory', JSON.stringify(sanitized));
+  }
 
   // Load history based on mode
   if (isHybridMode) {
@@ -215,8 +238,8 @@ export function initializeCallLogging() {
         <div class="call-icon">${getCallIcon(call.callType)}</div>
         <div class="call-info">
           <div class="call-header">
-            <strong class="caller-name">${call.callerName}</strong>
-            <span class="call-type type-${call.callType}">${call.callType}</span>
+            <strong class="caller-name">${escapeHtml(call.callerName || '')}</strong>
+            <span class="call-type type-${escapeHtml(call.callType || '')}">${escapeHtml(call.callType || '')}</span>
             ${call.crmId ? '<span class="crm-badge">CRM</span>' : ''}
             ${(() => {
               // Count verified (boolean true) fields only
@@ -230,12 +253,12 @@ export function initializeCallLogging() {
             })()}
           </div>
           <div class="call-details">
-            <span class="caller-phone">📞 ${call.callerPhone}</span>
+            <span class="caller-phone">📞 ${escapeHtml(call.callerPhone || '')}</span>
             <span class="call-date">📅 ${new Date(call.startTime).toLocaleDateString()}</span>
             <span class="call-time">⏰ ${new Date(call.startTime).toLocaleTimeString()}</span>
             ${call.duration ? `<span class="call-duration">⏱️ ${formatDuration(call.duration)}</span>` : ''}
           </div>
-          ${call.notes ? `<div class="call-notes-preview">${call.notes.substring(0, 100)}${call.notes.length > 100 ? '...' : ''}</div>` : ''}
+          ${call.notes ? `<div class="call-notes-preview">${escapeHtml(call.notes.substring(0, 100))}${call.notes.length > 100 ? '...' : ''}</div>` : ''}
         </div>
         <div class="call-actions">
           <button class="action-btn btn-edit" data-id="${call.id}" title="Edit Call">
@@ -331,13 +354,21 @@ export function initializeCallLogging() {
     }
 
     // Auto-save notes and other fields
-    setInterval(() => {
+    if (autoSaveInterval) clearInterval(autoSaveInterval);
+    autoSaveInterval = setInterval(() => {
       if (currentCall && currentCall.status === 'active') {
         currentCall.notes = callNotesTextarea.value;
         // Update live values
         currentCall.customData = getCustomFieldValues();
         if (callerAccount) currentCall.accountNumber = callerAccount.value;
-        if (callerSsn) currentCall.ssn = callerSsn.value;
+        // Never keep full SSN in the live call object — last 4 only
+        if (callerSsn) {
+          const raw = callerSsn.value.replace(/\D/g, '');
+          currentCall.ssnLast4 = raw ? raw.slice(-4) : '';
+          currentCall.ssn = currentCall.ssnLast4
+            ? `***${currentCall.ssnLast4}`
+            : '';
+        }
       }
     }, 5000);
 
@@ -411,7 +442,15 @@ export function initializeCallLogging() {
   function endCall() {
     if (currentCall) {
       clearInterval(callTimerInterval);
-      if (holdTimerInterval) clearInterval(holdTimerInterval);
+      callTimerInterval = null;
+      if (holdTimerInterval) {
+        clearInterval(holdTimerInterval);
+        holdTimerInterval = null;
+      }
+      if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+        autoSaveInterval = null;
+      }
 
       // If ending while on hold, add final hold segment
       if (currentCall.status === 'on-hold') {
