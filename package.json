@@ -17,7 +17,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest --runInBand",
-    "test:e2e": "npm run build:webpack && node test/e2e/run-e2e.js",
+    "test:e2e": "npm run build && node test/e2e/run-e2e.js",
+    "test:smoke": "node test/e2e/smoke-test.js",
     "dev": "NODE_OPTIONS='--no-deprecation' NODE_ENV=development webpack serve --mode development",
     "sass": "sass src/styles/main.scss:src/styles/main.css --style compressed",
     "sass:watch": "sass --watch src/styles/main.scss:src/styles/main.css",

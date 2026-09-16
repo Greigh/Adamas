@@ -4,19 +4,32 @@ export function initializeCollaboration() {
   const sendBtn = document.getElementById('send-message');
   const chatMessages = document.getElementById('chat-messages');
   const teamMembersList = document.getElementById('team-members-list');
-  const onlineCount = document.getElementById('online-count');
-  const typingIndicator = document.getElementById('typing-indicator');
+  let onlineCount = document.getElementById('online-count');
+  let typingIndicator = document.getElementById('typing-indicator');
 
-  // Check if required elements exist
-  if (
-    !chatInput ||
-    !sendBtn ||
-    !chatMessages ||
-    !teamMembersList ||
-    !onlineCount ||
-    !typingIndicator
-  ) {
+  // Check if core chat elements exist
+  if (!chatInput || !sendBtn || !chatMessages || !teamMembersList) {
     return;
+  }
+
+  // Create optional UI affordances when markup is incomplete
+  if (!onlineCount) {
+    onlineCount = document.createElement('div');
+    onlineCount.id = 'online-count';
+    onlineCount.className = 'online-count';
+    const membersHeader = teamMembersList.previousElementSibling;
+    if (membersHeader && membersHeader.tagName === 'H4') {
+      membersHeader.insertAdjacentElement('afterend', onlineCount);
+    } else {
+      teamMembersList.parentElement?.prepend(onlineCount);
+    }
+  }
+  if (!typingIndicator) {
+    typingIndicator = document.createElement('div');
+    typingIndicator.id = 'typing-indicator';
+    typingIndicator.className = 'typing-indicator';
+    typingIndicator.style.display = 'none';
+    chatMessages.insertAdjacentElement('afterend', typingIndicator);
   }
 
   let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];

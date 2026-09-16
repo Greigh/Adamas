@@ -19,17 +19,19 @@ export function initializeAdvancedReporting() {
   const refreshBtn = document.getElementById('refresh-report');
   const scheduleReportBtn = document.getElementById('schedule-report');
 
-  generateBtn.addEventListener('click', generateReport);
-  clearFiltersBtn.addEventListener('click', clearFilters);
-  exportReportBtn.addEventListener('click', exportReport);
-  refreshBtn.addEventListener('click', () => generateReport());
-  scheduleReportBtn.addEventListener('click', scheduleReport);
+  generateBtn?.addEventListener('click', generateReport);
+  clearFiltersBtn?.addEventListener('click', clearFilters);
+  exportReportBtn?.addEventListener('click', exportReport);
+  refreshBtn?.addEventListener('click', () => generateReport());
+  scheduleReportBtn?.addEventListener('click', scheduleReport);
 
-  // Set default date range (last 30 days)
-  const today = new Date();
-  const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-  startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
-  endDateInput.value = today.toISOString().split('T')[0];
+  // Set default date range (last 30 days) when date inputs exist
+  if (startDateInput && endDateInput) {
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+    endDateInput.value = today.toISOString().split('T')[0];
+  }
 
   // Auto-refresh every 5 minutes
   setInterval(() => {

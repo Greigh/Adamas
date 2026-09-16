@@ -360,7 +360,14 @@ function openSectionInFloatingWindow(sectionId) {
       return;
     }
 
-    // Hide original section
+    // Create a deep clone of the original section BEFORE hiding it so the
+    // clone does not inherit display:none from the docked original.
+    const wrapper = section.cloneNode(true);
+    wrapper.id = `floating-${sectionId}`;
+    wrapper.style.display = '';
+    wrapper.removeAttribute('data-patterns-attached');
+
+    // Hide original section after cloning
     section.style.display = 'none';
 
     // Create floating window
@@ -392,10 +399,6 @@ function openSectionInFloatingWindow(sectionId) {
     } catch {
       /* ignore */
     }
-
-    // Create a deep clone of the original section so it preserves header and full structure
-    const wrapper = section.cloneNode(true);
-    wrapper.id = `floating-${sectionId}`;
 
     // Update all IDs in the wrapper to avoid collisions
     wrapper.querySelectorAll('[id]').forEach((element) => {
@@ -474,11 +477,17 @@ function openSectionInFloatingWindow(sectionId) {
     (async () => {
       try {
         console.log('DRAGGABLE: Starting pattern attachment for', sectionId);
-        const mod = window.patternsModule || (await import('./patterns.js'));
+        let mod = window.patternsModule;
+        if (!mod || typeof mod.attachPatternEventListeners !== 'function') {
+          mod = await import('./patterns.js');
+        }
         if (mod && typeof mod.attachPatternEventListeners === 'function') {
           console.log('DRAGGABLE: Calling attachPatternEventListeners');
           mod.attachPatternEventListeners(wrapper);
-          window.patternsModule = mod;
+          window.patternsModule = {
+            ...(window.patternsModule || {}),
+            ...mod,
+          };
           wrapper.setAttribute('data-patterns-attached', 'true');
           console.log(
             'DRAGGABLE: Patterns attached successfully, resolving promise'

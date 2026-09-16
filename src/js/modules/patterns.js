@@ -26,8 +26,11 @@ export function initializePatterns() {
   }
   updatePatternTable();
 
-  // Expose module for testing and keyboard shortcuts
+  // Expose module for testing, keyboard shortcuts, and floating windows.
+  // Preserve any existing exports (e.g. from `import * as patternsModule`)
+  // and always include attach helpers so pop-out formatters keep working.
   window.patternsModule = {
+    ...(window.patternsModule || {}),
     initializePatterns,
     updatePatternTable,
     addPattern,
@@ -38,6 +41,11 @@ export function initializePatterns() {
     reorderPattern,
     formatNumber,
     displayHistory,
+    clearPattern,
+    pasteFromClipboard,
+    copyResult,
+    attachPatternEventListeners,
+    setupPatternEventListeners,
   };
 
   // Expose patterns state for keyboard shortcuts

@@ -277,14 +277,16 @@ app.use(
           "'unsafe-eval'",
           'https://cdn.jsdelivr.net',
           'https://cdn.socket.io',
+          'https://www.google.com',
+          'https://www.gstatic.com',
         ],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://www.gstatic.com'],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", 'https://cdn.socket.io'],
-        fontSrc: ["'self'"],
+        connectSrc: ["'self'", 'https://cdn.socket.io', 'https://www.google.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
+        frameSrc: ["'self'", 'https://www.google.com'],
       },
     },
   })
@@ -293,10 +295,18 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Rate limiting
+// Rate limiting (API only — do not throttle static assets/pages)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    const p = req.path || '';
+    // Skip static files and HTML pages; only rate-limit API/auth endpoints
+    if (p.startsWith('/api') || p.startsWith('/adamas/api')) return false;
+    return true;
+  },
 });
 app.use(limiter);
 
@@ -347,7 +357,7 @@ app.get('/adamas/privacy', (req, res) => {
 });
 
 // Contact Form Handling
-app.post('/api/contact', async (req, res) => {
+async function handleContactForm(req, res) {
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
@@ -381,7 +391,10 @@ app.post('/api/contact', async (req, res) => {
       .status(500)
       .json({ error: 'Failed to send message. Please try again later.' });
   }
-});
+}
+
+app.post('/api/contact', handleContactForm);
+app.post('/adamas/api/contact', handleContactForm);
 
 app.get('/adamas/terms', (req, res) => {
   res.sendFile(path.join(srcPath, 'terms.html'));

@@ -283,10 +283,10 @@ function handleResize() {
 
 // Show the main app content
 function showMainApp() {
-  document.getElementById('main-app').classList.remove('hidden');
-  document.getElementById('settings-view').classList.add('hidden');
-  document.getElementById('stats-view').classList.add('hidden');
-  document.getElementById('knowledge-base-view').classList.add('hidden');
+  document.getElementById('main-app')?.classList.remove('hidden');
+  document.getElementById('settings-view')?.classList.add('hidden');
+  document.getElementById('stats-view')?.classList.add('hidden');
+  document.getElementById('knowledge-base-view')?.classList.add('hidden');
   document.getElementById('main-tab')?.classList.add('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.remove('active');
@@ -304,10 +304,10 @@ window.showMainApp = showMainApp;
 
 // Show settings panel
 function showSettings() {
-  document.getElementById('main-app').classList.add('hidden');
-  document.getElementById('settings-view').classList.remove('hidden');
-  document.getElementById('stats-view').classList.add('hidden');
-  document.getElementById('knowledge-base-view').classList.add('hidden');
+  document.getElementById('main-app')?.classList.add('hidden');
+  document.getElementById('settings-view')?.classList.remove('hidden');
+  document.getElementById('stats-view')?.classList.add('hidden');
+  document.getElementById('knowledge-base-view')?.classList.add('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.add('active');
   document.getElementById('stats-tab')?.classList.remove('active');
@@ -345,10 +345,10 @@ window.test = window.showSettings;
 
 // Show stats panel
 function showStats() {
-  document.getElementById('main-app').classList.add('hidden');
-  document.getElementById('settings-view').classList.add('hidden');
-  document.getElementById('stats-view').classList.remove('hidden');
-  document.getElementById('knowledge-base-view').classList.add('hidden');
+  document.getElementById('main-app')?.classList.add('hidden');
+  document.getElementById('settings-view')?.classList.add('hidden');
+  document.getElementById('stats-view')?.classList.remove('hidden');
+  document.getElementById('knowledge-base-view')?.classList.add('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.add('active');
@@ -361,12 +361,14 @@ function showStats() {
   lazyLoadAdvancedModules();
 }
 
+window.showStats = showStats;
+
 // Show knowledge base panel
 function showKnowledgeBase() {
-  document.getElementById('main-app').classList.add('hidden');
-  document.getElementById('settings-view').classList.add('hidden');
-  document.getElementById('stats-view').classList.add('hidden');
-  document.getElementById('knowledge-base-view').classList.remove('hidden');
+  document.getElementById('main-app')?.classList.add('hidden');
+  document.getElementById('settings-view')?.classList.add('hidden');
+  document.getElementById('stats-view')?.classList.add('hidden');
+  document.getElementById('knowledge-base-view')?.classList.remove('hidden');
   document.getElementById('main-tab')?.classList.remove('active');
   document.getElementById('settings-tab')?.classList.remove('active');
   document.getElementById('stats-tab')?.classList.remove('active');
@@ -383,6 +385,8 @@ function showKnowledgeBase() {
     });
   }
 }
+
+window.showKnowledgeBase = showKnowledgeBase;
 
 function updateAuthHeader() {
   const btn = document.getElementById('header-login-btn');

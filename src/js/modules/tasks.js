@@ -14,21 +14,8 @@ export function initializeTasks() {
   const completedCount = document.getElementById('completed-count');
   const totalCount = document.getElementById('total-count');
 
-  // Check if required elements exist
-  if (
-    !addTaskBtn ||
-    !taskTitleInput ||
-    !taskDescriptionInput ||
-    !taskPrioritySelect ||
-    !taskDueDateInput ||
-    !taskAssigneeSelect ||
-    !taskList ||
-    !searchInput ||
-    !sortSelect ||
-    !progressBar ||
-    !completedCount ||
-    !totalCount
-  ) {
+  // Core controls required; optional fields (description, due date, etc.) are guarded
+  if (!addTaskBtn || !taskTitleInput || !taskPrioritySelect || !taskList) {
     return;
   }
 
@@ -45,6 +32,7 @@ export function initializeTasks() {
   ];
 
   function initializeAssignees() {
+    if (!taskAssigneeSelect) return;
     taskAssigneeSelect.innerHTML =
       '<option value="">Select assignee...</option>';
     defaultAssignees.forEach((assignee) => {
@@ -57,10 +45,12 @@ export function initializeTasks() {
 
   function addTask() {
     const title = taskTitleInput.value.trim();
-    const description = taskDescriptionInput.value.trim();
+    const description = taskDescriptionInput
+      ? taskDescriptionInput.value.trim()
+      : '';
     const priority = taskPrioritySelect.value;
-    const dueDate = taskDueDateInput.value;
-    const assignee = taskAssigneeSelect.value;
+    const dueDate = taskDueDateInput ? taskDueDateInput.value : '';
+    const assignee = taskAssigneeSelect ? taskAssigneeSelect.value : '';
 
     if (!title) {
       showToast('Please enter a task title', 'error');
@@ -88,10 +78,10 @@ export function initializeTasks() {
 
     // Clear form
     taskTitleInput.value = '';
-    taskDescriptionInput.value = '';
+    if (taskDescriptionInput) taskDescriptionInput.value = '';
     taskPrioritySelect.value = 'medium';
-    taskDueDateInput.value = '';
-    taskAssigneeSelect.value = '';
+    if (taskDueDateInput) taskDueDateInput.value = '';
+    if (taskAssigneeSelect) taskAssigneeSelect.value = '';
 
     showToast('Task added successfully', 'success');
 
@@ -114,7 +104,7 @@ export function initializeTasks() {
     });
 
     // Apply search filter
-    const searchTerm = searchInput.value.toLowerCase();
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
     if (searchTerm) {
       filteredTasks = filteredTasks.filter(
         (task) =>
@@ -368,9 +358,9 @@ export function initializeTasks() {
     const total = tasks.length;
     const percentage = total > 0 ? (completed / total) * 100 : 0;
 
-    progressBar.style.width = `${percentage}%`;
-    completedCount.textContent = completed;
-    totalCount.textContent = total;
+    if (progressBar) progressBar.style.width = `${percentage}%`;
+    if (completedCount) completedCount.textContent = completed;
+    if (totalCount) totalCount.textContent = total;
   }
 
   function checkDueDateNotifications() {
@@ -418,11 +408,15 @@ export function initializeTasks() {
     });
   });
 
-  searchInput.addEventListener('input', updateTaskList);
-  sortSelect.addEventListener('change', () => {
-    currentSort = sortSelect.value;
-    updateTaskList();
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', updateTaskList);
+  }
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      currentSort = sortSelect.value;
+      updateTaskList();
+    });
+  }
 
   // Initialize
   initializeAssignees();

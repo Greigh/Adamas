@@ -591,31 +591,12 @@ export function applySettings() {
     knowledgeBaseTab.style.display = appSettings.showKnowledgeBase
       ? ''
       : 'none';
-
-    // If Knowledge Base is being disabled and user is currently on that tab, switch to main
-    if (
-      !appSettings.showKnowledgeBase &&
-      knowledgeBaseTab.classList.contains('active')
-    ) {
-      // Switch to main tab if available
-      if (typeof window.showMainApp === 'function') {
-        window.showMainApp();
-      }
-    }
   }
 
   // Handle navigation tab visibility for Stats
   const statsTab = document.getElementById('stats-tab');
   if (statsTab) {
     statsTab.style.display = appSettings.showAnalytics ? '' : 'none';
-
-    // If Stats is being disabled and user is currently on that tab, switch to main
-    if (!appSettings.showAnalytics && statsTab.classList.contains('active')) {
-      // Switch to main tab if available
-      if (typeof window.showMainApp === 'function') {
-        window.showMainApp();
-      }
-    }
   }
 
   // Apply export settings
@@ -961,6 +942,21 @@ export function setupSettingsEventListeners() {
         appSettings[settingKey] = isOn;
         saveSettings(appSettings);
         applySettings();
+
+        // If the user disables a nav feature while viewing it, return to Main
+        if (
+          !isOn &&
+          ((settingKey === 'showKnowledgeBase' &&
+            document
+              .getElementById('knowledge-base-tab')
+              ?.classList.contains('active')) ||
+            (settingKey === 'showAnalytics' &&
+              document.getElementById('stats-tab')?.classList.contains('active')))
+        ) {
+          if (typeof window.showMainApp === 'function') {
+            window.showMainApp();
+          }
+        }
       });
     }
   });
@@ -1524,8 +1520,14 @@ function setupAdditionalSettingsListeners() {
   const testSoundBtn = document.getElementById('test-sound-btn');
   if (testSoundBtn) {
     testSoundBtn.addEventListener('click', function () {
-      const soundType = document.getElementById('timer-alert-sound').value;
-      const customUrl = document.getElementById('custom-sound-url').value;
+      const alertSoundEl = document.getElementById('timer-alert-sound');
+      const customUrlEl = document.getElementById('custom-sound-url');
+      if (!alertSoundEl) {
+        console.warn('Test sound: #timer-alert-sound not found');
+        return;
+      }
+      const soundType = alertSoundEl.value;
+      const customUrl = customUrlEl ? customUrlEl.value : '';
       playAlertSound(soundType, customUrl, true); // Play a short test sound immediately
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard
@@ -2423,7 +2425,8 @@ function checkWelcomeStatus() {
           else d.classList.remove('active');
         });
 
-        backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+        backBtn &&
+          (backBtn.style.visibility = step === 1 ? 'hidden' : 'visible');
 
         if (step === 5) {
           nextBtn.textContent = 'Finish';
@@ -2498,7 +2501,7 @@ function checkWelcomeStatus() {
         }
       });
 
-      backBtn.addEventListener('click', () => {
+      backBtn?.addEventListener('click', () => {
         let prevStep = currentStep - 1;
 
         // Skip Step 2 going back if not custom

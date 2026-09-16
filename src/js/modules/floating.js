@@ -62,6 +62,8 @@ export class FloatingWindowManager {
     }
 
     // Update all IDs in the cloned section to avoid collisions
+    clonedSection.removeAttribute('data-patterns-attached');
+    clonedSection.style.display = '';
     clonedSection.querySelectorAll('[id]').forEach((element) => {
       const originalId = element.id;
       const newId = `floating-${sectionId}-${originalId}`;

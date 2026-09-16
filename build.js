@@ -68,10 +68,19 @@ try {
     if (fs.existsSync(src)) {
       // Read the file, update stylesheet reference, and write to dist
       let html = fs.readFileSync(src, 'utf8');
+      // Replace lodash/webpack template tags left in static HTML sources
+      html = html.replace(
+        /<%= htmlWebpackPlugin\.files\.publicPath %>/g,
+        '/adamas/'
+      );
       // Replace any hashed or non-hashed stylesheet reference with main.css
       html = html.replace(
+        /<link\s+rel="stylesheet"\s+href="(?:\/adamas\/)?styles\/main(\.[a-f0-9]+)?\.css"\s*\/?>/gi,
+        '<link rel="stylesheet" href="/adamas/styles/main.css" />'
+      );
+      html = html.replace(
         /<link\s+rel="stylesheet"\s+href="styles\/main(\.[a-f0-9]+)?\.css"\s*\/?>/gi,
-        '<link rel="stylesheet" href="styles/main.css" />'
+        '<link rel="stylesheet" href="/adamas/styles/main.css" />'
       );
       fs.writeFileSync(dest, html, 'utf8');
       console.log(`✅ Copied ${file} to dist/`);
