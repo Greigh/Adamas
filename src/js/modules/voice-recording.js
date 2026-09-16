@@ -1,5 +1,6 @@
 // Voice Recording Integration Module - Cisco Unified Communications Manager
 import { showToast } from '../utils/toast.js';
+import { saveData, loadData, STORAGE_LIMITS } from './storage.js';
 
 export function initializeVoiceRecording() {
   const connectBtn = document.getElementById('connect-cucm');
@@ -18,7 +19,20 @@ export function initializeVoiceRecording() {
   let recordedChunks = [];
   let isRecording = false;
   let isConnected = false;
-  let recordings = JSON.parse(localStorage.getItem('recordings')) || [];
+  let recordings = loadData('recordings', []);
+
+  function persistRecordings() {
+    // Object URLs don't survive reload — store compact metadata only
+    const compact = recordings.slice(-STORAGE_LIMITS.recordings).map((r) => ({
+      id: r.id,
+      timestamp: r.timestamp,
+      duration: r.duration || 0,
+      // Keep url only for current-session playback
+      url: r.url,
+    }));
+    recordings = compact;
+    saveData('recordings', compact);
+  }
 
   function updateStatus() {
     if (!statusDiv) return;
@@ -78,7 +92,7 @@ export function initializeVoiceRecording() {
             duration: 0,
           };
           recordings.push(recording);
-          localStorage.setItem('recordings', JSON.stringify(recordings));
+          persistRecordings();
           updateRecordingsList();
           showToast('Recording saved', 'success');
         };

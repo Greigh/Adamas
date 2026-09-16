@@ -1,5 +1,6 @@
 // Team Collaboration Module
 import { escapeHtml } from '../utils/helpers.js';
+import { saveData, loadData, STORAGE_LIMITS } from './storage.js';
 
 let collaborationInitialized = false;
 let collaborationStatusInterval = null;
@@ -41,8 +42,8 @@ export function initializeCollaboration() {
     chatMessages.insertAdjacentElement('afterend', typingIndicator);
   }
 
-  let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-  let teamMembers = JSON.parse(localStorage.getItem('teamMembers')) || [
+  let messages = loadData('chatMessages', []);
+  let teamMembers = loadData('teamMembers', [
     {
       id: 1,
       name: 'Alice Johnson',
@@ -59,7 +60,7 @@ export function initializeCollaboration() {
       status: 'offline',
       avatar: '👨‍💼',
     },
-  ];
+  ]).slice(0, STORAGE_LIMITS.teamMembers);
   let typingUsers = new Set();
   let currentUser = { id: 0, name: 'You', avatar: '👤' };
 
@@ -123,7 +124,10 @@ export function initializeCollaboration() {
     };
 
     messages.push(message);
-    localStorage.setItem('chatMessages', JSON.stringify(messages.slice(-100))); // Keep last 100 messages
+    saveData(
+      'chatMessages',
+      messages.slice(-(STORAGE_LIMITS.chatMessages || 100))
+    ); // Keep last N messages
     renderMessage(message);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }

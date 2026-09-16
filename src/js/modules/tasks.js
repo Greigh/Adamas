@@ -1,5 +1,6 @@
 // Task Management Module
 import { escapeHtml } from '../utils/helpers.js';
+import { saveData, loadData, STORAGE_LIMITS } from './storage.js';
 
 export function initializeTasks() {
   const addTaskBtn = document.getElementById('add-task');
@@ -21,9 +22,16 @@ export function initializeTasks() {
     return;
   }
 
-  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  let tasks = loadData('tasks', []);
   let currentFilter = 'all';
   let currentSort = 'created-desc';
+
+  function persistTasks() {
+    tasks = Array.isArray(tasks)
+      ? tasks.slice(-STORAGE_LIMITS.tasks)
+      : [];
+    saveData('tasks', tasks);
+  }
 
   // Initialize default assignees
   const defaultAssignees = [
@@ -74,7 +82,7 @@ export function initializeTasks() {
     };
 
     tasks.push(task);
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    persistTasks();
     updateTaskList();
     updateProgress();
 
@@ -243,7 +251,7 @@ export function initializeTasks() {
     if (task) {
       task.status = task.status === 'completed' ? 'pending' : 'completed';
       task.updatedAt = new Date();
-      localStorage.setItem('tasks', JSON.stringify(tasks));
+      persistTasks();
       updateTaskList();
       updateProgress();
 
@@ -328,7 +336,7 @@ export function initializeTasks() {
         task.assignee = newAssignee;
         task.updatedAt = new Date();
 
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+        persistTasks();
         updateTaskList();
         updateProgress();
         modal.remove();
@@ -346,7 +354,7 @@ export function initializeTasks() {
   function deleteTask(taskId) {
     if (confirm('Are you sure you want to delete this task?')) {
       tasks = tasks.filter((t) => t.id !== taskId);
-      localStorage.setItem('tasks', JSON.stringify(tasks));
+      persistTasks();
       updateTaskList();
       updateProgress();
       showToast('Task deleted successfully', 'success');

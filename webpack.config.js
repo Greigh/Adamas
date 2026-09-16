@@ -128,6 +128,14 @@ module.exports = {
           from: 'src/public',
           to: '.',
         },
+        {
+          from: 'src/js/theme-init.js',
+          to: 'js/theme-init.js',
+        },
+        {
+          from: 'src/js/deferred-stubs.js',
+          to: 'js/deferred-stubs.js',
+        },
       ],
     }),
     new webpack.DefinePlugin({

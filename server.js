@@ -12,9 +12,53 @@ const cors = require('cors');
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
+const cookie = require('cookie');
 const bodyParser = require('body-parser');
 const { body, validationResult } = require('express-validator');
 const { nanoid } = require('nanoid');
+
+const SESSION_COOKIE = 'adamas_session';
+const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+
+function sessionCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: SESSION_MAX_AGE_MS,
+  };
+}
+
+function readSessionToken(req) {
+  const header = req.header('Authorization');
+  if (header && header.startsWith('Bearer ')) {
+    return header.slice(7).trim();
+  }
+  const raw = req.headers.cookie || '';
+  if (!raw) return null;
+  try {
+    const parsed = cookie.parse(raw);
+    return parsed[SESSION_COOKIE] || null;
+  } catch {
+    return null;
+  }
+}
+
+function injectHtmlNonce(html, nonce) {
+  return String(html)
+    .replace(/<script(?=[\s>])(?![^>]*\bnonce=)/gi, `<script nonce="${nonce}"`)
+    .replace(/<style(?=[\s>])(?![^>]*\bnonce=)/gi, `<style nonce="${nonce}"`);
+}
+
+function sendHtmlFile(res, filePath) {
+  const nonce = res.locals.cspNonce;
+  let html = fs.readFileSync(filePath, 'utf8');
+  if (nonce) html = injectHtmlNonce(html, nonce);
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+}
 
 const logger = winston.createLogger({
   level: 'info',
@@ -39,7 +83,13 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  // Cookies on the Socket.IO handshake (same-origin)
+  cors: {
+    origin: true,
+    credentials: true,
+  },
+});
 const port = process.env.PORT || 8080;
 
 // Fail closed if JWT secret is missing in production; use a noisy default only in non-production.
@@ -277,33 +327,52 @@ async function logAudit(userId, action, resource, details, req) {
   }
 }
 
-// Middleware
+// Middleware — per-request CSP nonce (no unsafe-inline / unsafe-eval on scripts)
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
+
 app.use(
   helmet({
     contentSecurityPolicy: {
+      useDefaults: false,
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-          'https://cdn.jsdelivr.net',
-          'https://cdn.socket.io',
+          (req, res) => `'nonce-${res.locals.cspNonce}'`,
           'https://www.google.com',
           'https://www.gstatic.com',
         ],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://www.gstatic.com'],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", 'https://cdn.socket.io', 'https://www.google.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        // Legacy inline event handlers (onclick=) still present in some modules
+        scriptSrcAttr: ["'unsafe-inline'"],
+        styleSrc: [
+          "'self'",
+          (req, res) => `'nonce-${res.locals.cspNonce}'`,
+          'https://www.gstatic.com',
+        ],
+        // element.style / style= attributes (not style tags)
+        styleSrcAttr: ["'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+        connectSrc: ["'self'", 'https://www.google.com', 'ws:', 'wss:'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
         objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
+        mediaSrc: ["'self'", 'blob:'],
         frameSrc: ["'self'", 'https://www.google.com'],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        frameAncestors: ["'self'"],
       },
     },
   })
 );
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -331,16 +400,16 @@ const authLimiter = rateLimit({
   message: { error: 'Too many auth attempts, please try again later' },
 });
 
-// Auth middleware
+// Auth middleware — httpOnly cookie session, with Bearer fallback for tooling
 const auth = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = readSessionToken(req);
   if (!token) return res.status(401).json({ error: 'Access denied' });
   try {
     const verified = jwt.verify(token, EFFECTIVE_JWT_SECRET);
     req.user = verified;
     next();
   } catch {
-    res.status(400).json({ error: 'Invalid token' });
+    res.status(401).json({ error: 'Invalid token' });
   }
 };
 
@@ -395,8 +464,27 @@ const uploadsDir = path.join(__dirname, 'uploads');
 fs.mkdirSync(popupsDir, { recursive: true });
 fs.mkdirSync(uploadsDir, { recursive: true });
 
-// Serve static files
+// Serve static files (HTML gets CSP nonces injected)
+function htmlNonceStatic(rootDir) {
+  return (req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    let rel = req.path || '/';
+    if (rel.endsWith('/')) rel += 'index.html';
+    if (!rel.endsWith('.html')) return next();
+    const filePath = path.normalize(path.join(rootDir, rel));
+    if (!filePath.startsWith(path.normalize(rootDir))) return next();
+    if (!fs.existsSync(filePath)) return next();
+    try {
+      return sendHtmlFile(res, filePath);
+    } catch (err) {
+      return next(err);
+    }
+  };
+}
+
+app.use(htmlNonceStatic(srcPath));
 app.use(express.static(srcPath));
+app.use('/adamas', htmlNonceStatic(srcPath));
 app.use('/adamas', express.static(srcPath));
 app.use('/callcenterhelper', (req, res) => {
   res.redirect(301, '/adamas' + req.path);
@@ -410,7 +498,7 @@ app.use(
 
 // Routes for static pages with /adamas/ prefix
 app.get('/adamas/privacy', (req, res) => {
-  res.sendFile(path.join(srcPath, 'privacy.html'));
+  sendHtmlFile(res, path.join(srcPath, 'privacy.html'));
 });
 
 // Contact Form Handling
@@ -457,15 +545,15 @@ app.post('/api/contact', handleContactForm);
 app.post('/adamas/api/contact', handleContactForm);
 
 app.get('/adamas/terms', (req, res) => {
-  res.sendFile(path.join(srcPath, 'terms.html'));
+  sendHtmlFile(res, path.join(srcPath, 'terms.html'));
 });
 
 app.get('/adamas/contact', (req, res) => {
-  res.sendFile(path.join(srcPath, 'contact.html'));
+  sendHtmlFile(res, path.join(srcPath, 'contact.html'));
 });
 
 app.get('/adamas/settings', (req, res) => {
-  res.sendFile(path.join(srcPath, 'settings.html'));
+  sendHtmlFile(res, path.join(srcPath, 'settings.html'));
 });
 
 // Ensure JavaScript files have proper charset in Content-Type
@@ -530,8 +618,9 @@ app.post(
       EFFECTIVE_JWT_SECRET,
       { expiresIn: '12h' }
     );
+    res.cookie(SESSION_COOKIE, token, sessionCookieOptions());
+    // Token is intentionally omitted from JSON — session lives in httpOnly cookie
     res.json({
-      token,
       user: {
         _id: user._id,
         username: user.username,
@@ -541,6 +630,37 @@ app.post(
     });
   }
 );
+
+// Current session (cookie-based)
+app.get('/api/me', async (req, res) => {
+  const token = readSessionToken(req);
+  if (!token) return res.status(401).json({ error: 'Not authenticated' });
+  try {
+    const verified = jwt.verify(token, EFFECTIVE_JWT_SECRET);
+    const user = await Models.User.findById(verified._id);
+    if (!user) return res.status(401).json({ error: 'Not authenticated' });
+    res.json({
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch {
+    res.status(401).json({ error: 'Not authenticated' });
+  }
+});
+
+app.post('/api/logout', (req, res) => {
+  res.clearCookie(SESSION_COOKIE, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
+  res.json({ message: 'Logged out' });
+});
 
 // Update Profile
 app.put(
@@ -1330,14 +1450,37 @@ app.get('/api/user/twilio', auth, async (req, res) => {
   }
 });
 
-// Socket.io for real-time
+// Socket.io — require valid session JWT on handshake
+io.use((socket, next) => {
+  try {
+    let token = socket.handshake.auth && socket.handshake.auth.token;
+    if (!token && socket.handshake.headers && socket.handshake.headers.cookie) {
+      const parsed = cookie.parse(socket.handshake.headers.cookie);
+      token = parsed[SESSION_COOKIE];
+    }
+    if (!token) {
+      return next(new Error('Unauthorized'));
+    }
+    socket.user = jwt.verify(token, EFFECTIVE_JWT_SECRET);
+    return next();
+  } catch {
+    return next(new Error('Unauthorized'));
+  }
+});
+
 io.on('connection', (socket) => {
-  console.log('User connected');
+  console.log('User connected', socket.user && socket.user._id);
   socket.on('join', (userId) => {
-    socket.join(userId);
+    if (!socket.user || String(userId) !== String(socket.user._id)) {
+      return;
+    }
+    socket.join(String(userId));
   });
   socket.on('note-update', (data) => {
-    socket.to(data.userId).emit('note-updated', data);
+    if (!socket.user || !data || String(data.userId) !== String(socket.user._id)) {
+      return;
+    }
+    socket.to(String(data.userId)).emit('note-updated', data);
   });
   socket.on('disconnect', () => {
     console.log('User disconnected');

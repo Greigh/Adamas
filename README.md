@@ -15,10 +15,10 @@ Deployed under the `/adamas/` path (legacy `/callcenterhelper/` redirects are st
 | **Backend** | **Node.js** + **Express 5** (`server.js`) |
 | **Realtime** | **Socket.IO** (server + client) |
 | **Data** | **MongoDB** via **Mongoose** (falls back to an in-memory mock DB when Mongo is unavailable) |
-| **Auth** | **JWT** + **bcryptjs** |
+| **Auth** | **JWT** in **httpOnly** session cookies (`adamas_session`) + **bcryptjs** |
 | **Charts** | **Chart.js** |
 | **Integrations** | Twilio, Nodemailer, OpenAI, CRM providers (Salesforce, HubSpot, Zendesk, Dynamics, Five9, Finesse) |
-| **Security** | Helmet, CORS, express-rate-limit (API routes), express-validator |
+| **Security** | Helmet CSP (nonce-based, no `unsafe-inline`/`unsafe-eval` on scripts), CORS w/ credentials, express-rate-limit (API routes), express-validator, Socket.IO handshake auth |
 | **Logging** | Winston |
 | **Testing** | Jest (jsdom unit tests), Playwright (e2e + smoke) |
 | **Tooling** | ESLint, Prettier, TypeScript (types/check), Sass, Concurrently, Nodemon |
@@ -77,9 +77,18 @@ Adamas/
 ## Installation
 
 ```bash
+# GitHub
 git clone https://github.com/Greigh/Adamas.git
+# Or Greigh Studios Forgejo (dual-homed)
+# git clone git@git.greighstudios.com:greighstudios/Adamas.git
 cd Adamas
 npm install
+```
+
+Attach the studio forge remote on an existing clone:
+
+```bash
+git remote add gitea git@git.greighstudios.com:greighstudios/Adamas.git
 ```
 
 ## Development

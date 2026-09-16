@@ -1,6 +1,7 @@
 // Multi-Channel Support Module
 import { crmManager } from './crm/CRMManager.js';
 import { showToast } from '../utils/toast.js';
+import { apiFetch } from '../utils/api.js';
 
 export function initializeMultiChannel() {
   // ... existing initialization code ...
@@ -284,11 +285,10 @@ function initializeSMSChannel() {
       sendSmsBtn.textContent = 'Sending...';
 
       try {
-        const response = await fetch('/api/sms', {
+        const response = await apiFetch('/api/sms', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           },
           body: JSON.stringify({ to, message }),
         });

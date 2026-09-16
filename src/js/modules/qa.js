@@ -1,5 +1,6 @@
 // Quality Assurance Tools Module
 import { getCallHistory } from './call-logging.js';
+import { saveData, loadData, STORAGE_LIMITS } from './storage.js';
 
 export function initializeQA() {
   const callSelect = document.getElementById('call-to-review');
@@ -19,7 +20,12 @@ export function initializeQA() {
     return;
   }
 
-  let qaReports = JSON.parse(localStorage.getItem('qaReports')) || [];
+  let qaReports = loadData('qaReports', []);
+
+  function persistQaReports() {
+    qaReports = qaReports.slice(-STORAGE_LIMITS.qaReports);
+    saveData('qaReports', qaReports);
+  }
 
   function populateCallSelect() {
     const calls = getCallHistory();
@@ -57,7 +63,7 @@ export function initializeQA() {
     };
 
     qaReports.push(report);
-    localStorage.setItem('qaReports', JSON.stringify(qaReports));
+    persistQaReports();
     updateQAReports();
 
     // Reset form

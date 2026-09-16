@@ -402,8 +402,8 @@ function updateAuthHeader() {
   if (auth.isLoggedIn()) {
     const user = auth.getUser();
     btn.textContent = `Logout (${user ? user.username : 'User'})`;
-    btn.onclick = () => {
-      auth.logout();
+    btn.onclick = async () => {
+      await auth.logout();
       showToast('Logged out successfully', 'success');
       updateAuthHeader();
       // Optional: Reload to clear state if needed, but for now just stay
@@ -804,8 +804,31 @@ function setupAllEventListeners() {
 import { initializeSectionSettings } from './modules/section-settings.js';
 
 // Main initialization function
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   try {
+    // Wait for httpOnly session cookie probe before feature modules
+    try {
+      await auth.whenReady();
+    } catch (err) {
+      console.warn('Session restore skipped:', err);
+    }
+
+    // Authenticated realtime channel (handshake uses httpOnly cookie)
+    if (auth.isLoggedIn() && typeof io === 'function') {
+      try {
+        window.adamasSocket = io({
+          withCredentials: true,
+          transports: ['websocket', 'polling'],
+        });
+        const user = auth.getUser();
+        if (user && user._id) {
+          window.adamasSocket.emit('join', user._id);
+        }
+      } catch (err) {
+        console.warn('Socket.IO connect skipped:', err);
+      }
+    }
+
     // Core services
     initializeSectionSettings();
     // Set up global error handling first

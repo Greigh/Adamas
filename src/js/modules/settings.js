@@ -27,6 +27,8 @@ import {
   initAudio,
   setRepeatAlertSoundMode,
 } from '../utils/audio.js';
+import { auth } from './auth.js';
+import { apiFetch } from '../utils/api.js';
 
 // Helper to update slider visual state
 function updateSliderVisual(toggle) {
@@ -175,14 +177,12 @@ export function saveSettings(settings) {
   }
 
   // Cloud Persist (Debounced)
-  const token = localStorage.getItem('token');
-  if (token) {
+  if (auth.isLoggedIn()) {
     if (saveTimeout) clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
-      fetch('/api/user/settings', {
+      apiFetch('/api/user/settings', {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(appSettings),
@@ -228,11 +228,8 @@ export function initializeSettings() {
   }
 
   // Cloud Fetch
-  const token = localStorage.getItem('token');
-  if (token) {
-    fetch('/api/user/settings', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  if (auth.isLoggedIn()) {
+    apiFetch('/api/user/settings')
       .then((res) => res.json())
       .then((remoteSettings) => {
         if (remoteSettings && Object.keys(remoteSettings).length > 0) {
@@ -2199,11 +2196,10 @@ async function initializeTwilioSettings() {
     saveButton.textContent = 'Saving...';
 
     try {
-      const response = await fetch('/api/user/twilio', {
+      const response = await apiFetch('/api/user/twilio', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({ accountSid, authToken, phoneNumber }),
       });
@@ -2241,11 +2237,10 @@ async function initializeTwilioSettings() {
       testButton.textContent = 'Sending Test...';
 
       try {
-        const response = await fetch('/api/sms', {
+        const response = await apiFetch('/api/sms', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify({
             to: phoneNumber,
@@ -2278,11 +2273,7 @@ async function loadTwilioSettings() {
   if (!statusElement) return;
 
   try {
-    const response = await fetch('/api/user/twilio', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
+    const response = await apiFetch('/api/user/twilio');
 
     if (response.ok) {
       const settings = await response.json();

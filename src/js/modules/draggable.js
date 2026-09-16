@@ -1,5 +1,6 @@
 // Draggable sections and floating windows module
 import { appSettings } from './settings.js';
+import { apiFetch } from '../utils/api.js';
 
 export let draggedElement = null;
 export let floatingWindows = new Map();
@@ -69,7 +70,7 @@ document.addEventListener('click', (e) => {
 
   // If we have a server popup id, attempt to delete it
   if (stored && stored.popupId) {
-    fetch(`/popup/${stored.popupId}`, { method: 'DELETE' }).catch(() => {
+    apiFetch(`/popup/${stored.popupId}`, { method: 'DELETE' }).catch(() => {
       // ignore errors
     });
   }
@@ -679,7 +680,7 @@ function openSectionInBrowserPopup(sectionId) {
     // Instead of writing directly into the blank popup, prefer creating a
     // server-served URL for larger content. POST popupHTML to the server
     // and open the returned URL.
-    fetch('/popup', {
+    apiFetch('/popup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ html: popupHTML }),
@@ -757,7 +758,7 @@ function openSectionInBrowserPopup(sectionId) {
       });
   } else {
     // Popup was blocked — try to POST HTML to server and open returned URL in new tab
-    fetch('/popup', {
+    apiFetch('/popup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ html: popupHTML }),
