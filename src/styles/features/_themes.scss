@@ -16,7 +16,8 @@ body {
 }
 
 // Theme indicator
-.theme-indicator {
+// Theme toast (transient) — distinct from settings "Current Theme" label
+.theme-toast {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
@@ -41,6 +42,24 @@ body {
   }
 }
 
+// Settings appearance label (was colliding with .theme-indicator toast)
+.theme-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  opacity: 1;
+  position: static;
+  transform: none;
+  background: transparent;
+  padding: 0;
+  border: none;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+
 // Dark theme styles
 [data-theme="dark"] {
   body {
@@ -48,7 +67,7 @@ body {
     color: var(--dark-text);
   }
 
-  .theme-indicator {
+  .theme-toast {
     background: var(--dark-surface);
     color: var(--primary-blue-light);
     border-color: var(--dark-border);

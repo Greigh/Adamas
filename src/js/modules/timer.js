@@ -700,6 +700,16 @@ function showTimerWarning(currentTime) {
 
 // Initialize the holdTimer with default values
 export function initializeTimer() {
+  // Tear down any previous running intervals before replacing state
+  try {
+    if (typeof holdTimer !== 'undefined' && holdTimer) {
+      if (holdTimer.intervalId) clearInterval(holdTimer.intervalId);
+      if (holdTimer.soundInterval) clearInterval(holdTimer.soundInterval);
+    }
+  } catch {
+    /* ignore */
+  }
+
   // Load saved timer data
   const savedData = loadData('timerData', {
     totalHoldTime: 0,

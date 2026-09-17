@@ -922,10 +922,14 @@ export function normalizeNumber(text) {
 
 // Ensure this function is exported for dynamic import
 // Attach listeners scoped to a root element (defaults to document)
+let documentPatternsAttached = false;
 export function attachPatternEventListeners(root = document) {
   // Avoid double-attaching to the same root
   try {
-    if (
+    if (root === document || root === document.documentElement) {
+      if (documentPatternsAttached) return;
+      documentPatternsAttached = true;
+    } else if (
       root &&
       root.getAttribute &&
       root.getAttribute('data-patterns-attached') === 'true'

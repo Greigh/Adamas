@@ -78,7 +78,7 @@ function clearSessionCookie(res) {
   });
 }
 
-/** Reject private/link-local literal hosts and require Finesse-ish hostnames. */
+/** Reject private/link-local literal hosts; require strict Finesse hostnames. */
 function isAllowedFinesseUrl(rawUrl) {
   let urlObj;
   try {
@@ -86,7 +86,9 @@ function isAllowedFinesseUrl(rawUrl) {
   } catch {
     return false;
   }
-  if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') return false;
+  // HTTPS only — never follow cleartext to internal networks
+  if (urlObj.protocol !== 'https:') return false;
+  if (urlObj.username || urlObj.password) return false;
   const host = String(urlObj.hostname || '').toLowerCase();
   if (!host || host === 'localhost' || host.endsWith('.local')) return false;
   if (
@@ -98,14 +100,36 @@ function isAllowedFinesseUrl(rawUrl) {
   }
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return false;
   if (host.includes(':')) return false; // raw IPv6
+  // Exact suffix / label allowlist — no loose "finesse" substring hosts
   const patterns = [
     /(^|\.)cisco\.com$/i,
     /(^|\.)lminfosys\.net$/i,
-    /(^|\.)finesse\./i,
+    /^finesse(\.|-)/i,
     /\.finesse\./i,
-    /^finesse[.-]/i,
   ];
+  // Require hostname to look like a real Finesse server (finesse.X or X.finesse.Y)
+  // Reject attacker domains such as finesse.evil.com unless under known parents
+  const allowedExactEnv = (process.env.FINESSE_ALLOWED_HOSTS || '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  if (allowedExactEnv.length > 0) {
+    return allowedExactEnv.some(
+      (h) => host === h || host.endsWith('.' + h)
+    );
+  }
   return patterns.some((p) => p.test(host));
+}
+
+/** Fetch Finesse without following redirects (SSRF hardening). */
+async function fetchFinesse(url, options = {}) {
+  const response = await fetch(url, { ...options, redirect: 'manual' });
+  if (response.status >= 300 && response.status < 400) {
+    const err = new Error('Finesse redirect blocked');
+    err.status = 400;
+    throw err;
+  }
+  return response;
 }
 
 function maskSsnServer(value) {
@@ -476,7 +500,10 @@ app.use(
         .map((s) => s.trim())
         .filter(Boolean);
       if (allowed.length === 0) {
-        // Unconfigured: reflect request origin (set CORS_ORIGINS in production)
+        // Production must set CORS_ORIGINS — fail closed
+        if (process.env.NODE_ENV === 'production') {
+          return callback(new Error('CORS origin not allowed'));
+        }
         return callback(null, true);
       }
       if (allowed.includes(origin) || allowed.includes('*')) {
@@ -1070,7 +1097,7 @@ app.post('/adamas/api/finesse/debug', auth, async (req, res) => {
     const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
 
     const startTime = Date.now();
-    const response = await fetch(finesseUrl, {
+    const response = await fetchFinesse(finesseUrl, {
       method: 'GET',
       headers: {
         Authorization: authHeader,
@@ -1134,7 +1161,7 @@ app.get('/adamas/api/finesse/User/:username', auth, async (req, res) => {
     }
 
     const finesseUrl = `${url}/finesse/api/User/${encodeURIComponent(username)}`;
-    const response = await fetch(finesseUrl, {
+    const response = await fetchFinesse(finesseUrl, {
       method: 'GET',
       headers: {
         Authorization: authHeader,
@@ -1211,7 +1238,7 @@ app.post('/adamas/api/finesse/User/:username/Dialogs', auth, async (req, res) =>
       requestBody = req.body.rawXml;
     }
 
-    const response = await fetch(finesseUrl, {
+    const response = await fetchFinesse(finesseUrl, {
       method: 'POST',
       headers: {
         Authorization: authHeader,
@@ -1269,7 +1296,7 @@ app.put('/adamas/api/finesse/Dialog/:dialogId', auth, async (req, res) => {
       requestBody = req.body.rawXml;
     }
 
-    const response = await fetch(finesseUrl, {
+    const response = await fetchFinesse(finesseUrl, {
       method: 'PUT',
       headers: {
         Authorization: authHeader,

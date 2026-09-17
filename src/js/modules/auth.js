@@ -175,6 +175,14 @@ export class Auth {
       /* ignore */
     }
     try {
+      if (typeof window !== 'undefined' && window.adamasSocket) {
+        window.adamasSocket.disconnect();
+        window.adamasSocket = null;
+      }
+    } catch {
+      /* ignore */
+    }
+    try {
       const { crmManager } = await import('./crm/CRMManager.js');
       if (crmManager && typeof crmManager.clearPersistedSecrets === 'function') {
         crmManager.clearPersistedSecrets();

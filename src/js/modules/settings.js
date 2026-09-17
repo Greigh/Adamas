@@ -4,6 +4,7 @@
 import {
   saveData,
   loadData,
+  loadTheme,
   loadPatterns,
   savePatterns,
   loadSteps,
@@ -21,7 +22,7 @@ import {
   setupSectionToggle,
 } from './draggable.js';
 
-import { setupThemeToggle } from './themes.js';
+import { setupThemeToggle, applyTheme } from './themes.js';
 import {
   playAlertSound,
   initAudio,
@@ -29,6 +30,11 @@ import {
 } from '../utils/audio.js';
 import { auth } from './auth.js';
 import { apiFetch } from '../utils/api.js';
+
+/** Convert kebab-case ids to camelCase setting keys (export-patterns → exportPatterns). */
+function kebabToCamel(id) {
+  return String(id || '').replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
 
 // Helper to update slider visual state
 function updateSliderVisual(toggle) {
@@ -172,8 +178,12 @@ export function saveSettings(settings) {
   if (typeof window !== 'undefined') {
     window.appSettings = appSettings;
   }
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem('appSettings', JSON.stringify(appSettings));
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('appSettings', JSON.stringify(appSettings));
+    }
+  } catch (err) {
+    console.error('Failed to persist appSettings:', err);
   }
 
   // Cloud Persist (Debounced)
@@ -227,19 +237,32 @@ export function initializeSettings() {
     window.appSettings = appSettings;
   }
 
-  // Cloud Fetch
+  // Cloud Fetch — merge carefully so a completed welcome is not undone
   if (auth.isLoggedIn()) {
     apiFetch('/api/user/settings')
       .then((res) => res.json())
       .then((remoteSettings) => {
         if (remoteSettings && Object.keys(remoteSettings).length > 0) {
           console.log('Syncing settings from cloud...');
+          const localSeenWelcome = !!appSettings.hasSeenWelcome;
           Object.assign(appSettings, remoteSettings);
+          // Local welcome completion wins over stale cloud payloads
+          if (localSeenWelcome) {
+            appSettings.hasSeenWelcome = true;
+          }
           if (typeof window !== 'undefined') {
             window.appSettings = appSettings;
           }
-          // Re-apply settings after fetching from cloud
           applySettings();
+          // Dismiss wizard if cloud (or preserved local) says welcome done
+          if (appSettings.hasSeenWelcome) {
+            const overlay = document.getElementById('welcome-overlay');
+            if (overlay) {
+              overlay.classList.remove('active');
+              overlay.setAttribute('aria-hidden', 'true');
+              overlay.inert = true;
+            }
+          }
           window.dispatchEvent(
             new CustomEvent('appSettingsChanged', { detail: appSettings })
           );
@@ -1049,11 +1072,11 @@ export function setupSettingsEventListeners() {
     const toggle = document.getElementById(toggleId);
     if (toggle) {
       // Initialize checked state
-      const settingKey = toggleId.replace(/-/g, '');
+      const settingKey = kebabToCamel(toggleId);
       toggle.checked = appSettings[settingKey] !== false;
 
       toggle.addEventListener('change', function () {
-        const settingKey = toggleId.replace(/-/g, '');
+        const settingKey = kebabToCamel(toggleId);
         appSettings[settingKey] = this.checked;
         saveSettings(appSettings);
       });
@@ -1111,7 +1134,7 @@ export function setupSettingsEventListeners() {
     const toggle = document.getElementById(toggleId);
     if (toggle) {
       toggle.addEventListener('change', function () {
-        const settingKey = toggleId.replace(/-/g, '');
+        const settingKey = kebabToCamel(toggleId);
         appSettings[settingKey] = this.checked;
         saveSettings(appSettings);
       });
@@ -2395,130 +2418,167 @@ groupEnableBtns.forEach((btn) => {
 });
 
 // Welcome Screen Logic
-// Welcome Screen Logic
+let welcomeWizardBound = false;
 function checkWelcomeStatus() {
-  if (!appSettings.hasSeenWelcome) {
-    const overlay = document.getElementById('welcome-overlay');
-    const nextBtn = document.getElementById('wizard-next');
-    const backBtn = document.getElementById('wizard-back');
-    const steps = document.querySelectorAll('.wizard-step');
-    const dots = document.querySelectorAll('.wizard-dots .dot');
+  const overlay = document.getElementById('welcome-overlay');
 
-    // State
-    let currentStep = 1;
-    let selectedRole = 'agent';
-    let selectedTheme = 'dark';
-    let userName = '';
-    let customModules = {};
+  if (appSettings.hasSeenWelcome) {
+    if (overlay) {
+      overlay.classList.remove('active');
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.inert = true;
+    }
+    return;
+  }
 
-    if (overlay && nextBtn) {
-      setTimeout(() => overlay.classList.add('active'), 500);
+  const nextBtn = document.getElementById('wizard-next');
+  const backBtn = document.getElementById('wizard-back');
+  const steps = document.querySelectorAll('.wizard-step');
+  const dots = document.querySelectorAll('.wizard-dots .dot');
 
-      // --- Helpers ---
-      function updateStep(step) {
-        steps.forEach((s) => {
-          s.classList.remove('active');
-          if (parseInt(s.dataset.step) === step) s.classList.add('active');
-        });
+  // State
+  let currentStep = 1;
+  let selectedRole = 'agent';
+  let selectedTheme = loadTheme() || 'light';
+  let userName = '';
+  let customModules = {};
 
-        dots.forEach((d, i) => {
-          // Logic for dots needs to match visible steps vs actual steps?
-          // Simple approach: just light them up.
-          if (i < step) d.classList.add('active');
-          else d.classList.remove('active');
-        });
+  if (!(overlay && nextBtn) || welcomeWizardBound) {
+    if (overlay && !welcomeWizardBound) {
+      overlay.classList.add('active');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+    return;
+  }
+  welcomeWizardBound = true;
 
-        backBtn &&
-          (backBtn.style.visibility = step === 1 ? 'hidden' : 'visible');
+  // Sync theme card selection with default
+  document.querySelectorAll('.theme-card').forEach((card) => {
+    card.classList.toggle('selected', card.dataset.theme === selectedTheme);
+  });
 
-        if (step === 5) {
-          nextBtn.textContent = 'Finish';
-        } else {
-          nextBtn.textContent = 'Next';
-        }
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+  overlay.inert = false;
+
+  function dismissWelcomeOverlay() {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.inert = true;
+    const mainTab = document.getElementById('main-tab');
+    if (mainTab && typeof mainTab.focus === 'function') {
+      try {
+        mainTab.focus();
+      } catch {
+        /* ignore */
       }
-
-      // --- Interaction Handlers ---
-
-      // Step 1: Role Selection
-      const roleCards = document.querySelectorAll('.role-card');
-      roleCards.forEach((card) => {
-        card.addEventListener('click', () => {
-          roleCards.forEach((c) => c.classList.remove('selected'));
-          card.classList.add('selected');
-          selectedRole = card.dataset.role;
-        });
-      });
-
-      // Step 2 handled by checkboxes naturally
-
-      // Step 3: Theme Selection
-      const themeCards = document.querySelectorAll('.theme-card');
-      themeCards.forEach((card) => {
-        card.addEventListener('click', () => {
-          themeCards.forEach((c) => c.classList.remove('selected'));
-          card.classList.add('selected');
-          selectedTheme = card.dataset.theme;
-        });
-      });
-
-      // --- Navigation ---
-      nextBtn.addEventListener('click', () => {
-        // Logic for moving forward
-        let nextStep = currentStep + 1;
-
-        // Skip Step 2 if not custom
-        if (currentStep === 1 && selectedRole !== 'custom') {
-          nextStep = 3;
-        }
-
-        if (currentStep === 3) {
-          if (window.setTheme) window.setTheme(selectedTheme);
-        }
-
-        if (currentStep < 5) {
-          currentStep = nextStep;
-          updateStep(currentStep);
-        } else {
-          // FINISH (Step 5)
-          const nameInput = document.getElementById('welcome-name');
-          if (nameInput) userName = nameInput.value;
-
-          // Collect modules if custom
-          if (selectedRole === 'custom') {
-            document.querySelectorAll('input[name="modules"]').forEach((cb) => {
-              customModules[cb.value] = cb.checked;
-            });
-          }
-
-          applyRolePreset(selectedRole, customModules);
-
-          appSettings.theme = selectedTheme;
-          if (userName) appSettings.userName = userName;
-
-          appSettings.hasSeenWelcome = true;
-          saveSettings(appSettings);
-
-          overlay.classList.remove('active');
-          applySettings();
-        }
-      });
-
-      backBtn?.addEventListener('click', () => {
-        let prevStep = currentStep - 1;
-
-        // Skip Step 2 going back if not custom
-        if (currentStep === 3 && selectedRole !== 'custom') {
-          prevStep = 1;
-        }
-
-        if (prevStep >= 1) {
-          currentStep = prevStep;
-          updateStep(currentStep);
-        }
-      });
     }
   }
+
+  function updateStep(step) {
+    steps.forEach((s) => {
+      s.classList.remove('active');
+      if (parseInt(s.dataset.step, 10) === step) s.classList.add('active');
+    });
+
+    // Progress along the visible path (skip modules step for non-custom)
+    const path =
+      selectedRole === 'custom' ? [1, 2, 3, 4, 5] : [1, 3, 4, 5];
+    const visibleIndex = Math.max(0, path.indexOf(step));
+
+    dots.forEach((d, i) => {
+      // Hide the modules-step dot when not on custom path
+      if (selectedRole !== 'custom' && i === 1) {
+        d.style.display = 'none';
+        d.classList.remove('active');
+        return;
+      }
+      d.style.display = '';
+      // Map physical dot index → path index
+      const pathIdx =
+        selectedRole === 'custom' ? i : i === 0 ? 0 : i - 1;
+      d.classList.toggle('active', pathIdx <= visibleIndex);
+    });
+
+    if (backBtn) {
+      backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+    }
+
+    nextBtn.textContent = step === 5 ? 'Finish' : 'Next';
+  }
+
+  // Step 1: Role Selection
+  const roleCards = document.querySelectorAll('.role-card');
+  roleCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      roleCards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedRole = card.dataset.role;
+      updateStep(currentStep);
+    });
+  });
+
+  // Step 3: Theme Selection — apply live preview
+  const themeCards = document.querySelectorAll('.theme-card');
+  themeCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      themeCards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedTheme = card.dataset.theme;
+      applyTheme(selectedTheme);
+    });
+  });
+
+  nextBtn.addEventListener('click', () => {
+    let nextStep = currentStep + 1;
+
+    if (currentStep === 1 && selectedRole !== 'custom') {
+      nextStep = 3;
+    }
+
+    if (currentStep === 3) {
+      applyTheme(selectedTheme);
+    }
+
+    if (currentStep < 5) {
+      currentStep = nextStep;
+      updateStep(currentStep);
+      return;
+    }
+
+    // FINISH
+    const nameInput = document.getElementById('welcome-name');
+    if (nameInput) userName = nameInput.value.trim();
+
+    if (selectedRole === 'custom') {
+      document.querySelectorAll('input[name="modules"]').forEach((cb) => {
+        customModules[cb.value] = cb.checked;
+      });
+    }
+
+    applyRolePreset(selectedRole, customModules);
+    applyTheme(selectedTheme);
+
+    if (userName) appSettings.userName = userName;
+    appSettings.hasSeenWelcome = true;
+    saveSettings(appSettings);
+
+    dismissWelcomeOverlay();
+    applySettings();
+  });
+
+  backBtn?.addEventListener('click', () => {
+    let prevStep = currentStep - 1;
+    if (currentStep === 3 && selectedRole !== 'custom') {
+      prevStep = 1;
+    }
+    if (prevStep >= 1) {
+      currentStep = prevStep;
+      updateStep(currentStep);
+    }
+  });
+
+  updateStep(1);
 }
 
 function applyRolePreset(role, customModules = {}) {
