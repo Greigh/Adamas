@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adamas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%230e7490' d='M32 4L8 24l24 36 24-36L32 4zm0 10.5L46.5 26 32 48.2 17.5 26 32 14.5z'/%3E%3C/svg%3E"
     />
     <link
       rel="manifest"
@@ -97,7 +103,16 @@
       <header class="app-header">
         <div class="header-content">
           <div class="app-title">
-            <h1>💎 Adamas <span class="beta-badge">BETA</span></h1>
+            <h1>
+              <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M32 4L8 24l24 36 24-36L32 4zm0 10.5L46.5 26 32 48.2 17.5 26 32 14.5z"
+                />
+              </svg>
+              <span class="brand-name">Adamas</span>
+              <span class="beta-badge">BETA</span>
+            </h1>
           </div>
           <nav class="main-nav">
             <button id="main-tab" class="nav-tab active">Main</button>
@@ -3268,11 +3283,8 @@
           <!-- Step 1: Role Selection -->
           <div class="wizard-step active" data-step="1">
             <div class="welcome-header">
-              <h1>Welcome to Adamas</h1>
-              <p>
-                Your ultimate call center companion. Let's set up your
-                workspace.
-              </p>
+              <h1>Adamas</h1>
+              <p>Set up your agent workspace in a few short steps.</p>
             </div>
             <div class="welcome-body">
               <div class="role-grid">
@@ -3449,7 +3461,7 @@
           <div class="wizard-step" data-step="3">
             <div class="welcome-header">
               <h1>Choose Your Look</h1>
-              <p>Select the theme that fits your vibe.</p>
+              <p>Pick a theme for long shifts.</p>
             </div>
             <div class="welcome-body">
               <div

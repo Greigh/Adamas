@@ -16,7 +16,7 @@ function addPoppedOutIndicator(sectionId, text = 'Popped Out') {
     span.textContent = text;
     span.style.marginLeft = '8px';
     span.style.fontSize = '0.85em';
-    span.style.color = '#1976d2';
+    span.style.color = '#0e7490';
     const header =
       section.querySelector('.section-header .title-container') ||
       section.querySelector('.section-header');
@@ -467,7 +467,7 @@ function openSectionInFloatingWindow(sectionId) {
       span.textContent = 'Floating';
       span.style.marginLeft = '8px';
       span.style.fontSize = '0.85em';
-      span.style.color = '#1976d2';
+      span.style.color = '#0e7490';
       const header =
         section.querySelector('.section-header .title-container') ||
         section.querySelector('.section-header');
@@ -573,7 +573,7 @@ function openSectionInBrowserPopup(sectionId) {
                 }
                 
                 h1 {
-                    color: #1976d2;
+                    color: #0e7490;
                     margin-top: 0;
                     text-align: center;
                     border-bottom: 2px solid #e3f2fd;
@@ -581,7 +581,7 @@ function openSectionInBrowserPopup(sectionId) {
                 }
                 
                 .button, button {
-                    background: linear-gradient(90deg, #3498db 60%, #1976d2 100%);
+                    background: #0e7490;
                     color: #fff;
                     border: none;
                     border-radius: 5px;
@@ -593,7 +593,7 @@ function openSectionInBrowserPopup(sectionId) {
                 }
                 
                 .button:hover, button:hover {
-                    background: linear-gradient(90deg, #1976d2 60%, #3498db 100%);
+                    background: #0e7490;
                 }
                 
                 /* Add styles for form elements */
