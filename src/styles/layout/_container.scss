@@ -165,17 +165,7 @@
   min-width: 0;
 }
 
-.drag-handle {
-  cursor: grab;
-  color: var(--text-muted);
-  padding: 0.25rem;
-  border-radius: var(--radius-control);
-
-  &:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-  }
-}
+// .drag-handle visual lives in features/_draggable.scss (6-dot grip)
 
 .float-btn,
 .minimize-btn,
