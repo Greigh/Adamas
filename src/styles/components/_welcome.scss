@@ -22,6 +22,7 @@
   justify-content: center;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.45s ease, visibility 0.45s ease;
   font-family: var(--font-sans);
   color: #e8eef6;
@@ -29,7 +30,12 @@
   &.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
   }
+}
+
+body.welcome-open {
+  overflow: hidden;
 }
 
 .welcome-content {
@@ -72,6 +78,20 @@
   padding: 0 1rem 2.5rem;
 }
 
+.welcome-finish-mark {
+  color: #5eead4;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-summary {
+  color: #cbd5e1;
+  font-size: 1rem;
+  margin: 0 auto;
+  max-width: 420px;
+}
+
 .role-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -100,13 +120,18 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  color: inherit;
 
   &:hover,
-  &.selected {
+  &.selected,
+  &:has(input:checked) {
     background: rgb(8 145 178 / 0.15);
     border-color: rgb(94 234 212 / 0.45);
-    transform: none;
-    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #5eead4;
+    outline-offset: 2px;
   }
 
   &.selected .check-icon {
@@ -114,14 +139,30 @@
     transform: scale(1);
   }
 
-  .role-icon {
+  .role-icon,
+  .module-icon {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     display: inline-block;
     padding: 0.5rem 0.65rem;
     background: rgb(255 255 255 / 0.08);
     border-radius: var(--radius-control);
     width: fit-content;
+  }
+
+  .module-name {
+    color: #fff;
+    font-weight: 560;
+    font-size: 0.95rem;
+  }
+
+  input[type='checkbox'] {
+    position: absolute;
+    opacity: 0.01;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
 
   h3 {
@@ -196,7 +237,11 @@
   &.selected {
     background: rgb(8 145 178 / 0.12);
     border-color: rgb(94 234 212 / 0.4);
-    transform: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #5eead4;
+    outline-offset: 2px;
   }
 
   .theme-preview {
@@ -205,8 +250,12 @@
     margin-bottom: 0.85rem;
     border: 1px solid rgb(255 255 255 / 0.1);
 
-    &.light { background: #eef2f6; }
-    &.dark { background: #0b1320; }
+    &.light {
+      background: #eef2f6;
+    }
+    &.dark {
+      background: #0b1320;
+    }
   }
 
   h3 {
@@ -241,6 +290,16 @@
   .get-started-btn {
     min-width: 10rem;
   }
+
+  #wizard-back.btn-ghost {
+    color: #cbd5e1;
+    background: transparent;
+
+    &:hover:not(:disabled) {
+      color: #fff;
+      background: rgb(255 255 255 / 0.08);
+    }
+  }
 }
 
 .wizard-actions {
@@ -263,6 +322,10 @@
     display: block;
     animation: wizard-in 0.35s ease both;
   }
+
+  &[hidden] {
+    display: none !important;
+  }
 }
 
 @keyframes wizard-in {
@@ -274,4 +337,18 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+#welcome-name {
+  background: rgb(255 255 255 / 0.06) !important;
+  border-color: rgb(255 255 255 / 0.18) !important;
+  color: #fff !important;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+.welcome-overlay label[for='welcome-name'] {
+  color: #94a3b8 !important;
 }

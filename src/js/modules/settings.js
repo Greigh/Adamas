@@ -2419,6 +2419,8 @@ groupEnableBtns.forEach((btn) => {
 
 // Welcome Screen Logic
 let welcomeWizardBound = false;
+let welcomeFinishing = false;
+
 function checkWelcomeStatus() {
   const overlay = document.getElementById('welcome-overlay');
 
@@ -2427,6 +2429,7 @@ function checkWelcomeStatus() {
       overlay.classList.remove('active');
       overlay.setAttribute('aria-hidden', 'true');
       overlay.inert = true;
+      document.body.classList.remove('welcome-open');
     }
     return;
   }
@@ -2435,36 +2438,51 @@ function checkWelcomeStatus() {
   const backBtn = document.getElementById('wizard-back');
   const steps = document.querySelectorAll('.wizard-step');
   const dots = document.querySelectorAll('.wizard-dots .dot');
+  const summaryEl = document.getElementById('welcome-summary');
 
-  // State
   let currentStep = 1;
-  let selectedRole = 'agent';
+  let selectedRole =
+    document.querySelector('.role-card.selected')?.dataset?.role || 'agent';
   let selectedTheme = loadTheme() || 'light';
   let userName = '';
   let customModules = {};
 
-  if (!(overlay && nextBtn) || welcomeWizardBound) {
-    if (overlay && !welcomeWizardBound) {
-      overlay.classList.add('active');
-      overlay.setAttribute('aria-hidden', 'false');
-    }
+  if (!(overlay && nextBtn)) return;
+
+  // Already bound: just ensure visible if still needed
+  if (welcomeWizardBound) {
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('welcome-open');
     return;
   }
   welcomeWizardBound = true;
 
-  // Sync theme card selection with default
+  // Sync selections from DOM
   document.querySelectorAll('.theme-card').forEach((card) => {
     card.classList.toggle('selected', card.dataset.theme === selectedTheme);
+  });
+  document.querySelectorAll('.role-card').forEach((card) => {
+    card.classList.toggle('selected', card.dataset.role === selectedRole);
+    if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
+    if (!card.getAttribute('role')) card.setAttribute('role', 'button');
+  });
+  document.querySelectorAll('.theme-card').forEach((card) => {
+    if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
+    if (!card.getAttribute('role')) card.setAttribute('role', 'button');
   });
 
   overlay.classList.add('active');
   overlay.setAttribute('aria-hidden', 'false');
   overlay.inert = false;
+  document.body.classList.add('welcome-open');
 
   function dismissWelcomeOverlay() {
     overlay.classList.remove('active');
     overlay.setAttribute('aria-hidden', 'true');
     overlay.inert = true;
+    document.body.classList.remove('welcome-open');
+    document.removeEventListener('keydown', onWizardKeydown, true);
     const mainTab = document.getElementById('main-tab');
     if (mainTab && typeof mainTab.focus === 'function') {
       try {
@@ -2475,63 +2493,140 @@ function checkWelcomeStatus() {
     }
   }
 
+  function roleLabel(role) {
+    return (
+      {
+        agent: 'Agent',
+        manager: 'Manager',
+        minimal: 'Minimalist',
+        custom: 'Custom',
+      }[role] || role
+    );
+  }
+
+  function updateSummary() {
+    if (!summaryEl) return;
+    const themeName = selectedTheme === 'dark' ? 'Dark' : 'Light';
+    const nameBit = userName ? ` · ${userName}` : '';
+    summaryEl.textContent = `${roleLabel(selectedRole)} workspace · ${themeName} theme${nameBit}`;
+  }
+
   function updateStep(step) {
+    currentStep = step;
     steps.forEach((s) => {
-      s.classList.remove('active');
-      if (parseInt(s.dataset.step, 10) === step) s.classList.add('active');
+      const active = parseInt(s.dataset.step, 10) === step;
+      s.classList.toggle('active', active);
+      s.hidden = !active;
     });
 
-    // Progress along the visible path (skip modules step for non-custom)
     const path =
       selectedRole === 'custom' ? [1, 2, 3, 4, 5] : [1, 3, 4, 5];
     const visibleIndex = Math.max(0, path.indexOf(step));
 
     dots.forEach((d, i) => {
-      // Hide the modules-step dot when not on custom path
       if (selectedRole !== 'custom' && i === 1) {
         d.style.display = 'none';
         d.classList.remove('active');
         return;
       }
       d.style.display = '';
-      // Map physical dot index → path index
-      const pathIdx =
-        selectedRole === 'custom' ? i : i === 0 ? 0 : i - 1;
+      const pathIdx = selectedRole === 'custom' ? i : i === 0 ? 0 : i - 1;
       d.classList.toggle('active', pathIdx <= visibleIndex);
     });
 
     if (backBtn) {
       backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+      backBtn.disabled = step === 1;
     }
 
     nextBtn.textContent = step === 5 ? 'Finish' : 'Next';
+    nextBtn.disabled = false;
+
+    if (step === 4) {
+      const nameInput = document.getElementById('welcome-name');
+      if (nameInput) userName = nameInput.value.trim();
+    }
+    if (step === 5) updateSummary();
+
+    // Focus first interactive control in the active step
+    const activeStep = overlay.querySelector('.wizard-step.active');
+    const focusable = activeStep?.querySelector(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable && step !== 1) {
+      try {
+        focusable.focus({ preventScroll: true });
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
-  // Step 1: Role Selection
-  const roleCards = document.querySelectorAll('.role-card');
-  roleCards.forEach((card) => {
-    card.addEventListener('click', () => {
-      roleCards.forEach((c) => c.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedRole = card.dataset.role;
-      updateStep(currentStep);
+  function selectRole(card) {
+    if (!card) return;
+    document.querySelectorAll('.role-card').forEach((c) => {
+      c.classList.remove('selected');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    card.classList.add('selected');
+    card.setAttribute('aria-pressed', 'true');
+    selectedRole = card.dataset.role || 'agent';
+    updateStep(currentStep);
+  }
+
+  function selectTheme(card) {
+    if (!card || !card.dataset.theme) return;
+    document.querySelectorAll('.theme-card').forEach((c) => {
+      c.classList.remove('selected');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    card.classList.add('selected');
+    card.setAttribute('aria-pressed', 'true');
+    selectedTheme = card.dataset.theme;
+    applyTheme(selectedTheme);
+  }
+
+  document.querySelectorAll('.role-card').forEach((card) => {
+    card.setAttribute(
+      'aria-pressed',
+      card.classList.contains('selected') ? 'true' : 'false'
+    );
+    card.addEventListener('click', () => selectRole(card));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectRole(card);
+      }
     });
   });
 
-  // Step 3: Theme Selection — apply live preview
-  const themeCards = document.querySelectorAll('.theme-card');
-  themeCards.forEach((card) => {
-    card.addEventListener('click', () => {
-      themeCards.forEach((c) => c.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedTheme = card.dataset.theme;
-      applyTheme(selectedTheme);
+  document.querySelectorAll('.theme-card').forEach((card) => {
+    card.setAttribute(
+      'aria-pressed',
+      card.classList.contains('selected') ? 'true' : 'false'
+    );
+    card.addEventListener('click', () => selectTheme(card));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectTheme(card);
+      }
     });
   });
 
-  nextBtn.addEventListener('click', () => {
+  // Keep module-card selected class in sync (for browsers without :has)
+  document.querySelectorAll('.module-card input[name="modules"]').forEach((cb) => {
+    const sync = () => {
+      cb.closest('.module-card')?.classList.toggle('selected', cb.checked);
+    };
+    sync();
+    cb.addEventListener('change', sync);
+  });
+
+  function goNext() {
+    if (welcomeFinishing) return;
+
     let nextStep = currentStep + 1;
-
     if (currentStep === 1 && selectedRole !== 'custom') {
       nextStep = 3;
     }
@@ -2540,98 +2635,184 @@ function checkWelcomeStatus() {
       applyTheme(selectedTheme);
     }
 
+    if (currentStep === 4) {
+      const nameInput = document.getElementById('welcome-name');
+      if (nameInput) userName = nameInput.value.trim();
+    }
+
     if (currentStep < 5) {
-      currentStep = nextStep;
-      updateStep(currentStep);
+      updateStep(nextStep);
       return;
     }
 
     // FINISH
+    welcomeFinishing = true;
+    nextBtn.disabled = true;
+    nextBtn.textContent = 'Saving…';
+
     const nameInput = document.getElementById('welcome-name');
     if (nameInput) userName = nameInput.value.trim();
 
     if (selectedRole === 'custom') {
+      customModules = {};
       document.querySelectorAll('input[name="modules"]').forEach((cb) => {
         customModules[cb.value] = cb.checked;
       });
     }
 
-    applyRolePreset(selectedRole, customModules);
-    applyTheme(selectedTheme);
+    try {
+      applyRolePreset(selectedRole, customModules);
+      applyTheme(selectedTheme);
+      if (userName) appSettings.userName = userName;
+      appSettings.hasSeenWelcome = true;
+      saveSettings(appSettings);
+      dismissWelcomeOverlay();
+      applySettings();
+      if (typeof window.showMainApp === 'function') {
+        window.showMainApp();
+      }
+    } catch (err) {
+      console.error('Welcome finish failed:', err);
+      welcomeFinishing = false;
+      nextBtn.disabled = false;
+      nextBtn.textContent = 'Finish';
+      // Still dismiss so the user is not trapped; flag already attempted
+      appSettings.hasSeenWelcome = true;
+      try {
+        saveSettings(appSettings);
+      } catch {
+        /* ignore */
+      }
+      dismissWelcomeOverlay();
+      applySettings();
+    }
+  }
 
-    if (userName) appSettings.userName = userName;
-    appSettings.hasSeenWelcome = true;
-    saveSettings(appSettings);
-
-    dismissWelcomeOverlay();
-    applySettings();
-  });
-
-  backBtn?.addEventListener('click', () => {
+  function goBack() {
+    if (welcomeFinishing || currentStep <= 1) return;
     let prevStep = currentStep - 1;
     if (currentStep === 3 && selectedRole !== 'custom') {
       prevStep = 1;
     }
-    if (prevStep >= 1) {
-      currentStep = prevStep;
-      updateStep(currentStep);
-    }
-  });
+    updateStep(prevStep);
+  }
 
+  nextBtn.addEventListener('click', goNext);
+  backBtn?.addEventListener('click', goBack);
+
+  function onWizardKeydown(e) {
+    if (!overlay.classList.contains('active')) return;
+
+    // Focus trap
+    if (e.key === 'Tab') {
+      const focusables = [
+        ...overlay.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+        ),
+      ].filter((el) => el.offsetParent !== null || el === document.activeElement);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      goBack();
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'TEXTAREA') return;
+      // Allow default on buttons; for inputs/cards advance
+      if (tag === 'INPUT' || e.target?.classList?.contains('role-card') || e.target?.classList?.contains('theme-card')) {
+        e.preventDefault();
+        goNext();
+      }
+    }
+  }
+  document.addEventListener('keydown', onWizardKeydown, true);
+
+  // Hide inactive steps for a11y
+  steps.forEach((s) => {
+    s.hidden = !s.classList.contains('active');
+  });
   updateStep(1);
 }
 
 function applyRolePreset(role, customModules = {}) {
-  // Defaults set to false for clarity before enabling
   const allModules = [
     'showFormatter',
+    'showCallflow',
     'showCalllogging',
     'showScripts',
     'showHoldtimer',
     'showNotes',
     'showAnalytics',
+    'showAdvancedAnalytics',
     'showCrm',
     'showTasks',
     'showCollaboration',
     'showPerformanceMonitoring',
+    'showKnowledgeBase',
+    'showWorkflows',
+    'showMultichannel',
+    'showVoicerecording',
+    'showQuickActions',
+    'showTimeTracking',
+    'showApiIntegration',
+    'showFeedback',
   ];
 
-  // Helper to reset
   const resetAll = () => {
-    allModules.forEach((m) => (appSettings[m] = false));
+    allModules.forEach((m) => {
+      appSettings[m] = false;
+    });
   };
 
-  if (role === 'custom') {
-    // Apply exact check states
-    Object.keys(customModules).forEach((key) => {
-      appSettings[key] = customModules[key];
-    });
-    // Ensure Quick actions is on by default for custom?
-    appSettings.showQuickActions = appSettings.showQuickActions ?? true;
-  } else {
-    resetAll(); // Clear first for presets
+  resetAll();
 
-    if (role === 'agent') {
-      appSettings.showFormatter = true;
-      appSettings.showCalllogging = true;
-      appSettings.showScripts = true;
-      appSettings.showHoldtimer = true;
-      appSettings.showNotes = true;
-      appSettings.showQuickActions = true;
-    } else if (role === 'manager') {
-      appSettings.showAnalytics = true;
-      appSettings.showPerformanceMonitoring = true; // Often paired with analytics
-      appSettings.showCollaboration = true;
-      appSettings.showTasks = true;
-      appSettings.showCrm = true;
-      appSettings.showFormatter = true; // Useful for everyone
-      appSettings.showCalllogging = true; // Reviewing calls
-      appSettings.showQuickActions = true;
-    } else if (role === 'minimal') {
+  if (role === 'custom') {
+    Object.keys(customModules).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(appSettings, key)) {
+        appSettings[key] = !!customModules[key];
+      }
+    });
+    // Keep a usable chrome baseline if user unchecked everything
+    if (!allModules.some((m) => appSettings[m])) {
       appSettings.showFormatter = true;
       appSettings.showHoldtimer = true;
       appSettings.showQuickActions = true;
     }
+  } else if (role === 'agent') {
+    appSettings.showFormatter = true;
+    appSettings.showCalllogging = true;
+    appSettings.showScripts = true;
+    appSettings.showHoldtimer = true;
+    appSettings.showNotes = true;
+    appSettings.showQuickActions = true;
+  } else if (role === 'manager') {
+    appSettings.showAnalytics = true;
+    appSettings.showAdvancedAnalytics = true;
+    appSettings.showPerformanceMonitoring = true;
+    appSettings.showCollaboration = true;
+    appSettings.showTasks = true;
+    appSettings.showCrm = true;
+    appSettings.showFormatter = true;
+    appSettings.showCalllogging = true;
+    appSettings.showQuickActions = true;
+  } else if (role === 'minimal') {
+    appSettings.showFormatter = true;
+    appSettings.showHoldtimer = true;
+    appSettings.showQuickActions = true;
   }
 
   saveSettings(appSettings);

@@ -3278,18 +3278,31 @@
       </div>
 
       <!-- Welcome Overlay -->
-      <div id="welcome-overlay" class="welcome-overlay">
+      <div
+        id="welcome-overlay"
+        class="welcome-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="welcome-title"
+        aria-hidden="true"
+      >
         <div class="welcome-content wizard-container">
           <!-- Step 1: Role Selection -->
           <div class="wizard-step active" data-step="1">
             <div class="welcome-header">
-              <h1>Adamas</h1>
+              <h1 id="welcome-title">Adamas</h1>
               <p>Set up your agent workspace in a few short steps.</p>
             </div>
             <div class="welcome-body">
               <div class="role-grid">
                 <!-- Agent Role -->
-                <div class="role-card selected" data-role="agent">
+                <div
+                  class="role-card selected"
+                  data-role="agent"
+                  role="button"
+                  tabindex="0"
+                  aria-pressed="true"
+                >
                   <div class="check-icon">✓</div>
                   <span class="role-icon">🎧</span>
                   <h3>Agent</h3>
@@ -3453,6 +3466,26 @@
                   <span class="module-icon">⚡</span>
                   <span class="module-name">Quick Bar</span>
                 </label>
+                <!-- Performance -->
+                <label class="module-card">
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showPerformanceMonitoring"
+                  />
+                  <span class="module-icon">📈</span>
+                  <span class="module-name">Performance</span>
+                </label>
+                <!-- Knowledge Base -->
+                <label class="module-card">
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value="showKnowledgeBase"
+                  />
+                  <span class="module-icon">📚</span>
+                  <span class="module-name">Knowledge Base</span>
+                </label>
               </div>
             </div>
           </div>
@@ -3522,10 +3555,18 @@
           <div class="wizard-step" data-step="5">
             <div class="welcome-header">
               <h1>All Set!</h1>
-              <p>Your workspace is ready. Enjoy using Adamas.</p>
+              <p>Your workspace is ready.</p>
             </div>
             <div class="welcome-body">
-              <div style="font-size: 4rem; margin-bottom: 1rem">🚀</div>
+              <div class="welcome-finish-mark" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="56" height="56">
+                  <path
+                    fill="currentColor"
+                    d="M32 4L8 24l24 36 24-36L32 4zm0 10.5L46.5 26 32 48.2 17.5 26 32 14.5z"
+                  />
+                </svg>
+              </div>
+              <p id="welcome-summary" class="welcome-summary"></p>
             </div>
           </div>
 
