@@ -127,14 +127,18 @@ try {
     console.warn('⚠️  contact.js not found in src/js/');
   }
 
-  // 4d. Copy service worker to dist
-  const swSrc = path.join(__dirname, 'public', 'sw.js');
+  // 4d. Copy service worker to dist (src/public is source of truth; public/ is gitignored)
+  const swSrcCandidates = [
+    path.join(__dirname, 'src', 'public', 'sw.js'),
+    path.join(__dirname, 'public', 'sw.js'),
+  ];
   const swDest = path.join(distPath, 'sw.js');
-  if (fs.existsSync(swSrc)) {
+  const swSrc = swSrcCandidates.find((p) => fs.existsSync(p));
+  if (swSrc) {
     fs.copyFileSync(swSrc, swDest);
-    console.log(`✅ Copied sw.js to dist/`);
+    console.log(`✅ Copied sw.js to dist/ (from ${path.relative(__dirname, swSrc)})`);
   } else {
-    console.warn('⚠️  sw.js not found in public/');
+    console.warn('⚠️  sw.js not found in src/public/ or public/');
   }
 
   // 4e. Copy download script to dist
