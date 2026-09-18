@@ -972,26 +972,30 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Handle service worker for offline functionality
     if ('serviceWorker' in navigator) {
-      if (
+      const isLocalDev =
         window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1'
-      ) {
-        // In development mode, unregister any existing service workers
+        window.location.hostname === '127.0.0.1';
+
+      // Drop stale Cache Storage from the old cache-first SW (adamas-*-v1.0.0)
+      if ('caches' in window) {
+        caches.keys().then((keys) => {
+          keys
+            .filter((k) => !k.startsWith('adamas-facet-'))
+            .forEach((k) => caches.delete(k));
+        });
+      }
+
+      if (isLocalDev) {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           registrations.forEach((registration) => {
-            registration.unregister().then(() => {
-              //console.log('Service Worker unregistered in development mode');
-            });
+            registration.unregister();
           });
         });
       } else {
-        // In production mode, register service worker
         navigator.serviceWorker
-          .register('/adamas/sw.js')
+          .register('/adamas/sw.js?v=facet-20260918', { updateViaCache: 'none' })
           .then((registration) => {
-            //console.log('Service Worker registered successfully:', registration.scope);
-
-            // Check for updates
+            registration.update().catch(() => {});
             registration.addEventListener('updatefound', () => {
               const newWorker = registration.installing;
               if (newWorker) {
@@ -1000,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     newWorker.state === 'installed' &&
                     navigator.serviceWorker.controller
                   ) {
-                    // New version available
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
                     showUpdateNotification();
                   }
                 });

@@ -315,7 +315,7 @@ function startAPIServer() {
       window.location.hostname !== '127.0.0.1'
     ) {
       navigator.serviceWorker
-        .register('/adamas/sw.js')
+        .register('/adamas/sw.js?v=facet-20260918', { updateViaCache: 'none' })
         .then(() => {}) //console.log('API Service Worker registered'))
         .catch(() => {}); //console.log('Service Worker registration failed:', err));
     }

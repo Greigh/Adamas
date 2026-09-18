@@ -19,10 +19,18 @@ module.exports = {
   },
   devtool: isProduction ? false : 'source-map',
   devServer: {
+    // Do NOT serve production `dist/` here — a prior `npm run build` leaves
+    // /adamas/-prefixed HTML/CSS that shadows the in-memory Facet rebuild.
     static: [
       {
-        directory: path.join(__dirname, 'dist'),
+        directory: path.join(__dirname, 'public'),
         publicPath: '/',
+        watch: false,
+      },
+      {
+        directory: path.join(__dirname, 'src/public'),
+        publicPath: '/',
+        watch: false,
       },
     ],
     proxy: [

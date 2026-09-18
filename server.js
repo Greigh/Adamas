@@ -65,6 +65,10 @@ function sendHtmlFile(res, filePath) {
   let html = fs.readFileSync(filePath, 'utf8');
   if (nonce) html = injectHtmlNonce(html, nonce);
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  // HTML must revalidate so deploys / Facet redesigns aren't stuck behind CDN/browser cache
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.send(html);
 }
 
@@ -632,10 +636,39 @@ function htmlNonceStatic(rootDir) {
   };
 }
 
+// Cache policy: never cache SW/HTML; long-cache only contenthashed assets
+function setStaticCacheHeaders(res, filePath) {
+  const rel = String(filePath || '').replace(/\\/g, '/');
+  if (rel.endsWith('/sw.js') || rel.endsWith('sw.js')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Service-Worker-Allowed', '/');
+    return;
+  }
+  if (rel.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    return;
+  }
+  // Webpack contenthash: main.abc123.js / main.abc123.css
+  if (/\.[a-f0-9]{8,}\.(js|css|woff2?|ttf|png|jpe?g|gif|svg|mp3|wav|ogg)(\.map)?$/i.test(rel)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+  // Non-hashed compat copies (main.js / main.css) — always revalidate
+  if (/\.(js|css)$/i.test(rel)) {
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+  }
+}
+
+const staticOpts = {
+  setHeaders: setStaticCacheHeaders,
+};
+
 app.use(htmlNonceStatic(srcPath));
-app.use(express.static(srcPath));
+app.use(express.static(srcPath, staticOpts));
 app.use('/adamas', htmlNonceStatic(srcPath));
-app.use('/adamas', express.static(srcPath));
+app.use('/adamas', express.static(srcPath, staticOpts));
 app.use('/callcenterhelper', (req, res) => {
   res.redirect(301, '/adamas' + req.path);
 });
