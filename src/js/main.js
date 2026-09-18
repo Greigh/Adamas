@@ -993,7 +993,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
       } else {
         navigator.serviceWorker
-          .register('/adamas/sw.js?v=facet-20260918', { updateViaCache: 'none' })
+          .register('/adamas/sw.facet.js?v=20260918', { updateViaCache: 'none' })
           .then((registration) => {
             registration.update().catch(() => {});
             registration.addEventListener('updatefound', () => {

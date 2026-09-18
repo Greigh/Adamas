@@ -13,7 +13,7 @@ AddType application/manifest+json .webmanifest
 AddType application/json .json
 
 # Never cache the service worker or HTML — otherwise deploys look "stuck"
-<FilesMatch "^(sw\.js|.*\.html)$">
+<FilesMatch "^(sw\.js|sw\.facet\.js|.*\.html)$">
   Header set Cache-Control "no-cache, no-store, must-revalidate"
   Header set Pragma "no-cache"
   Header set Expires "0"

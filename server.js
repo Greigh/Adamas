@@ -639,10 +639,10 @@ function htmlNonceStatic(rootDir) {
 // Cache policy: never cache SW/HTML; long-cache only contenthashed assets
 function setStaticCacheHeaders(res, filePath) {
   const rel = String(filePath || '').replace(/\\/g, '/');
-  if (rel.endsWith('/sw.js') || rel.endsWith('sw.js')) {
+  if (rel.endsWith('/sw.js') || rel.endsWith('sw.js') || rel.endsWith('sw.facet.js')) {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Service-Worker-Allowed', '/');
+    res.setHeader('Service-Worker-Allowed', '/adamas/');
     return;
   }
   if (rel.endsWith('.html')) {

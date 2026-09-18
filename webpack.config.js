@@ -141,6 +141,10 @@ module.exports = {
           to: 'js/theme-init.js',
         },
         {
+          from: 'src/public/sw.facet.js',
+          to: 'sw.facet.js',
+        },
+        {
           from: 'src/js/deferred-stubs.js',
           to: 'js/deferred-stubs.js',
         },
