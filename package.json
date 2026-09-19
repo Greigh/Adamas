@@ -32,7 +32,9 @@
     "tsc": "tsc",
     "server:dev": "PORT=8080 nodemon server.js",
     "dev:local": "concurrently \"npm run server:dev\" \"npm run dev\"",
-    "deploy": "../../deploy.sh"
+    "deploy": "../../deploy.sh",
+    "git:identity": "git config user.name Greigh && git config user.email dghipskind@gmail.com",
+    "prepare": "npm run git:identity || true"
   },
   "author": "Daniel Hipskind aka Greigh",
   "license": "CC BY-NC-ND",
