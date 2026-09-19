@@ -1,6 +1,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const { seedWelcomeSeen, dismissWelcomeOverlay } = require('./helpers');
 
 (async () => {
   const http = require('http');
@@ -16,6 +17,14 @@ const path = require('path');
         urlPath = urlPath.replace('/adamas', '');
       } else if (urlPath.startsWith('/callcenterhelper/')) {
         urlPath = urlPath.replace('/callcenterhelper', '');
+      }
+
+      // Static e2e server has no Express API — stub auth probe so the app
+      // does not log noisy 404s for /api/me.
+      if (urlPath === '/api/me' || urlPath.startsWith('/api/')) {
+        res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: 'Not authenticated' }));
+        return;
       }
 
       let filePath = path.join(
@@ -72,9 +81,11 @@ const path = require('path');
         // ignore
       }
     });
+    await seedWelcomeSeen(page);
     await page.goto(url, { waitUntil: 'load' });
     // Wait for the app to initialize (main.js sets body.app-ready on success)
     await page.waitForSelector('body.app-ready', { timeout: 5000 });
+    await dismissWelcomeOverlay(page);
     // Grant clipboard permissions and set clipboard content
     await page
       .context()
@@ -214,7 +225,8 @@ const path = require('path');
     }
 
     // Toggle dark mode via the setting control
-    await page.click('#settings-tab');
+    await dismissWelcomeOverlay(page);
+    await page.click('#settings-tab', { timeout: 10000 });
     // The settings view may render elements but keep them hidden; wait for the toggle to be attached
     await page.waitForSelector('#dark-mode-toggle', {
       state: 'attached',
